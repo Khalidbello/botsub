@@ -1,0 +1,37 @@
+{
+  "name": "qsub",
+  "version": "1.0.0",
+  "description": "data and airtime top up vtu site",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Khalidbello/qsub0.git"
+  },
+  "keywords": [
+    "data",
+    "airtime",
+    "cheap",
+    "top",
+    "up"
+  ],
+  "author": "Khalid Bello",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Khalidbello/qsub0/issues"
+  },
+  "homepage": "https://github.com/Khalidbello/qsub0#readme",
+  "dependencies": {
+    "@aws-sdk/util-base64": "^3.208.0",
+    "axios": "^1.2.3",
+    "cyclic-dynamodb": "^0.0.28",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-handlebars": "^6.0.6",
+    "flutterwave-node-v3": "^1.0.12",
+    "nodemon": "^2.0.20"
+  }
+}
