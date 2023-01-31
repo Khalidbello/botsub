@@ -44,7 +44,7 @@ router.get("/confirm", (req, res)=> {
     refundPayment(req, res, response);
     res.end();
   })
-  .catch((err)=> res.json({status: "error"}) );
+  .catch((err)=> res.json({status: "failed", error: err}) );
 }); //end of confirm payment routes
 
 
