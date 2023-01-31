@@ -19,7 +19,7 @@ router.get("/confirm", (req, res)=> {
   .then((response)=> {
     
     if (response.status === "error") {
-      res.json({status:"error"}); res.end();
+      res.json({status: response}); res.end();
     };
 
     // calling function to check if transaction has never beign 
