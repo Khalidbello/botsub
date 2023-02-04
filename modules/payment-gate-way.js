@@ -1,6 +1,6 @@
 // module for things related to payment gate ways
-import {default as fsWithCallbacks} from "node:fs";
-const fs = fsWithCallbacks.promises;
+import {default as fs} from "node:fs";
+const fsP = fs.promises;
 import cyclicDB from "cyclic-dynamodb";
 import flutterwave from "flutterwave-node-v3";
 import { Router } from "express";
@@ -142,29 +142,39 @@ const deliverValue = function (response, req, res, requireMet) {
 }; // end of deliver value function
 
 
+router.get("/test", async(req, res)=> {
+  let code = await createStoreToDeliverCode({code: 284})
+  console.log(code);
+  res.send("ok");
+});
+
 
 // function to create and store to deliver code
 const createStoreToDeliverCode = async function(info) {
-  const codes = "QTYOPLMBCVTDSAGK0985674321&@#$_&-+()/%£¢¥";
-  const length = code.length;
-  let code;
+  const codes = "qwrtyuipplkhggdsazxvbnm0987654321";
+  const length = codes.length - 1;
+  let code = "";
   
-  for (i < 10; i = 0;) {
-    code += codes.charAt(Math.floor( Math.random()*length) );
+  for (let i=0; i < 20; i++) {
+    let index = Math.floor( Math.random() * length);
+    code += codes[index];
   };
 
-  let storedCodes = await fs.readFile("stored-codes.json",
-  "utf8").catch((err)=> console.log(err) );
-  storedCodes = JSON(storedCodes);
-  
-  if (storedCodes.hasOwnProperty(code)) createStoreToDeliverCode(info);
+  let storedCodes = await fsP.readFile("stored-codes.json", "utf8")
+  .catch((err)=> console.log(err) );
+
+  storedCodes = JSON.parse(storedCodes);
+
+  if (storedCodes.hasOwnProperty(code)){
+    console.log("recur");
+    createStoreToDeliverCode(info)
+  };
  
   storedCodes[code] = info;
   storedCodes = JSON.stringify(storedCodes);
+  console.log("before write");
+  await fsP.writeFile("stored-codes.json", storedCodes, "utf-8");
   
-  await fs.writeFile("stored-codes.json").catch((err)=> 
-  console.log(err) );
-
   return code;
 };//
 
