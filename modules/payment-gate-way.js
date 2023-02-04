@@ -22,7 +22,7 @@ router.get("/confirm", (req, res)=> {
       res.json({status: response}); res.end();
     };
 
-    /*/ calling function to check if transaction has never beign 
+    // calling function to check if transaction has never beign 
     // made before
     const previouslyDelivered = checkIfPreviouslyDelivered(
       req.query.transaction_id, req.query.tx_ref);
@@ -42,7 +42,7 @@ router.get("/confirm", (req, res)=> {
 
     // calling refund payment if proper conditions were not met
     refundPayment(req, res, response);
-    res.end();*/
+    res.end();
   })
   .catch((err)=> res.json({status: "failed", error: err}) );
 }); //end of confirm payment routes
