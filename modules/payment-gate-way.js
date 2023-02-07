@@ -4,7 +4,7 @@ const fsP = fs.promises;
 import cyclicDB from "cyclic-dynamodb";
 import flutterwave from "flutterwave-node-v3";
 import { Router } from "express";
-
+import {sendMail} from "./mailer.js";
 
 export const router = Router();
 
@@ -143,9 +143,21 @@ const deliverValue = function (response, req, res, requireMet) {
 
 
 router.get("/test", async(req, res)=> {
-  let code = await createStoreToDeliverCode({code: 284})
-  console.log(code);
-  res.send("ok");
+  let mailOptions = {
+    from: "qsub@gmail.com",
+    to: "ismailisah006@gmail.com",
+    subject: "testimg qsub mailing system",
+    text: "rough work"
+  };
+
+  let resp = sendMail(mailOptions);
+  if(resp){
+    console.log("sent");
+    res.end("semt");
+  } else {
+    console.log("no semt");
+    res.end("fauled to semt");
+  };
 });
 
 
