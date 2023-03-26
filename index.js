@@ -16,7 +16,6 @@ import {fileURLToPath} from 'url';
 
 // importing modules to handle different routes 
 import {router as viewsRouter}  from "./modules/views.js";
-import {router as deliverValueRouter} from "./modules/deliver-value.js";
 import {router as paymentGateWayRouter} from "./modules/payment-gate-way.js";
 
 
@@ -60,12 +59,11 @@ app.use(express.urlencoded({ extended: true }));
 
 //locking in middlewares for route handling
 app.use("/payment", paymentGateWayRouter);
-app.use("/deliver-value",  deliverValueRouter);
 app.use("/view", viewsRouter );
 
 
 
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 app.listen(port, ()=> console.log("running on port " + port) );

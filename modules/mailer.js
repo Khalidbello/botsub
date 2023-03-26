@@ -1,19 +1,21 @@
 // module to setup email sending
 import nodemailer from "nodemailer"
-
-export const sendMail = function(mailOptions) {
-  let transporter = nodemailer.createTransport({
-     service: "gmail",
-     auth: {
-       user: "bellokhalid74@gmail.com",
-       pass: "kH9L!D_bello",
-     }
-  });
-  
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: "bellokhalid74@gmail.com",
+    pass: "kH9L!D_BELL0",
+  },
+});
+export const sendMail = function(mailOptions) { 
   transporter.sendMail(mailOptions, (err, data)=> {
     if(err) {
-      return false;
       console.log(err);
+      console.log("failed mailer");
+      return false;
     } else {
       return true;
     };
