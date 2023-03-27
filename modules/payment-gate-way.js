@@ -19,7 +19,7 @@ export const router = Router();
 // route for confirming payment
 router.get("/confirm", (req, res)=> {
   const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-  ir
+  
   flw.Transaction.verify({id: req.query.transaction_id})
   .then((response)=> {
     if (respone.status == "succees") {
