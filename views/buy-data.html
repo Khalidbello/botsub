@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="eng">
+  <script src="scripts/eruda.min.js"></script>
+  <script> eruda.init();</script>
+  <head>
+   <meta charset="utf-8">
+   <meta name="author" content="Khalid Bello">
+   <meta name="viewport" content= "width=device-width,
+    initial-scale=1.0">
+   <link href="styles/terminal.css" rel="stylesheet">
+  </head>
+  <body>
+   <header class="bg-prp ">
+       
+    <svg onclick="back(this)" id="home" xmlns=
+    "http://www.w3.org/2000/svg" width=
+    "24" height="24" viewBox="0 0 24 24" 
+    fill="none" stroke="#fff" 
+    stroke-width="2" stroke-linecap=
+    "round" stroke-linejoin="round">
+     <path d="M19 12H6M12 5l-7 7 7 7"/>
+    </svg>
+    
+    <div class="name bg-white">                
+     <span class="txt-big bold">Q</span>sub   
+    </div>
+        
+    <div class="enquire bg-drkb flex flex-justify-center bg-white bold" onclick="showQueryBox();">
+     ?
+    </div>  
+
+    <div class="title  shdw clrw flex
+    flex-justify-center">
+     Data Purchase Terminal 
+    </div>
+
+    <svg width="0" height="0">
+     <defs>
+      <clipPath id="headCurve"
+      clipPathUnits="objectBoundingBox">
+      <path d="
+       M 0 1
+       L 0 0
+       L 1 0
+       L 1 1
+       C 1 1 1 0.75 0.8 0.75
+       L 0.3 0.75
+       C 0 0.75 0 0.45 0 0.45
+       " />
+      </clipPath>
+     </defs>
+    </svg> 
+   </header>
+    
+   <!-- queryBox -->
+    <div id="query-box" class="shdw bold" onclick="hideQueryBox();">
+       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="black" stroke-width="2" stroke-linecap="round"stroke-linejoin="round">
+           <line x1="18" y1="6" x2="6" y2="18"></line>
+           <line x1="6" y1="6" x2="18" y2="18"></line>
+       </svg>
+       <div data-location="about">About us</div>
+       <div data-location="report-issue">Report an issue</div>
+       <div data-location="wa">Contact us via watsaap</div>
+       <div data-location="https://qgame.cyclic.app">play games</div>
+    </div> 
+    
+
+   <!-- start of body circle -->
+   <div class="b-circle bg-drkb flex  flex-justify-center">
+    <div class="i-b-circle bg-white"></div>
+   </div>
+   <div class="b-s-circle bg-drkb flex flex-justify-center">
+    <div class="i-b-s-circle bg-white"></div>    
+   </div>
+   <!-- end of body circle-->
+
+
+
+   <!-- starting of form-->
+   <form class="shdw" id="form">
+       
+    <label>Select network</label>
+     <select  value="select network" id="network-box" required onclick="showNetwork(this)">
+        <option  value="empty" selected hidden disabled>•••••••• 
+        </option>
+     </select>
+     <div class="warning" id="network-warning">
+        select a network!
+     </div>
+         
+     <label>Select data offer</label>
+     <select  value="select network" id="offer-box" required 
+      onclick="showOffers(this)" >
+         <option  value="empty" selected hidden disabled>••••••••
+        </option>
+     </select>
+     <div class="warning" id="offer-warning">
+        select a an offer!
+     </div>
+      
+    <label for="email">Email</label>
+    <div id="email-holder">
+        
+      <input type="email" name="email"  required  id="email" 
+       placeholder="....@email.com" autocomplete="email"
+       oninput="changeBorder();">
+      <div class="shdw bg-drkb clrw flex" data-do="true" onclick="showEmailInfo();">
+          ? 
+          <div class="shdw flex">
+            receipt of this transaction would be sent to the 
+            provided email
+          </div>
+       </div>       
+      
+    </div>
+    <div class="warning" id="email-warning">
+        email format not valid
+    </div>
+    
+    <label for="name">Phone number</label>
+     <input type="" name="number" minlength="11" 
+      maxlength="11"   required  id="number"
+      placeholder="•••••••" oninput="changeBorder();" 
+      data-pass="false" autocomplete="tel" required>
+      <div class="warning" id="number-warning">
+         number should be in this format 090########
+          and 11 digit long
+      </div>    
+      
+     <span class="or shdw txt-small flex
+     flex-justify-center">OR</span>
+         
+     <button id="contact" class="txt-small"
+     onclick="getContact()">
+       select number from contact 
+       <!-- phoneError Box -->
+       <div id="phone-error"> function not supported</div>
+     </button>
+       
+    <label for="number-validator">Number validator
+    </label>
+       <br>
+    <label class="switch" >
+     <input type="checkbox" id="number-validator" checked
+     onclick="handleValidatorState();">
+     <span class="slider round"></span>
+      <span id="validator-state">ON</span>
+    </label>
+
+    <input type="submit" id="submit" value="Buy now" 
+     class="bg-prp clrw" onclick="formValidate(event);">
+   </form>
+   <!-- end of form -->
+   
+   
+   
+       
+   <!-- select boxes for network -->
+   <div id="networks" class="bg-white">
+     <div class="header bg-drkb clrw flex flex-sp-btw">
+      <span class="bold">Select network</span>
+      <svg xmlns="http://www.w3.org/2000/svg"
+      onclick="hideBox()"
+      width="24" height="24" viewBox="0 0 24 24"
+      fill="none" stroke="#fff" 
+      stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round">
+       <line x1="18" y1="6" x2="6" y2="18"/></line>
+       <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+     </div>
+     
+     <div class="networks shdw bg-white flex flex-sp-btw bold"
+      data-network="mtn" onclick="networkSelected(this)">
+        <img src="mtn.jpg" class="bg-prp"> MTN
+        <button class="select clrw flex flex-justify-center">
+       select</button>
+     </div>  
+     
+     <div class="networks shdw bg-white flex flex-sp-btw bold"
+      data-network="airtel" onclick="networkSelected(this)">
+       <img src="mtn.jpg" class="bg-prp"> Airtel 
+       <button class="select clrw flex flex-justify-center">
+        select</button>
+     </div>  
+     
+     <div class="networks shdw bg-white flex flex-sp-btw bold" 
+      data-network="glo" onclick="networkSelected(this)">
+        <img src="mtn.jpg" class="bg-prp"> Glo
+        <button class="select clrw flex flex-justify-center">
+        select</button>
+     </div>  
+    
+    <div class="networks shdw bg-white flex flex-sp-btw bold"
+     data-network="9mobile" onclick="networkSelected(this)">
+       <img src="mtn.jpg" class="bg-prp"> 9mobile
+       <button class="select clrw flex flex-justify-center">
+       select</button>
+    </div>  
+   </div> 
+    <!-- end of select network -->
+    
+    
+    
+    <!-- start of mtn offers -->
+    <div id="mtn" class="offer">
+      <div class="offer-header bold bg-drkb clrw flex 
+       flex-sp-btw">
+        <span class="flex">&nbsp; <img src="mtn.jpg" 
+         alt="mtn logo">&nbsp; &nbsp; MTN Offers</span>
+        <svg xmlns="http://www.w3.org/2000/svg"
+         onclick="hideBox()"
+         width="24" height="24" viewBox="0 0 24 24" fill="none"
+         stroke="#fff" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </div>
+   </div>
+   <!-- end of mtn offer -->
+   
+   
+   <!-- start of airtel offers -->
+   <div id="airtel" class="offer">
+     <div class="offer-header bold bg-drkb clrw
+     flex flex-sp-btw">
+      <span class="flex">&nbsp; <img src="mtn.jpg" 
+       alt="mtn logo">&nbsp; &nbsp; Airtel Offers
+      </span>
+      
+      <svg xmlns="http://www.w3.org/2000/svg"
+      onclick="hideBox()"
+      width="24" height="24" viewBox="0 0 24 24"
+      fill="none" stroke="#fff" 
+      stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round"><line x1="18" y1="6"
+      x2="6" y2="18">
+       </line><line x1="6" y1="6" x2="18"
+       y2="18"></line>
+       </svg>
+      </div>
+   </div>
+   <!-- end of airtel offers -->
+   
+   
+   <!-- start of glo offers -->
+   <div id="glo" class="offer">
+     <div class="offer-header bold bg-drkb clrw
+     flex flex-sp-btw">
+      <span class="flex">&nbsp; <img src="mtn.jpg" 
+       alt="mtn logo">&nbsp; &nbsp; Glo Offers
+      </span>
+      
+      <svg xmlns="http://www.w3.org/2000/svg"
+      onclick="hideBox()"
+      width="24" height="24" viewBox="0 0 24 24"
+      fill="none" stroke="#fff" 
+      stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round"><line x1="18" y1="6"
+      x2="6" y2="18">
+       </line><line x1="6" y1="6" x2="18"
+       y2="18"></line>
+      </svg>
+     </div>
+   </div>
+   <!-- end of glo offers -->
+   
+   
+   <!-- start of 9mobile offers -->
+   <div id="nine-mobile" class="offer">
+     <div class="offer-header bold bg-drkb clrw
+     flex flex-sp-btw">
+      <span class="flex">&nbsp; <img src="mtn.jpg" 
+       alt="mtn logo">&nbsp; &nbsp; 9mobile Offers
+      </span>
+      
+      <svg xmlns="http://www.w3.org/2000/svg"
+      onclick="hideBox()"
+      width="24" height="24" viewBox="0 0 24 24"
+      fill="none" stroke="#fff" 
+      stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round"><line x1="18" y1="6"
+      x2="6" y2="18">
+       </line><line x1="6" y1="6" x2="18"
+       y2="18"></line>
+      </svg>
+     </div>
+   </div>
+   <!-- end of 9mobile offers -->
+   
+
+    <!-- invalid number box -->
+    <div id="invalid-number-box"></div>
+        
+
+    <!-- blur background effect -->
+    <div id="blur" class="bg-white"></div>
+   
+   <script src="buy-data.js"></script>
+   
+<script src="scripts/buy-data.js"></script>      
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+</html>

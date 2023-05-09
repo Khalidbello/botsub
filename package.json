@@ -34,6 +34,7 @@
     "express-handlebars": "^6.0.6",
     "flutterwave-node-v3": "^1.0.12",
     "nodemailer": "^6.9.1",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "request": "^2.88.2"
   }
 }

@@ -1,0 +1,125 @@
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width,
+    initial-scale=1.0">
+ <meta name="author" content="Khalid Bello">
+ <title>under maintenance</title>
+ <style>
+  * {
+   padding: 0;                             
+   margin: 0;
+   box-sizing: border-box;    
+   font-family: fantasy;         
+  }
+
+  
+  img {
+    display: block;
+    width: 90%;
+    max-width: 900px;
+    margin: 1em auto;
+    border-radius: 1em;
+  }
+  a {
+    display: block;
+    text-decoration: none;
+    max-width: 150px;
+    padding: 0.5em;
+    border-radius: 1em;
+    margin: 0.5em auto;
+    background-color: darkorange;
+    color: white;
+    text-align: center;
+    box-shadow: 0 0 0 1px white,  0 0 0 2px darkorange;
+  }
+    
+  header {
+      position: sticky;
+       top: 0;
+       left: 0;  
+       height: 3em;
+       padding: 0 10px 0 10px;
+       z-index: 3;
+    }
+    header > svg {
+      width: 2em;
+      height: 2em;
+      border-radius: 10px;
+    }
+    header  > span {
+      min-width: 50%;
+      height: 2.5em;
+      border-radius: 10px;
+    }
+   #response-header {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 20px 10px 10px;
+  }
+  p {
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px;
+  }
+  /* generic styles */
+  .bg-prp, .bg-drkb {
+   background-color: #112;
+  }
+  .bg-white {
+   background-color: white;
+  }
+  .clrw { color: white;}
+  .flex {
+   display: flex;
+   align-items: center;
+  }     
+  .flex-col { flex-direction: column;}                          
+  .flex-sp-btw {
+   justify-content: space-between;
+  }
+  .flex-sp-ar {
+   justify-content: space-around;
+  }
+  .flex-justify-center {
+   justify-content: center;
+  } 
+  .flex-col {flex-direction: column;}   
+  .flex-align-start {align-items: flex-start;}      
+  .flex-end {align-items: flex-end; }                   
+  .shdw {
+   box-shadow: 0 0 10px -3px #112;
+  }
+  .txt-small {font-size: small;}
+  .txt-big {font-size: large;}
+  .bold {font-weight: bold;}
+  .float-right {float: right;}
+  .ash1 {background-color: #eee;}
+  .ash2 {background-color: #ddd;}
+  .ash3 {background-color: #ccc;}
+ </style>
+</head>
+<body>
+  <div id="check-payment" class=" bg-white hide transition">
+    <header class="bg-white flex flex-sp-btw">
+      <svg class="bg-drkb" onclick="hideSection(checkPayment);"></svg>
+      <span class="shdw bg-white bold flex flex-justify-center">Qsub</span>
+    </header>
+    <div id="response-header" class="bg-white shdw bold">
+       404 Error
+    </div>
+
+    <p class="ash1">
+     Requested resource was not found
+    </p>
+
+    <img src="images/not-found.png">
+
+    <p class="ash1">
+      mind playing some games?<br>
+      <a href="https://qgames.cyclic.app">play games</a>
+    </p>
+  </div>
+</body>  
+</html>

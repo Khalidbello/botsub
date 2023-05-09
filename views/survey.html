@@ -1,0 +1,408 @@
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta name="author" content="Khalid Bello">
+ <title>Qsub Survey</title>
+  <script src="scripts/eruda.min.js"></script>
+  <script> eruda.init();</script>
+ <style>
+  * {
+   padding: 0;                             
+   margin: 0;
+   box-sizing: border-box;    
+   font-family: fantasy; 
+ }
+  header {
+      position: sticky;
+       top: 0;
+       left: 0;  
+       height: 3em;
+       padding: 0 10px 0 10px;
+       z-index: 3;
+    }
+    header > svg {
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+    }
+    header  > span {
+      min-width: 50%;
+      height: 2.5em;
+      border-radius: 10px;
+    }
+
+  p {
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px; 
+  }
+  /* styling for question-box */
+  #question-box {
+    border-radius: 10px;
+    margin: 10px;
+    min-height: 150px;
+    position: relative;
+  }
+  #question-box > button {
+    position: absolute;
+    bottom: 10px;
+    left: calc(50% - 75px);
+    width: 150px;
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+    transition: opacity 0.5s;
+  }
+  #question-box > svg {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+    display: none;
+  }
+  .data-container { 
+    display: none;
+    transition: left 0.5s;
+    position: absolute;
+    top: 60px;
+    left: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
+    background-color: #eee;
+    padding-bottom: 40px;
+  }
+  .data-container > h3 {
+    background-color: #ddd;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .data-container > div {
+    background-color: #112;
+    opacity: 0.5;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px;
+    color: white;
+  }
+  #email { text-align: right; }
+  #email h4 { text-align: left; }
+  #email > input { 
+    display: block;
+    height: 40px;
+    width: 80%;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 20px;
+    border: thin solid #ddd;
+  }
+  #email > button {
+    height: 35px;
+    width: 70px;
+    border-radius: 10px;
+    background-color: darkorange;
+    color: white;
+  }
+  input[type="email"]:valid { border: thin solid blue; } 
+
+  /* styling for loader */
+  #loader {
+    position: absolute;
+    top: calc(50% - 100px);
+    left: calc(50% - 100px);
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    animation: 3s infinite rotate;
+    opacity: 0.7;
+    display: none;
+  }
+  @keyframes rotate {
+      from {
+    transform: rotateZ(0deg);
+   }
+   to {
+    transform: rotateZ(360deg);
+   }
+  }
+
+  #loader > * {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   border-radius: 50%;
+   border: thin solid #112;
+  }
+  .x {
+   animation: 3s infinite alternate x;
+  }
+  @keyframes x {
+   from {
+    transform: rotateX(0deg);
+   }
+   to {
+    transform: rotateX(360deg);
+   }
+  }
+  
+  .y {
+   animation: 3s infinite alternate y
+  }
+  @keyframes y {
+   from {
+    transform: rotateZ(0deg);
+   }
+   to {
+    transform: rotateY(360deg);
+   }
+  }
+
+  /* blur */
+  #blur {
+      opacity: 0.4;
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 6;
+      background-color: white;
+      display: none;
+     }
+  /* generic styles */
+  .bg-prp, .bg-drkb {
+   background-color: #112;
+  }
+  .bg-white {
+   background-color: white;
+  }
+  .clrw { color: white;}
+  .flex {
+   display: flex;
+   align-items: center;
+  }     
+  .flex-col { flex-direction: column;}                          
+  .flex-sp-btw {
+   justify-content: space-between;
+  }
+  .flex-sp-ar {
+   justify-content: space-around;
+  }
+  .flex-justify-center {
+   justify-content: center;
+  } 
+  .flex-col {flex-direction: column;}   
+  .flex-align-start {align-items: flex-start;}      
+  .flex-end {align-items: flex-end; }                   
+  .shdw {
+   box-shadow: 0 0 10px -3px #112;
+  }
+  .txt-small {font-size: small;}
+  .txt-big {font-size: large;}
+  .bold {font-weight: bold;}
+  .float-right {float: right;}
+  .ash1 {background-color: #eee;}
+  .ash2 {background-color: #ddd;}
+  .ash3 {background-color: #ccc;}
+ </style>
+</head>
+<body>
+
+  <header class="bg-white flex flex-sp-btw">
+    <svg class="bg-drkb" onclick="home();"></svg>
+    <span class="shdw bg-white bold 
+     flex flex-justify-center">Qsub Survey</span>
+  </header>
+
+  <p class="ash1"> 
+   Qsub servey is a platform that collects data about our
+   customers and potential customers so as   
+  </p>
+
+  <div id="question-box" class="ash1">
+    <button id="start-survey" class="bg-drkb"
+     onclick="startSurvey();">start survey</button>
+    <svg id="previous" class="bg-drkb" onclick=
+     "showPrevious()"></svg>
+
+    <div id="gender" class="data-container" onclick=
+     "selected(this, network)">
+      <h4>kindly select your gender</h4>
+      <div data-value="male">Male</div>
+      <div data-value="female">Female</div>
+    </div>
+
+    <div id="network" class="data-container" onclick=
+     "selected(this, dataSize)">
+      <h4>which of the followong networks do you buy data into</h4>
+      <div data-value="mtn">MTN</div>
+      <div data-value="airtel">Airtel</div>
+      <div data-value="ninemobile">9mobile</div>
+      <div data-value="glo">Glo</div>
+    </div>
+
+    <div id="data-size" class="data-container" onclick=
+     "selected(this, email);">
+      <h4>what size of data bundle do you normally buy</h4>
+      <div data-value="0.5GB">500mb</div>
+      <div data-value="1GB">1GB</div>
+      <div data-value="2GB">2GB</div>
+      <div data-value="3GB">3GB</div>
+      <div data-value="5"GB">5GB</div>
+      <div data-value="10GB">10GB</div>
+      <div data-value="15"GB">15GB</div>
+      <div data-value="20"GB">20GB</div>
+    </div>
+
+    <div id="email" class="data-container">
+    <h4>kindly enter your email</h4>
+     <input type="email" placeholder="*****@email.com"
+      required oninput="checkEmail();">
+     <button onclick="submitData();">done</button>
+    </div>
+  </div>
+
+  <!-- loader -->
+  <div id="loader" class="shdw flex flex-justify-center 
+   bg-white">
+   <div class="x"></div>
+   <div class="y"></div>
+  </div>
+  <div id="blur"></div>
+<script>
+let questionBox = document.querySelector("#question-box");
+let startBt= questionBox.querySelector("#start-survey");
+let back = questionBox.querySelector("#previous");
+let gender = questionBox.querySelector("#gender");
+let network = questionBox.querySelector("#network");
+let dataSize = questionBox.querySelector("#data-size");
+let email = questionBox.querySelector("#email");
+let loader = document.querySelector("#loader");
+let blur = document.querySelector("#blur");
+let sections = [gender, network, dataSize, email]
+
+
+// function to start survey
+
+function startSurvey() {
+  ele = event.target;
+  ele.style.opacity = 0;
+  back.style.display = "block";
+  back.dataset.index = 0;
+
+  setTimeout(()=> {
+    ele.style.displsy = "none";
+    back.style.opacity = 1;
+  }, 500);
+  setTimeout(()=> gender.style.display = "block", 500);
+  setTimeout(()=> gender.style.left = 0,  620);
+} // end of startSurveyfunction
+
+
+// function to be called once an option is selected
+
+function selected(current, next) {
+  option = event.target;
+  if (!option.dataset.value) return null;
+  option.style.opacity = 1;
+  back.dataset.index = parseInt(back.dataset.index) + 1;
+  
+  current.dataset.value = option.dataset.value;
+  setTimeout(()=> {
+    current.style.left =  "-100%";
+    next.style.display = "block";
+  }, 300);
+  setTimeout(()=> next.style.left = 0, 500);
+  setTimeout(()=> {
+    current.style.display = "none";
+    option.style.opacity = 0.5;
+  }, 850);
+}; // end  of selected function
+ 
+ 
+// function to change email border if valid
+
+function checkEmail() {
+  ele = event.target;
+  emailInput = ele.parentNode.children[1];
+  if (emailInput.checkValidity()) {
+    return emailInput.style.border = "thin solid green"; 
+  };
+  return emailInput.style.border = "thin solid #ddd"; ;
+}; // end of done
+// function to handle back click
+
+function showPrevious() {
+  let currentIndex = parseInt(event.target.dataset.index);
+  back.dataset.index = parseInt(back.dataset.index) - 1;
+
+  if (currentIndex == 0) {
+    startBt.style.display = "block";
+    back.style.opacity = 0;
+    gender.style.left = "100%";
+    setTimeout(()=> {
+      back.style.display = "none";
+      gender.style.display = "none";
+      startBt.style.opacity = 1;
+    }, 550);
+    return;
+  };
+  
+  sections[currentIndex].style.left = "100%";
+  sections[currentIndex - 1].style.display = "block";
+  setTimeout(()=> {
+    sections[currentIndex].style.display = "none";
+    sections[currentIndex - 1].style.left = 0;
+  }, 500);
+}; // end of showPrevious
+
+
+// function to handle submitting of data
+
+async function  submitData() {
+  // first check email validity before submitting
+  ele = event.target;
+  emailInput = ele.parentNode.children[1];
+  if (!emailInput.checkValidity()) {
+    return emailInput.style.border = "thin solid red"; 
+  }
+  
+  // submittng data
+  blur.style.display = "block";
+  loader.style.display = "block";
+  
+  const url = "https://qsub0.khalidbello.repl.co/front-api/survey";
+  data = {
+    email: emailInput.value,
+    network: network.dataset.value,
+    dataSize: dataSize.dataset.value,
+    gender: gender.dataset.value,
+  };
+  
+  let response = await fetch(
+    url,
+    { 
+      method: "POST", 
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)}
+  )
+  .catch((err)=> {
+    console.log(err);
+    console.log("error");
+  });
+
+  console.log(response);
+  // extracting response data
+  response = await response.json();
+  console.log(response);
+};  // end of submit data
+</script>
+ </body>
+</html>
