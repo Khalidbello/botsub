@@ -123,7 +123,7 @@ async function sendDataResponse(response, res) {
         <h3>Product</h3> <h5>2GB data bundle</h5>
       </div>
       <div style="display: flex; align-items: center; justify-content: center; height: 30px; width: 150px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">
-        ${response.date}
+        ${details.date}
       </div>
      </div>
     </div>`
@@ -158,7 +158,7 @@ async function sendAirtimeResponse(response, res) {
         <h3>Product</h3> <h5>2GB data bundle</h5>
       </div>
       <div style="display: flex; align-items: center; justify-content: center; height: 30px; width: 150px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">
-        ${response.date}
+        ${details.date}
       </div>
      </div>
     </div>`
