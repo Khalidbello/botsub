@@ -11,6 +11,7 @@ export const router = Router();
 router.get("/data-offers", async (req, res)=> {
   let dataOffers = await fsP.readFile("files/data-details.json");
   dataOffers = JSON.parse(dataOffers);
+  dataOffers.FLW_PB_KEY = process.env.FLW_PB_KEY;
   res.json(dataOffers)
 });
 

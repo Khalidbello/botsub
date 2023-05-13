@@ -2,7 +2,19 @@
 
 import request from "request";
 import cyclicDB from "cyclic-dynamodb";
+import nodemailer from "nodemailer";
 import mailer from "./mailer.js";
+
+
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'bellokhalid74@@gmail.com',
+    pass: process.env.EMAIL_PASS
+  }
+});  // end of transporter
+
 
 
 export function deliverValue(response, req, res, requirementMet) {
@@ -77,14 +89,19 @@ async function deliverAirtime(response, req, res) {
       return res.send(error);
     };
     console.log(response.body);
-    // to do if succesfull transaction
+    
+    // to do dependent transaction status
     if (true) {
       addToDelivered(req)
       //calling function to send mail and json response object
       return sendAirtimeResponse(response, res);
+    } else if (true) {
+      addToFailedToDeliver(req);
+      return sendFailedToDeliverResponse(response, res);
     };
   });
 };
+
 
 
 
@@ -100,12 +117,27 @@ async function addToDelivered(req) {
 
 
 
-      
+
+
+// function to add transaction to failed to deliver
+async function addToFailedToDeliver(req) {
+  const db = cyclicDB(process.env.DB_TABLENAME);
+  const deliveredDB = db.collection("failed-to-deliver");
+  const response = await deliveredDB.set(req.query.tx_ref, {transactionID: req.query.transaction_id});
+  console.log(response);
+  return response;
+}; // end if add to failed to deliver
+
+
+
+
+
+
 // function to send data purchase mail and response
 async function sendDataResponse(response, res) {
   let details = formResponse(response);
   details.product = `${response.data.meta.size} data`; 
-  const options = {
+  const mailOptions = {
     from: 'qsub@gmail.com',
     to: response.data.customer.email,
     subject: 'Qsub receipt',
@@ -122,13 +154,20 @@ async function sendDataResponse(response, res) {
       <div style = "border-bottom: thin solid #fff;">
         <h3 style="float: left;">Product</h3> <h5 style="float: right;">2GB data bundle</h5>
       </div>
-      <div style="display: inline-block; padding: 10px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">
+      div style="width: 150px; text-align: center; padding: 10px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">
         ${details.date}
       </div>
      </div>
     </div>`
   };
-  await mailer(options);
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log("failed to send data mail");
+    } else {
+      console.log('data mail sent: ' + info.response);
+      res.send(info);
+    };
+  });
   return res.json({ status: "successful", data: details }); 
 };  // end of sendDataResponse function
 
@@ -136,11 +175,12 @@ async function sendDataResponse(response, res) {
 
                     
 
+
 // function to send data purchase mail and response
 async function sendAirtimeResponse(response, res) {
   let details = formResponse(response);
   details.product = `&#8358;${response.data.meta.amount} airtime`;  
-  const options = {
+  const mailOptions = {
     from: 'qsub@gmail.com',
     to: response.data.customer.email,
     subject: 'Qsub receipt',
@@ -163,14 +203,43 @@ async function sendAirtimeResponse(response, res) {
      </div>
     </div>`
   };
-  await mailer(options);
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log("failed to send airtime mail");
+    } else {
+      console.log(' airtime data mail sent: ' + info.response);
+      res.send(info);
+    };
+  });
   return res.json({ status: "successful", data: details }); 
 };  // end of sendAirtimeResponse function
 
 
 
-          
-//function to form response fot request
+
+
+
+
+// function to form response on failed to deliver
+async function sendFailedToDeliverResponse(response, res) {
+  const options = {
+    from: 'qsub@gmail.com',
+    to: response.data.customer.email,
+    subject: 'Qsub receipt',
+    html: `
+    <div style="width: 100%;">
+     <div style="max-width: 1000px; margin: 0 auto; padding: 10px; border-radius: 10px; background-color: #eee;">
+      <h1 style="
+    `
+  };
+}; // end of sendFailedToDeliverResponse
+
+
+
+
+
+
+//function to form response for request
 function formResponse(response) {
   const meta = response.data.meta;
   // create a Date object with the UTC time
@@ -193,7 +262,10 @@ function formResponse(response) {
 };  // end of formResponse
 
 
-          
+
+
+
+
 // function to check balance and add to it when necessary
 async function topUpBalance() {
   

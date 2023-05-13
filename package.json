@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node index.js",
+    "test1": "TEST=true node index.js",
     "start": "node index.js"
   },
   "repository": {

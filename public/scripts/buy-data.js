@@ -22,6 +22,7 @@
  let airtelOffers = document.querySelector("#airtel");
  let gloOffers = document.querySelector("#glo");
  let nineMobileOffers = document.querySelector("#nine-mobile");
+ let flwKey;
  
  let validNumbers = {
     mtn: ["0803", "0816", "0903", "0810", "0806", "0703", "0706",
@@ -33,7 +34,7 @@
  };
  
  
- //adding event listener for animation to networks
+ /*/adding event listener for animation to networks
  networks.addEventListener("animationend",
  endListener, false);
    
@@ -55,7 +56,7 @@
  
  //adding event listener to phoneError
  phoneError.addEventListener("animationend",
- handlePhoneError, false);
+ handlePhoneError, false);*/
  
   function back(ele)  {
    // function to be called by back button
@@ -72,7 +73,9 @@
 async function renderOffers() {
   const response = await fetch('front-api/data-offers');
   const datas = await response.json();
-  
+  // seting value for flwKey
+  console.log(datas);
+  flwKey = datas.FLW_PB_KEY; console.log(flwKey);
   for (let data in datas["1"]) {_helper(datas["1"][data], mtnOffers) };
    // for (data of dummyData.airtel) { _helper(data, airtelOffers) };
 
@@ -85,7 +88,6 @@ async function renderOffers() {
      div.dataset.index = data.index;
      div.dataset.size = data.size;
      div.dataset.price = data.price;
-     console.log(div.dataset.index, " index");
      // adding event listener to div
      div.onclick= offerSelected;
       
@@ -536,7 +538,7 @@ makePayment = function() {
   alert(offerBox.dataset.index);
   alert(offerBox.dataset.size);
   FlutterwaveCheckout({
-    public_key: "FLWPUBK_TEST-2248d6a5fde7469314a61c4fd3aa86b1-X",
+    public_key: flwKey,
     tx_ref: txCode(),
     amount: parseInt(offerBox.dataset.price),
     currency: "NGN",

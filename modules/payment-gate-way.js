@@ -17,8 +17,7 @@ import nodemailer from "nodemailer";
 
 export const router = Router();
 
-export const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-  
+
 
 // route for confirming payment and calling payment deliver function
 router.get("/confirm", async (req, res)=> {
@@ -26,6 +25,7 @@ router.get("/confirm", async (req, res)=> {
     return res.json({status: "error", message: "query parameters missing"});
   };
   
+  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY); 
   const response = await flw.Transaction.verify({id: req.query.transaction_id})
   .catch((err)=> {
     return res.json({status: "error", message: "failed to check transaction"}) 
@@ -40,7 +40,7 @@ router.get("/confirm", async (req, res)=> {
   
   const previouslyDelivered = await checkIfPreviouslyDelivered(req.query.transaction_id, req.query.tx_ref);
   
-  if (previouslyDelivered && false) {
+  if (previouslyDelivered) {
     const meta = response.data.meta;
     // Create a Date object with the UTC time
     const date = new Date(response.data.customer.created_at);
@@ -72,7 +72,7 @@ router.get("/confirm", async (req, res)=> {
   
   // calling function to ccheck if all transaction requirement were met
   let requirementMet = await checkRequirementMet(response, req, res);
-  if (requirementMet.status && false) {
+  if (requirementMet.status) {
     return deliverValue(response, req, res, requirementMet);
     //return res.json({status:"success", message:"requirement met", data: requirementMet.type});
   };
@@ -136,7 +136,7 @@ const checkRequirementMet = async function (response, req, res) {
       returnFalse = true 
     };
     
-    if (returnFalse) return {status: false, message: "data plan with id not found", data: err};
+    if (returnFalse) return {status: false, message: "data plan with id not found"};
     let pricePaid = Number(response.data.amount);
 
     if (
@@ -174,6 +174,7 @@ const checkRequirementMet = async function (response, req, res) {
 // helper function to refund payment
 
 async function refundPayment(transactionId, transactionRef, customerMail) {
+  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const response = await flw.Transaction.refund({
     id: transactionId,
     amount: null,
@@ -202,7 +203,7 @@ async function refundPayment(transactionId, transactionRef, customerMail) {
         this might be as a result of transfering insufficient amount for product purchase.
         <br>
         Refund would be received between 3 to 5 days 
-        <br>
+        <br><br>
         thank you...
       </p>
       <div style="width: 150px; text-align: center; padding: 10px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">

@@ -16,7 +16,20 @@ import {router as frontEndApiRouter} from "./modules/front-end-api.js";
 import {router as paymentGateWayRouter} from "./modules/payment-gate-way.js";
 
 
-console.log(process.env.TEST);
+// adding configurations for environment
+if (process.env.TEST == "true") {
+  console.log("in test mode");
+  process.env.FLW_PB_KEY = process.env.FLW_TEST_PB_KEY;
+  process.env.FLW_SCRT_KEY = process.env.FLW_TEST_SCRT_KEY;
+} 
+else if (process.env.PROD == true) {
+  process.env.FLW_PB_KEY = process.env.FLW_OG_PB_KEY;
+  process.env.FLW_SCRT_KEY = process.env.FLW_OG_TEST_SCRT_KEY;
+};
+
+
+
+//console.log(process.env);
 
 
 // setting __filename since its not supported in type: module
