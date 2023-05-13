@@ -111,18 +111,18 @@ async function sendDataResponse(response, res) {
     subject: 'Qsub receipt',
     html: `
     <div style="width: 100%;">
-     <div style="max-width: 1000px; margin: 0 auto; padding: 10px; border-radius: 10px; background-color: #ccc;">
+     <div style="max-width: 1000px; margin: 0 auto; padding: 10px; border-radius: 10px; background-color: #eee;">
       <h1 style="padding: 10px; text-align: center; background-color: #112; color: white; border-radius: 10px;">Qsub Receipt</h1>
-      <div style = "border-bottom: thin solid #fff; display: flex; align-items: center; justify-content: space-around;">
-        <h3>Product</h3> <h5>${details.product}</h5>
+      <div style = "border-bottom: thin solid #fff;">
+        <h3 style="float: left;">Product</h3> <h5 style="float: right;">${details.product}</h5>
       </div>
-      <div style = "border-bottom: thin solid #fff; display: flex; align-items: center; justify-content: space-around;">
-        <h3>Network</h3> <h5>${details.network}</h5>
+      <div style = "border-bottom: thin solid #fff;">
+        <h3 style="float: left;">Network</h3> <h5 style="float: right;">${details.network}</h5>
       </div>
-      <div style = "border-bottom: thin solid #fff; display: flex; align-items: center; justify-content: space-around;">
-        <h3>Product</h3> <h5>2GB data bundle</h5>
+      <div style = "border-bottom: thin solid #fff;">
+        <h3 style="float: left;">Product</h3> <h5 style="float: right;">2GB data bundle</h5>
       </div>
-      <div style="display: flex; align-items: center; justify-content: center; height: 30px; width: 150px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">
+      <div style="display: inline-block; padding: 10px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">
         ${details.date}
       </div>
      </div>
@@ -146,7 +146,7 @@ async function sendAirtimeResponse(response, res) {
     subject: 'Qsub receipt',
     html: `
     <div style="width: 100%;">
-     <div style="max-width: 1000px; margin: 0 auto; padding: 10px; border-radius: 10px; background-color: #ccc;">
+     <div style="max-width: 1000px; margin: 0 auto; padding: 10px; border-radius: 10px; background-color: #eee;">
       <h1 style="padding: 10px; text-align: center; background-color: #112; color: white; border-radius: 10px;">Qsub Receipt</h1>
       <div style = "border-bottom: thin solid #fff; display: flex; align-items: center; justify-content: space-around;">
         <h3>Product</h3> <h5>${details.product}</h5>

@@ -36,11 +36,11 @@ router.get("/confirm", async (req, res)=> {
   };
   console.log(response);
   
-  // calling function to check if transaction has never beign made before
+  // calling function to check if transaction has ever beign made before
   
   const previouslyDelivered = await checkIfPreviouslyDelivered(req.query.transaction_id, req.query.tx_ref);
   
-  if (previouslyDelivered) {
+  if (previouslyDelivered && false) {
     const meta = response.data.meta;
     // Create a Date object with the UTC time
     const date = new Date(response.data.customer.created_at);
@@ -72,12 +72,13 @@ router.get("/confirm", async (req, res)=> {
   
   // calling function to ccheck if all transaction requirement were met
   let requirementMet = await checkRequirementMet(response, req, res);
-  if (requirementMet.status) {
+  if (requirementMet.status && false) {
     return deliverValue(response, req, res, requirementMet);
     //return res.json({status:"success", message:"requirement met", data: requirementMet.type});
   };
   // calling refund payment if proper conditions were not met
-  res.end("at bottom end"); 
+  const finalResp = await refundPayment(req.query.transaction_id, req.query.tx_ref, response.data.customer.email); 
+  return res.json(finalResp);
 }); //end of confirm payment routes
 
 
@@ -108,7 +109,6 @@ const checkIfPreviouslyDelivered = async function (transaction_id, transactionRe
   const deliveredDB = db.collection("settled");
   const toConfirm = await deliveredDB.get(transactionRef);
   
-  console.log(toConfirm)
   if (toConfirm) {
     let condition = toConfirm.props.transactionID === transaction_id;
     return condition;
@@ -121,20 +121,23 @@ const checkIfPreviouslyDelivered = async function (transaction_id, transactionRe
 
 // function to check if all requirements are met 
 const checkRequirementMet = async function (response, req, res) {
+  let returnFalse = false;
   if (response.data.meta.type === "data") {
     let dataDetails = await fsP.readFile("files/data-details.json")
-    .catch((err)=> {
-      return res.json({status: "error", messsage: "error reading data-details.json"});
-    });
+    .catch((err)=> returnFalse = true );
+
+    if (returnFalse) return {status: false, messsage: "error reading data-details.json"};
     
     dataDetails = JSON.parse(dataDetails); 
     let price;
     try {
       price = Number( dataDetails[response.data.meta.networkID][response.data.meta.index]["price"] );
-    } catch (err) {
-      return res.json({status: "error", message: "data plan with id not found", data: err});
-    }
-     let pricePaid = Number(response.data.amount);
+    } catch (err) { 
+      returnFalse = true 
+    };
+    
+    if (returnFalse) return {status: false, message: "data plan with id not found", data: err};
+    let pricePaid = Number(response.data.amount);
 
     if (
       response.data.status === "successful" && 
@@ -161,40 +164,88 @@ const checkRequirementMet = async function (response, req, res) {
       let toRefund = pricePaid - price;
       return {status: true, refund: toRefund, type: "airtime"};
     };
-  };
-  
+  }; 
   return {status: false, message: "payment requirement not met"};
 }; //end of checkRequiremtMet
 	
 
 
 
+// helper function to refund payment
+
+async function refundPayment(transactionId, transactionRef, customerMail) {
+  const response = await flw.Transaction.refund({
+    id: transactionId,
+    amount: null,
+    comments: "transaction requirement not met"
+  });
+  const date = new Date();
+  // Create an Intl.DateTimeFormat object with the Nigeria time zone
+  const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
+    timeZone: 'Africa/Lagos',
+    dateStyle: 'long',
+      timeStyle: 'medium',
+  }); 
+  // Format the Nigeria time using the formatter
+  const nigeriaTimeString = nigeriaFormatter.format(date);
+
+  const options = {
+    from: 'qsub@gmail.com',
+    to: customerMail,
+    subject: 'Qsub Transaction failed',
+    html: `
+    <div style="width: 100%;">
+     <div style="max-width: 1000px; margin: 0 auto; padding: 10px; border-radius: 10px; background-color: #eee;">
+      <h1 style="padding: 10px; text-align: center; background-color: #112; color: white; border-radius: 10px;">Qsub Failed Transaction</h1>
+      <p> payment has been refunded due to the fact that some transaction requirement was not met.
+        <br>
+        this might be as a result of transfering insufficient amount for product purchase.
+        <br>
+        Refund would be received between 3 to 5 days 
+        <br>
+        thank you...
+      </p>
+      <div style="width: 150px; text-align: center; padding: 10px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">
+        ${nigeriaTimeString}
+      </div>`
+  };
+  console.log(response);
+  await mailer(options);
+  // adding transaction to toRefundDb
+  const db = cyclicDB(process.env.DB_TABLENAME);
+  const deliveredDB = db.collection("toRefund");
+  let resp = await deliveredDB.set(transactionRef, {transactionID: transactionId});
+  console.log(resp);
+  return {
+    status: "requirementNotMet",
+  };
+}; // end of refundPayment
+
+
 
 router.get("/test", async(req, res)=> {
-  
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'bellokhalid74@@gmail.com',
-    pass: process.env.EMAIL_PASS
-  }
-});
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'bellokhalid74@@gmail.com',
+      pass: process.env.EMAIL_PASS
+    }
+  });
 
-const mailOptions = {
-  from: 'qsub.com',
-  to: 'bellokhalid74@gmail.com',
-  subject: 'testing Qmail',
-  html: '<p style="color:red; background-color:black; border-radius: 10px;">Qsub is on </p>'
-};
+  const mailOptions = {
+    from: 'qsub.com',
+    to: 'bellokhalid74@gmail.com',
+    subject: 'testing Qmail',
+    html: '<p style="color:red; background-color:black; border-radius: 10px;">Qsub is on </p>'
+  };
 
-transporter.sendMail(mailOptions, function(error, info) {
-  if (error) {
-    console.log(error);
-    res.send(err);
-  } else {
-    console.log('Email sent: ' + info.response);
-    res.send(info);
-  }
-});
-
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log(error);
+      res.send(err);
+    } else {
+      console.log('Email sent: ' + info.response);
+      res.send(info);
+    };
+  });
 });
