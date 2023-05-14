@@ -3,7 +3,7 @@
 import request from "request";
 import cyclicDB from "cyclic-dynamodb";
 import nodemailer from "nodemailer";
-import mailer from "./mailer.js";
+//import mailer from "./mailer.js";
 
 
 
@@ -160,14 +160,11 @@ async function sendDataResponse(response, res) {
      </div>
     </div>`
   };
-  transporter.sendMail(mailOptions, function(error, info) {
-    if (error) {
-      console.log("failed to send data mail");
-    } else {
-      console.log('data mail sent: ' + info.response);
-      res.send(info);
-    };
-  });
+  
+  const resp = await transporter.sendMail(mailOptions)
+  .catch((err)=> console.log("error sending data mail") );
+  console.log(resp);
+  console.log("should have seen mail");
   return res.json({ status: "successful", data: details }); 
 };  // end of sendDataResponse function
 
