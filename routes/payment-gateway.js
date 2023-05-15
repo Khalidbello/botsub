@@ -84,7 +84,7 @@ res.post("/webhook", (req, res)=> {
 });
 
 
-  .
+
 router.get("/test", async(req, res)=> {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
