@@ -3,6 +3,8 @@
 import request from "request";
 import cyclicDB from "cyclic-dynamodb";
 import nodemailer from "nodemailer";
+import {successfullDeliveryMail, failedDeliveryMail} from "./email-templates.js";
+
 //import mailer from "./mailer.js";
 
 
@@ -56,6 +58,9 @@ async function deliverData(response, req, res) {
       addToDelivered(req);
       //calling function to send mail and json response object
       return sendDataResponse(response, res);
+    } else if (true) {
+      addToFailedToDeliver(req);
+      return sendFailedToDeliverResponse(response, res);
     };
   });
 };  // end of deliver value function
@@ -64,7 +69,6 @@ async function deliverData(response, req, res) {
 
 
 // function to make airtime purchase request
-
 async function deliverAirtime(response, req, res) {
   let options = {
     'method': 'POST',
@@ -100,7 +104,7 @@ async function deliverAirtime(response, req, res) {
       return sendFailedToDeliverResponse(response, res);
     };
   });
-};
+}; // end of deliverAirtime
 
 
 
@@ -135,36 +139,27 @@ async function addToFailedToDeliver(req) {
 
 // function to send data purchase mail and response
 async function sendDataResponse(response, res) {
-  let details = formResponse(response);
-  details.product = `${response.data.meta.size} data`; 
+  const details = formResponse(response);
+  details.product = `${response.data.meta.size} data`;
+  const mailParams = {
+    product: details.product,
+    network: details.network,
+    date: details.date,
+    id: response.data.id,
+    txRef: response.data.tx_ref,
+    status: "successfull",
+    price: response.data.amount,
+  };
   const mailOptions = {
     from: 'qsub@gmail.com',
     to: response.data.customer.email,
     subject: 'Qsub receipt',
-    html: `
-    <div style="width: 100%;">
-     <div style="max-width: 1000px; margin: 0 auto; padding: 10px; border-radius: 10px; background-color: #eee;">
-      <h1 style="padding: 10px; text-align: center; background-color: #112; color: white; border-radius: 10px;">Qsub Receipt</h1>
-      <div style = "border-bottom: thin solid #fff;">
-        <h3 style="float: left;">Product</h3> <h5 style="float: right;">${details.product}</h5>
-      </div>
-      <div style = "border-bottom: thin solid #fff;">
-        <h3 style="float: left;">Network</h3> <h5 style="float: right;">${details.network}</h5>
-      </div>
-      <div style = "border-bottom: thin solid #fff;">
-        <h3 style="float: left;">Product</h3> <h5 style="float: right;">2GB data bundle</h5>
-      </div>
-      div style="width: 150px; text-align: center; padding: 10px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">
-        ${details.date}
-      </div>
-     </div>
-    </div>`
+    html: successfullDeliveryMail(mailParams)
   };
   
   const resp = await transporter.sendMail(mailOptions)
   .catch((err)=> console.log("error sending data mail") );
   console.log(resp);
-  console.log("should have seen mail");
   return res.json({ status: "successful", data: details }); 
 };  // end of sendDataResponse function
 
@@ -177,37 +172,24 @@ async function sendDataResponse(response, res) {
 async function sendAirtimeResponse(response, res) {
   let details = formResponse(response);
   details.product = `&#8358;${response.data.meta.amount} airtime`;  
+  const mailParams = {
+    product: details.product,
+    network: details.network,
+    date: details.date,
+    id: response.data.id,
+    txRef: response.data.tx_ref,
+    status: "successfull",
+    price: response.data.amount,
+  };
   const mailOptions = {
     from: 'qsub@gmail.com',
     to: response.data.customer.email,
     subject: 'Qsub receipt',
-    html: `
-    <div style="width: 100%;">
-     <div style="max-width: 1000px; margin: 0 auto; padding: 10px; border-radius: 10px; background-color: #eee;">
-      <h1 style="padding: 10px; text-align: center; background-color: #112; color: white; border-radius: 10px;">Qsub Receipt</h1>
-      <div style = "border-bottom: thin solid #fff; display: flex; align-items: center; justify-content: space-around;">
-        <h3>Product</h3> <h5>${details.product}</h5>
-      </div>
-      <div style = "border-bottom: thin solid #fff; display: flex; align-items: center; justify-content: space-around;">
-        <h3>Network</h3> <h5>${details.network}</h5>
-      </div>
-      <div style = "border-bottom: thin solid #fff; display: flex; align-items: center; justify-content: space-around;">
-        <h3>Product</h3> <h5>2GB data bundle</h5>
-      </div>
-      <div style="display: flex; align-items: center; justify-content: center; height: 30px; width: 150px; margin: 20px auto 0; background-color: white; border-radius: 10px; font-weight: bold;">
-        ${details.date}
-      </div>
-     </div>
-    </div>`
+    html: successfullDeliveryMail(mailParams)
   };
-  transporter.sendMail(mailOptions, function(error, info) {
-    if (error) {
-      console.log("failed to send airtime mail");
-    } else {
-      console.log(' airtime data mail sent: ' + info.response);
-      res.send(info);
-    };
-  });
+  const resp = await transporter.sendMail(mailOptions)
+  .catch((err)=> console.log("error sending data mail") );
+  console.log(resp);
   return res.json({ status: "successful", data: details }); 
 };  // end of sendAirtimeResponse function
 
@@ -219,16 +201,16 @@ async function sendAirtimeResponse(response, res) {
 
 // function to form response on failed to deliver
 async function sendFailedToDeliverResponse(response, res) {
-  const options = {
+  const mailOptions = {
     from: 'qsub@gmail.com',
     to: response.data.customer.email,
-    subject: 'Qsub receipt',
-    html: `
-    <div style="width: 100%;">
-     <div style="max-width: 1000px; margin: 0 auto; padding: 10px; border-radius: 10px; background-color: #eee;">
-      <h1 style="
-    `
+    subject: 'Failed To Deliver Purchased product',
+    html: filedDeliveryMail()
   };
+  const resp = await transporter.sendMail(mailOptions)
+  .catch((err)=> console.log("error sending data mail") );
+  console.log(resp);
+  return res.json({status: "failedDelivery", message: "failed to deliver purchased product"})
 }; // end of sendFailedToDeliverResponse
 
 

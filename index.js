@@ -11,9 +11,9 @@ import {fileURLToPath} from 'url';
 
 
 // importing modules to handle different routes 
-import {router as viewsRouter}  from "./modules/views.js";
-import {router as frontEndApiRouter} from "./modules/front-end-api.js";
-import {router as paymentGateWayRouter} from "./modules/payment-gate-way.js";
+import {router as viewsRouter}  from "./routes/views.js";
+import {router as frontEndApiRouter} from "./routes/frontend-api.js";
+import {router as paymentGateWayRouter} from "./routes/payment-gateway.js";
 
 
 // adding configurations for environment
