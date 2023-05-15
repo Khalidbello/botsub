@@ -79,7 +79,7 @@ router.get("/transfer-account", async (req, res)=> {
         
 
 // route for flutterwave webhook
-res.post("/webhook", (req, res)=> {
+router.post("/webhook", (req, res)=> {
   
 });
 

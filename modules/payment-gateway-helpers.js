@@ -1,4 +1,4 @@
-7import {default as fs } from "node:fs"; 
+import {default as fs } from "node:fs"; 
   
 const fsP = fs.promises;
 
