@@ -15,7 +15,7 @@ export const router = Router();
 
 
 router.get("/", (req, res)=> {
-  res.send("<h2>hello world</h2>");
+    res.sendFile( path.join(__dirname, "..", "views", "home.html") );
 });
 
 

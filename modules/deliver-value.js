@@ -205,7 +205,7 @@ async function sendFailedToDeliverResponse(response, res) {
     from: 'qsub@gmail.com',
     to: response.data.customer.email,
     subject: 'Failed To Deliver Purchased product',
-    html: filedDeliveryMail()
+    html: failedDeliveryMail()
   };
   const resp = await transporter.sendMail(mailOptions)
   .catch((err)=> console.log("error sending data mail") );

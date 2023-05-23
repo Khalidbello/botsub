@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="scripts/eruda.min.js"></script>
+  <script> eruda.init();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qsub Home Page</title>
+  <style>
+    * {
+     padding: 0; 
+     margin: 0;
+     font-family: fantasy;
+    }
+    html, body {
+      width: 100%;
+      height: 100vh;
+    }
+    
+    #hero {
+      height: 100%;
+      width: 100%;
+      
+    }
+    
+    header {
+      padding-top: 10px;
+      height: 50%;
+      position: relative;
+      clip-path: url("#head-slant")
+    }
+    
+    header img {
+        width: 100%;
+        height: 100%;
+        opacity: 0.15;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+    
+    #hero h1, #hero p {
+      text-align: center;
+      width: 90%;
+      margin: 20px auto 0;
+    }
+    
+    #logo {
+        padding: 10px 20px;
+        width: 60px;
+        margin: 0 auto;
+        text-align: center;
+        font-size: large;
+    }
+    
+    #box {
+      width: 80%;
+      margin: -70px auto 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    #networks-i-holder {
+      height: 30px;
+      margin: 5px;
+    }
+    
+    #networks-i-holder img {
+      width: 20px;
+      height: 20px;
+      border-radius: 0%;
+      border-right: thin solid #ddd;
+    }
+    
+    .listing {
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+    
+    .listing button {
+      color: darkorange;
+      height: 30px;
+      width: 130px;
+      border-radius: 20px; 
+      background-color: transparent;
+      margin: 10px 10px 0;
+    }
+    
+    .listing button svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    #view-more-bt {
+      width: 200px;
+      height: 35px;
+      margin: 0 auto;
+      margin-top: 20px;
+      border-radius: 100px;
+      background-color: darkorange;
+      overflow-y: auto;
+      animation-name: large-small;
+    }
+    
+    #view-more-bt svg {
+        width: 20px;
+        height: 25px;
+    }
+    
+    .flex { display: flex; }
+    .flex-al-cent { align-items: center; }
+    .flex-jst-cent { justify-content: center; }
+    .flex-sp-ar { justify-content: space-around; }
+    .grad-drkb { background: linear-gradient(30deg, #112, #334); }
+    .bg-white { background-color: #fff }
+    .clr-white { color: white; }
+    .border-r20 { border-radius: 20px; }
+    .l-drkb { background-color: #334; }
+    .bold { font-weight: 800; }
+    .large { font-size: x-large;}
+    .small { font-size: small; }
+    .shadow { box-shadow: 0 0 15px -5px #445;}
+    .padding-10 { padding: 5px;}
+    .padding-top5 { padding-top: 5px; }
+    .center-text { text-align: center; }
+    .no-border {border: none;}
+    .l-border { border: thin solid #eee; }
+    .green { color: green; }
+  </style>
+</head>
+    
+<body>
+  <section id="hero">
+    <header class="grad-drkb clr-white">
+      <img src="images/Hpic">
+      
+      <div id="logo" class="border-r20 l-drkb">  
+        <span class="bold large">Q</span> sub 
+     </div>
+      <h1>Buy Data And Airtime At Cheaper Rate With ease</h1>
+      
+      <p class="small">
+        Unlock the convenience of instant mobile recharges and data 
+        top-ups with Qsub. 
+      </p>
+    </header>
+    
+    
+    <div id="box" class="bg-white border-r20 padding-10 shadow">
+      <p class="">All networks available</p>
+       
+      <div id="networks-i-holder"class="border-r20 shadow flex flex-sp-ar flex-al-cent shdw">
+        <img src="images/mtn-logo.png"> 
+        <img src="images/airtel-logo.png"> 
+        <img src="images/glo-logo.jpeg"> 
+        <img src="images/9mobile-logo.jpeg">
+      </div>
+      
+      <div class="padding-top5 listing l-border border-r10">
+        <span> <span class="green">&#10004;</span> Buy data with ease </span><br>
+        <span> <span class="green">&#10004;</span> No registration required</span><br>
+        <span> <span class="green">&#10004;</span> No wallet funding </span><br>
+        <button onclick="changeLocation(event);" data-location="buy-data" class="l-border flex flex-al-cent flex-jst-cent bold no-border clr-white">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+            <path d="M1.42 9a16 16 0 0 1 21.16 0" />
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+            <line x1="12" y1="20" x2="12" y2="20" />
+          </svg> &nbsp;
+          Buy Data
+        </button>
+      </div>
+      
+      <div class="padding-top5 listing l-border border-r10">
+        <span> <span class="green">&#10004;</span> Airtime purchased simplified</span><br>
+        <span> <span class="green">&#10004;</span> Simplified payment flow</span><br>
+        <span> <span class="green">&#10004;</span> Fast and reliable transaction</span><br>
+        <button onclick="changeLocation();" data-location="buy-airtime" class="l-border flex flex-al-cent flex-jst-cent bold no-border clr-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16"> 
+            <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168
+             c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062
+             a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19
+             a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034
+             c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+          </svg> &nbsp;
+          Buy Airtime
+        </button>
+      </div>
+      
+      <button id="view-more-bt" class="transition flex flex-sp-ar flex-al-cent bold no-border clr-white">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v15M5 12l7 7 7-7" />
+        </svg>
+        <span>See More</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v15M5 12l7 7 7-7" />
+        </svg>
+      </button>
+    </div>
+  </section>
+  
+  <svg width="0" height="0">
+    <defs>
+     <clipPath id="head-slant"     
+     clipPathUnits="objectBoundingBox">
+      <path d="
+        M 0 0
+        L 1 0
+        L 1 1
+        L 0 0.9
+        Z
+       " />
+     </clipPath>
+    </defs>
+   </svg>
+</body>
+<script src="scripts/home.js"></script>
+</html>

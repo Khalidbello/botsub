@@ -15,6 +15,10 @@ import {deliverValue} from "./../modules/deliver-value.js";
 
 import nodemailer from "nodemailer";
 
+import axios from "axios";
+
+
+
 export const router = Router();
 
 
@@ -79,9 +83,26 @@ router.get("/transfer-account", async (req, res)=> {
         
 
 // route for flutterwave webhook
-router.post("/webhook", (req, res)=> {
-  
-});
+// In an Express-like app:
+
+router.post("/flw-webhook", (req, res) => {
+    // If you specified a secret hash, check for the signature
+    const secretHash = process.env.FLW_SECRET_HASH;
+    const signature = req.headers["verif-hash"];
+    if (!signature || (signature !== secretHash)) {
+      // This request isn't from Flutterwave; discard
+      res.status(401).end();
+    };
+    const payload = req.body;
+    const host = req.hostname;
+    
+    axios.get(`https://${host}/gateway/confirm?transaction_id=${payload.id}&tx_ref=${payload.txRef}`)
+    .then(response => console.log(response.data) )
+    .catch(error => console.error(error) );
+    res.status(200).end();
+});  // end of flw webhook
+
+
 
 
 
