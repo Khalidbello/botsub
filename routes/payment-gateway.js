@@ -78,12 +78,14 @@ router.post("/transfer-account", async (req, res)=> {
       planID: datas.planID,
       networkID: datas.networkID,
       number: datas.phoneNumber,
-      index: datas.index
+      index: datas.index,
+      type: datas.type,
+      size: datas.size,
     };
   };
   console.log(meta);
   const details = {
-    tx_ref: "MC-1585230950508",
+    tx_ref: "MC-158523ghjjj0950508",
     amount: datas.price,
     email: datas.email,
     currency: "NGN",
@@ -105,11 +107,11 @@ router.post("/transfer-account", async (req, res)=> {
 router.post("/flw-webhook", (req, res) => {
   console.log("am in webhook")
   // If you specified a secret hash, check for the signature
-  const secretHash = process.env['FLW_SECRET_HASH'];
+  const mySecret = process.env['FLW_H']
   const signature = req.headers["verif-hash"];
   console.log(signature);
-  console.log(secretHash)
-  if (!signature || (signature != secretHash)) {
+  console.log(mySecret)
+  if (!signature || (signature != mySecret)) {
     // This request isn't from Flutterwave; discard
     console.log("in ashhh")
     return res.status(401).end();
@@ -131,7 +133,7 @@ router.post("/flw-webhook", (req, res) => {
 
 router.get("/test", async(req, res)=> {
   const details = {
-    tx_ref: "MC-1585230hftghjhhfhhfh950508",
+    tx_ref: "MC-1585230hftfghhhghjhhfhhfh950508",
     amount: 250,
     email: "bellokhalid74@gmail.com",
     currency: "NGN",
@@ -146,6 +148,9 @@ router.get("/test", async(req, res)=> {
 
   const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const response = await flw.Charge.bank_transfer(details);
-  console.log(response);
-  res.json(response);
+  if (response.status = "success") {
+    res.json(response.meta);
+  } else {
+    res.json({status: "error"});
+  };
 });

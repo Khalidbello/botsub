@@ -85,7 +85,10 @@ export const checkRequirementMet = async function (response, req, res) {
       returnFalse = true 
     };
     
-    if (returnFalse) return {status: false, message: "data plan with id not found"};
+    if (returnFalse) {
+      console.log("data plan with id not found");
+      return {status: false, message: "data plan with id not found"};
+    };
     let pricePaid = Number(response.data.amount);
 
     if (
