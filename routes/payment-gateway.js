@@ -23,8 +23,10 @@ export const router = Router();
 
 
 
+
 // route for confirming payment and calling payment deliver function
 router.get("/confirm", async (req, res)=> {
+  console.log(req.query.webhook);
   if (!req.query.transaction_id || !req.query.tx_ref) {
     return res.json({status: "error", message: "query parameters missing"});
   };
@@ -66,14 +68,29 @@ router.get("/confirm", async (req, res)=> {
 
 // route for initialing account for payment to be made to
 // Install with: npm i flutterwave-node-v3
-router.get("/transfer-account", async (req, res)=> {
+router.post("/transfer-account", async (req, res)=> {
+  const datas = req.body;
+  console.log(datas);
+  let meta;
+  if (datas.type = "data") {
+    meta = {
+      network: datas.network,
+      planID: datas.planID,
+      networkID: datas.networkID,
+      number: datas.phoneNumber,
+      index: datas.index
+    };
+  };
+  console.log(meta);
   const details = {
     tx_ref: "MC-1585230950508",
-    amount: "1500",
-    email: "johnmadakin@gmail.com",
+    amount: datas.price,
+    email: datas.email,
     currency: "NGN",
+    meta: meta,
   };
 
+  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const response = await flw.Charge.bank_transfer(details);
   console.log(response);
   res.json(response);
@@ -86,20 +103,26 @@ router.get("/transfer-account", async (req, res)=> {
 // In an Express-like app:
 
 router.post("/flw-webhook", (req, res) => {
-    // If you specified a secret hash, check for the signature
-    const secretHash = process.env.FLW_SECRET_HASH;
-    const signature = req.headers["verif-hash"];
-    if (!signature || (signature !== secretHash)) {
-      // This request isn't from Flutterwave; discard
-      res.status(401).end();
-    };
-    const payload = req.body;
-    const host = req.hostname;
-    
-    axios.get(`https://${host}/gateway/confirm?transaction_id=${payload.id}&tx_ref=${payload.txRef}`)
-    .then(response => console.log(response.data) )
-    .catch(error => console.error(error) );
-    res.status(200).end();
+  console.log("am in webhook")
+  // If you specified a secret hash, check for the signature
+  const secretHash = process.env['FLW_SECRET_HASH'];
+  const signature = req.headers["verif-hash"];
+  console.log(signature);
+  console.log(secretHash)
+  if (!signature || (signature != secretHash)) {
+    // This request isn't from Flutterwave; discard
+    console.log("in ashhh")
+    return res.status(401).end();
+  };
+  const payload = req.body;
+  const host = req.hostname;
+  console.log("btw hook")  
+  //https://qsub0.khalidbello.repl.co/gateway/test
+  axios.get(`https://qsub0.khalidbello.repl.co/gateway/confirm?transaction_id=${payload.id}&tx_ref=${payload.txRef}&webhook=webhooyouu`)
+  .then(response => console.log(response.data) )
+  .catch(error => console.error(error) );
+  console.log("end hook")  
+  res.status(200).end();
 });  // end of flw webhook
 
 
@@ -107,28 +130,22 @@ router.post("/flw-webhook", (req, res) => {
 
 
 router.get("/test", async(req, res)=> {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'bellokhalid74@@gmail.com',
-      pass: process.env.EMAIL_PASS
-    }
-  });
-
-  const mailOptions = {
-    from: 'qsub.com',
-    to: 'bellokhalid74@gmail.com',
-    subject: 'testing Qmail',
-    html: '<p style="color:red; background-color:black; border-radius: 10px;">Qsub is on </p>'
+  const details = {
+    tx_ref: "MC-1585230hftghjhhfhhfh950508",
+    amount: 250,
+    email: "bellokhalid74@gmail.com",
+    currency: "NGN",
+    meta: {
+      network: "mtn",
+      networkID: 1,
+      planID: 7,
+      index: 2,
+      number: "08188146243",
+    },
   };
 
-  transporter.sendMail(mailOptions, function(error, info) {
-    if (error) {
-      console.log(error);
-      res.send(err);
-    } else {
-      console.log('Email sent: ' + info.response);
-      res.send(info);
-    };
-  });
+  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
+  const response = await flw.Charge.bank_transfer(details);
+  console.log(response);
+  res.json(response);
 });

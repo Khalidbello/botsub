@@ -405,8 +405,7 @@ async function getContact() {
 changeBorder = function () {
     const ele = event.target;
     ele.style.borderBottom = "2px solid #112";
-
-    
+  
     if (ele.checkValidity()) {
         ele.style.borderBottom = "2px solid green";
         if (ele.id === "email") {
