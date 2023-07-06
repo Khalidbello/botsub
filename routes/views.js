@@ -1,10 +1,10 @@
 // module to serve views
 
-import { Router } from "express";
+import { Router } from 'express';
 
 import path from 'path';
 
-import {fileURLToPath} from 'url';
+import { fileURLToPath } from 'url';
 
 //setting __filename since its not supported in type: module
 const __filename = fileURLToPath(import.meta.url);
@@ -14,24 +14,51 @@ const __dirname = path.dirname(__filename);
 export const router = Router();
 
 
-router.get("/", (req, res)=> {
-    res.sendFile( path.join(__dirname, "..", "views", "home.html") );
+
+const TEST = process.env.NODE_ENV === "development";
+
+router.get('/', (req, res) => {
+  res.render("home", {TEST});
+});
+
+router.get('/buy-data', (req, res) => {
+res.render("buy-data", {TEST});
+});
+
+router.get('/buy-airtime', (req, res) => {
+  res.render("buy-airtime", {TEST});
+});
+
+router.get('/after-pay', (req, res) => {
+  res.render("after-pay", {TEST});
+});
+
+router.get('/data-pricing', (req, res) => {
+  res.render("data-pricing", {TEST});
 });
 
 
-router.get("/buy-data", (req, res)=> {
-  res.sendFile( path.join(__dirname, "..", "views", "buy-data.html") );
+router.get('/survey', (req, res) => {
+  res.render("survey", {TEST});
 });
 
-router.get("/buy-airtime", (req, res)=> {
-  res.sendFile( path.join(__dirname, "..", "views", "buy-airtime.html") );
+
+router.get('/test', (req, res) => {
+  res.render("test", {TEST});
 });
 
-router.get("/after-pay", (req, res)=> {
-  res.sendFile( path.join(__dirname, "..", "views", "after-pay.html") );
+router.get('/success-mail', (req, res)=> {
+  res.sendFile("/home/runner/qsub0/modules/email-templates/successful-delivery.html");
 });
 
-router.get("/survey", (req, res)=> {
-  res.sendFile( path.join(__dirname, "..", "views", "survey.html") );
+router.get('/failed-mail', (req, res)=> {
+  res.sendFile("/home/runner/qsub0/modules/email-templates/failed-delivery.html");
 });
 
+router.get('/refund-mail', (req, res)=> {
+  res.sendFile("/home/runner/qsub0/modules/email-templates/refund-mail.html");
+});
+
+router.get('/survey-mail', (req, res)=> {
+  res.sendFile("/home/runner/qsub0/modules/email-templates/survey-recieved-mail.html");
+})

@@ -1,408 +1,427 @@
 <html lang="en">
-<head>
- <meta charset="utf-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <meta name="author" content="Khalid Bello">
- <title>Qsub Survey</title>
-  <script src="scripts/eruda.min.js"></script>
-  <script> eruda.init();</script>
- <style>
-  * {
-   padding: 0;                             
-   margin: 0;
-   box-sizing: border-box;    
-   font-family: fantasy; 
- }
-  header {
-      position: sticky;
-       top: 0;
-       left: 0;  
-       height: 3em;
-       padding: 0 10px 0 10px;
-       z-index: 3;
-    }
-    header > svg {
-      width: 35px;
-      height: 35px;
-      border-radius: 10px;
-    }
-    header  > span {
-      min-width: 50%;
-      height: 2.5em;
-      border-radius: 10px;
-    }
+  <head>
+    <meta charset="utf-8" />
+    {{#if TEST}}
+    <script src="scripts/eruda.min.js"></script>
+    <script>
+      eruda.init();
+    </script>
+    {{/if }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Khalid Bello" />
+    <title>Qsub Survey</title>
+    <link rel="stylesheet" href="styles/generic.css" />
+    <link rel="icon" href="images/chatbot.png" />
+    <style>
+      header {
+        position: sticky;
+        top: 0;
+        left: 0;
+        height: auto;
+        padding: 10px 0;
+        z-index: 3;
+      }
+      header > svg:first-of-type {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        opacity: 1;
+      }
+      header > span {
+        min-width: 50%;
+        height: 40px;
+        border-radius: 10px;
+      }
+      header #menu-icon {
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+        stroke: white;
+        opacity: 1;
+      }
+      p {
+        padding: 10px;
+        border-radius: 10px;
+        margin: 10px;
+      }
+      /* styling for question-box */
+      button:hover, .data-container > div:hover, svg { opacity: 0.7; }
+      #question-box {
+        min-height: 150px;
+        overflow: hidden;
+        position: relative;
+        border-radius: 10px;
+        margin: 10px;
+      }
+      #question-box > #carousel {
+        width: 100%;
+        min-height: 150px;
+        display: flex;
+        transition: transform 1s ease-in-out;
+      }
 
-  p {
-    padding: 10px;
-    border-radius: 10px;
-    margin: 10px; 
-  }
-  /* styling for question-box */
-  #question-box {
-    border-radius: 10px;
-    margin: 10px;
-    min-height: 150px;
-    position: relative;
-  }
-  #question-box > button {
-    position: absolute;
-    bottom: 10px;
-    left: calc(50% - 75px);
-    width: 150px;
-    border-radius: 10px;
-    padding: 10px;
-    color: white;
-    transition: opacity 0.5s;
-  }
-  #question-box > svg {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 35px;
-    height: 35px;
-    border-radius: 10px;
-    display: none;
-  }
-  .data-container { 
-    display: none;
-    transition: left 0.5s;
-    position: absolute;
-    top: 60px;
-    left: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    width: 100%;
-    background-color: #eee;
-    padding-bottom: 40px;
-  }
-  .data-container > h3 {
-    background-color: #ddd;
-    padding: 10px;
-    border-radius: 10px;
-  }
-  .data-container > div {
-    background-color: #112;
-    opacity: 0.5;
-    padding: 10px;
-    border-radius: 10px;
-    margin: 10px;
-    color: white;
-  }
-  #email { text-align: right; }
-  #email h4 { text-align: left; }
-  #email > input { 
-    display: block;
-    height: 40px;
-    width: 80%;
-    padding: 10px;
-    border-radius: 10px;
-    margin: 20px;
-    border: thin solid #ddd;
-  }
-  #email > button {
-    height: 35px;
-    width: 70px;
-    border-radius: 10px;
-    background-color: darkorange;
-    color: white;
-  }
-  input[type="email"]:valid { border: thin solid blue; } 
+      #question-box > #carousel > * {
+        flex-shrink: 0;
+        width: 100%;
+        height: 100%;
+      }
+      
+      #question-box #survey-intro button {
+        width: 150px;
+        border-radius: 10px;
+        padding: 10px;
+        color: white;
+        transition: opacity 0.5s;
+        display: block;
+        margin: auto;
+      }
+      #question-box svg {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        display: none;
+        opacity: 0;
+      }
+      .data-container {
+        padding: 40px 10px;
+        border-radius: 10px;
+        width: 100%;
+        background-color: #eee;
+        margin-top: 60px;
+      }
+      .data-container > h3 {
+        background-color: #ddd;
+        padding: 10px;
+        border-radius: 10px;
+      }
+      .data-container > div {
+        background-color: #112;
+        opacity: 0.5;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 10px;
+        color: white;
+      }
+      #email {
+        text-align: right;
+      }
+      #email h4 {
+        text-align: left;
+      }
+      #email > input {
+        display: block;
+        height: 40px;
+        width: 80%;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 20px;
+        border: thin solid #ddd;
+      }
+      #email > button {
+        height: 35px;
+        width: 70px;
+        border-radius: 10px;
+        background-color: darkorange;
+        color: white;
+      }
+      input[type='email']:valid {
+        border: thin solid blue;
+      }
 
-  /* styling for loader */
-  #loader {
-    position: absolute;
-    top: calc(50% - 100px);
-    left: calc(50% - 100px);
-    height: 200px;
-    width: 200px;
-    border-radius: 50%;
-    animation: 3s infinite rotate;
-    opacity: 0.7;
-    display: none;
-  }
-  @keyframes rotate {
-      from {
-    transform: rotateZ(0deg);
-   }
-   to {
-    transform: rotateZ(360deg);
-   }
-  }
+      /* styling for loader */
+      #loader {
+        position: absolute;
+        top: calc(50% - 100px);
+        left: calc(50% - 100px);
+        height: 200px;
+        width: 200px;
+        border-radius: 50%;
+        animation: 3s infinite rotate;
+        opacity: 0.7;
+        display: none;
+      }
+      @keyframes rotate {
+        from {
+          transform: rotateZ(0deg);
+        }
+        to {
+          transform: rotateZ(360deg);
+        }
+      }
 
-  #loader > * {
-   position: absolute;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
-   border-radius: 50%;
-   border: thin solid #112;
-  }
-  .x {
-   animation: 3s infinite alternate x;
-  }
-  @keyframes x {
-   from {
-    transform: rotateX(0deg);
-   }
-   to {
-    transform: rotateX(360deg);
-   }
-  }
+      #loader > * {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: thin solid #112;
+      }
+      .x {
+        animation: 3s infinite alternate x;
+      }
+      @keyframes x {
+        from {
+          transform: rotateX(0deg);
+        }
+        to {
+          transform: rotateX(360deg);
+        }
+      }
+
+      .y {
+        animation: 3s infinite alternate y;
+      }
+      @keyframes y {
+        from {
+          transform: rotateZ(0deg);
+        }
+        to {
+          transform: rotateY(360deg);
+        }
+      }
+
+      /* blur */
+      #blur {
+        opacity: 0.4;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 6;
+        background-color: white;
+        display: none;
+      }
+      #success-box,
+      #error-box {
+        width: 300px;
+        position: fixed;
+        top: -200px;
+        left: calc(50% - 150px);
+        transition: top 0.8s ease-in-out;
+        border-radius: 10px;
+        z-index: 6;
+      }
+      #success-box button,
+      #error-box button {
+        padding: 10px;
+        min-width: 100px;
+        border-radius: 10px;
+      }
+      
+      /* generic styles */
+      .bg-prp,
+      .bg-drkb {
+        background-color: #112;
+      }
+      .bg-white {
+        background-color: white;
+      }
+      .clrw {
+        color: white;
+      }
+      .flex {
+        display: flex;
+        align-items: center;
+      }
+      .flex-col {
+        flex-direction: column;
+      }
+      .flex-sp-btw {
+        justify-content: space-between;
+      }
+      .flex-sp-ar {
+        justify-content: space-around;
+      }
+      .flex-jst-center {
+        justify-content: center;
+      }
+      .flex-col {
+        flex-direction: column;
+      }
+      .flex-al-start {
+        align-items: flex-start;
+      }
+      .flex-al-end {
+        align-items: flex-end;
+      }
+      .l-border {
+        border: thin solid #eee;
+      }
+      .small {
+        font-size: small;
+      }
+      .txt-big {
+        font-size: large;
+      }
+      .txt-cent {
+        text-align: center;
+      }
+      .bold {
+        font-weight: bold;
+      }
+      .padding-10 {
+        padding: 10px;
+      }
+      .float-right {
+        float: right;
+      }
+      .ash1 {
+        background-color: #eee;
+      }
+      .ash2 {
+        background-color: #ddd;
+      }
+      .ash3 {
+        background-color: #ccc;
+      }
+      .transition {
+        transition: all 0.3s ease-in-out;
+      }
+      .bg-darkorange {
+        background-color: darkorange;
+      }
+      .bg-white { background-color: white; }
+      .border-r20 {
+        border-radius: 20px;
+      }
+      .red {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- nav menu -->
+    <nav id="nav-menu" class="border-r20 bg-white l-border small">
+      <svg
+        id="cancel-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
+      </svg>
+      <a href="/buy-data" class="l-border txt-cent">Buy Data</a>
+      <a href="/buy-data" class="l-border txt-cent">Buy Airtime</a>
+      <a href="" class="l-border txt-cent">Chat BotSub</a>
+      <a href="data-pricing" class="l-border txt-cent">View Data Pricing</a>
+      <a href="report-issue" class="l-border txt-cent">Report An Issue</a>
+      <a href="/#about-us" class="l-border txt-cent">About Us</a>
+    </nav>
   
-  .y {
-   animation: 3s infinite alternate y
-  }
-  @keyframes y {
-   from {
-    transform: rotateZ(0deg);
-   }
-   to {
-    transform: rotateY(360deg);
-   }
-  }
+    <header class="bg-white flex flex-sp-ar">
+      <svg xmlns="http://www.w3.org/2000/svg" class="l-border" id="home" onclick="home();" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M9 22V12h6v10M2 10.6L12 2l10 8.6"/></svg>
+      <span class="l-border bg-white bold flex flex-jst-center">BotSub Survey</span>
+      <svg
+        id="menu-icon"
+        class="padding-10 bg-darkorange"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 12h18M3 6h18M3 18h18" />
+      </svg>
+    </header>
+    <br /><br />
 
-  /* blur */
-  #blur {
-      opacity: 0.4;
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 6;
-      background-color: white;
-      display: none;
-     }
-  /* generic styles */
-  .bg-prp, .bg-drkb {
-   background-color: #112;
-  }
-  .bg-white {
-   background-color: white;
-  }
-  .clrw { color: white;}
-  .flex {
-   display: flex;
-   align-items: center;
-  }     
-  .flex-col { flex-direction: column;}                          
-  .flex-sp-btw {
-   justify-content: space-between;
-  }
-  .flex-sp-ar {
-   justify-content: space-around;
-  }
-  .flex-justify-center {
-   justify-content: center;
-  } 
-  .flex-col {flex-direction: column;}   
-  .flex-align-start {align-items: flex-start;}      
-  .flex-end {align-items: flex-end; }                   
-  .shdw {
-   box-shadow: 0 0 10px -3px #112;
-  }
-  .txt-small {font-size: small;}
-  .txt-big {font-size: large;}
-  .bold {font-weight: bold;}
-  .float-right {float: right;}
-  .ash1 {background-color: #eee;}
-  .ash2 {background-color: #ddd;}
-  .ash3 {background-color: #ccc;}
- </style>
-</head>
-<body>
+    <div id="question-box" class="l-border">
+      <svg id="previous" class="transition bg-drkb" onclick="prevSlide()"></svg>
+      <div id="carousel">
+        <div id="survey-intro">
+          <p class="txt-cent">
+            Thank you for choosing BotSub, your number one platform for airtime and data TopUp. <br>
+            We greatly appreciate your participation in this survey as it enables us to provide personalized recommendations and 
+            continually improve our services. Your feedback is invaluable in our ongoing efforts to make BotSub the best it can be.
+          </p>
+          <br /><br />
 
-  <header class="bg-white flex flex-sp-btw">
-    <svg class="bg-drkb" onclick="home();"></svg>
-    <span class="shdw bg-white bold 
-     flex flex-justify-center">Qsub Survey</span>
-  </header>
+          <button data-index="1" id="start-survey" class="bg-drkb transition" onclick="nextSlide(1);">
+            start survey
+          </button>
+          <br /><br />
+        </div>
 
-  <p class="ash1"> 
-   Qsub servey is a platform that collects data about our
-   customers and potential customers so as   
-  </p>
+        <div data-index="2" id="gender" class="transition data-container" onclick="selected(gender)">
+          <h4>kindly select your gender</h4>
+          <br />
+          <div data-value="male">Male</div>
+          <div data-value="female">Female</div>
+        </div>
 
-  <div id="question-box" class="ash1">
-    <button id="start-survey" class="bg-drkb"
-     onclick="startSurvey();">start survey</button>
-    <svg id="previous" class="bg-drkb" onclick=
-     "showPrevious()"></svg>
+        <div data-index="3" id="network" class="data-container transition" onclick="selected(network)">
+          <h4>Which network do you frequently buy data into</h4>
+          <br />
+          <div data-value="mtn">MTN</div>
+          <div data-value="airtel">Airtel</div>
+          <div data-value="ninemobile">9mobile</div>
+          <div data-value="glo">Glo</div>
+        </div>
 
-    <div id="gender" class="data-container" onclick=
-     "selected(this, network)">
-      <h4>kindly select your gender</h4>
-      <div data-value="male">Male</div>
-      <div data-value="female">Female</div>
+        <div data-index="4" id="data-size" class="data-container transition" onclick="selected(dataSize);">
+          <h4>What size of data bundle do you normally buy</h4>
+          <br />
+          <div data-value="0.5GB">500mb</div>
+          <div data-value="1GB">1GB</div>
+          <div data-value="2GB">2GB</div>
+          <div data-value="3GB">3GB</div>
+          <div data-value="5GB">5GB</div>
+          <div data-value="10GB">10GB</div>
+          <div data-value="15GB">15GB</div>
+          <div data-value="20GB">20GB</div>
+        </div>
+
+        <div id="email" class="data-container transition">
+          <h4>kindly enter your email</h4>
+          <br />
+          <input
+            type="email"
+            placeholder="*****@email.com"
+            required
+            oninput="checkEmail();"
+            validate
+          />
+          <button onclick="submitData();">done</button>
+        </div>
+      </div>
     </div>
 
-    <div id="network" class="data-container" onclick=
-     "selected(this, dataSize)">
-      <h4>which of the followong networks do you buy data into</h4>
-      <div data-value="mtn">MTN</div>
-      <div data-value="airtel">Airtel</div>
-      <div data-value="ninemobile">9mobile</div>
-      <div data-value="glo">Glo</div>
+    <!-- loader -->
+    <div id="loader" class="shdw flex flex-justify-center bg-white">
+      <div class="x"></div>
+      <div class="y"></div>
     </div>
 
-    <div id="data-size" class="data-container" onclick=
-     "selected(this, email);">
-      <h4>what size of data bundle do you normally buy</h4>
-      <div data-value="0.5GB">500mb</div>
-      <div data-value="1GB">1GB</div>
-      <div data-value="2GB">2GB</div>
-      <div data-value="3GB">3GB</div>
-      <div data-value="5"GB">5GB</div>
-      <div data-value="10GB">10GB</div>
-      <div data-value="15"GB">15GB</div>
-      <div data-value="20"GB">20GB</div>
+    <div id="blur"></div>
+
+    <!-- success box -->
+    <div id="success-box" class="border-20 padding-10 bg-white l-border txt-cent">
+      <h3>Survey Sbmitted SuccessFully</h3><br>
+      <button onclick="resetSurvey();" class="clrw bg-darkorange">OK</button>
     </div>
 
-    <div id="email" class="data-container">
-    <h4>kindly enter your email</h4>
-     <input type="email" placeholder="*****@email.com"
-      required oninput="checkEmail();">
-     <button onclick="submitData();">done</button>
+    <!-- error box -->
+    <div id="error-box" class="border-20 padding-10 bg-white l-border txt-cent">
+      <h3>
+        <span class="red">Sorry An Error Occured</span> <br />
+        Kindly restart survey
+      </h3><br>
+      <button onclick="resetSurvey();" class="clrw bg-darkorange">Restart Survey</button>
     </div>
-  </div>
-
-  <!-- loader -->
-  <div id="loader" class="shdw flex flex-justify-center 
-   bg-white">
-   <div class="x"></div>
-   <div class="y"></div>
-  </div>
-  <div id="blur"></div>
-<script>
-let questionBox = document.querySelector("#question-box");
-let startBt= questionBox.querySelector("#start-survey");
-let back = questionBox.querySelector("#previous");
-let gender = questionBox.querySelector("#gender");
-let network = questionBox.querySelector("#network");
-let dataSize = questionBox.querySelector("#data-size");
-let email = questionBox.querySelector("#email");
-let loader = document.querySelector("#loader");
-let blur = document.querySelector("#blur");
-let sections = [gender, network, dataSize, email]
-
-
-// function to start survey
-
-function startSurvey() {
-  ele = event.target;
-  ele.style.opacity = 0;
-  back.style.display = "block";
-  back.dataset.index = 0;
-
-  setTimeout(()=> {
-    ele.style.displsy = "none";
-    back.style.opacity = 1;
-  }, 500);
-  setTimeout(()=> gender.style.display = "block", 500);
-  setTimeout(()=> gender.style.left = 0,  620);
-} // end of startSurveyfunction
-
-
-// function to be called once an option is selected
-
-function selected(current, next) {
-  option = event.target;
-  if (!option.dataset.value) return null;
-  option.style.opacity = 1;
-  back.dataset.index = parseInt(back.dataset.index) + 1;
-  
-  current.dataset.value = option.dataset.value;
-  setTimeout(()=> {
-    current.style.left =  "-100%";
-    next.style.display = "block";
-  }, 300);
-  setTimeout(()=> next.style.left = 0, 500);
-  setTimeout(()=> {
-    current.style.display = "none";
-    option.style.opacity = 0.5;
-  }, 850);
-}; // end  of selected function
- 
- 
-// function to change email border if valid
-
-function checkEmail() {
-  ele = event.target;
-  emailInput = ele.parentNode.children[1];
-  if (emailInput.checkValidity()) {
-    return emailInput.style.border = "thin solid green"; 
-  };
-  return emailInput.style.border = "thin solid #ddd"; ;
-}; // end of done
-// function to handle back click
-
-function showPrevious() {
-  let currentIndex = parseInt(event.target.dataset.index);
-  back.dataset.index = parseInt(back.dataset.index) - 1;
-
-  if (currentIndex == 0) {
-    startBt.style.display = "block";
-    back.style.opacity = 0;
-    gender.style.left = "100%";
-    setTimeout(()=> {
-      back.style.display = "none";
-      gender.style.display = "none";
-      startBt.style.opacity = 1;
-    }, 550);
-    return;
-  };
-  
-  sections[currentIndex].style.left = "100%";
-  sections[currentIndex - 1].style.display = "block";
-  setTimeout(()=> {
-    sections[currentIndex].style.display = "none";
-    sections[currentIndex - 1].style.left = 0;
-  }, 500);
-}; // end of showPrevious
-
-
-// function to handle submitting of data
-
-async function  submitData() {
-  // first check email validity before submitting
-  ele = event.target;
-  emailInput = ele.parentNode.children[1];
-  if (!emailInput.checkValidity()) {
-    return emailInput.style.border = "thin solid red"; 
-  }
-  
-  // submittng data
-  blur.style.display = "block";
-  loader.style.display = "block";
-  
-  const url = "https://qsub0.khalidbello.repl.co/front-api/survey";
-  data = {
-    email: emailInput.value,
-    network: network.dataset.value,
-    dataSize: dataSize.dataset.value,
-    gender: gender.dataset.value,
-  };
-  
-  let response = await fetch(
-    url,
-    { 
-      method: "POST", 
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)}
-  )
-  .catch((err)=> {
-    console.log(err);
-    console.log("error");
-  });
-
-  console.log(response);
-  // extracting response data
-  response = await response.json();
-  console.log(response);
-};  // end of submit data
-</script>
- </body>
+    <script src="scripts/survey.js"></script>
+  </body>
 </html>

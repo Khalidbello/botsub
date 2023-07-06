@@ -1,224 +1,251 @@
 // module to deliver value
 
-import request from "request";
-import cyclicDB from "cyclic-dynamodb";
-import nodemailer from "nodemailer";
-import {successfullDeliveryMail, failedDeliveryMail} from "./email-templates.js";
+import Flutterwave from "flutterwave-node-v3";
 
-//import mailer from "./mailer.js";
+import request from 'request';
 
+import handlebars from "handlebars";
+
+import cyclicDB from 'cyclic-dynamodb';
+
+import nodemailer from 'nodemailer';
+
+import { generateRandomString } from './payment-gateway-helpers.js';
+
+
+import { successfullDeliveryMail, failedDeliveryMail } from './email-templates.js';
+
+import { default as fs } from 'node:fs';
+
+const fsP = fs.promises;
 
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'bellokhalid74@@gmail.com',
-    pass: process.env.EMAIL_PASS
-  }
-});  // end of transporter
-
-
+    user: process.env.EMAIL_ADDRESS,
+    pass: process.env.EMAIL_PASS,
+  },
+}); // end of transporter
 
 export function deliverValue(response, req, res, requirementMet) {
-  if (requirementMet.type == "data") {
+  if (requirementMet.type == 'data') {
     return deliverData(response, req, res);
-  } else if (requirementMet.type == "airtime") {
+  } else if (requirementMet.type == 'airtime') {
     return deliverAirtime(response, req, res);
-  };
-};
+  }
+}
+
 
 
 // function to make data purchase request
 
 async function deliverData(response, req, res) {
   let options = {
-    'method': 'POST',
-    'url': 'https://opendatasub.com/api/data/',
-    'headers': {
-      'Authorization': 'Token ' + process.env.OPENSUB_KEY,
-      'Content-Type': 'application/json'
+    method: 'POST',
+    url: 'https://opendatasub.com/api/data/',
+    headers: {
+      Authorization: 'Token ' + process.env.OPENSUB_KEY,
+      'Content-Type': 'application/json',
     },
     body: {
-      "network": Number(response.data.meta.networkID),
-      "mobile_number": response.data.meta.number,
-      "plan": Number(response.data.meta.planID),
-      "Ported_number":true
+      network: Number(response.data.meta.networkID),
+      mobile_number: response.data.meta.number,
+      plan: Number(response.data.meta.planID),
+      Ported_number: true,
     },
-    json: true 
+    json: true,
   };
   // making request
-  request(options, (error, resp, body) => {
+  request(options, (error, _, body) => {
     if (error) {
-      console.log(error); 
+      console.log(error);
       return res.send(error);
-    };
-    console.log(response.body);
-    // to do if succesfull transaction
-    if (true) {
+    }
+    //console.log('data purchase resp', resp.body);
+    console.log('data purchase resp body', body);
+    // to do dependent transaction status
+    if (body.Status === 'successful') {
       addToDelivered(req);
-      //calling function to send mail and json response object
-      return sendDataResponse(response, res);
+      // calling function to send mail and json response object
+      sendSuccessfulResponse(response, res);
+
+      if (parseInt(body.balance_after) <= 5000) topUpBalance();
+      return;
     } else if (true) {
       addToFailedToDeliver(req);
       return sendFailedToDeliverResponse(response, res);
-    };
+    }
   });
-};  // end of deliver value function
-
+} // end of deliver value function
 
 
 
 // function to make airtime purchase request
+
 async function deliverAirtime(response, req, res) {
   let options = {
-    'method': 'POST',
-    'url': 'https://opendatasub.com/api/topup/',
-    'headers': {
-      'Authorization': 'Token ' + process.env.OPENSUB_KEY,
-      'Content-Type': 'application/json'
+    method: 'POST',
+    url: 'https://opendatasub.com/api/topup/',
+    headers: {
+      Authorization: 'Token ' + process.env.OPENSUB_KEY,
+      'Content-Type': 'application/json',
     },
     body: {
-      "network": Number(response.data.meta.networkID),
-      "amount": Number(response.data.meta.amount),
-      "mobile_number": response.data.meta.number,
-      "Ported_number": true,
-      "airtime_type":"VTU"
+      network: Number(response.data.meta.networkID),
+      amount: Number(response.data.meta.amount),
+      mobile_number: response.data.meta.number,
+      Ported_number: true,
+      airtime_type: 'VTU',
     },
-    json: true 
+    json: true,
   };
+
   // making request
-  request(options, (error, resp, body) => {
+  request(options, (error, _, body) => {
     if (error) {
-      console.log(error); 
+      console.log(error);
       return res.send(error);
-    };
-    console.log(response.body);
-    
+    }
+    //console.log('airtime purchase resp', resp.body);
+    console.log("bodyof request ", body);
     // to do dependent transaction status
-    if (true) {
-      addToDelivered(req)
-      //calling function to send mail and json response object
-      return sendAirtimeResponse(response, res);
-    } else if (true) {
+    if (body.Status === 'successful') {
+      addToDelivered(req);
+      // calling function to send mail and json response object
+      sendSuccessfulResponse(response, res);
+
+      if (parseInt(body.balance_after) <= 5000) topUpBalance();
+      return;
+    } else {
       addToFailedToDeliver(req);
       return sendFailedToDeliverResponse(response, res);
-    };
+    }
   });
 }; // end of deliverAirtime
 
 
 
-
-
 // function to add transaction to delivered transaction
+
 async function addToDelivered(req) {
   const db = cyclicDB(process.env.DB_TABLENAME);
-  const deliveredDB = db.collection("settled");
-  const response = await deliveredDB.set(req.query.tx_ref, {transactionID: req.query.transaction_id});
+  const deliveredDB = db.collection(process.env.SETTLED_COLLECTION);
+  
+  const response = await deliveredDB.set(req.query.tx_ref, {
+    transactionID: req.query.transaction_id,
+  });
   console.log(response);
   return response;
-}; // end of addToDelivered
-
-
+} // end of addToDelivered
 
 
 
 // function to add transaction to failed to deliver
+
 async function addToFailedToDeliver(req) {
   const db = cyclicDB(process.env.DB_TABLENAME);
-  const deliveredDB = db.collection("failed-to-deliver");
-  const response = await deliveredDB.set(req.query.tx_ref, {transactionID: req.query.transaction_id});
+  const deliveredDB = db.collection(process.env.PENDING_COLLECTION);
+  const response = await deliveredDB.set(req.query.tx_ref, {
+    transactionID: req.query.transaction_id,
+  });
   console.log(response);
   return response;
-}; // end if add to failed to deliver
-
-
-
+} // end if add to failed to deliver
 
 
 
 // function to send data purchase mail and response
-async function sendDataResponse(response, res) {
-  const details = formResponse(response);
-  details.product = `${response.data.meta.size} data`;
-  const mailParams = {
-    product: details.product,
-    network: details.network,
-    date: details.date,
-    id: response.data.id,
-    txRef: response.data.tx_ref,
-    status: "successfull",
-    price: response.data.amount,
-  };
-  const mailOptions = {
-    from: 'qsub@gmail.com',
-    to: response.data.customer.email,
-    subject: 'Qsub receipt',
-    html: successfullDeliveryMail(mailParams)
-  };
-  
-  const resp = await transporter.sendMail(mailOptions)
-  .catch((err)=> console.log("error sending data mail") );
-  console.log(resp);
-  return res.json({ status: "successful", data: details }); 
-};  // end of sendDataResponse function
 
+async function sendSuccessfulResponse(response, res) {
+  try {
+    const successfulMailTemplate = await fsP.readFile("modules/email-templates/successful-delivery.html", "utf8");
+    const compiledSuccessfulMailTemplate = handlebars.compile(successfulMailTemplate);
+    let details = formResponse(response);
+    details.product = `${response.data.meta.size} data`;
 
+    if (response.data.meta.type === "airtime") {
+      details.product = `₦${response.data.meta.amount} airtime`;
+    };
 
-                    
+    const mailParams = {
+      product: details.product,
+      network: details.network,
+      date: details.date,
+      id: response.data.id,
+      txRef: response.data.tx_ref,
+      status: 'Successfull',
+      price: response.data.amount,
+      recipientNumber: details.number,
+      chatBotUrl: process.env.CHATBOT_URL,
+    };
 
+    const mailOptions = {
+      from: 'qsub@gmail.com',
+      to: response.data.customer.email,
+      subject: 'BotSub Receipt',
+      html: compiledSuccessfulMailTemplate(mailParams),
+    };
 
-// function to send data purchase mail and response
-async function sendAirtimeResponse(response, res) {
-  let details = formResponse(response);
-  details.product = `&#8358;${response.data.meta.amount} airtime`;  
-  const mailParams = {
-    product: details.product,
-    network: details.network,
-    date: details.date,
-    id: response.data.id,
-    txRef: response.data.tx_ref,
-    status: "successfull",
-    price: response.data.amount,
-  };
-  const mailOptions = {
-    from: 'qsub@gmail.com',
-    to: response.data.customer.email,
-    subject: 'Qsub receipt',
-    html: successfullDeliveryMail(mailParams)
-  };
-  const resp = await transporter.sendMail(mailOptions)
-  .catch((err)=> console.log("error sending data mail") );
-  console.log(resp);
-  return res.json({ status: "successful", data: details }); 
-};  // end of sendAirtimeResponse function
+    const resp = await transporter.sendMail(mailOptions)
 
-
-
-
+    console.log("successful delivery function", resp);
+    return res.json({ status: 'successful', data: details });
+  } catch (err) {
+    console.log("send successful vtu response error", err);
+    return res.json({ status: 'error', data: err });
+  }
+} // end of sendAirtimeResponse function
 
 
 
 // function to form response on failed to deliver
+
 async function sendFailedToDeliverResponse(response, res) {
-  const mailOptions = {
-    from: 'qsub@gmail.com',
-    to: response.data.customer.email,
-    subject: 'Failed To Deliver Purchased product',
-    html: failedDeliveryMail()
+  try {
+    const pendingMailTemplate = await fsP.readFile("modules/email-templates/failed-delivery.html", "utf8");
+    const compiledPendingMailTemplate = handlebars.compile(pendingMailTemplate);
+    let details = formResponse(response);
+    details.product = `${response.data.meta.size} data`;
+
+    if (response.data.meta.type === "airtime") {
+      details.product = `₦${response.data.meta.amount} airtime`;
+    };
+
+    const mailParams = {
+      product: details.product,
+      network: details.network,
+      date: details.date,
+      id: response.data.id,
+      txRef: response.data.tx_ref,
+      status: 'Pending',
+      price: response.data.amount,
+      recipientNumber: details.number,
+      chatBotUrl: process.env.CHATBOT_URL,
+    };
+
+    const mailOptions = {
+      from: 'qsub@gmail.com',
+      to: response.data.customer.email,
+      subject: 'BotSub Pending Transaction',
+      html: compiledPendingMailTemplate(mailParams),
+    };
+
+    const resp = await transporter.sendMail(mailOptions)
+
+    console.log("in failed to deliver function", resp);
+    return res.json({ status: 'pending', data: details });
+  } catch (err) {
+    console.log("send successfulvtu response error", err);
+    return res.json({ status: 'error', data: err });
+    //return res.json({ status: 'failedDelivery', message: 'failed to deliver purchased product' });
   };
-  const resp = await transporter.sendMail(mailOptions)
-  .catch((err)=> console.log("error sending data mail") );
-  console.log(resp);
-  return res.json({status: "failedDelivery", message: "failed to deliver purchased product"})
-}; // end of sendFailedToDeliverResponse
-
-
-
+} // end of sendFailedToDeliverResponse
 
 
 
 //function to form response for request
+
 function formResponse(response) {
   const meta = response.data.meta;
   // create a Date object with the UTC time
@@ -227,8 +254,8 @@ function formResponse(response) {
   const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
     timeZone: 'Africa/Lagos',
     dateStyle: 'long',
-      timeStyle: 'medium',
-  }); 
+    timeStyle: 'medium',
+  });
   // Format the Nigeria time using the formatter
   const nigeriaTimeString = nigeriaFormatter.format(date);
   const details = {
@@ -236,16 +263,32 @@ function formResponse(response) {
     number: meta.number,
     email: response.data.customer.email,
     date: nigeriaTimeString,
-  };  
+  };
   return details;
-};  // end of formResponse
-
-
-
+} // end of formResponse
 
 
 
 // function to check balance and add to it when necessary
+
 async function topUpBalance() {
-  
-};
+  try {
+    const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
+    
+    const details = {
+      account_bank: process.env.WALLET_ACC_NAME,
+      account_number: process.env.WALLET_ACC_NUMBER,
+      amount: parseInt(process.env.WALLET_FUND_AMOUNT),
+      narration: "REFUNDING WALLET",
+      currency: "NGN",
+      reference: generateRandomString(),
+      debit_currency: "NGN",
+      meta: { walletTopUp: true },
+    };
+
+    const response = await flw.Transfer.initiate(details);
+    console.log("wallet transfer response", response);
+  } catch (err) {
+    console.log("balance top up error", err);
+  };
+}

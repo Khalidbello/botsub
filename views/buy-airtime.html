@@ -1,208 +1,244 @@
 <!DOCTYPE html>
 <html lang="eng">
+  {{#if TEST}}
   <script src="scripts/eruda.min.js"></script>
-  <script> eruda.init();</script>
+  <script>
+    eruda.init();
+  </script>
+  {{/if }}
   <head>
-   <meta charset="utf-8">
-   <meta name="author" content="Khalid Bello">
-   <meta name="viewport" content= "width=device-width, initial-scale=1">
-   <link href="styles/terminal.css" rel="stylesheet">
+    <meta charset="utf-8" />
+    <meta name="author" content="Khalid Bello" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="styles/terminal.css" rel="stylesheet" />
+    <link rel="icon" href="images/chatbot.png" />
   </head>
   <body>
-   <header class="bg-prp ">
-       
-    <svg onclick="back(this)" id="home" xmlns=
-    "http://www.w3.org/2000/svg" width=
-    "24" height="24" viewBox="0 0 24 24" 
-    fill="none" stroke="#fff" 
-    stroke-width="2" stroke-linecap=
-    "round" stroke-linejoin="round">
-     <path d="M19 12H6M12 5l-7 7 7 7"/>
-    </svg>
-    
-    <div class="name bg-white">                
-     <span class="txt-big bold">Q</span>sub   
-    </div>
-        
-    <div class="enquire bg-drkb flex flex-justify-center 
-    bg-white bold" onclick="showQueryBox();">
-     ?
-    </div>  
-
-    <div class="title  shdw clrw flex flex-justify-center">
-     Data Purchase Terminal 
-    </div>
-
-    <!-- clip path for  header curve -->
-    <svg width="0" height="0">
-     <defs>
-      <clipPath id="headCurve" clipPathUnits=
-      "objectBoundingBox">
-      <path d="
-       M 0 1
-       L 0 0
-       L 1 0
-       L 1 1
-       C 1 1 1 0.75 0.8 0.75
-       L 0.3 0.75
-       C 0 0.75 0 0.45 0 0.45
-       " />
-      </clipPath>
-     </defs>
-    </svg> 
-   </header>
-    
-   <!-- queryBox -->
-    <div id="query-box" class="shdw bold" onclick="hideQueryBox();">
-      <svg xmlns="http://www.w3.org/2000/svg"
-      width="24" height="24" viewBox="0 0 24 24"
-      fill="none" stroke="black" 
-      stroke-width="2" stroke-linecap="round"
-      stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
+            <nav id="nav-menu" class="border-r20 bg-white l-border small">
+      <svg
+        id="cancel-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
       </svg>
-      <div data-location="about">About us</div>
-      <div data-location="report-issue">Report an issue</div>
-      <div data-location="wa">Contact us via watsaap</div>
-      <div data-location="https://qgame.cyclic.app">play games</div>
-    </div> 
+      <a href="/buy-data" class="l-border txt-cent">Buy Data</a>
+      <a href="/buy-airtime" class="l-border txt-cent">Buy Airtime</a>
+      <a href="" class="l-border txt-cent">Chat BotSub</a>
+      <a href="data-pricing" class="l-border txt-cent">View Data Pricing</a>
+      <a href="report-issue" class="l-border txt-cent">Report An Issue</a>
+      <a href="/#about-us" class="l-border txt-cent">About Us</a>
+    </nav>
+    <header class="bg-prp  flex-al-start flex-sp-btw">
+      <div class="flex flex-al-cent flex-sp-btw padding-10">
+      <svg xmlns="http://www.w3.org/2000/svg" class="" id="home" onclick="home();" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M9 22V12h6v10M2 10.6L12 2l10 8.6"/></svg>
+      <div
+            id="header-logo"
+            class="scroll-anime bold flex flex-al-cent flex-sp-ar"
+          >
+            <span class="img-container flex-i flex-al-cent flex-sp-ar bg-drkb2"><img src="images/chatbot.png" alt="botsub-logo"></span>
+            <span class="bg-drkb2 clrw padding-10 border-r20"> &nbsp; &nbsp; BotSub</span>
+          </div>
+
+      <svg
+        id="menu-icon"
+        class="padding-10 bg-darkorange"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 12h18M3 6h18M3 18h18" />
+      </svg>
+      </div>
+
+      <div class="title shdw clrw flex flex-justify-center">Airtime Purchase Terminal</div>
+    </header>
+    <!-- clip path def for head curve -->
+      <svg width="0" height="0">
+        <defs>
+          <clipPath id="headCurve" clipPathUnits="objectBoundingBox">
+            <path
+              d="M 0 1 L 0 0 L 1 0 L 1 1 C 1 1 1 0.75 0.8 0.75
+              L 0.3 0.75 C 0 0.75 0 0.45 0 0.45"
+            />
+          </clipPath>
+        </defs>
+      </svg>
     
+    <!-- start of body circle -->
+    <div class="b-circle bg-drkb flex flex-justify-center">
+      <div class="i-b-circle bg-white"></div>
+    </div>
 
-   <!-- start of body circle -->
-   <div class="b-circle bg-drkb flex  flex-justify-center">
-    <div class="i-b-circle bg-white"></div>
-   </div>
-   <div class="b-s-circle bg-drkb flex flex-justify-center">
-    <div class="i-b-s-circle bg-white"></div>    
-   </div>
-   <!-- end of body circle-->
+    <div class="b-s-circle bg-drkb flex flex-justify-center">
+      <div class="i-b-s-circle bg-white"></div>
+    </div>
+    <!-- end of body circle-->
 
+    <!-- starting of form-->
+    <form class="shdw" id="form">
+      <label>Select network</label>
+      <select value="select network" id="network-box" required onclick="showNetwork(this);">
+        <option value="empty" selected hidden disabled>••••••••</option>
+      </select>
+      <div class="warning" id="network-warning">select a network</div>
 
+      <label>Enter Amount</label>
+      <input
+        type="number"
+        id="amount"
+        placeholder="####"
+        onchange="changeBorder();"
+        min="50"
+        required
+      />
+      <div min="50" class="warning" id="amount-warning">
+        Select a valid amount should be atleast 50
+      </div>
 
-   <!-- starting of form-->
-   <form class="shdw" id="form">
-       
-    <label>Select network</label>
-     <select  value="select network" id="network-box" required onclick="showNetwork(this);" >
-        <option  value="empty" selected hidden disabled>•••••••• 
-        </option>
-     </select>
-     <div class="warning" id="network-warning">
-        select a network!
-     </div>
-         
-     <label>Enter Amount</label>
-     <input type="number"  id="amount" placeholder="####" onchange="changeBorder();" min="50" required>
-     <div min="50" class="warning" id="amount-warning">
-        select a valid amount should be atleast 50
-     </div>
-      
-     <label for="email">Email</label>
-     
-     <div id="email-holder">
-       <input type="email" name="email"  required  id=
-        "email"  placeholder="....@email.com" oninput="changeBorder();">
-       <div class="shdw bg-drkb clrw flex" data-do="true" onclick="showEmailInfo();">
-          ? 
+      <label for="email">Email</label>
+      <div id="email-holder">
+        <input
+          type="email"
+          name="email"
+          required
+          id="email"
+          placeholder="....@email.com"
+          oninput="changeBorder();"
+        />
+        <div class="shdw bg-drkb clrw flex" data-do="true" onclick="showEmailInfo();">
+          ?
           <div class="shdw flex">
             receipt of this transaction would be sent to the provided email
           </div>
-       </div>      
-     </div>
-    <div class="warning" id="email-warning">
-        email format not valid
-    </div>
-    
-    <label for="name">Phone number</label>
-    <input type="" name="number" minlength="11" 
-      maxlength="11"   required  id="number"
-      placeholder="•••••••" onchange="changeBorder();" 
-      data-pass="false" required>
-    <div class="warning" id="number-warning">
-       number should be in this format 090######## and 11 digit long
-    </div>    
-      
-    <span class="or shdw txt-small flex flex-justify-center">OR</span>
-         
-    <button id="contact" class="txt-small" onclick="getContact()">
-      select number from contact 
-      <!-- phoneError Box -->
-      <div id="phone-error"> function not supported</div>
-    </button>
-       
-    <label for="number-validator">Number validator</label>
-       <br>
-    <label class="switch" >
-     <input type="checkbox" id="number-validator" checked
-     onclick="handleValidatorState();">
-     <span class="slider round"></span>
-      <span id="validator-state">ON</span>
-    </label>
+        </div>
+      </div>
+      <div class="warning" id="email-warning">Email format not valid</div>
 
-    <input type="submit" id="submit" value="Buy now" 
-     class="bg-prp clrw" onclick="formValidate(event);">
-   </form>
-   <!-- end of form -->
-   
-   
-   
-       
-   <!-- select boxes for network -->
-   <div id="networks" class="bg-white">
-     <div class="header bg-drkb clrw flex flex-sp-btw">
-      <span class="bold">Select network</span>
-      
-      <svg xmlns="http://www.w3.org/2000/svg" onclick="hideBox()"
-       width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" 
-       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-         <line x1="18" y1="6" x2="6" y2="18"></line>
-         <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-          
-    </div>
-     
-     <div class="networks shdw bg-white flex
-      flex-sp-btw bold" data-network="mtn" data-networkID="1"
-      onclick="networkSelected(this)">
-       <img src="../public/images/mtn.jpg" class="bg-prp"> MTN
-       <button class="select clrw flex flex-justify-center">select</button>
-     </div>  
-     
-     <div class="networks shdw bg-white flex
-     flex-sp-btw bold" data-network="airtel" data-networkID="4"
-     onclick="networkSelected(this)">
-      <img src="../public/images/mtn.jpg" class="bg-prp"> Airtel 
-      <button class="select clrw flex flex-justify-center">select</button>
-     </div>  
-     
-     <div class="networks shdw bg-white flex flex-sp-btw bold" 
-      data-network="glo" data-networkID="2" 
-      onclick="networkSelected(this)">         
-        <img src="../public/images/mtn.jpg" class="bg-prp"> Glo
+      <label for="name">Phone number</label>
+      <input
+        type=""
+        name="number"
+        minlength="11"
+        maxlength="11"
+        required
+        id="number"
+        placeholder="•••••••"
+        onchange="changeBorder();"
+        data-pass="false"
+        required
+      />
+      <div class="warning" id="number-warning">
+        number should be in this format 090######## and 11 digit long
+      </div>
+
+      <span class="or shdw txt-small flex flex-justify-center">OR</span>
+
+      <button id="contact" class="txt-small" onclick="getContact()">
+        select number from contact
+        <!-- phoneError Box -->
+        <div id="phone-error">function not supported</div>
+      </button>
+
+      <label for="number-validator">Number validator</label>
+      <br />
+      <label class="switch">
+        <input type="checkbox" id="number-validator" checked onclick="handleValidatorState();" />
+        <span class="slider round"></span>
+        <span id="validator-state">ON</span>
+      </label>
+
+      <input
+        type="submit"
+        id="submit"
+        value="Buy now"
+        class="bg-prp clrw"
+        onclick="formValidate(event);"
+      />
+    </form>
+    <!-- end of form -->
+
+    <!-- select boxes for network -->
+    <div id="networks" class="bg-white">
+      <div class="header bg-drkb clrw flex flex-sp-btw">
+        <span class="bold">Select network</span>
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          onclick="hideBox()"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </div>
+
+      <div
+        class="networks shdw bg-white flex flex-sp-btw bold"
+        data-network="mtn"
+        data-networkID="1"
+        onclick="networkSelected(this)"
+      >
+        <img src="../public/images/mtn.jpg" class="bg-prp" /> MTN
         <button class="select clrw flex flex-justify-center">select</button>
-     </div>  
-    
-    <div class="networks shdw bg-white flex
-     flex-sp-btw bold" data-network="9mobile" data-networkID=
-     "3" onclick="networkSelected(this)">
-         
-      <img src="mtn.jpg" class="bg-prp"> 
-      9mobile
-      <button class="select clrw flex 
-      flex-justify-center">select</button>
-          
-    </div>  
-   </div> 
+      </div>
+
+      <div
+        class="networks shdw bg-white flex flex-sp-btw bold"
+        data-network="airtel"
+        data-networkID="4"
+        onclick="networkSelected(this)"
+      >
+        <img src="../public/images/mtn.jpg" class="bg-prp" /> Airtel
+        <button class="select clrw flex flex-justify-center">select</button>
+      </div>
+
+      <div
+        class="networks shdw bg-white flex flex-sp-btw bold"
+        data-network="glo"
+        data-networkID="2"
+        onclick="networkSelected(this)"
+      >
+        <img src="../public/images/mtn.jpg" class="bg-prp" /> Glo
+        <button class="select clrw flex flex-justify-center">select</button>
+      </div>
+
+      <div
+        class="networks shdw bg-white flex flex-sp-btw bold"
+        data-network="9mobile"
+        data-networkID="3"
+        onclick="networkSelected(this)"
+      >
+        <img src="mtn.jpg" class="bg-prp" /> 9mobile
+        <button class="select clrw flex flex-justify-center">select</button>
+      </div>
+    </div>
     <!-- end of select network -->
-    
+
     <!-- invalid number box -->
     <div id="invalid-number-box"></div>
-        
+
     <!-- blur background effect -->
     <div id="blur" class="bg-white"></div>
-
   </body>
-<script src="scripts/buy-airtime.js"></script>
-<script src="https://checkout.flutterwave.com/v3.js"></script>
+  <script src="scripts/buy-airtime.js"></script>
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
 </html>

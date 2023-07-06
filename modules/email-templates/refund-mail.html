@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Payment Refund</title>
+    <meta
+      name="viewport"
+      content="width=device-width,
+    initial-scale=1.0"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+      }
+
+      .container {
+        border-top: 3px solid darkorange;
+        margin: 0 auto;
+        max-width: 600px;
+        padding: 20px;
+        background-color: #eeeef8;
+        text-align: left;
+      }
+      #img-holder {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        background-color: whitesmoke;
+        display: block;
+        padding-top: 10px;
+        margin: 10px auto;
+        text-align: center;
+      }
+      #img-holder img {
+        height: 30px;
+        width: 30px;
+        margin: 10px;
+        display: block;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333333;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #fff;
+        color: #333333;
+      }
+
+      .total-row {
+        font-weight: bold;
+      }
+
+      .total-row td {
+        color: #ff6600;
+      }
+
+      p {
+        margin-top: 30px;
+
+        color: #666666;
+      }
+      .contact-info {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+
+      .contact-info p {
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="img-holder">
+        <img src="https://qsub0.khalidbello.repl.co/images/chatbot.png" alt="botsub logo" />
+      </div>
+      <h1>BotSub Payment Refund</h1>
+
+      <p>Dear esteemed customer,</p>
+
+      <p>
+        We regret to inform you that your recent transaction on {{date}} is will be refunded. <br />
+        <br />
+        This is mostly because the transferred amount is less than product amount. <br />
+        <br />
+        We apologize for any inconvenience this may have caused. The details of the failed
+        transaction are as follows:
+      </p>
+
+      <table>
+        <tr>
+          <th>Product</th>
+          <td>{{product}}</td>
+        </tr>
+        <tr>
+          <th>Network</th>
+          <td>{{network}}</td>
+        </tr>
+        <tr>
+          <th>Product Amount</th>
+          <td>₦{{price}}</td>
+        </tr>
+        <tr>
+          <th>Amount Paid</th>
+          <td>₦{{amountPaid}}</td>
+        </tr>
+        <tr>
+          <th>Recipient Number</th>
+          <td>{{recipientNumber}}</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td>Payment Refund</td>
+        </tr>
+        <tr>
+          <th>Transaction ID</th>
+          <td>{{id}}</td>
+        </tr>
+        <tr>
+          <th>tx_ref</th>
+          <td>{{txRef}}</td>
+        </tr>
+
+        <tr>
+          <th>Date</th>
+          <td>{{date}}</td>
+        </tr>
+      </table>
+
+      <p><b>Note: </b>If payment is not refunded after 24 hours, kindly report issue.</p>
+
+      <div class="contact-info">
+        <p>Email: {{supportEmail}}</p>
+        <p>facebook: {{chatBotUrl}}</p>
+      </div>
+
+      <p>Thank you for your understanding.</p>
+
+      <p>Sincerely,</p>
+      <p><b>The BotSub Team</b></p>
+    </div>
+  </body>
+</html>

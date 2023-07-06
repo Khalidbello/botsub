@@ -1,0 +1,238 @@
+<!!DOCTYPE html>
+<html>
+  <head>
+    {{#if TEST}}
+    <script src="scripts/eruda.min.js"></script>
+    <script>
+      eruda.init();
+    </script>
+    {{/if }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Khalid Bello" />
+    <title>Qsub Survey</title>
+    <link rel="stylesheet" href="styles/generic.css" />
+    <link rel="icon" href="images/chatbot.png" />
+    <style>
+      .pricing {
+        margin: 60px 10px;
+        padding-top: 5px;
+        border-top: 3px solid darkorange;
+        border-radius: 0 0 10px 10px;
+      }
+      .pricing .logo {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        padding: 5px;
+        margin: 5px auto;
+      }
+      .pricing .logo img {
+        height: 30px;
+        width: 30px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th,
+      td {
+        border: none;
+        border-bottom: thin solid #eee;
+        padding: 8px;
+        text-align: center;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+
+      @media (min-width: 650px) {
+        .responsive {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: stretch;
+        }
+        .responsive > * {
+          max-width: 800px;
+          margin: 10px;
+          flex-grow: 1;
+          width: 400px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav id="nav-menu" class="border-r20 bg-white l-border small">
+      <svg
+        id="cancel-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
+      </svg>
+      <a href="/buy-data" class="l-border txt-cent">Buy Data</a>
+      <a href="/buy-data" class="l-border txt-cent">Buy Airtime</a>
+      <a href="" class="l-border txt-cent">Chat BotSub</a>
+      <a href="data-pricing" class="l-border txt-cent">View Data Pricing</a>
+      <a href="report-issue" class="l-border txt-cent">Report An Issue</a>
+      <a href="/#about-us" class="l-border txt-cent">About Us</a>
+    </nav>
+    <br />
+    <header class="bg-white flex flex-sp-ar">
+      <svg class="l-border" onclick="home();" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M9 22V12h6v10M2 10.6L12 2l10 8.6"/></svg>
+      <span class="l-border bg-white bold flex flex-jst-cent">Data Pricing</span>
+      <svg
+        id="menu-icon"
+        class="padding-10 bg-darkorange"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 12h18M3 6h18M3 18h18" />
+      </svg>
+    </header>
+
+    <section id="prices" class="responsive">
+      <div id="mtn-table" class="pricing l-border padding-10">
+        <div class="logo ash1 flex flex-al-cent flex-jst-cent txt-cent">
+          <img alt="mtn-logo" src="images/mtn.svg" />
+        </div>
+
+        <h4 class="txt-cent">MTN Pricing</h4>
+        <br />
+      </div>
+
+      <div id="airtel-table" class="pricing">
+        <div class="logo ash1 flex flex-al-cent flex-jst-cent txt-cent">
+          <img alt="airtel-logo" src="images/airtel.svg" />
+        </div>
+
+        <h4 class="txt-cent">Airtel Pricing</h4>
+        <br />
+      </div>
+
+      <div id="glo-table" class="pricing">
+        <div class="logo ash1 flex flex-al-cent flex-jst-cent txt-cent">
+          <img alt="glo-logo" src="images/glo.svg" />
+        </div>
+
+        <h4 class="txt-cent">Glo Pricing</h4>
+        <br />
+      </div>
+
+      <div id="nine-mobile-table" class="pricing">
+        <div class="logo ash1 flex flex-al-cent flex-jst-cent txt-cent">
+          <img alt="9mobile-logo" src="images/9mobile.svg" />
+        </div>
+
+        <h4 class="txt-cent">9mobile Pricing</h4>
+        <br />
+      </div>
+    </section>
+
+    <script type="text/template" id="table-template">
+        <table>
+            <tr>
+              <th>Size</th>
+              <th>Price</th>
+              <th>Validity</th>
+            </tr>
+            <% _.each(products, function(data, key) { %>
+              <tr>
+                <td><%- data.size %></td>
+                <td><%- data.price %></td>
+                <td><%- data.validity %></td>
+      </      </tr>
+            <% }); %>
+          </table>
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.1/underscore-min.js"></script>
+
+    <script>
+      const menuIcon = document.getElementById('menu-icon');
+      const navMenu = document.getElementById('nav-menu');
+      const hideIcon = document.getElementById('cancel-icon');
+      let menuFlag = 'hidden';
+
+      menuIcon.addEventListener('click', toggleNavMenu);
+      navMenu.addEventListener('click', toggleNavMenu);
+
+      // function to show nav bar
+      function toggleNavMenu() {
+        if (menuFlag === 'hidden') {
+          navMenu.style.top = '10px';
+          menuIcon.style.opacity = '0.4';
+          hideIcon.style.backgroundColor = 'transparent';
+          menuFlag = 'visible';
+        } else {
+          navMenu.style.top = '-800px';
+          hideIcon.style.backgroundColor = 'darkorange';
+          menuIcon.style.opacity = '1';
+          menuFlag = 'hidden';
+        }
+        console.log(navMenu.style.left);
+        console.log(navMenu.style.display);
+      } // end of toggle navMenu
+
+
+function home() {
+  const ele = event.target;
+  ele.style.backgroundColor = "darkorange";
+  setTimeout(() => {
+    ele.style.backgroundColor = "transparent";
+    window.location = "/";
+  }, 200);
+};
+      
+      
+      // forming tables
+      const tableTemplate = _.template(document.querySelector('#table-template').innerHTML);
+      const mtnSect = document.querySelector('#mtn-table');
+      const airtelSect = document.querySelector('#airtel-table');
+      const gloSect = document.querySelector('#glo-table');
+      const nineMobileSect = document.querySelector('#nine-mobile-table');
+
+      async function addTables() {
+        // fetching data pricing
+        try {
+          const response = await fetch('front-api/data-offers');
+          const datas = await response.json();
+          console.log(datas);
+
+          const mtnTable = tableTemplate({ products: datas['1'] });
+          mtnSect.innerHTML += mtnTable;
+
+          const airtelTable = tableTemplate({ products: datas['3'] });
+          airtelSect.innerHTML += airtelTable;
+
+          const gloTable = tableTemplate({ products: datas['2'] });
+          gloSect.innerHTML += gloTable;
+
+          const nineMobileTable = tableTemplate({ products: datas['4'] });
+          nineMobileSect.innerHTML += nineMobileTable;
+        } catch (err) {
+          console.log(err);
+          alert('an error occured fetching data');
+        }
+      }
+
+      // calling fucntion to add tables
+      addTables();
+    </script>
+  </body>
+</html>

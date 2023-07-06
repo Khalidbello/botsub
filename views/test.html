@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Table Rendering Example</title>
+  </head>
+  <body>
+    <div id="tableContainer"></div>
+
+    <script type="text/template" id="tableTemplate">
+      <table>
+        <thead>
+          <tr>
+            <% _.each(headers, function(header) { %>
+              <th><%= header %></th>
+            <% }); %>
+          </tr>
+        </thead>
+        <tbody>
+          <% _.each(data, function(row) { %>
+            <tr>
+              <% _.each(row, function(cell) { %>
+                <td><%= cell %></td>
+              <% }); %>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.1/underscore-min.js"></script>
+    <script>
+      const tableData = {
+        headers: ['Name', 'Age', 'City'],
+        data: [
+          ['John Doe', 25, 'New York'],
+          ['Jane Smith', 30, 'London'],
+          ['Bob Johnson', 40, 'Sydney'],
+        ],
+      };
+
+      const template = _.template(document.getElementById('tableTemplate').innerHTML);
+      const renderedHTML = template(tableData);
+
+      document.getElementById('tableContainer').innerHTML = renderedHTML;
+    </script>
+  </body>
+</html>

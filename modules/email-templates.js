@@ -1,5 +1,5 @@
 // function to compose successfull trn0ansaction mail
-export  function successfullDeliveryMail ({product, network, status, id, txRef, price, date}) {
+export function successfullDeliveryMail({ product, network, status, id, txRef, price, date }) {
   const composedMail = `
   <!DOCTYPE html>
   <html>
@@ -93,20 +93,16 @@ export  function successfullDeliveryMail ({product, network, status, id, txRef, 
         </div>
     </body>
   </html>`;
-  return composedMail
-}; // end of succesfullDeliveryMail 
+  return composedMail;
+} // end of succesfullDeliveryMail
 
-
-export function failedDeliveryMail () {
- const composedMail = `
+export function failedDeliveryMail() {
+  const composedMail = `
   `;
-  return composedMail 
-};  // end of failedDeliveryMail
+  return composedMail;
+} // end of failedDeliveryMail
 
-
-
-
-export function failedTransactionMail () {
+export function failedTransactionMail() {
   const composedMail = `
     <!DOCTYPE html>
     <html>
@@ -212,6 +208,6 @@ export function failedTransactionMail () {
         <p>The [Company Name] Team</p>
       </div>
     </body>
-  </html>`
+  </html>`;
   return composedMail;
-};
+}

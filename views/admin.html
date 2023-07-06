@@ -1,49 +1,63 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8"/>
-  <meta name="description" content=""/>
-   <meta name="viewport" content="width=device-width,
-    initial-scale=1.0">
-  <title>Qsub admin </title>
-   <style>
-     * { 
-       padding: 0;
-       margin: 0; 
-     }
-     header {
-      position: sticky;
-       top: 0;
-       left: 0;  
-       height: 3em;
-       padding: 0 10px 0 10px;
-       z-index: 3;
-    }
-    header > svg {
-      width: 2em;
-      height: 2em;
-      border-radius: 10px;
-    }
-    header  > span {
-      min-width: 50%;
-      height: 2em;
-      border-radius: 10px;
-    }
-     main, #check-payment {
-       position: fixed;
-       top: 0;
-       left: 0;
-       width: 100%;
-       height: 100%;
-       overflow: auto;
-     }
-     main > header { 
-       border-radius: 0 0 10px 10px; 
-       height: 3.5em;
-     }
-     main > header svg{ border: thin solid white;}
-     main > div:first-of-type { margin-top: 2em;}
-     main > div  {
+  <head>
+    {{#if TEST}}
+    <script src="scripts/eruda.min.js"></script>
+    <script>
+      eruda.init();
+    </script>
+    {{/if }}
+    <meta charset="utf-8" />
+    <meta name="description" content="" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+    initial-scale=1.0"
+    />
+    <title>Qsub admin</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        left: 0;
+        height: 3em;
+        padding: 0 10px 0 10px;
+        z-index: 3;
+      }
+      header > svg {
+        width: 2em;
+        height: 2em;
+        border-radius: 10px;
+      }
+      header > span {
+        min-width: 50%;
+        height: 2em;
+        border-radius: 10px;
+      }
+      main,
+      #check-payment {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+      }
+      main > header {
+        border-radius: 0 0 10px 10px;
+        height: 3.5em;
+      }
+      main > header svg {
+        border: thin solid white;
+      }
+      main > div:first-of-type {
+        margin-top: 2em;
+      }
+      main > div {
         position: relative;
         height: 3.5em;
         width: 90%;
@@ -55,212 +69,235 @@
         padding: 10px;
         font-size: large;
         font-weight: bold;
-     } 
-     main > div > button {
-       position: absolute;
-       bottom: 10px;
-       right: 10px;
-       height: 3em;
-       width: 6em;
-       border-radius: 10px;
-       background-color: darkorange;
-       font-weight: bold;
-       color: white;
-     }
+      }
+      main > div > button {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        height: 3em;
+        width: 6em;
+        border-radius: 10px;
+        background-color: darkorange;
+        font-weight: bold;
+        color: white;
+      }
 
-    /* styling for check-payment */
-   #check-payment > form { 
-      display: block; 
-       margin: 40px 10px;
-      padding: 10px;
-      text-align: right;
-      border-radius: 10px;
-    }
-   #check-payment > form > label {
-      display: block; 
-      text-align: left;
-    }
-   #check-payment > form  > label > input {
-     display: block;
-     width: 90%;
-     border: none;
-     padding: 10px;
-     margin: 10px auto;
-     border-radius: 10px;
-   }
-  #check-payment > form > input {
-    width: 6em;
-    height: 3em;
-    border-radius: 10px;
-    background-color: darkorange;
-  }
-  #check-payment > #response-header {
-    display: inline-block;
-    padding: 10px;
-    border-radius: 10px;
-    margin-left: 10px;
-  }
- #check-payment > #response-field {
-   min-height: 30px;
-   padding: 10px;
-   margin: 10px;
-   border-radius: 10px;
- }
+      /* styling for check-payment */
+      #check-payment > form {
+        display: block;
+        margin: 40px 10px;
+        padding: 10px;
+        text-align: right;
+        border-radius: 10px;
+      }
+      #check-payment > form > label {
+        display: block;
+        text-align: left;
+      }
+      #check-payment > form > label > input {
+        display: block;
+        width: 90%;
+        border: none;
+        padding: 10px;
+        margin: 10px auto;
+        border-radius: 10px;
+      }
+      #check-payment > form > input {
+        width: 6em;
+        height: 3em;
+        border-radius: 10px;
+        background-color: darkorange;
+      }
+      #check-payment > #response-header {
+        display: inline-block;
+        padding: 10px;
+        border-radius: 10px;
+        margin-left: 10px;
+      }
+      #check-payment > #response-field {
+        min-height: 30px;
+        padding: 10px;
+        margin: 10px;
+        border-radius: 10px;
+      }
 
-     .b-circle {
-       display: none;
-       width: 15em;
-       height: 15em;
-       border-radius: 50%;
-       position: fixed;
-       top: 8em;
-       left: -8em;
-       opacity: 0.1;
-       z-index: -1;
-     }
-     .i-b-circle {
-       width: 10em;
-       height: 10em;
-       border-radius: 50%;
-     }
-     .b-s-circle {
-       display: none;
-       width: 10em;
-       height: 10em;
-       border-radius: 50%;
-       position: fixed;
-       bottom: 0;
-       right: 1em;
-       opacity: 0.1;
-       z-index: -1;
-     }
-     .i-b-s-circle {
-       width: 6em;
-       height: 6em;
-       border-radius: 50%;
-     }
+      .b-circle {
+        display: none;
+        width: 15em;
+        height: 15em;
+        border-radius: 50%;
+        position: fixed;
+        top: 8em;
+        left: -8em;
+        opacity: 0.1;
+        z-index: -1;
+      }
+      .i-b-circle {
+        width: 10em;
+        height: 10em;
+        border-radius: 50%;
+      }
+      .b-s-circle {
+        display: none;
+        width: 10em;
+        height: 10em;
+        border-radius: 50%;
+        position: fixed;
+        bottom: 0;
+        right: 1em;
+        opacity: 0.1;
+        z-index: -1;
+      }
+      .i-b-s-circle {
+        width: 6em;
+        height: 6em;
+        border-radius: 50%;
+      }
 
-
-  /* generic styles */
-  .bg-drkb {
-   background-color: #112;
-  }
-  .bg-white {
-   background-color: white;
-  }
-  .clrw { color: white;}
-  .flex {
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-  }     
-  .flex-col { flex-direction: column;}                          
-  .flex-sp-btw {
-   justify-content: space-between;
-  }
-  .flex-sp-ar {
-   justify-content: space-around;
-  }
-  .flex-justify-center {
-   justify-content: center;
-  } 
-  .flex-col {flex-direction: column;}   
-  .flex-align-start {align-items: flex-start;}      
-  .flex-end {align-items: flex-end; }                   
-  .shdw {
-   box-shadow: #112 0 0 10px -3px;
-  }
-  .txt-small {font-size: small;}
-  .txt-big {font-size: large;}
-  .bold {font-weight: bold;}
-  .float-right {float: right;}
-    .ash1 {background-color: #eee;}
-    .ash2 {background-color: #ddd;}
-    .ash3 {background-color: #ccc;}
-    .hide { display: none;}
-    .transition { transition: top 0.5s; }
-   </style>
-</head>
-<body>
-   <!-- start of body circle -->
-   <div class="b-circle bg-drkb flex  flex-justify-center">
-    <div class="i-b-circle bg-white"></div>
-   </div>
-   <div class="b-s-circle bg-drkb flex flex-justify-center">
-    <div class="i-b-s-circle bg-white"></div>    
-   </div>
-   <!-- end of body circle-->
-  <main>
-    <header class="bg-drkb flex flex-sp-btw">
-      <svg class="bg-drkb">H</svg>
-      <span class="shdw bg-white bold 
-       flex flex-justify-center">Qsub Admin</span>
-    </header>
-    <div>
-      Check Payment
-      <button onclick="showSection(checkPayment);">click
-      </button>
+      /* generic styles */
+      .bg-drkb {
+        background-color: #112;
+      }
+      .bg-white {
+        background-color: white;
+      }
+      .clrw {
+        color: white;
+      }
+      .flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .flex-col {
+        flex-direction: column;
+      }
+      .flex-sp-btw {
+        justify-content: space-between;
+      }
+      .flex-sp-ar {
+        justify-content: space-around;
+      }
+      .flex-justify-center {
+        justify-content: center;
+      }
+      .flex-col {
+        flex-direction: column;
+      }
+      .flex-align-start {
+        align-items: flex-start;
+      }
+      .flex-end {
+        align-items: flex-end;
+      }
+      .shdw {
+        box-shadow: #112 0 0 10px -3px;
+      }
+      .txt-small {
+        font-size: small;
+      }
+      .txt-big {
+        font-size: large;
+      }
+      .bold {
+        font-weight: bold;
+      }
+      .float-right {
+        float: right;
+      }
+      .ash1 {
+        background-color: #eee;
+      }
+      .ash2 {
+        background-color: #ddd;
+      }
+      .ash3 {
+        background-color: #ccc;
+      }
+      .hide {
+        display: none;
+      }
+      .transition {
+        transition: top 0.5s;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- start of body circle -->
+    <div class="b-circle bg-drkb flex flex-justify-center">
+      <div class="i-b-circle bg-white"></div>
     </div>
-    <div>
-      Check Data Purchase
-      <button>click</button>
+    <div class="b-s-circle bg-drkb flex flex-justify-center">
+      <div class="i-b-s-circle bg-white"></div>
     </div>
-    <div>
-      Check Airtime purchase
-      <button>click</button>
+    <!-- end of body circle-->
+    <main>
+      <header class="bg-drkb flex flex-sp-btw">
+        <svg class="bg-drkb">H</svg>
+        <span class="shdw bg-white bold flex flex-justify-center">Qsub Admin</span>
+      </header>
+      <div>
+        Check Payment
+        <button onclick="showSection(checkPayment);">click</button>
+      </div>
+      <div>
+        Check Data Purchase
+        <button>click</button>
+      </div>
+      <div>
+        Check Airtime purchase
+        <button>click</button>
+      </div>
+      <div>
+        See Business Statistics
+        <button>click</button>
+      </div>
+      <div>
+        Send Recommendation mails
+        <button>click</button>
+      </div>
+    </main>
+
+    <!-- check payment section -->
+    <div id="check-payment" class="bg-white hide transition">
+      <header class="bg-white flex flex-sp-btw">
+        <svg class="bg-drkb" onclick="hideSection(checkPayment);"></svg>
+        <span class="shdw bg-white bold flex flex-justify-center">Check payment</span>
+      </header>
+
+      <form class="ash1">
+        <label>
+          Enter Transaction ID <br />
+          <input type="text" placeholder="******" class="shdw" />
+        </label>
+        <input type="submit" value="check" class="clrw bold" />
+      </form>
+
+      <div id="response-header" class="bg-white shdw bold">Response</div>
+      <div id="response-field" class="ash1"></div>
     </div>
-    <div>
-      See Business Statistics 
-      <button>click</button>
-    </div>
-    <div>
-      Send Recommendation mails
-      <button>click</button>
-    </div>
-  </main>
 
-  <!-- check payment section -->
-  <div id="check-payment" class=" bg-white hide transition">
-    <header class="bg-white flex flex-sp-btw">
-      <svg class="bg-drkb" onclick=
-       "hideSection(checkPayment);"></svg>
-      <span class="shdw bg-white bold 
-       flex flex-justify-center">Check payment</span>
-    </header>
+    <script>
+      let checkPayment = document.querySelector('#check-payment');
 
-    <form class="ash1">
-      <label>
-        Enter Transaction ID <br>
-        <input type="text" placeholder="******" class="shdw">
-      </label>
-      <input type="submit" value="check" class="clrw bold">
-    </form>
+      // function to show respective sections
 
-    <div id="response-header" class="bg-white shdw bold">
-      Response
-    </div>
-    <div id="response-field" class="ash1">
-    </div>
-  </div>
+      function showSection(section) {
+        section.style.top = '100vh';
+        section.style.display = 'block';
+        setTimeout(() => {
+          section.style.top = 0;
+        }, 10);
+      } // end of showSection
 
-<script>
-let checkPayment = document.querySelector(
-  "#check-payment");
+      // function to hiderespective sections
 
-// function to show respective sections
-
-function showSection(section) {
-  section.style.top = "100vh";
-  section.style.display = "block";
-  setTimeout(()=> { section.style.top = 0 }, 10);
-}; // end of showSection
-
-// function to hiderespective sections
-
-function hideSection(section) {
-  section.style.top = "100vh";
-  setTimeout(()=> { section.style.display = "none" }, 1010);
-}; // end of hideSection
-</script>
-</body>
+      function hideSection(section) {
+        section.style.top = '100vh';
+        setTimeout(() => {
+          section.style.display = 'none';
+        }, 1010);
+      } // end of hideSection
+    </script>
+  </body>
 </html>
