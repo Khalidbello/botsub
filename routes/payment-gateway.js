@@ -15,7 +15,7 @@ import {
   checkRequirementMet,
   refundPayment,
   generateRandomString,
-} from './../modules/payment-gateway-helpers.js';
+} from './../modules/helper_functions.js';
 
 import { deliverValue } from './../modules/deliver-value.js';
 
@@ -73,40 +73,46 @@ router.get('/confirm', async (req, res) => {
 // Install with: npm i flutterwave-node-v3
 router.post('/transfer-account', async (req, res) => {
   const datas = req.body;
-  console.log(datas);
-  let payload;
-  if (datas.type == 'data') {
-    payload = {
-      network: datas.network,
-      planID: datas.planID,
-      networkID: datas.networkID,
-      number: datas.phoneNumber,
-      index: datas.index,
-      type: datas.type,
-      size: datas.size,
+  console.log("transfer acc boddy", datas);
+  try {
+    let payload;
+    if (datas.transactionType == 'data') {
+      payload = {
+        network: datas.network,
+        planID: datas.planID,
+        networkID: datas.networkID,
+        number: datas.phoneNumber,
+        index: datas.index,
+        type: datas.transactionType,
+        size: datas.size,
+      };
+    } else if (datas.transactionType == 'airtime') {
+      payload = {
+        network: datas.network,
+        networkID: datas.networkID,
+        amount: datas.price,
+        type: datas.transactionType,
+        number: datas.phoneNumber,
+      };
     };
-  } else if (datas.type == 'airtime') {
-    payload = {
-      network: datas.network,
-      networkID: datas.networkID,
-      amount: datas.price,
-      type: datas.type,
-      number: datas.phoneNumber,
-    };
-  }
-  console.log('bot purchase payload', payload);
-  const details = {
-    tx_ref: generateRandomString(),
-    amount: datas.price,
-    email: datas.email,
-    currency: 'NGN',
-    meta: payload,
-  };
+    console.log('bot purchase payload', payload);
 
-  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-  const response = await flw.Charge.bank_transfer(details);
-  console.log(response);
-  res.json(response);
+    const details = {
+      tx_ref: generateRandomString(),
+      amount: datas.price,
+      email: datas.email,
+      currency: 'NGN',
+      meta: payload,
+    };
+
+    const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
+    const response = await flw.Charge.bank_transfer(details);
+    console.log(response);
+    res.json(response);
+  } catch (err) {
+    console.log("transfer accoun err", err);
+    res.json({ status: "error" });
+  };
 }); // end of transfer-account route
 
 

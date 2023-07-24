@@ -44,9 +44,9 @@
       }
       header {
         position: sticky;
-        top: 0;
+        top: 0px;
         left: 0;
-        height: 3em;
+        height: 50px;
         padding: 0 10px 0 10px;
         z-index: 3;
         background-color:white;
@@ -119,6 +119,9 @@
       .padding-10 {
         padding: 10px;
       }
+.padding-5 {
+  padding: 5px;
+}
       .float-right {
         float: right;
       }
@@ -137,7 +140,9 @@
       .bg-darkorange {
         background-color: darkorange;
       }
+.bg-drkb { background-color: #112; }
 .bg-white { background-color: white;}
       .border-r20 {
         border-radius: 20px;
       }
+.darkorange { color: darkorange; }

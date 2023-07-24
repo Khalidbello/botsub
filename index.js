@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 import { router as viewsRouter } from "./routes/views.js";
 import { router as frontEndApiRouter } from "./routes/frontend-api.js";
 import { router as paymentGateWayRouter } from "./routes/payment-gateway.js";
-
+import { router as fbBotRouter } from "./routes/fb-bot-webhook.js";
 
 // adding configurations for environment
 
@@ -92,6 +92,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/gateway", paymentGateWayRouter);
 app.use("/front-api", frontEndApiRouter);
 app.use("/", viewsRouter);
+app.use("/", fbBotRouter)
 
 // handling 404
 app.use(function(req, res, next) {

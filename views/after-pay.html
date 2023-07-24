@@ -212,7 +212,7 @@
         <line x1="9" y1="9" x2="15" y2="15" />
       </svg>
       <a href="/buy-data" class="l-border txt-cent">Buy Data</a>
-      <a href="/buy-data" class="l-border txt-cent">Buy Airtime</a>
+      <a href="/buy-airtime" class="l-border txt-cent">Buy Airtime</a>
       <a href="" class="l-border txt-cent">Chat BotSub</a>
       <a href="data-pricing" class="l-border txt-cent">View Data Pricing</a>
       <a href="report-issue" class="l-border txt-cent">Report An Issue</a>
@@ -249,6 +249,15 @@
   </body>
 
   <script>
+    function home() {
+  const ele = event.target;
+  ele.style.backgroundColor = "darkorange";
+  setTimeout(() => {
+    ele.style.backgroundColor = "transparent";
+    window.location = "/";
+  }, 200);
+};
+
     const menuIcon = document.getElementById('menu-icon');
     const navMenu = document.getElementById('nav-menu');
     const hideIcon = document.getElementById('cancel-icon');
@@ -272,7 +281,7 @@
       }
       console.log(navMenu.style.left);
       console.log(navMenu.style.display);
-    } // end of toggle navMenuv
+    }; // end of toggle navMenuv
 
     let leftHeader = document.querySelector('#response-header');
     let loader = document.querySelector('#loader');
@@ -289,45 +298,6 @@
       },
     };
 
-    // function to show info-box
-    showQueryBox = function () {
-      event.stopPropagation();
-      let ele = event.target;
-
-      ele.style.backgroundColor = 'darkorange';
-      queryBox.style.display = 'block';
-
-      setTimeout(() => {
-        ele.style.backgroundColor = '#112';
-        queryBox.style.opacity = 1;
-      }, 100);
-    }; // end of showQueryBox
-
-    // function to hideQueryBox
-    hideQueryBox = function () {
-      let ele = event.target;
-      let hide = false;
-
-      if (ele.tagName === 'svg') {
-        hide = true;
-        ele.style.backgroundColor = 'darkorange';
-        queryBox.style.opacity = 0;
-        setTimeout(() => (ele.style.backgroundColor = 'transparent'), 500);
-      } else if (ele.dataset.location) {
-        hide = true;
-        ele.style.backgroundColor = '#ddf';
-        ele.style.color = 'darkorange';
-        setTimeout(() => {
-          ele.style.backgroundColor = '#ccc';
-          ele.style.color = 'black';
-          window.location = ele.dataset.location;
-        }, 1100);
-      }
-      if (hide) {
-        queryBox.style.opacity = 0;
-        setTimeout(() => (queryBox.style.display = 'none'), 1100);
-      }
-    }; // end of hideQueryBox
 
     // function to fetch transaction
 

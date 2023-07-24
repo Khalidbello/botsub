@@ -26,19 +26,21 @@
   },
   "homepage": "https://github.com/Khalidbello/qsub0#readme",
   "dependencies": {
-    "@aws-sdk/util-base64": "^3.208.0",
+    "@cyclic.sh/dynamodb": "^0.0.34",
     "axios": "^1.2.3",
     "cyclic-dynamodb": "^0.0.28",
     "dotenv": "^16.0.3",
+    "email-validator": "^2.0.4",
     "express": "^4.18.2",
     "express-handlebars": "^6.0.7",
     "flutterwave-node-v3": "^1.0.12",
     "handlebars": "^4.7.7",
+    "mongodb": "^5.7.0",
     "nodemailer": "^6.9.1",
-    "nodemon": "^2.0.20",
     "request": "^2.88.2"
   },
   "devDependencies": {
+    "nodemon": "^2.0.20",
     "prettier": "^2.8.8"
   }
 }

@@ -110,22 +110,22 @@ async function renderOffers() {
   console.log(datas);
   flwKey = datas.FLW_PB_KEY;
   console.log("fkutter key", flwKey);
-  
+
   for (let data in datas["1"]) {
     _helper(datas["1"][data], mtnOffers);
   };
-  
+
   for (let data in datas["2"]) {
     _helper(datas["2"][data], gloOffers);
   };
-  
+
   for (let data in datas["3"]) {
     _helper(datas["3"][data], airtelOffers);
   };
-  
+
   for (let data in datas["4"]) {
     _helper(datas["4"][data], nineMobileOffers);
-  }; 
+  };
   // for (data of dummyData.airtel) { _helper(data, airtelOffers) };
 
   // helper to help rendering
@@ -154,7 +154,7 @@ async function renderOffers() {
 renderOffers();
 
 // function to show queryBox
-showQueryBox = function () {
+showQueryBox = function() {
   event.stopPropagation();
   let ele = event.target;
 
@@ -168,7 +168,7 @@ showQueryBox = function () {
 }; // end of showQueryBox
 
 // function to hideQueryBox
-hideQueryBox = function () {
+hideQueryBox = function() {
   let ele = event.target;
   let hide = false;
 
@@ -251,7 +251,7 @@ function endListener(event) {
 
 // function highlight clicked
 
-highlightClicked = function (ele) {
+highlightClicked = function(ele) {
   ele.style.opacity = 0.3;
   setTimeout(() => (ele.style.opacity = 1), 1000);
 };
@@ -380,7 +380,7 @@ function showEmailInfo() {
 // function handle number validator state
 // function called by number validator slidder
 
-handleValidatorState = function () {
+handleValidatorState = function() {
   if (validatorState.innerHTML !== "ON") {
     validatorState.innerHTML = "ON";
     validatorState.style.color = "green";
@@ -426,7 +426,7 @@ async function getContact() {
 
 // function to be called  by email field and number field
 
-changeBorder = function () {
+changeBorder = function() {
   const ele = event.target;
   ele.style.borderBottom = "2px solid #112";
 
@@ -498,7 +498,7 @@ function formValidate() {
 }
 
 // helper function to show warning fields
-_showFieldError = function (ele, warning, offset = "160px") {
+_showFieldError = function(ele, warning, offset = "160px") {
   ele.style.borderBottom = "2px solid  red";
   warning.style.display = "block";
   if (ele.tagName == "select") {
@@ -508,7 +508,7 @@ _showFieldError = function (ele, warning, offset = "160px") {
 }; // end of _showFieldError
 
 // function to validate phone number
-validateNumber = function () {
+validateNumber = function() {
   // extracting first four digit of number for validation test
   let num = number.value.slice(0, 4);
   switch (networkBox.dataset.network) {
@@ -525,7 +525,7 @@ validateNumber = function () {
 }; // end of validateNumber
 
 // function to show invalid number box
-showInvalidNumberBox = function () {
+showInvalidNumberBox = function() {
   let info = `It seems the entred phone number 
      <strong class="red">is not  an/a  
      ${networkBox.dataset.network} number</strong>
@@ -540,7 +540,7 @@ showInvalidNumberBox = function () {
 }; // end showInvalidNumberBox
 
 // function to hide invalidNumberBox
-hideInvalidNumberBox = function () {
+hideInvalidNumberBox = function() {
   invalidNumberBox.style.opacity = 0;
   setTimeout(() => {
     invalidNumberBox.style.display = "none";
@@ -548,7 +548,7 @@ hideInvalidNumberBox = function () {
   }, 600);
 }; // end of hideInvalidNumberBox
 
-makePayment = function () {
+makePayment = function() {
   alert(offerBox.dataset.index);
   alert(offerBox.dataset.size);
   FlutterwaveCheckout({
@@ -582,8 +582,8 @@ makePayment = function () {
 
 function txCode() {
   let code = "";
-  let characters = "1234567890ABCDEFGHIJKLMNOPQRSTUV";
-  for (let x = 0; x < 25; x++) {
+  let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  for (let x = 0; x < 16; x++) {
     code += characters.charAt(Math.floor(Math.random() * characters.length));
     console.log(characters.length);
   }

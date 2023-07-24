@@ -6,19 +6,16 @@ import request from 'request';
 
 import handlebars from "handlebars";
 
-import cyclicDB from 'cyclic-dynamodb';
 
 import nodemailer from 'nodemailer';
 
-import { generateRandomString } from './payment-gateway-helpers.js';
+import { generateRandomString } from './helper_functions.js';
 
-
-import { successfullDeliveryMail, failedDeliveryMail } from './email-templates.js';
+import { createClient } from "./mongodb.js";
 
 import { default as fs } from 'node:fs';
 
 const fsP = fs.promises;
-
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -61,18 +58,19 @@ async function deliverData(response, req, res) {
     if (error) {
       console.log(error);
       return res.send(error);
-    }
+    };
     //console.log('data purchase resp', resp.body);
-    console.log('data purchase resp body', body);
+    console.log('data purchase resp body 001', body);
     // to do dependent transaction status
-    if (body.Status === 'successful') {
+    if (true || body.Status === 'successful') {
       addToDelivered(req);
       // calling function to send mail and json response object
       sendSuccessfulResponse(response, res);
 
-      if (parseInt(body.balance_after) <= 5000) topUpBalance();
+      //if (parseInt(body.balance_after) <= 5000) topUpBalance();
       return;
     } else if (true) {
+      console.log("got hrre failed");
       addToFailedToDeliver(req);
       return sendFailedToDeliverResponse(response, res);
     }
@@ -110,12 +108,12 @@ async function deliverAirtime(response, req, res) {
     //console.log('airtime purchase resp', resp.body);
     console.log("bodyof request ", body);
     // to do dependent transaction status
-    if (body.Status === 'successful') {
+    if (true || body.Status === 'successful') {
       addToDelivered(req);
       // calling function to send mail and json response object
       sendSuccessfulResponse(response, res);
 
-      if (parseInt(body.balance_after) <= 5000) topUpBalance();
+      //if (parseInt(body.balance_after) <= 5000) topUpBalance();
       return;
     } else {
       addToFailedToDeliver(req);
@@ -129,13 +127,21 @@ async function deliverAirtime(response, req, res) {
 // function to add transaction to delivered transaction
 
 async function addToDelivered(req) {
-  const db = cyclicDB(process.env.DB_TABLENAME);
-  const deliveredDB = db.collection(process.env.SETTLED_COLLECTION);
-  
-  const response = await deliveredDB.set(req.query.tx_ref, {
-    transactionID: req.query.transaction_id,
+  const client = createClient();
+  await client.connect();
+  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
+  const transact = await collection.findOne({ _id: req.query.transaction_id });
+
+  if (transact) return;
+
+  const response = await collection.insertOne({
+    txRef: req.query.tx_ref,
+    _id: req.query.transaction_id,
+    status: "settled"
   });
-  console.log(response);
+
+  client.close();
+  console.log("add to delivered respomse", response);
   return response;
 } // end of addToDelivered
 
@@ -144,12 +150,23 @@ async function addToDelivered(req) {
 // function to add transaction to failed to deliver
 
 async function addToFailedToDeliver(req) {
-  const db = cyclicDB(process.env.DB_TABLENAME);
-  const deliveredDB = db.collection(process.env.PENDING_COLLECTION);
-  const response = await deliveredDB.set(req.query.tx_ref, {
-    transactionID: req.query.transaction_id,
+  const client = createClient();
+  await client.connect();
+  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FAILED_DELIVERY_COLLECTION);
+  const transact = await collection.findOne({ _id: req.query.transaction_id });
+
+  if (transact) return;
+
+  const date = new Date();
+  const response = await collection.insertOne({
+    txRef: req.query.tx_ref,
+    _id: req.query.transaction_id,
+    status: "pending",
+    date: date,
   });
-  console.log(response);
+
+  client.close();
+  console.log("add to failed delivery respose", response);
   return response;
 } // end if add to failed to deliver
 
@@ -274,7 +291,7 @@ function formResponse(response) {
 async function topUpBalance() {
   try {
     const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-    
+
     const details = {
       account_bank: process.env.WALLET_ACC_NAME,
       account_number: process.env.WALLET_ACC_NUMBER,
