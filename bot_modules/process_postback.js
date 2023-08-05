@@ -1,89 +1,85 @@
-import 
-  {
-    sendNewConversationResponse, 
-    sendPurchaseDataReponse,
-    sendMtnOffers,
-    sendAirtelOffers,
-    sendNineMobileOffers,
-    sendGloOffers,
-    offerSelected,
-    sendPurchaseAirtimeResponse,
-    airtimePurchase,
-    generateAccountNumber,
-    changeMailBeforeTransact,
-    changePhoneNumber,
-    cancelTransaction,
-    issueReport,
-  } from "./postback_responses.js";
+import {
+  sendNewConversationResponse,
+  sendPurchaseDataReponse,
+  sendMtnOffers,
+  sendAirtelOffers,
+  sendNineMobileOffers,
+  sendGloOffers,
+  offerSelected,
+  sendPurchaseAirtimeResponse,
+  airtimePurchase,
+  generateAccountNumber,
+  changeMailBeforeTransact,
+  changePhoneNumber,
+  cancelTransaction,
+  issueReport,
+} from './postback_responses.js';
 
 //import {createClient} from "./../modules/mongodb.js";
 
-
-export default async function processPostback (event, res) {
-  // first set nextAction to null 
-  if (event.postback.payload == "newConversation") {
+export default async function processPostback(event, res) {
+  // first set nextAction to null
+  if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);
-  };
-  
+  }
+
   let payload = event.postback.payload;
-  try { 
+  try {
     payload = JSON.parse(payload);
-    console.log("postback payload", payload);
-  } catch (err) {
-    
-  };
-  
+    console.log('postback payload', payload);
+  } catch (err) {}
+
   const payloadTitle = payload.title;
-  console.log("postback payload title", payloadTitle);
+  console.log('postback payload title', payloadTitle);
 
   switch (payloadTitle) {
-    case "newConversation":
+    case 'newConversation':
       sendNewConversationResponse(event);
       break;
-    case "dataPurchase":
+    case 'dataPurchase':
       sendPurchaseDataReponse(event);
       break;
-    case "selectNetworkForAirtime":
+    case 'selectNetworkForAirtime':
       console.log("It's Friday. TGIF!");
       break;
-    case "mtnOffers": 
+    case 'mtnOffers':
       sendMtnOffers(event);
       break;
-    case "airtelOffers":
+    case 'airtelOffers':
       sendAirtelOffers(event);
       break;
-    case "gloOffers":
+    case 'gloOffers':
       sendGloOffers(event);
       break;
-    case "9mobileOffers":
+    case '9mobileOffers':
       sendNineMobileOffers(event);
       break;
-    case "offerSelected":
+    case 'offerSelected':
       offerSelected(event, payload);
       break;
-    case "airtimePurchase":
+    case 'airtimePurchase':
       sendPurchaseAirtimeResponse(event);
       break;
-    case "enterAirtimeAmount":
-      console.log('airtume amount')
+    case 'enterAirtimeAmount':
+      console.log('airtume amount');
       airtimePurchase(event, payload);
       break;
-    case "generateAccountNumber":
+    case 'generateAccountNumber':
       generateAccountNumber(event);
       break;
-    case "changeMailBeforeTransact":
+    case 'changeMailBeforeTransact':
       changeMailBeforeTransact(event);
       break;
-    case "changePhoneNumber":
+    case 'changePhoneNumber':
       changePhoneNumber(event);
       break;
-    case "cancel":
+    case 'cancel':
       cancelTransaction(event);
       break;
-    case "issueReport":
+    case 'issueReport':
       issueReport(event);
       break;
     default:
       break;
-  };
-};  // end of processPostback
+  }
+} // end of processPostback

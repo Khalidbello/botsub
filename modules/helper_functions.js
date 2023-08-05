@@ -4,11 +4,11 @@ const fsP = fs.promises;
 
 import nodemailer from 'nodemailer';
 
-import handlebars from "handlebars";
+import handlebars from 'handlebars';
 
 import flutterwave from 'flutterwave-node-v3';
 
-import axios from "axios";
+import axios from 'axios';
 
 import { createClient } from './mongodb.js';
 
@@ -24,29 +24,24 @@ const transporter = nodemailer.createTransport({
   },
 }); // end of transporter
 
-
-
-
 // function to check if transaction has ever beign made
 
-export const checkIfPreviouslyDelivered = async function(transactionId, tx_ref) {
+export const checkIfPreviouslyDelivered = async function (transactionId, tx_ref) {
   const client = createClient();
   await client.connect();
   const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
 
   const transact = await collection.findOne({ _id: transactionId });
 
-  console.log("transaction in check if previous", transact);
+  console.log('transaction in check if previous', transact);
 
   if (transact) {
-    return transact.txRef === tx_ref && transact.status === "settled";
-  };
+    return transact.txRef === tx_ref && transact.status === 'settled';
+  }
 
   client.close();
   return false;
 }; //end of checkIfPreviouslyDelivered
-
-
 
 export function returnPreviouslyDelivered(response) {
   const meta = response.data.meta;
@@ -76,11 +71,8 @@ export function returnPreviouslyDelivered(response) {
   return details;
 } // end of returnPreviouslyDelivered
 
-
-
-
 // function to check if all requirements are met
-export const checkRequirementMet = async function(response, req, res) {
+export const checkRequirementMet = async function (response, req, res) {
   let returnFalse = false;
   let price;
   if (response.data.meta.type === 'data') {
@@ -132,8 +124,6 @@ export const checkRequirementMet = async function(response, req, res) {
   return { status: false, message: 'payment requirement not met', price };
 }; //end of checkRequiremtMet
 
-
-
 // helper function to refund payment
 export async function refundPayment(response, price) {
   try {
@@ -144,7 +134,7 @@ export async function refundPayment(response, price) {
       comments: 'transaction requirement not met',
     });
 
-    console.log("payment refund response", resp);
+    console.log('payment refund response', resp);
     const date = new Date();
     // Create an Intl.DateTimeFormat object with the Nigeria time zone
     const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
@@ -156,7 +146,7 @@ export async function refundPayment(response, price) {
     // Format the Nigeria time using the formatter
     const nigeriaTimeString = nigeriaFormatter.format(date);
 
-    const emailTemplate = await fsP.readFile("modules/email-templates/refund-mail.html", "utf8");
+    const emailTemplate = await fsP.readFile('modules/email-templates/refund-mail.html', 'utf8');
     const mail = handlebars.compile(emailTemplate);
 
     const refundData = {
@@ -168,15 +158,15 @@ export async function refundPayment(response, price) {
       id: response.data.id,
       txRef: response.data.tx_ref,
       supportEmail: process.env.EMAIL_ADDRESS,
-      chatBotUrl: process.env.CHATBOT_URL
+      chatBotUrl: process.env.CHATBOT_URL,
     };
 
     // setting product name
     refundData.product = `${response.data.meta.size} data`;
 
-    if (response.data.meta.type === "airtime") {
+    if (response.data.meta.type === 'airtime') {
       refundData.product = `₦${response.data.meta.amount} airtime`;
-    };
+    }
 
     const mailOptions = {
       from: process.env.EMAIL_ADDRESS,
@@ -187,7 +177,7 @@ export async function refundPayment(response, price) {
 
     const resp1 = await transporter.sendMail(mailOptions);
 
-    console.log("refund mail response", resp1);
+    console.log('refund mail response', resp1);
 
     // adding transaction to toRefundDb
     const client = createClient();
@@ -198,19 +188,18 @@ export async function refundPayment(response, price) {
     const resp2 = await collection.insertOne({
       txRef: response.data.tx_ref,
       transactionId: response.data.id,
-      status: "pending"
+      status: 'pending',
     });
     client.close();
-    console.log("add to toRefund response", resp2);
+    console.log('add to toRefund response', resp2);
 
     return {
       status: 'requirementNotMet',
     };
   } catch (err) {
-    console.log("regund error", err);
-  };
-}; // end of refundPayment
-
+    console.log('regund error', err);
+  }
+} // end of refundPayment
 
 // function to generate random Strings
 export function generateRandomString(length = 15) {
@@ -221,8 +210,7 @@ export function generateRandomString(length = 15) {
     randomString += characters.charAt(randomIndex);
   }
   return randomString;
-}; // end of generateRandomString
-
+} // end of generateRandomString
 
 // finction to add transact to settled collection and remove from pending collection
 
@@ -230,38 +218,42 @@ export async function removeFromPendingAddToSettled(transaction_id, tx_ref) {
   const client = createClient();
 
   client.connect();
-  const pendingCollection = client.db(process.env.BOTSUB_DB).collection(process.env.FAILED_DELIVERY_COLLECTION);
+  const pendingCollection = client
+    .db(process.env.BOTSUB_DB)
+    .collection(process.env.FAILED_DELIVERY_COLLECTION);
 
   await pendingCollection.deleteOne({ _id: transaction_id });
   client.close();
-};
-
-
+}
 
 export async function retryAllFailedDelivery(req) {
   const client = createClient();
   await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FAILED_DELIVERY_COLLECTION);
+  const collection = client
+    .db(process.env.BOTSUB_DB)
+    .collection(process.env.FAILED_DELIVERY_COLLECTION);
   const length = await collection.countDocuments();
   const flag = Math.round(length / 20) + 1;
-  console.log("flag", flag);
+  console.log('flag', flag);
   const statistic = {
     total: length,
     successful: 0,
-    failed: 0
+    failed: 0,
   };
 
   for (let i = 0; i < flag; i++) {
     const transacts = await collection.find().limit(20).toArray();
-    console.log("transacts", transacts);
+    console.log('transacts', transacts);
 
     // Create an array to store the promises for each transaction
     const transactionPromises = transacts.map(async (transact) => {
       const { _id, txRef } = transact;
-      const response = await axios.get(`https://${req.hostname}/gateway/confirm?transaction_id=${_id}&tx_ref=${txRef}`);
+      const response = await axios.get(
+        `https://${req.hostname}/gateway/confirm?transaction_id=${_id}&tx_ref=${txRef}`
+      );
       const data = response.data;
 
-      if (data.status === "successful" || data.status === "settled") {
+      if (data.status === 'successful' || data.status === 'settled') {
         statistic.successful += 1;
         await removeFromPendingAddToSettled(_id, txRef);
       } else {

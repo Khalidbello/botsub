@@ -14,7 +14,7 @@
     <link rel="icon" href="images/chatbot.png" />
   </head>
   <body>
-        <nav id="nav-menu" class="border-r20 bg-white l-border small">
+    <nav id="nav-menu" class="border-r20 bg-white l-border small">
       <svg
         id="cancel-icon"
         xmlns="http://www.w3.org/2000/svg"
@@ -36,47 +36,60 @@
       <a href="report-issue" class="l-border txt-cent">Report An Issue</a>
       <a href="/#about-us" class="l-border txt-cent">About Us</a>
     </nav>
-    <header class="bg-prp  flex-al-start flex-sp-btw">
+    <header class="bg-prp flex-al-start flex-sp-btw">
       <div class="flex flex-al-cent flex-sp-btw padding-10">
-      <svg xmlns="http://www.w3.org/2000/svg" id="home" onclick="home();" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M9 22V12h6v10M2 10.6L12 2l10 8.6"/></svg>
-      <div
-            id="header-logo"
-            class="scroll-anime bold flex flex-al-cent flex-sp-ar"
-          >
-            <span class="img-container flex-i flex-al-cent flex-sp-ar bg-drkb2"><img src="images/chatbot.png" alt="botsub-logo"></span>
-            <span class="bg-drkb2 clrw padding-10 border-r20"> &nbsp; &nbsp; BotSub</span>
-          </div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          id="home"
+          onclick="home();"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9" />
+          <path d="M9 22V12h6v10M2 10.6L12 2l10 8.6" />
+        </svg>
+        <div id="header-logo" class="scroll-anime bold flex flex-al-cent flex-sp-ar">
+          <span class="img-container flex-i flex-al-cent flex-sp-ar bg-drkb2"
+            ><img src="images/chatbot.png" alt="botsub-logo"
+          /></span>
+          <span class="bg-drkb2 clrw padding-10 border-r20"> &nbsp; &nbsp; BotSub</span>
+        </div>
 
-      <svg
-        id="menu-icon"
-        class="padding-10 bg-darkorange"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M3 12h18M3 6h18M3 18h18" />
-      </svg>
+        <svg
+          id="menu-icon"
+          class="padding-10 bg-darkorange"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
       </div>
 
       <div class="title shdw clrw flex flex-justify-center">Data Purchase Terminal</div>
     </header>
     <!-- clip path def for head curve -->
-      <svg width="0" height="0">
-        <defs>
-          <clipPath id="headCurve" clipPathUnits="objectBoundingBox">
-            <path
-              d="M 0 1 L 0 0 L 1 0 L 1 1 C 1 1 1 0.75 0.8 0.75
+    <svg width="0" height="0">
+      <defs>
+        <clipPath id="headCurve" clipPathUnits="objectBoundingBox">
+          <path
+            d="M 0 1 L 0 0 L 1 0 L 1 1 C 1 1 1 0.75 0.8 0.75
               L 0.3 0.75 C 0 0.75 0 0.45 0 0.45"
-            />
-          </clipPath>
-        </defs>
-      </svg>
+          />
+        </clipPath>
+      </defs>
+    </svg>
 
-    
     <!-- start of body circle -->
     <div class="b-circle bg-drkb flex flex-justify-center">
       <div class="i-b-circle bg-white"></div>
@@ -227,7 +240,10 @@
     <!-- start of mtn offers -->
     <div id="mtn" class="offer">
       <div class="offer-header bold bg-drkb clrw flex flex-sp-btw">
-        <span class="flex">&nbsp; <span><img src="images/mtn.svg" alt="mtn logo" /></span>&nbsp; &nbsp; MTN Offers</span>
+        <span class="flex"
+          >&nbsp; <span><img src="images/mtn.svg" alt="mtn logo" /></span>&nbsp; &nbsp; MTN
+          Offers</span
+        >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           onclick="hideBox()"
@@ -250,7 +266,10 @@
     <!-- start of airtel offers -->
     <div id="airtel" class="offer">
       <div class="offer-header bold bg-drkb clrw flex flex-sp-btw">
-        <span class="flex">&nbsp; <span><img src="images/airtel.svg" alt="airtel logo" /></span>&nbsp; &nbsp; Airtel Offers</span>
+        <span class="flex"
+          >&nbsp; <span><img src="images/airtel.svg" alt="airtel logo" /></span>&nbsp; &nbsp; Airtel
+          Offers</span
+        >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           onclick="hideBox()"
@@ -273,7 +292,10 @@
     <!-- start of glo offers -->
     <div id="glo" class="offer">
       <div class="offer-header bold bg-drkb clrw flex flex-sp-btw">
-        <span class="flex">&nbsp; <span><img src="images/glo.svg" alt="glo logo" /></span>&nbsp; &nbsp; Glo Offer</span>
+        <span class="flex"
+          >&nbsp; <span><img src="images/glo.svg" alt="glo logo" /></span>&nbsp; &nbsp; Glo
+          Offer</span
+        >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           onclick="hideBox()"
@@ -296,7 +318,10 @@
     <!-- start of 9mobile offers -->
     <div id="nine-mobile" class="offer">
       <div class="offer-header bold bg-drkb clrw flex flex-sp-btw">
-        <span class="flex">&nbsp; <span><img src="images/9mobile.svg" alt="9mobile logo" /></span>&nbsp; &nbsp; 9mobile Offers</span>
+        <span class="flex"
+          >&nbsp; <span><img src="images/9mobile.svg" alt="9mobile logo" /></span>&nbsp; &nbsp;
+          9mobile Offers</span
+        >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           onclick="hideBox();"

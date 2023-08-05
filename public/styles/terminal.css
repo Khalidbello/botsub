@@ -18,40 +18,40 @@ body {
   background-color: #eee;
   padding-bottom: 10px;
 }
-      #nav-menu {
-        position: fixed;
-        top: -800px;
-        right: 10px;
-        width: 180px;
-        z-index: 6;
-        text-align: right;
-        padding-top: 5px;
-        transition: top 0.5s ease-in-out;
-        color: red;
-      }
-      #nav-menu > svg {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-      }
-      #nav-menu > a {
-        display: block;
-        text-decoration: none;
-        margin: 10px;
-        border-radius: 10px;
-        padding: 5px;
-        color: darkorange;
-      }
-      #nav-menu > a:hover {
-        background-color: #eee;
-      }
+#nav-menu {
+  position: fixed;
+  top: -800px;
+  right: 10px;
+  width: 180px;
+  z-index: 6;
+  text-align: right;
+  padding-top: 5px;
+  transition: top 0.5s ease-in-out;
+  color: red;
+}
+#nav-menu > svg {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+#nav-menu > a {
+  display: block;
+  text-decoration: none;
+  margin: 10px;
+  border-radius: 10px;
+  padding: 5px;
+  color: darkorange;
+}
+#nav-menu > a:hover {
+  background-color: #eee;
+}
 header {
   height: 180px;
   width: 100%;
   position: sticky;
   left: 0;
   top: -1px;
-  clip-path: url("#headCurve");
+  clip-path: url('#headCurve');
   z-index: 3;
 }
 
@@ -70,17 +70,17 @@ header #header-logo > .img-container {
   margin-right: -20px;
   position: relative;
 }
-header  #header-logo > .img-container img {
+header #header-logo > .img-container img {
   height: 40px;
   width: 40px;
 }
 
 header #menu-icon {
-        height: 40px;
-        width: 40px;
-        border-radius: 50%;
-        stroke: white;
-      }
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  stroke: white;
+}
 
 .title {
   width: 70%;
@@ -89,7 +89,6 @@ header #menu-icon {
   border-radius: 20px;
   background-color: #334;
 }
-
 
 .b-circle {
   width: 15em;
@@ -159,7 +158,7 @@ select {
 #email-holder {
   width: 100%;
   display: flex;
-  height: 
+  height: ;
 }
 #email-holder > div {
   position: relative;
@@ -232,7 +231,7 @@ select {
   transition-duration: 1s;
 }
 
-label[for="number-validator"] {
+label[for='number-validator'] {
   position: absolute;
   left: 10px;
   bottom: 40px;
@@ -240,7 +239,7 @@ label[for="number-validator"] {
   font-size: small;
   padding-bottom: 10px;
 }
-label[class="switch"] {
+label[class='switch'] {
   position: absolute;
   left: 10px;
   bottom: 20px;
@@ -274,11 +273,11 @@ label[class="switch"] {
 }
 .slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 20px;
   width: 20px;
   border-radius: 50%;
-  left: 5px;;
+  left: 5px;
   bottom: 5px;
   background-color: #999;
   -webkit-transition: 0.4s;
@@ -351,7 +350,7 @@ input:checked + .slider:before {
   background-color: #eee;
   display: inline-flex;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
 }
 .networks > span > img {
   height: 30px;
@@ -384,9 +383,9 @@ input:checked + .slider:before {
   display: flex;
   justify-content: center;
   align-items: center;
-background-color: #223;
+  background-color: #223;
 }
-.offer-header > span > span >img {
+.offer-header > span > span > img {
   height: 30px;
   width: 30px;
 }
@@ -479,7 +478,9 @@ background-color: #223;
 .bg-white {
   background-color: white;
 }
-.bg-darkorange { background-color: darkorange; }
+.bg-darkorange {
+  background-color: darkorange;
+}
 .clrw {
   color: white;
 }
@@ -525,17 +526,24 @@ background-color: #223;
 }
 .bold {
   font-weight: bold;
-}border3
-.float-right {
+}
+border3 .float-right {
   float: right;
 }
-.padding-10 { padding: 10px }
-.border-r20 { border-radius: 20px; }
-
+.padding-10 {
+  padding: 10px;
+}
+.border-r20 {
+  border-radius: 20px;
+}
 
 .l-border {
   border: thin solid #eee;
 }
-.small { font-size: small; }
+.small {
+  font-size: small;
+}
 
-.txt-cent { text-align: center; }
+.txt-cent {
+  text-align: center;
+}

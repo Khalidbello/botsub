@@ -29,6 +29,7 @@ if (process.env.NODE_ENV == "development") {
   env.SETTLED_COLLECTION = env.SETTLED_COLLECTION_TEST;
   env.PENDING_COLLECTION = env.PENDING_COLLECTION_TEST;
   env.TOREFUND_COLLECTION = env.TOREFUND_COLLECTION_TEST;
+    env.USERS_COLLECTION = env.USERS_COLLECTION_TEST;
 } else if (process.env.NODE_ENV === "staging") {
   console.log("in staging mode");
 

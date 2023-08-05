@@ -23,17 +23,15 @@ function toggleNavMenu() {
   console.log(navMenu.style.display);
 } // end of toggle navMenu
 
-
 function home() {
   const ele = event.target;
-  ele.style.backgroundColor = "darkorange";
+  ele.style.backgroundColor = 'darkorange';
   setTimeout(() => {
-    ele.style.backgroundColor = "transparent";
-    window.location = "/";
+    ele.style.backgroundColor = 'transparent';
+    window.location = '/';
   }, 400);
-};
+}
 
-      
 const questionBox = document.querySelector('#question-box');
 const carousel = document.querySelector('#carousel');
 const surveyIntro = document.querySelector('#survey-intro');
@@ -42,6 +40,7 @@ const back = questionBox.querySelector('#previous');
 const gender = questionBox.querySelector('#gender');
 const network = questionBox.querySelector('#network');
 const dataSize = questionBox.querySelector('#data-size');
+const dataFrequency = questionBox.querySelector('#data-frequency');
 const email = questionBox.querySelector('#email');
 const loader = document.querySelector('#loader');
 const blur = document.querySelector('#blur');
@@ -50,8 +49,11 @@ const blur = document.querySelector('#blur');
 let currentIndex;
 
 function prevSlide(reset = false) {
+  const ele = event.target;
+  ele.style.backgroundColor = 'darkorange';
+  setTimeout(() => (ele.style.backgroundColor = 'transparent'), 200);
   if (reset) currentIndex = 1;
-  
+
   if (currentIndex === 1) {
     back.style.opacity = 0;
 
@@ -72,15 +74,14 @@ function nextSlide(index) {
 
   setTimeout(() => {
     back.style.opacity = 1;
-  }, 500);
+  }, 800);
 
   updateCarousel(index);
 }
 
 function updateCarousel(index) {
   carousel.style.transform = `translateX(-${index * 100}%)`;
-}; // end of carousel
-
+} // end of carousel
 
 // function to be called once an option is selected
 
@@ -91,18 +92,17 @@ function selected(current) {
   if (!option.dataset.value) return null;
 
   // incase of doubling clicking
-  const children = parent.children; 
+  const children = parent.children;
   for (const ele of children) {
-    if (ele.dataset.value) ele.style.opacity = 0.5; 
-  };
-  
+    if (ele.dataset.value) ele.style.opacity = 0.5;
+  }
+
   option.style.opacity = 1;
 
-  setTimeout(() => option.style.opacity = 0.5, 500);
+  setTimeout(() => (option.style.opacity = 0.5), 1000);
   current.dataset.value = option.dataset.value;
   nextSlide(parseInt(parent.dataset.index));
 } // end  of selected function
-
 
 // function to change email border if valid
 
@@ -156,7 +156,7 @@ async function submitData() {
 
   if (!emailInput.checkValidity()) {
     return (emailInput.style.border = 'thin solid red');
-  };
+  }
 
   // submittng data
   blur.style.display = 'block';
@@ -168,6 +168,7 @@ async function submitData() {
       email: emailInput.value,
       network: network.dataset.value,
       dataSize: dataSize.dataset.value,
+      dataFrequency: dataFrequency.dataset.value,
       gender: gender.dataset.value,
     };
     let response = await fetch(url, {
@@ -195,25 +196,25 @@ function showSuccessfulSurvey() {
   blur.style.opacity = 1;
   loader.style.display = 'none';
   successBox.style.top = '80px';
-};
+}
 
 function showErroneousSurvey() {
   blur.style.opacity = 1;
   loader.style.display = 'none';
   errorBox.style.top = '80px';
-};
+}
 
 //function to resetSurvey
 function resetSurvey() {
   // resetting email field
-  emailInput.value = "";
+  emailInput.value = '';
 
-  prevSlide(reset=true);
-  errorBox.style.top = "-300px";
-  successBox.style.top = "-300px";
+  prevSlide((reset = true));
+  errorBox.style.top = '-300px';
+  successBox.style.top = '-300px';
 
   setTimeout(() => {
-    blur.style.opacity = "0.4";
-    blur.style.display = "none";
+    blur.style.opacity = '0.4';
+    blur.style.display = 'none';
   }, 1090);
 }

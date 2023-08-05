@@ -9,7 +9,7 @@
     {{/if }}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Khalid Bello" />
-    <title>Qsub Survey</title>
+    <title>BotSub Survey</title>
     <link rel="stylesheet" href="styles/generic.css" />
     <link rel="icon" href="images/chatbot.png" />
     <style>
@@ -45,7 +45,11 @@
         margin: 10px;
       }
       /* styling for question-box */
-      button:hover, .data-container > div:hover, svg { opacity: 0.7; }
+      button:hover,
+      .data-container > div:hover,
+      svg {
+        opacity: 0.7;
+      }
       #question-box {
         min-height: 150px;
         overflow: hidden;
@@ -65,7 +69,7 @@
         width: 100%;
         height: 100%;
       }
-      
+
       #question-box #survey-intro button {
         width: 150px;
         border-radius: 10px;
@@ -213,7 +217,7 @@
         min-width: 100px;
         border-radius: 10px;
       }
-      
+
       /* generic styles */
       .bg-prp,
       .bg-drkb {
@@ -286,7 +290,9 @@
       .bg-darkorange {
         background-color: darkorange;
       }
-      .bg-white { background-color: white; }
+      .bg-white {
+        background-color: white;
+      }
       .border-r20 {
         border-radius: 20px;
       }
@@ -319,9 +325,25 @@
       <a href="report-issue" class="l-border txt-cent">Report An Issue</a>
       <a href="/#about-us" class="l-border txt-cent">About Us</a>
     </nav>
-  
+
     <header class="bg-white flex flex-sp-ar">
-      <svg xmlns="http://www.w3.org/2000/svg" class="l-border" id="home" onclick="home();" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M9 22V12h6v10M2 10.6L12 2l10 8.6"/></svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="l-border"
+        id="home"
+        onclick="home();"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#111"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9" />
+        <path d="M9 22V12h6v10M2 10.6L12 2l10 8.6" />
+      </svg>
       <span class="l-border bg-white bold flex flex-jst-center">BotSub Survey</span>
       <svg
         id="menu-icon"
@@ -340,30 +362,63 @@
     <br /><br />
 
     <div id="question-box" class="l-border">
-      <svg id="previous" class="transition bg-drkb" onclick="prevSlide()"></svg>
+      <svg
+        id="previous"
+        class="transition"
+        onclick="prevSlide()"
+        clip-rule="evenodd"
+        fill-rule="evenodd"
+        stroke-linejoin="round"
+        stroke-miterlimit="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m9.474 5.209s-4.501 4.505-6.254 6.259c-.147.146-.22.338-.22.53s.073.384.22.53c1.752 1.754 6.252 6.257 6.252 6.257.145.145.336.217.527.217.191-.001.383-.074.53-.221.293-.293.294-.766.004-1.057l-4.976-4.976h14.692c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-14.692l4.978-4.979c.289-.289.287-.761-.006-1.054-.147-.147-.339-.221-.53-.221-.191-.001-.38.071-.525.215z"
+          fill-rule="nonzero"
+        />
+      </svg>
+
       <div id="carousel">
         <div id="survey-intro">
           <p class="txt-cent">
-            Thank you for choosing BotSub, your number one platform for airtime and data TopUp. <br>
-            We greatly appreciate your participation in this survey as it enables us to provide personalized recommendations and 
-            continually improve our services. Your feedback is invaluable in our ongoing efforts to make BotSub the best it can be.
+            Thank you for choosing BotSub, your number one platform for airtime and data TopUp.
+            <br />
+            We greatly appreciate your participation in this survey as it enables us to provide
+            personalized recommendations and continually improve our services. Your feedback is
+            invaluable in our ongoing efforts to make BotSub the best it can be.
           </p>
           <br /><br />
 
-          <button data-index="1" id="start-survey" class="bg-drkb transition" onclick="nextSlide(1);">
+          <button
+            data-index="1"
+            id="start-survey"
+            class="bg-drkb transition"
+            onclick="nextSlide(1);"
+          >
             start survey
           </button>
           <br /><br />
         </div>
 
-        <div data-index="2" id="gender" class="transition data-container" onclick="selected(gender)">
+        <div
+          data-index="2"
+          id="gender"
+          class="transition data-container"
+          onclick="selected(gender)"
+        >
           <h4>kindly select your gender</h4>
           <br />
           <div data-value="male">Male</div>
           <div data-value="female">Female</div>
         </div>
 
-        <div data-index="3" id="network" class="data-container transition" onclick="selected(network)">
+        <div
+          data-index="3"
+          id="network"
+          class="data-container transition"
+          onclick="selected(network)"
+        >
           <h4>Which network do you frequently buy data into</h4>
           <br />
           <div data-value="mtn">MTN</div>
@@ -372,7 +427,12 @@
           <div data-value="glo">Glo</div>
         </div>
 
-        <div data-index="4" id="data-size" class="data-container transition" onclick="selected(dataSize);">
+        <div
+          data-index="4"
+          id="data-size"
+          class="data-container transition"
+          onclick="selected(dataSize);"
+        >
           <h4>What size of data bundle do you normally buy</h4>
           <br />
           <div data-value="0.5GB">500mb</div>
@@ -383,6 +443,27 @@
           <div data-value="10GB">10GB</div>
           <div data-value="15GB">15GB</div>
           <div data-value="20GB">20GB</div>
+        </div>
+
+        <div
+          data-index="5"
+          id="data-frequency"
+          class="data-container transition"
+          onclick="selected(dataFrequency);"
+        >
+          <h4>How frequent do you purchase data in a month</h4>
+          <br />
+          <div data-value="1">Once in a month</div>
+          <div data-value="2">Twice in a month</div>
+          <div data-value="3">Thrice in a month</div>
+          <div data-value="4">Four times a month</div>
+          <div data-value="5">Five times a month</div>
+          <div data-value="6">Six times a month</div>
+          <div data-value="7">Seven times a month</div>
+          <div data-value="8">Eight times a month</div>
+          <div data-value="9">Nine times a month</div>
+          <div data-value="10">Ten times a month</div>
+          <div data-value="11">More than ten times a month</div>
         </div>
 
         <div id="email" class="data-container transition">
@@ -410,7 +491,8 @@
 
     <!-- success box -->
     <div id="success-box" class="border-20 padding-10 bg-white l-border txt-cent">
-      <h3>Survey Sbmitted SuccessFully</h3><br>
+      <h3>Survey Sbmitted SuccessFully</h3>
+      <br />
       <button onclick="resetSurvey();" class="clrw bg-darkorange">OK</button>
     </div>
 
@@ -419,7 +501,8 @@
       <h3>
         <span class="red">Sorry An Error Occured</span> <br />
         Kindly restart survey
-      </h3><br>
+      </h3>
+      <br />
       <button onclick="resetSurvey();" class="clrw bg-darkorange">Restart Survey</button>
     </div>
     <script src="scripts/survey.js"></script>

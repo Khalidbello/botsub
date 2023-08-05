@@ -1,17 +1,16 @@
 // module to deliver value
 
-import Flutterwave from "flutterwave-node-v3";
+import Flutterwave from 'flutterwave-node-v3';
 
 import request from 'request';
 
-import handlebars from "handlebars";
-
+import handlebars from 'handlebars';
 
 import nodemailer from 'nodemailer';
 
 import { generateRandomString } from './helper_functions.js';
 
-import { createClient } from "./mongodb.js";
+import { createClient } from './mongodb.js';
 
 import { default as fs } from 'node:fs';
 
@@ -33,14 +32,12 @@ export function deliverValue(response, req, res, requirementMet) {
   }
 }
 
-
-
 // function to make data purchase request
 
 async function deliverData(response, req, res) {
   let options = {
     method: 'POST',
-    url: 'https://opendatasub.com/api/data/',
+    url: 'https://dancitysub.com/api/data/',
     headers: {
       Authorization: 'Token ' + process.env.OPENSUB_KEY,
       'Content-Type': 'application/json',
@@ -58,11 +55,11 @@ async function deliverData(response, req, res) {
     if (error) {
       console.log(error);
       return res.send(error);
-    };
+    }
     //console.log('data purchase resp', resp.body);
     console.log('data purchase resp body 001', body);
     // to do dependent transaction status
-    if (true || body.Status === 'successful') {
+    if (body.Status === 'successful') {
       addToDelivered(req);
       // calling function to send mail and json response object
       sendSuccessfulResponse(response, res);
@@ -70,21 +67,19 @@ async function deliverData(response, req, res) {
       //if (parseInt(body.balance_after) <= 5000) topUpBalance();
       return;
     } else if (true) {
-      console.log("got hrre failed");
+      console.log('got hrre failed');
       addToFailedToDeliver(req);
       return sendFailedToDeliverResponse(response, res);
     }
   });
 } // end of deliver value function
 
-
-
 // function to make airtime purchase request
 
 async function deliverAirtime(response, req, res) {
   let options = {
     method: 'POST',
-    url: 'https://opendatasub.com/api/topup/',
+    url: 'https://dancitysub.com/api/topup/',
     headers: {
       Authorization: 'Token ' + process.env.OPENSUB_KEY,
       'Content-Type': 'application/json',
@@ -106,7 +101,7 @@ async function deliverAirtime(response, req, res) {
       return res.send(error);
     }
     //console.log('airtime purchase resp', resp.body);
-    console.log("bodyof request ", body);
+    console.log('bodyof request ', body);
     // to do dependent transaction status
     if (true || body.Status === 'successful') {
       addToDelivered(req);
@@ -120,9 +115,7 @@ async function deliverAirtime(response, req, res) {
       return sendFailedToDeliverResponse(response, res);
     }
   });
-}; // end of deliverAirtime
-
-
+} // end of deliverAirtime
 
 // function to add transaction to delivered transaction
 
@@ -137,22 +130,22 @@ async function addToDelivered(req) {
   const response = await collection.insertOne({
     txRef: req.query.tx_ref,
     _id: req.query.transaction_id,
-    status: "settled"
+    status: 'settled',
   });
 
   client.close();
-  console.log("add to delivered respomse", response);
+  console.log('add to delivered respomse', response);
   return response;
 } // end of addToDelivered
-
-
 
 // function to add transaction to failed to deliver
 
 async function addToFailedToDeliver(req) {
   const client = createClient();
   await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FAILED_DELIVERY_COLLECTION);
+  const collection = client
+    .db(process.env.BOTSUB_DB)
+    .collection(process.env.FAILED_DELIVERY_COLLECTION);
   const transact = await collection.findOne({ _id: req.query.transaction_id });
 
   if (transact) return;
@@ -161,29 +154,30 @@ async function addToFailedToDeliver(req) {
   const response = await collection.insertOne({
     txRef: req.query.tx_ref,
     _id: req.query.transaction_id,
-    status: "pending",
+    status: 'pending',
     date: date,
   });
 
   client.close();
-  console.log("add to failed delivery respose", response);
+  console.log('add to failed delivery respose', response);
   return response;
 } // end if add to failed to deliver
-
-
 
 // function to send data purchase mail and response
 
 async function sendSuccessfulResponse(response, res) {
   try {
-    const successfulMailTemplate = await fsP.readFile("modules/email-templates/successful-delivery.html", "utf8");
+    const successfulMailTemplate = await fsP.readFile(
+      'modules/email-templates/successful-delivery.html',
+      'utf8'
+    );
     const compiledSuccessfulMailTemplate = handlebars.compile(successfulMailTemplate);
     let details = formResponse(response);
     details.product = `${response.data.meta.size} data`;
 
-    if (response.data.meta.type === "airtime") {
+    if (response.data.meta.type === 'airtime') {
       details.product = `₦${response.data.meta.amount} airtime`;
-    };
+    }
 
     const mailParams = {
       product: details.product,
@@ -204,30 +198,31 @@ async function sendSuccessfulResponse(response, res) {
       html: compiledSuccessfulMailTemplate(mailParams),
     };
 
-    const resp = await transporter.sendMail(mailOptions)
+    const resp = await transporter.sendMail(mailOptions);
 
-    console.log("successful delivery function", resp);
+    console.log('successful delivery function', resp);
     return res.json({ status: 'successful', data: details });
   } catch (err) {
-    console.log("send successful vtu response error", err);
+    console.log('send successful vtu response error', err);
     return res.json({ status: 'error', data: err });
   }
 } // end of sendAirtimeResponse function
-
-
 
 // function to form response on failed to deliver
 
 async function sendFailedToDeliverResponse(response, res) {
   try {
-    const pendingMailTemplate = await fsP.readFile("modules/email-templates/failed-delivery.html", "utf8");
+    const pendingMailTemplate = await fsP.readFile(
+      'modules/email-templates/failed-delivery.html',
+      'utf8'
+    );
     const compiledPendingMailTemplate = handlebars.compile(pendingMailTemplate);
     let details = formResponse(response);
     details.product = `${response.data.meta.size} data`;
 
-    if (response.data.meta.type === "airtime") {
+    if (response.data.meta.type === 'airtime') {
       details.product = `₦${response.data.meta.amount} airtime`;
-    };
+    }
 
     const mailParams = {
       product: details.product,
@@ -248,18 +243,16 @@ async function sendFailedToDeliverResponse(response, res) {
       html: compiledPendingMailTemplate(mailParams),
     };
 
-    const resp = await transporter.sendMail(mailOptions)
+    const resp = await transporter.sendMail(mailOptions);
 
-    console.log("in failed to deliver function", resp);
+    console.log('in failed to deliver function', resp);
     return res.json({ status: 'pending', data: details });
   } catch (err) {
-    console.log("send successfulvtu response error", err);
+    console.log('send successfulvtu response error', err);
     return res.json({ status: 'error', data: err });
     //return res.json({ status: 'failedDelivery', message: 'failed to deliver purchased product' });
-  };
+  }
 } // end of sendFailedToDeliverResponse
-
-
 
 //function to form response for request
 
@@ -284,8 +277,6 @@ function formResponse(response) {
   return details;
 } // end of formResponse
 
-
-
 // function to check balance and add to it when necessary
 
 async function topUpBalance() {
@@ -296,16 +287,16 @@ async function topUpBalance() {
       account_bank: process.env.WALLET_ACC_NAME,
       account_number: process.env.WALLET_ACC_NUMBER,
       amount: parseInt(process.env.WALLET_FUND_AMOUNT),
-      narration: "REFUNDING WALLET",
-      currency: "NGN",
+      narration: 'REFUNDING WALLET',
+      currency: 'NGN',
       reference: generateRandomString(),
-      debit_currency: "NGN",
+      debit_currency: 'NGN',
       meta: { walletTopUp: true },
     };
 
     const response = await flw.Transfer.initiate(details);
-    console.log("wallet transfer response", response);
+    console.log('wallet transfer response', response);
   } catch (err) {
-    console.log("balance top up error", err);
-  };
+    console.log('balance top up error', err);
+  }
 }

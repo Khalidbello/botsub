@@ -1,12 +1,12 @@
 @font-face {
-  font-family: "MyFantasyFont";
-  src: url("path-to-font/myfantasyfont.ttf") format("truetype");
+  font-family: 'MyFantasyFont';
+  src: url('path-to-font/myfantasyfont.ttf') format('truetype');
 }
 
 * {
   padding: 0;
   margin: 0;
-  font-family: "MyFantasyFont", fantasy, sans-serif;
+  font-family: 'MyFantasyFont', fantasy, sans-serif;
 }
 html,
 body {
@@ -63,7 +63,7 @@ header {
   height: 50%;
   min-height: 260px;
   position: relative;
-  clip-path: url("#head-slant");
+  clip-path: url('#head-slant');
 }
 
 header > img {
@@ -253,7 +253,7 @@ header > img {
   position: relative;
 }
 
-#footer-logo > .img-container img ,
+#footer-logo > .img-container img,
 #header-logo > .img-container img {
   height: 40px;
   width: 40px;
@@ -283,7 +283,7 @@ header > img {
 }
 
 .left-slide {
-  animation: left-slide .7s ease-in-out;
+  animation: left-slide 0.7s ease-in-out;
 }
 
 @keyframes right-slide {
@@ -298,7 +298,7 @@ header > img {
 }
 
 .right-slide {
-  animation: right-slide .7s ease-in-out;
+  animation: right-slide 0.7s ease-in-out;
 }
 
 @keyframes top-slide {
@@ -314,7 +314,7 @@ header > img {
 
 /* Apply the animation to an element */
 .top-slide {
-  animation: top-slide .7s ease-in-out;
+  animation: top-slide 0.7s ease-in-out;
 }
 
 @keyframes bottom-slide {
@@ -329,7 +329,7 @@ header > img {
 }
 
 .bottom-slide {
-  animation: bottom-slide .7s ease-in-out;
+  animation: bottom-slide 0.7s ease-in-out;
 }
 
 @keyframes bottom-slide-rotate-y {
@@ -346,7 +346,7 @@ header > img {
 }
 
 .bottom-slide-rotate-y {
-  animation: bottom-slide-rotate-y .7s ease-in-out;
+  animation: bottom-slide-rotate-y 0.7s ease-in-out;
 }
 
 /* for larger screens */

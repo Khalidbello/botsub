@@ -1,13 +1,13 @@
-import { default as fs } from "node:fs";
+import { default as fs } from 'node:fs';
 const fsP = fs.promises;
 
-import sendMessage from "./send_message.js";
+import sendMessage from './send_message.js';
 
-import { responseServices } from "./templates.js";
+import { responseServices } from './templates.js';
 
-import sendTemplate from "./send_templates.js";
+import sendTemplate from './send_templates.js';
 
-import { sendNewConversationResponse, cancelTransaction } from "./postback_responses.js";
+import { sendNewConversationResponse, cancelTransaction } from './postback_responses.js';
 
 import {
   sendEmailEnteredResponse,
@@ -16,12 +16,9 @@ import {
   newPhoneNumberBeforeTransactResponse,
   sendAirtimeAmountReceived,
   defaultMessageHandler,
-} from "./message_responses.js";
+} from './message_responses.js';
 
-import { createClient } from "./../modules/mongodb.js";
-
-
-
+import { createClient } from './../modules/mongodb.js';
 
 export default async function processMessage(event, res) {
   // check user previousky stored action to determine
@@ -30,44 +27,46 @@ export default async function processMessage(event, res) {
   const client = createClient();
   await client.connect();
   const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-  
-  const user = await collection.findOne({_id: senderId});
-  console.log('user mongo db payload', user);
+  //await collection.drop();
+
+  const user = await collection.findOne({ id: senderId });
+  console.log('user mongo db payload process message', user);
 
   if (!user) {
     client.close();
-    return sendNewConversationResponse(event); 
+    return sendNewConversationResponse(event);
   }
 
   // check if its a cancel request
-  if (event.message.text.toLowerCase() === "q") return cancelTransaction(event);
+  if (event.message.text.toLowerCase() === 'q') return cancelTransaction(event);
 
   //const user = await usersAction.get(senderId);
   let transactionType;
   try {
     transactionType = user.purchasePayload.transactionType;
   } catch (err) {
-    console.log("no transactionType")
-  };
+    console.log('no transactionType');
+  }
 
   switch (user.nextAction) {
-    case "toEnterEmail":
+    case 'enterEmailFirst':
       sendEmailEnteredResponse(event);
       break;
-    case "phoneNumber":
-      sendPhoneNumberEnteredResponses(event)
+    case 'phoneNumber':
+      sendPhoneNumberEnteredResponses(event);
       break;
-    case "enterAirtimeAmount":
+    case 'enterAirtimeAmount':
       sendAirtimeAmountReceived(event, transactionType);
       break;
-    case "changeEmailBeforeTransact":
+    case 'changeEmailBeforeTransact':
       newEmailBeforeTransactResponse(event, transactionType);
       break;
-    case "changePhoneNumberBeforeTransact":
+    case 'changePhoneNumberBeforeTransact':
       newPhoneNumberBeforeTransactResponse(event, transactionType);
       break;
     default:
-      await sendMessage(senderId, { text: "Hy what can i do for you" })
-      sendTemplate(senderId, responseServices);
-  };
-}; // end 
+      defaultMessageHandler(event);
+    /*await sendMessage(senderId, { text: "Hy what can i do for you" })
+      sendTemplate(senderId, responseServices);*/
+  }
+} // end
