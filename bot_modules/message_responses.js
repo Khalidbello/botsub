@@ -228,3 +228,23 @@ export async function newPhoneNumberBeforeTransactResponse(event, transactionTyp
     await sendMessage(senderId, response);
   }
 } // end of newPhoneNumberBeforeTransactResponse
+
+export async function reportIssue(event) {
+  const senderId = event.sender.id;
+  const client = createClient();
+  await client.connect();
+  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
+
+  await sendMessage(senderId, {
+    text: 'Your issue have beign directed to BotSub support team. \nSorry for any inconveniences caused.',
+  });
+
+  const filter = { id: senderId };
+  const update = {
+    $set: {
+      nextAction: null,
+    },
+  };
+
+  await collection.updateOne(filter, update);
+}

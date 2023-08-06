@@ -39,7 +39,7 @@ export async function sendNewConversationResponse(event) {
   sendTemplate(senderId, responseServices);
 
   // adding one
-  await collection.insertOne({ id: senderId });
+  await collection.replaceOne({ id: senderId }, { id: senderId });
   console.log('end of new conversation');
 } // end of newConversationResponse
 

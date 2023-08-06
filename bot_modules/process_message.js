@@ -16,6 +16,7 @@ import {
   newPhoneNumberBeforeTransactResponse,
   sendAirtimeAmountReceived,
   defaultMessageHandler,
+  reportIssue,
 } from './message_responses.js';
 
 import { createClient } from './../modules/mongodb.js';
@@ -63,6 +64,9 @@ export default async function processMessage(event, res) {
       break;
     case 'changePhoneNumberBeforeTransact':
       newPhoneNumberBeforeTransactResponse(event, transactionType);
+      break;
+    case 'enterIssue':
+      reportIssue(event);
       break;
     default:
       defaultMessageHandler(event);
