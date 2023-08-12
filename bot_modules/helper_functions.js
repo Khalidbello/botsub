@@ -1,25 +1,24 @@
-import { default as fs } from 'node:fs';
-const fsP = fs.promises;
+const fsP = require('fs').promises;
 
-import sendMessage from './send_message.js';
+const sendMessage = require('./send_message.js');
 
-import sendTemplate from './send_templates.js';
+const sendTemplate = require('./send_templates.js');
 
-import {
+const {
   confrimDataPurchaseButton1,
   confrimDataPurchaseButton2,
   responseServices,
-} from './templates.js';
+} = require('./templates.js');
 
-import { createClient } from './../modules/mongodb.js';
+const createClient = require('./../modules/mongodb.js');
 
 // function to respond to cases when no purchase payload is found for a transact
-export async function noTransactFound(senderId) {
+async function noTransactFound(senderId) {
   await sendMessage(senderId, { text: 'No transaction found \nInitiate new transaction' });
   await sendTemplate(senderId, responseServices);
 } // end of noFransactFound
 
-export function validateNumber(phoneNumber) {
+function validateNumber(phoneNumber) {
   const prefixes = {
     MTN: [
       '0803',
@@ -57,7 +56,7 @@ export function validateNumber(phoneNumber) {
 } // end of validateNumbe4
 
 // function to form product response
-export async function confirmDataPurchaseResponse(senderId) {
+async function confirmDataPurchaseResponse(senderId) {
   const client = createClient();
   await client.connect();
   const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
@@ -86,7 +85,7 @@ export async function confirmDataPurchaseResponse(senderId) {
 } // confirmPurchaseTemplate
 
 // function to validate airtime amount
-export async function validateAmount(amount) {
+async function validateAmount(amount) {
   // Remove any leading or trailing spaces
   amount = amount.trim();
 
@@ -111,7 +110,7 @@ export async function validateAmount(amount) {
 } // end of validateAmount
 
 // functiont to format date to Nigeria time
-export function dateFormatter(date) {
+function dateFormatter(date) {
   const date0 = new Date(date);
   // Create an Intl.DateTimeFormat object with the Nigeria time zone
   const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
@@ -124,7 +123,7 @@ export function dateFormatter(date) {
 } // end of dateFormatter
 
 // function to create tx_ref
-export function txCode() {
+function txCode() {
   let code = '';
   let characters = '1234567890ABCDEFGHIJKLMNOPQRSTUV';
   for (let x = 0; x < 25; x++) {
@@ -133,3 +132,13 @@ export function txCode() {
   }
   return code + Date.now();
 } // end of txCode
+
+
+module.exports = {
+  noTransactFound, 
+  validateNumber, 
+  confirmDataPurchaseResponse, 
+  validateAmount,
+  dateFormatter,
+  txCode
+};

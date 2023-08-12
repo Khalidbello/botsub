@@ -1,30 +1,29 @@
 // message responses
-import { default as fs } from 'node:fs';
-const fsP = fs.promises;
+const fsP = require('fs').promises;
 
-import emailValidator from 'email-validator';
+const emailValidator = require('email-validator');
 
-import sendMessage from './send_message.js';
+const sendMessage = require('./send_message.js');
 
-import { sendNewConversationResponse } from './postback_responses.js';
+const { sendNewConversationResponse } = require('./postback_responses.js');
 
-import sendTemplate from './send_templates.js';
+const sendTemplate = require('./send_templates.js');
 
-import { responseServices } from './templates.js';
+const { responseServices } = require('./templates.js');
 
-import {
+const {
   noTransactFound,
   validateNumber,
   confirmDataPurchaseResponse,
   validateAmount,
-} from './helper_functions.js';
+} = require('./helper_functions.js');
 
-import getUserName from './get_user_info.js';
+const getUserName = require('./get_user_info.js');
 
-import { createClient } from './../modules/mongodb.js';
+const createClient = require('./../modules/mongodb.js');
 
 // function to respond to unexpected message
-export async function defaultMessageHandler(event) {
+async function defaultMessageHandler(event) {
   const senderId = event.sender.id;
   const userName = await getUserName(senderId);
 
@@ -33,7 +32,7 @@ export async function defaultMessageHandler(event) {
 } // end of defaultMessenger
 
 // function to handle first email
-export async function sendEmailEnteredResponse(event) {
+async function sendEmailEnteredResponse(event) {
   const senderId = event.sender.id;
   const client = createClient();
   const email = event.message.text;
@@ -70,7 +69,7 @@ export async function sendEmailEnteredResponse(event) {
 // airtime purchase response function
 
 // function to handle airtime amount entred
-export async function sendAirtimeAmountReceived(event) {
+async function sendAirtimeAmountReceived(event) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -103,7 +102,7 @@ export async function sendAirtimeAmountReceived(event) {
 } // end of sendAirtimeAmountReceived
 
 // function to handle phone number entred
-export async function sendPhoneNumberEnteredResponses(event) {
+async function sendPhoneNumberEnteredResponses(event) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -150,7 +149,7 @@ export async function sendPhoneNumberEnteredResponses(event) {
 } // end of sendPhoneNumberEnteredResponses
 
 // function to handle change of email before transaction
-export async function newEmailBeforeTransactResponse(event, transactionType) {
+async function newEmailBeforeTransactResponse(event, transactionType) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -190,7 +189,7 @@ export async function newEmailBeforeTransactResponse(event, transactionType) {
 } // end of newEmailBeforeTransactResponse
 
 // function to handle change of phoneNumber
-export async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
+async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -229,7 +228,7 @@ export async function newPhoneNumberBeforeTransactResponse(event, transactionTyp
   }
 } // end of newPhoneNumberBeforeTransactResponse
 
-export async function reportIssue(event) {
+async function reportIssue(event) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -248,3 +247,14 @@ export async function reportIssue(event) {
 
   await collection.updateOne(filter, update);
 }
+
+
+module.exports = {
+  defaultMessageHandler,
+  sendEmailEnteredResponse,
+  sendAirtimeAmountReceived,
+  sendPhoneNumberEnteredResponses,
+  newEmailBeforeTransactResponse,
+  newPhoneNumberBeforeTransactResponse,
+  reportIssue
+};

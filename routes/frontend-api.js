@@ -1,26 +1,22 @@
 // module for frontend api
-import { Router } from 'express';
+const { Router } = require('express');
 
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
 
-import handlebars from 'handlebars';
+const handlebars = require('handlebars');
 
-import {ObjectId} from 'mongodb';
+const axios = require('axios');
 
-import axios from 'axios';
-
-import {
+const {
   removeFromPendingAddToSettled,
   retryAllFailedDelivery,
-} from './../modules/helper_functions.js';
+} = require('./../modules/helper_functions.js');
 
-import { default as fs } from 'node:fs';
+const fsP = require('fs').promises;
 
-const fsP = fs.promises;
+const createClient =  require('./../modules/mongodb.js');
 
-import { createClient } from './../modules/mongodb.js';
-
-export const router = Router();
+const router = Router();
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -122,3 +118,5 @@ router.get('/fetch-failed-transactions', async (req, res) => {
     res.json({ error: err });
   }
 });
+
+module.exports = router;

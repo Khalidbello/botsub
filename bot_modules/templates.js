@@ -1,7 +1,6 @@
-import { default as fs } from 'node:fs';
-const fsP = fs.promises;
+const fsP = require('fs').promises;
 
-export const responseServices = {
+const responseServices = {
   type: 'template',
   payload: {
     template_type: 'button',
@@ -26,7 +25,7 @@ export const responseServices = {
   },
 }; // end of responseServices
 
-export const dataNetworks1 = {
+const dataNetworks1 = {
   type: 'template',
   payload: {
     template_type: 'button',
@@ -46,7 +45,7 @@ export const dataNetworks1 = {
   },
 };
 
-export const dataNetworks2 = {
+const dataNetworks2 = {
   type: 'template',
   payload: {
     template_type: 'button',
@@ -67,7 +66,7 @@ export const dataNetworks2 = {
 }; // end of dataNetworks
 
 // button for comfirm data purchase
-export const confrimDataPurchaseButton1 = {
+const confrimDataPurchaseButton1 = {
   type: 'template',
   payload: {
     template_type: 'button',
@@ -87,7 +86,7 @@ export const confrimDataPurchaseButton1 = {
   },
 }; // end of confrimDataPurchaseButton
 
-export const confrimDataPurchaseButton2 = {
+const confrimDataPurchaseButton2 = {
   type: 'template',
   payload: {
     template_type: 'button',
@@ -110,7 +109,7 @@ export const confrimDataPurchaseButton2 = {
 //=================================================
 // section for airtime templates
 
-export const airtimeNetworks1 = {
+const airtimeNetworks1 = {
   type: 'template',
   payload: {
     template_type: 'button',
@@ -140,7 +139,7 @@ export const airtimeNetworks1 = {
   },
 }; // end of dataNetworks1
 
-export const airtimeNetworks2 = {
+const airtimeNetworks2 = {
   type: 'template',
   payload: {
     template_type: 'button',
@@ -196,7 +195,7 @@ function generatePostbackTemplate(buttons, network, i) {
   return template;
 }
 
-export async function generateFacebookPosts(id, network) {
+async function generateFacebookPosts(id, network) {
   const file = JSON.parse(await fsP.readFile('files/data-details.json', 'utf-8'));
   const data = file[id];
   const templates = [];
@@ -232,11 +231,14 @@ export async function generateFacebookPosts(id, network) {
   return templates;
 }
 
-/*/ Example usage
-const jsonFile = "data.json";
-const postTemplates = generateFacebookPosts(jsonFile);
-postTemplates.forEach((template, index) => {
-  console.log(`Post Template ${index + 1}:`);
-  console.log(JSON.stringify(template, null, 2));
-  console.log("--------------------");
-});*/
+
+module.exports = {
+  responseServices,
+  dataNetworks1,
+  dataNetworks2,
+  confrimDataPurchaseButton1,
+  confrimDataPurchaseButton2,
+  airtimeNetworks1,
+  airtimeNetworks2,
+  generateFacebookPosts
+}

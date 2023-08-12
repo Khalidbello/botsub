@@ -1,20 +1,18 @@
 // module to deliver value
 
-import Flutterwave from 'flutterwave-node-v3';
+const Flutterwave = require('flutterwave-node-v3');
 
-import request from 'request';
+const request = require('request');
 
-import handlebars from 'handlebars';
+const handlebars = require('handlebars');
 
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
 
-import { generateRandomString } from './helper_functions.js';
+const { generateRandomString } = require('./helper_functions.js');
 
-import { createClient } from './mongodb.js';
+const createClient = require('./mongodb.js');
 
-import { default as fs } from 'node:fs';
-
-const fsP = fs.promises;
+const fsP = require('fs').promises;
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -24,7 +22,9 @@ const transporter = nodemailer.createTransport({
   },
 }); // end of transporter
 
-export function deliverValue(response, req, res, requirementMet) {
+
+
+function deliverValue(response, req, res, requirementMet) {
   if (requirementMet.type == 'data') {
     return deliverData(response, req, res);
   } else if (requirementMet.type == 'airtime') {
@@ -300,3 +300,6 @@ async function topUpBalance() {
     console.log('balance top up error', err);
   }
 }
+
+
+module.exports = deliverValue;

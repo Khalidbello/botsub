@@ -1,15 +1,14 @@
-import { default as fs } from 'node:fs';
-const fsP = fs.promises;
+const fsP = require('fs').promises;
 
-import sendMessage from './send_message.js';
+const sendMessage = require('./send_message.js');
 
-import { responseServices } from './templates.js';
+const { responseServices } = require('./templates.js');
 
-import sendTemplate from './send_templates.js';
+const sendTemplate = require('./send_templates.js');
 
-import { sendNewConversationResponse, cancelTransaction } from './postback_responses.js';
+const { sendNewConversationResponse, cancelTransaction } = require('./postback_responses.js');
 
-import {
+const {
   sendEmailEnteredResponse,
   sendPhoneNumberEnteredResponses,
   newEmailBeforeTransactResponse,
@@ -17,11 +16,11 @@ import {
   sendAirtimeAmountReceived,
   defaultMessageHandler,
   reportIssue,
-} from './message_responses.js';
+} = require('./message_responses.js');
 
-import { createClient } from './../modules/mongodb.js';
+const createClient = require('./../modules/mongodb.js');
 
-export default async function processMessage(event, res) {
+async function processMessage(event, res) {
   // check user previousky stored action to determine
   // how to respond to user messages
   const senderId = event.sender.id;
@@ -73,4 +72,7 @@ export default async function processMessage(event, res) {
     /*await sendMessage(senderId, { text: "Hy what can i do for you" })
       sendTemplate(senderId, responseServices);*/
   }
-} // end
+}; // end
+
+
+module.exports = processMessage;

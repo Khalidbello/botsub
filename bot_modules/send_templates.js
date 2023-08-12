@@ -1,8 +1,8 @@
 // module to send templates
 
-import axios from 'axios';
+const axios = require('axios');
 
-export default async function sendTemplates(senderId, template) {
+async function sendTemplates(senderId, template) {
   const request_body = {
     recipient: { id: senderId },
     message: {
@@ -19,3 +19,6 @@ export default async function sendTemplates(senderId, template) {
       console.log('Error sending message:', error.response.data.error.message);
     });
 } // end of sendTemplates
+
+
+module.exports = sendTemplates;

@@ -1,4 +1,4 @@
-import {
+const {
   sendNewConversationResponse,
   sendPurchaseDataReponse,
   sendMtnOffers,
@@ -13,11 +13,11 @@ import {
   changePhoneNumber,
   cancelTransaction,
   issueReport,
-} from './postback_responses.js';
+} = require('./postback_responses.js');
 
 //import {createClient} from "./../modules/mongodb.js";
 
-export default async function processPostback(event, res) {
+async function processPostback(event, res) {
   // first set nextAction to null
   if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);
@@ -83,3 +83,6 @@ export default async function processPostback(event, res) {
       break;
   }
 } // end of processPostback
+
+
+module.exports = processPostback;

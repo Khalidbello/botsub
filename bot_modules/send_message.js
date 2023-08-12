@@ -1,6 +1,6 @@
-import axios from 'axios';
+const axios = require('axios');
 
-export default async function sendMessage(sender_psid, response, cb = false, rep) {
+async function sendMessage(sender_psid, response, cb = false, rep) {
   // Construct the message body
   let request_body = {
     messaging_type: 'RESPONSE',
@@ -21,4 +21,7 @@ export default async function sendMessage(sender_psid, response, cb = false, rep
 
   resp = await resp.data;
   console.log(resp);
-}
+};
+
+
+module.exports = sendMessage;

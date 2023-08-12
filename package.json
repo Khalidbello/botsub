@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "data and airtime top up vtu site",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test1": "NODE_ENV=development node index.js",
     "start": "node index.js"

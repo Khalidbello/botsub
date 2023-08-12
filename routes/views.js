@@ -1,17 +1,12 @@
 // module to serve views
 
-import { Router } from 'express';
+const { Router } = require('express');
 
-import path from 'path';
+const path = require('path');
 
-import { fileURLToPath } from 'url';
+const { fileURLToPath } = require('url');
 
-//setting __filename since its not supported in type: module
-const __filename = fileURLToPath(import.meta.url);
-
-const __dirname = path.dirname(__filename);
-
-export const router = Router();
+const router = Router();
 
 const TEST = process.env.NODE_ENV === 'development';
 
@@ -66,3 +61,6 @@ router.get('/refund-mail', (req, res) => {
 router.get('/survey-mail', (req, res) => {
   res.sendFile('/home/runner/qsub0/modules/email-templates/survey-recieved-mail.html');
 });
+
+
+module.exports = router;

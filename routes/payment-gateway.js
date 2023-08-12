@@ -1,29 +1,25 @@
 // module for things related to payment gate ways
-import { default as fs } from 'node:fs';
+const fsP = require('fs').promises;
 
-const fsP = fs.promises;
+const flutterwave = require('flutterwave-node-v3');
 
-import cyclicDB from 'cyclic-dynamodb';
+const { Router } = require('express');
 
-import flutterwave from 'flutterwave-node-v3';
-
-import { Router } from 'express';
-
-import {
+const {
   checkIfPreviouslyDelivered,
   returnPreviouslyDelivered,
   checkRequirementMet,
   refundPayment,
   generateRandomString,
-} from './../modules/helper_functions.js';
+} = require('./../modules/helper_functions.js');
 
-import { deliverValue } from './../modules/deliver-value.js';
+const deliverValue = require('./../modules/deliver-value.js');
 
 //import nodemailer from "nodemailer";
 
-import axios from 'axios';
+const axios = require('axios');
 
-export const router = Router();
+const router = Router();
 
 // route for confirming payment and calling payment deliver function
 router.get('/confirm', async (req, res) => {
@@ -32,7 +28,7 @@ router.get('/confirm', async (req, res) => {
     return res.json({ status: 'error', message: 'query parameters missing' });
   }
 
-  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
+  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.F_S_R);
   const response = await flw.Transaction.verify({ id: req.query.transaction_id }).catch((err) => {
     return res.json({ status: 'error', message: 'failed to check transaction' });
   }); // end of check transaction call
@@ -164,3 +160,6 @@ router.get('/test', async (req, res) => {
     res.json({ status: 'error' });
   }
 });
+
+
+module.exports = router;

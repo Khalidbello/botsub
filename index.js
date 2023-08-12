@@ -3,18 +3,18 @@
 // making configurations for different environmet
 
 
-import express from "express";
-import handlebars from "express-handlebars";
-import path from 'path';
-import { fileURLToPath } from 'url';
+const express  = require("express");
+const handlebars = require("express-handlebars");
+const path = require('path');
+const { fileURLToPath } = require('url');
 
 
 
 // importing modules to handle different routes 
-import { router as viewsRouter } from "./routes/views.js";
-import { router as frontEndApiRouter } from "./routes/frontend-api.js";
-import { router as paymentGateWayRouter } from "./routes/payment-gateway.js";
-import { router as fbBotRouter } from "./routes/fb-bot-webhook.js";
+const viewsRouter = require("./routes/views.js");
+const frontEndApiRouter = require("./routes/frontend-api.js");
+const paymentGateWayRouter = require("./routes/payment-gateway.js");
+const fbBotRouter = require("./routes/fb-bot-webhook.js");
 
 // adding configurations for environment
 
@@ -46,11 +46,9 @@ if (process.env.NODE_ENV == "development") {
 
 
 // setting __filename since its not supported in type: module
-const __filename = fileURLToPath(import.meta.url);
 console.log(__filename)
 
 // // setting __dirname since its not supported in type: module
-const __dirname = path.dirname(__filename);
 console.log('directory-name 👉️', __dirname);
 
 

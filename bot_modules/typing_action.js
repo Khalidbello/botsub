@@ -1,6 +1,6 @@
-import axios from 'axios';
+const axios = require('axios');
 
-export default async function typingAction(sender_psid) {
+async function typingAction(sender_psid) {
   // Construct the message body
   let request_body = {
     recipient: {
@@ -20,3 +20,6 @@ export default async function typingAction(sender_psid) {
   resp = await resp.data;
   console.log(resp);
 } // end of typingAction
+
+
+module.exports = typingAction;

@@ -1,26 +1,26 @@
-import sendMessage from './send_message.js';
+const sendMessage = require('./send_message.js');
 
-import sendTemplate from './send_templates.js';
+const sendTemplate = require('./send_templates.js');
 
-import axios from 'axios';
+const axios = require('axios');
 
-import getUserName from './get_user_info.js';
+const getUserName = require('./get_user_info.js');
 
-import { dateFormatter, noTransactFound } from './helper_functions.js';
+const { dateFormatter, noTransactFound } = require('./helper_functions.js');
 
-import {
+const {
   responseServices,
   dataNetworks1,
   dataNetworks2,
   generateFacebookPosts,
   airtimeNetworks1,
   airtimeNetworks2,
-} from './templates.js';
+} = require('./templates.js');
 
-import { createClient } from './../modules/mongodb.js';
+const createClient = require('./../modules/mongodb.js');
 
 // function to response to newConversations
-export async function sendNewConversationResponse(event) {
+async function sendNewConversationResponse(event) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -44,7 +44,7 @@ export async function sendNewConversationResponse(event) {
 } // end of newConversationResponse
 
 // function to respond when buy data button is clicked
-export async function sendPurchaseDataReponse(event) {
+async function sendPurchaseDataReponse(event) {
   const senderId = event.sender.id;
   const message1 = {
     text: 'Select network for data purchase',
@@ -56,7 +56,7 @@ export async function sendPurchaseDataReponse(event) {
 } // end of data purchaseResponse
 
 // function to send mtn offers
-export async function sendMtnOffers(event) {
+async function sendMtnOffers(event) {
   const senderId = event.sender.id;
   const message = {
     text: 'Select MTN data offer',
@@ -73,7 +73,7 @@ export async function sendMtnOffers(event) {
 } // end sendMtnOffers
 
 // function to send airtel offers
-export async function sendAirtelOffers(event) {
+async function sendAirtelOffers(event) {
   const senderId = event.sender.id;
   const message = {
     text: 'Select Airtel data offer',
@@ -90,7 +90,7 @@ export async function sendAirtelOffers(event) {
 } // end sendAirtelOffers
 
 // function to send glo offers
-export async function sendGloOffers(event) {
+async function sendGloOffers(event) {
   const senderId = event.sender.id;
   const message = {
     text: 'Select Glo data offer',
@@ -107,7 +107,7 @@ export async function sendGloOffers(event) {
 } // end sendGloOffers
 
 // functiin to send 9mobile offers
-export async function sendNineMobileOffers(event) {
+async function sendNineMobileOffers(event) {
   const senderId = event.sender.id;
   const message = {
     text: 'Select 9mobile data offer',
@@ -124,7 +124,7 @@ export async function sendNineMobileOffers(event) {
 } // end sendNineMobileOffers
 
 // function to respond when an offer is selected
-export async function offerSelected(event, payload) {
+async function offerSelected(event, payload) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -151,7 +151,7 @@ export async function offerSelected(event, payload) {
 // section airtime purchase
 
 // function to respond to purchaseAirtime
-export async function sendPurchaseAirtimeResponse(event) {
+async function sendPurchaseAirtimeResponse(event) {
   const senderId = event.sender.id;
 
   await sendMessage(senderId, { text: 'Select network for airtime purchase' });
@@ -160,7 +160,7 @@ export async function sendPurchaseAirtimeResponse(event) {
 } // end of sendPurchaseAirtimeResponse
 
 // function to handdle mtnAirtime
-export async function airtimePurchase(event, payload) {
+async function airtimePurchase(event, payload) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -185,7 +185,7 @@ export async function airtimePurchase(event, payload) {
 //============================================
 // issue Report responses
 
-export async function issueReport(event) {
+async function issueReport(event) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -204,7 +204,7 @@ export async function issueReport(event) {
 // generic responses
 
 // function to generate account number
-export async function generateAccountNumber(event) {
+async function generateAccountNumber(event) {
   let returnFalse;
   const senderId = event.sender.id;
   const client = createClient();
@@ -254,8 +254,9 @@ export async function generateAccountNumber(event) {
   client.close();
 } // end of generateAccountNumber
 
+
 // function to chanege email b4 transaction
-export async function changeMailBeforeTransact(event) {
+async function changeMailBeforeTransact(event) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -286,7 +287,7 @@ export async function changeMailBeforeTransact(event) {
 } // end of changeMailBeforeTransact
 
 // function to changePhoneNumber
-export async function changePhoneNumber(event) {
+async function changePhoneNumber(event) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -317,7 +318,7 @@ export async function changePhoneNumber(event) {
 } // end of  changeNumber
 
 // function to cancel transaction
-export async function cancelTransaction(event, end = false) {
+async function cancelTransaction(event, end = false) {
   const senderId = event.sender.id;
   const client = createClient();
   await client.connect();
@@ -355,3 +356,20 @@ export async function cancelTransaction(event, end = false) {
   await collection.updateOne(filter, update);
   client.close();
 } // end of cancelTransaction
+
+module.exports = {
+  sendNewConversationResponse,
+  sendPurchaseDataReponse,
+  sendMtnOffers,
+  sendAirtelOffers,
+  sendGloOffers,
+  sendNineMobileOffers,
+  offerSelected,
+  sendPurchaseAirtimeResponse,
+  airtimePurchase,
+  issueReport,
+  generateAccountNumber,
+  changeMailBeforeTransact,
+  changePhoneNumber,
+  cancelTransaction
+};

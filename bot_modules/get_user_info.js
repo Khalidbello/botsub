@@ -1,4 +1,4 @@
-import axios from 'axios';
+const axios = require('axios');
 
 // Function to get the user's name
 async function getUserName(userId) {
@@ -26,4 +26,4 @@ getUserName(userId)
     }
   });*/
 
-export default getUserName;
+module.exports = getUserName;

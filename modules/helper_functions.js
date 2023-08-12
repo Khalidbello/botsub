@@ -1,16 +1,15 @@
-import { default as fs } from 'node:fs';
 
-const fsP = fs.promises;
+const fsP = require('fs').promises;
 
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
 
-import handlebars from 'handlebars';
+const handlebars = require('handlebars');
 
-import flutterwave from 'flutterwave-node-v3';
+const flutterwave = require('flutterwave-node-v3');
 
-import axios from 'axios';
+const axios = require('axios');
 
-import { createClient } from './mongodb.js';
+const createClient = require('./mongodb.js');
 
 const uri = `mongodb+srv://bellokhalid74:${process.env.MONGO_PASS1}@botsubcluster.orij2vq.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -26,7 +25,7 @@ const transporter = nodemailer.createTransport({
 
 // function to check if transaction has ever beign made
 
-export const checkIfPreviouslyDelivered = async function (transactionId, tx_ref) {
+const checkIfPreviouslyDelivered = async function (transactionId, tx_ref) {
   const client = createClient();
   await client.connect();
   const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
@@ -43,7 +42,7 @@ export const checkIfPreviouslyDelivered = async function (transactionId, tx_ref)
   return false;
 }; //end of checkIfPreviouslyDelivered
 
-export function returnPreviouslyDelivered(response) {
+function returnPreviouslyDelivered(response) {
   const meta = response.data.meta;
   // Create a Date object with the UTC time
   const date = new Date(response.data.customer.created_at);
@@ -72,7 +71,7 @@ export function returnPreviouslyDelivered(response) {
 } // end of returnPreviouslyDelivered
 
 // function to check if all requirements are met
-export const checkRequirementMet = async function (response, req, res) {
+const checkRequirementMet = async function (response, req, res) {
   let returnFalse = false;
   let price;
   if (response.data.meta.type === 'data') {
@@ -125,7 +124,7 @@ export const checkRequirementMet = async function (response, req, res) {
 }; //end of checkRequiremtMet
 
 // helper function to refund payment
-export async function refundPayment(response, price) {
+async function refundPayment(response, price) {
   try {
     const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
     const resp = await flw.Transaction.refund({
@@ -202,7 +201,7 @@ export async function refundPayment(response, price) {
 } // end of refundPayment
 
 // function to generate random Strings
-export function generateRandomString(length = 15) {
+function generateRandomString(length = 15) {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let randomString = '';
   for (let i = 0; i < length; i++) {
@@ -214,7 +213,7 @@ export function generateRandomString(length = 15) {
 
 // finction to add transact to settled collection and remove from pending collection
 
-export async function removeFromPendingAddToSettled(transaction_id, tx_ref) {
+async function removeFromPendingAddToSettled(transaction_id, tx_ref) {
   const client = createClient();
 
   client.connect();
@@ -226,7 +225,7 @@ export async function removeFromPendingAddToSettled(transaction_id, tx_ref) {
   client.close();
 }
 
-export async function retryAllFailedDelivery(req) {
+async function retryAllFailedDelivery(req) {
   const client = createClient();
   await client.connect();
   const collection = client
@@ -267,4 +266,15 @@ export async function retryAllFailedDelivery(req) {
 
   client.close();
   return statistic;
-}
+};
+
+
+module.exports = {
+  checkIfPreviouslyDelivered,
+  returnPreviouslyDelivered,
+  checkRequirementMet,
+  refundPayment,
+  generateRandomString,
+  removeFromPendingAddToSettled,
+  retryAllFailedDelivery
+};
