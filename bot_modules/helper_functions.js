@@ -115,8 +115,13 @@ function dateFormatter(date) {
   // Create an Intl.DateTimeFormat object with the Nigeria time zone
   const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
     timeZone: 'Africa/Lagos',
-    dateStyle: 'long',
-    timeStyle: 'medium',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true, // This will format the time in 12-hour format with AM/PM
   });
   // Format the Nigeria time using the formatter
   return nigeriaFormatter.format(date0);
@@ -133,12 +138,11 @@ function txCode() {
   return code + Date.now();
 } // end of txCode
 
-
 module.exports = {
-  noTransactFound, 
-  validateNumber, 
-  confirmDataPurchaseResponse, 
+  noTransactFound,
+  validateNumber,
+  confirmDataPurchaseResponse,
   validateAmount,
   dateFormatter,
-  txCode
+  txCode,
 };

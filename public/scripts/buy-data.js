@@ -85,8 +85,6 @@ function toggleNavMenu() {
     menuIcon.style.opacity = '1';
     menuFlag = 'hidden';
   }
-  console.log(navMenu.style.left);
-  console.log(navMenu.style.display);
 } // end of toggle navMenu
 // function to fetch data and render offers for all networks
 
@@ -96,7 +94,7 @@ async function renderOffers() {
   // seting value for flwKey
   console.log(datas);
   flwKey = datas.FLW_PB_KEY;
-  console.log('fkutter key', flwKey);
+  //alert(flwKey);
 
   for (let data in datas['1']) {
     _helper(datas['1'][data], mtnOffers);
@@ -190,7 +188,7 @@ function showNetwork(ele) {
     blur.style.display = 'block';
     currentBox = networks;
   }, 10);
-}
+};
 
 //function to be called when the value of select network changes
 
@@ -200,7 +198,7 @@ function networkChange() {
   offerBox.dataset.details = null;
   offerBox.innerHTML = '<option selected hidden' + " value='empty' disabled>••••••••</option>";
   offerBox.dataset.network = null;
-} // end networkChange
+}; // end networkChange
 
 //function to hide boxes
 
@@ -222,7 +220,7 @@ function hideBox() {
       ele.style.backgroundColor = 'transparent';
     }
   }, 500);
-} // end hideBox
+}; // end hideBox
 
 // function to react to animationend
 
@@ -403,7 +401,8 @@ async function getContact() {
   } catch (ex) {
     handlePhoneError();
   };*/
-}
+};
+
 
 // function to be called  by email field and number field
 
@@ -447,6 +446,28 @@ changeBorder = function () {
   }
 }; // end of changeBorder
 
+
+// validate number when clicked
+function validateNigeriaPhoneNumber(number) {
+    if (number.length !== 11) {
+        return false;
+    }
+    if (number[0] !== '0') {
+        return false;
+    }
+    const secondDigit = parseInt(number[1]);
+    if (secondDigit < 7 || secondDigit > 9) {
+        return false;
+    }
+    for (let i = 2; i < 11; i++) {
+        if (isNaN(parseInt(number[i]))) {
+            return false;
+        }
+    }
+    return true;
+}; // end of validtae nigeria number
+
+
 // function to validate form
 function formValidate() {
   let eve = event;
@@ -465,7 +486,7 @@ function formValidate() {
     eve.preventDefault();
     return;
   }
-  if (number.dataset.pass !== 'true' || !number.checkValidity()) {
+  if (!number.checkValidity() || !validateNigeriaPhoneNumber(number.value)) {
     _showFieldError(number, numberWarning, '10%');
     eve.preventDefault();
     return;
@@ -530,8 +551,6 @@ hideInvalidNumberBox = function () {
 }; // end of hideInvalidNumberBox
 
 makePayment = function () {
-  alert(offerBox.dataset.index);
-  alert(offerBox.dataset.size);
   FlutterwaveCheckout({
     public_key: flwKey,
     tx_ref: txCode(),
@@ -552,9 +571,9 @@ makePayment = function () {
       email: email.value,
     },
     customizations: {
-      title: 'Qsub',
-      description: 'payment for airtime purchase',
-      logo: 'https://qsub.cyclic.app/images/logo.png',
+      title: 'BotSub',
+      description: 'payment for data purchase',
+      logo: 'https://test.botsub.com.ng/images/chatbot.png',
     },
   });
 }; // end of makePayment

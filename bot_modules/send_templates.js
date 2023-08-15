@@ -20,5 +20,4 @@ async function sendTemplates(senderId, template) {
     });
 } // end of sendTemplates
 
-
 module.exports = sendTemplates;

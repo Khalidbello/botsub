@@ -72,7 +72,6 @@ async function processMessage(event, res) {
     /*await sendMessage(senderId, { text: "Hy what can i do for you" })
       sendTemplate(senderId, responseServices);*/
   }
-}; // end
-
+} // end
 
 module.exports = processMessage;

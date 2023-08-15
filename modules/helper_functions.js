@@ -1,4 +1,3 @@
-
 const fsP = require('fs').promises;
 
 const nodemailer = require('nodemailer');
@@ -266,8 +265,7 @@ async function retryAllFailedDelivery(req) {
 
   client.close();
   return statistic;
-};
-
+}
 
 module.exports = {
   checkIfPreviouslyDelivered,
@@ -276,5 +274,5 @@ module.exports = {
   refundPayment,
   generateRandomString,
   removeFromPendingAddToSettled,
-  retryAllFailedDelivery
+  retryAllFailedDelivery,
 };

@@ -217,6 +217,8 @@ async function generateAccountNumber(event) {
 
   const payload = user.purchasePayload;
   payload.email = user.email;
+  payload.bot = true;
+  payload.senderId = senderId;
 
   let response = await axios
     .post(`https://${process.env.HOST}/gateway/transfer-account`, payload)
@@ -253,7 +255,6 @@ async function generateAccountNumber(event) {
   cancelTransaction(event, true);
   client.close();
 } // end of generateAccountNumber
-
 
 // function to chanege email b4 transaction
 async function changeMailBeforeTransact(event) {
@@ -327,7 +328,7 @@ async function cancelTransaction(event, end = false) {
 
   // delete purchase payload here
   if (end) {
-    await sendMessage(senderId, { text: 'Transaction Concluded' });
+    //await sendMessage(senderId, { text: 'Transaction Concluded' });
     const filter = { id: senderId };
     const update = {
       $set: {
@@ -371,5 +372,5 @@ module.exports = {
   generateAccountNumber,
   changeMailBeforeTransact,
   changePhoneNumber,
-  cancelTransaction
+  cancelTransaction,
 };

@@ -14,5 +14,4 @@ function createClient() {
   return client;
 } // end of createClient
 
-
 module.exports = createClient;

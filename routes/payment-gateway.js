@@ -1,7 +1,8 @@
 // module for things related to payment gate ways
-const fsP = require('fs').promises;
 
 const flutterwave = require('flutterwave-node-v3');
+
+const sendMessage = require('./../bot_modules/send_message.js');
 
 const { Router } = require('express');
 
@@ -24,15 +25,17 @@ const router = Router();
 // route for confirming payment and calling payment deliver function
 router.get('/confirm', async (req, res) => {
   //console.log(req.query.webhook);
+  console.log('req body', req.query);
   if (!req.query.transaction_id || !req.query.tx_ref) {
     return res.json({ status: 'error', message: 'query parameters missing' });
   }
 
-  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.F_S_R);
+  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const response = await flw.Transaction.verify({ id: req.query.transaction_id }).catch((err) => {
     return res.json({ status: 'error', message: 'failed to check transaction' });
   }); // end of check transaction call
 
+  console.log('transaction details', response);
   if (response.status == 'error') {
     return res.json({ status: 'error', message: 'error fetching transaction' });
   }
@@ -59,6 +62,13 @@ router.get('/confirm', async (req, res) => {
   // calling refund payment if proper conditions were not met
   const finalResp = await refundPayment(response, requirementMet.price);
   console.log('refunding payment', finalResp);
+
+  if (response.data.meta.bot) {
+    await sendMessage(response.data.meta.senderId, {
+      text: `Sorry your Transaction failed due to some reasons  \nTransaction ID: ${response.data.id}`,
+    });
+  }
+
   return res.json(finalResp);
 }); //end of confirm payment routes
 
@@ -78,6 +88,8 @@ router.post('/transfer-account', async (req, res) => {
         index: datas.index,
         type: datas.transactionType,
         size: datas.size,
+        bot: datas.bot,
+        senderId: datas.senderId,
       };
     } else if (datas.transactionType == 'airtime') {
       payload = {
@@ -86,6 +98,8 @@ router.post('/transfer-account', async (req, res) => {
         amount: datas.price,
         type: datas.transactionType,
         number: datas.phoneNumber,
+        bot: datas.bot,
+        senderId: datas.senderId,
       };
     }
     console.log('bot purchase payload', payload);
@@ -100,7 +114,7 @@ router.post('/transfer-account', async (req, res) => {
 
     const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
     const response = await flw.Charge.bank_transfer(details);
-    console.log(response);
+    console.log('transfer account details', response);
     res.json(response);
   } catch (err) {
     console.log('transfer accoun err', err);
@@ -113,7 +127,7 @@ router.post('/transfer-account', async (req, res) => {
 router.post('/webhook', (req, res) => {
   console.log('am in webhook');
   // If you specified a secret hash, check for the signature
-  const mySecret = process.env['FLW_H'];
+  const mySecret = process.env.FLW_H;
   const signature = req.headers['verif-hash'];
 
   if (!signature || signature != mySecret) {
@@ -160,6 +174,5 @@ router.get('/test', async (req, res) => {
     res.json({ status: 'error' });
   }
 });
-
 
 module.exports = router;

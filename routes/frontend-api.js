@@ -14,7 +14,7 @@ const {
 
 const fsP = require('fs').promises;
 
-const createClient =  require('./../modules/mongodb.js');
+const createClient = require('./../modules/mongodb.js');
 
 const router = Router();
 
@@ -31,6 +31,11 @@ router.get('/data-offers', async (req, res) => {
   dataOffers = JSON.parse(dataOffers);
   dataOffers.FLW_PB_KEY = process.env.FLW_PB_KEY;
   res.json(dataOffers);
+});
+
+// to get key
+router.get('/get-key', (req, res) => {
+  res.json({ key: process.env.FLW_PB_KEY });
 });
 
 // route to recieve and  save survey datas
@@ -53,17 +58,15 @@ router.post('/survey', async (req, res) => {
     console.log('mail send response', resp);
 
     const client = createClient();
-  await client.connect();
-  const collection = client
-    .db(process.env.BOTSUB_DB)
-    .collection(process.env.USERS_COLLECTION);
-    
-    const filter = {user: req.body.emai};
-    const update = {$set: {survey: req.body}};
-    const option = {upsert: true}
+    await client.connect();
+    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.USERS_COLLECTION);
+
+    const filter = { user: req.body.emai };
+    const update = { $set: { survey: req.body } };
+    const option = { upsert: true };
     const survey = await collection.updateOne(filter, update, option);
-    
-    console.log("survey stored", survey);
+
+    console.log('survey stored', survey);
     client.close();
 
     res.json({ status: 'success' });

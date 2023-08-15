@@ -62,5 +62,4 @@ router.get('/survey-mail', (req, res) => {
   res.sendFile('/home/runner/qsub0/modules/email-templates/survey-recieved-mail.html');
 });
 
-
 module.exports = router;

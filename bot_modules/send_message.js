@@ -21,7 +21,6 @@ async function sendMessage(sender_psid, response, cb = false, rep) {
 
   resp = await resp.data;
   console.log(resp);
-};
-
+}
 
 module.exports = sendMessage;

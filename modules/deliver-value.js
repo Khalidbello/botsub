@@ -12,6 +12,8 @@ const { generateRandomString } = require('./helper_functions.js');
 
 const createClient = require('./mongodb.js');
 
+const sendMessage = require('./../bot_modules/send_message.js');
+
 const fsP = require('fs').promises;
 
 const transporter = nodemailer.createTransport({
@@ -21,8 +23,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 }); // end of transporter
-
-
 
 function deliverValue(response, req, res, requirementMet) {
   if (requirementMet.type == 'data') {
@@ -51,25 +51,36 @@ async function deliverData(response, req, res) {
     json: true,
   };
   // making request
-  request(options, (error, _, body) => {
+  request(options, async (error, _, body) => {
     if (error) {
       console.log(error);
       return res.send(error);
     }
     //console.log('data purchase resp', resp.body);
-    console.log('data purchase resp body 001', body);
+    console.log('data purchase resp body: ', body);
     // to do dependent transaction status
     if (body.Status === 'successful') {
       addToDelivered(req);
       // calling function to send mail and json response object
       sendSuccessfulResponse(response, res);
 
+      if (response.data.meta.bot) {
+        await sendMessage(response.data.meta.senderId, {
+          text: `Transaction Succesful \nTransaction ID: ${response.data.id}`,
+        });
+      }
       //if (parseInt(body.balance_after) <= 5000) topUpBalance();
       return;
     } else if (true) {
       console.log('got hrre failed');
       addToFailedToDeliver(req);
-      return sendFailedToDeliverResponse(response, res);
+      sendFailedToDeliverResponse(response, res);
+
+      if (response.data.meta.bot) {
+        await sendMessage(response.data.meta.senderId, {
+          text: `Sorry your Transaction is Pending \nTransaction ID: ${response.data.id}`,
+        });
+      }
     }
   });
 } // end of deliver value function
@@ -95,7 +106,7 @@ async function deliverAirtime(response, req, res) {
   };
 
   // making request
-  request(options, (error, _, body) => {
+  request(options, async (error, _, body) => {
     if (error) {
       console.log(error);
       return res.send(error);
@@ -103,16 +114,26 @@ async function deliverAirtime(response, req, res) {
     //console.log('airtime purchase resp', resp.body);
     console.log('bodyof request ', body);
     // to do dependent transaction status
-    if (true || body.Status === 'successful') {
+    if (body.Status === 'successful') {
       addToDelivered(req);
       // calling function to send mail and json response object
       sendSuccessfulResponse(response, res);
 
+      if (response.data.meta.bot) {
+        await sendMessage(response.data.meta.senderId, {
+          text: `Transaction Succesful \nTransaction ID: ${response.data.id}`,
+        });
+      }
       //if (parseInt(body.balance_after) <= 5000) topUpBalance();
       return;
     } else {
       addToFailedToDeliver(req);
-      return sendFailedToDeliverResponse(response, res);
+      sendFailedToDeliverResponse(response, res);
+      if (response.data.meta.bot) {
+        await sendMessage(response.data.meta.senderId, {
+          text: `Sorry your Transaction is Pending \nTransaction ID: ${response.data.id}`,
+        });
+      }
     }
   });
 } // end of deliverAirtime
@@ -261,11 +282,18 @@ function formResponse(response) {
   // create a Date object with the UTC time
   const date = new Date(response.data.customer.created_at);
   // Create an Intl.DateTimeFormat object with the Nigeria time zone
+
   const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
     timeZone: 'Africa/Lagos',
-    dateStyle: 'long',
-    timeStyle: 'medium',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true, // This will format the time in 12-hour format with AM/PM
   });
+
   // Format the Nigeria time using the formatter
   const nigeriaTimeString = nigeriaFormatter.format(date);
   const details = {
@@ -300,6 +328,5 @@ async function topUpBalance() {
     console.log('balance top up error', err);
   }
 }
-
 
 module.exports = deliverValue;

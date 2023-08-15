@@ -84,5 +84,4 @@ async function processPostback(event, res) {
   }
 } // end of processPostback
 
-
 module.exports = processPostback;

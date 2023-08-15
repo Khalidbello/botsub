@@ -8,7 +8,7 @@ const { Router } = require('express');
 
 const router = Router();
 
-router.get('/fb-hook', function(req, res) {
+router.get('/fb-hook', function (req, res) {
   console.log(process.env.FB_VERIFY_TOKEN);
   console.log(req.query['hub.verify_token']);
   if (req.query['hub.verify_token'] === process.env.FB_VERIFY_TOKEN) {
@@ -20,14 +20,14 @@ router.get('/fb-hook', function(req, res) {
   }
 }); // end of webhook get req
 
-router.post('/fb-hook', async function(req, res) {
+router.post('/fb-hook', async function (req, res) {
   //checking for page subscription.
   if (req.body.object === 'page') {
     /* Iterate over each entry, there can be multiple entries allbacks are batched. */
-    req.body.entry.forEach(function(entry) {
+    req.body.entry.forEach(function (entry) {
       // Iterate over each messaging event
       console.log('entry,0', entry);
-      entry.messaging.forEach(function(event) {
+      entry.messaging.forEach(function (event) {
         console.log(event);
         let sender_psid = event.sender.id;
         console.log('Sender PSID: ' + sender_psid);
@@ -117,6 +117,5 @@ router.get('/set-get-started', (req, res) => {
       console.error('Failed to set the get started payload:', error);
     });
 });
-
 
 module.exports = router;

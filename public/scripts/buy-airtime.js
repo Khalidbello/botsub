@@ -26,6 +26,15 @@ let validNumbers = {
   airtel: ['0907', '0708', '0802', '0902', '0812', '0808', '0701', '0904'],
 };
 
+let key;
+
+async function getKey() {
+  const response = await fetch('front-api/get-key');
+  const datas = await response.json();
+  key = datas.key
+}; 
+getKey();
+
 //adding event listener for animation to networks
 //networks.addEventListener("animationend", endListener, false);
 
@@ -387,7 +396,7 @@ hideInvalidNumberBox = function () {
 makePayment = function (event) {
   console.log(networkBox.dataset);
   FlutterwaveCheckout({
-    public_key: 'FLWPUBK_TEST-2248d6a5fde7469314a61c4fd3aa86b1-X',
+    public_key: key,
     tx_ref: txCode(),
     amount: parseInt(amount.value),
     currency: 'NGN',
@@ -403,9 +412,9 @@ makePayment = function (event) {
       email: email.value,
     },
     customizations: {
-      title: 'Qsub',
-      description: 'payment for airtime purchase',
-      logo: 'https://qsub.cyclic.app/logo.png',
+      title: 'BotSub',
+      description: 'payment for data purchase',
+      logo: 'https://test.botsub.com.ng/images/chatbot.png',
     },
   });
   event.preventDefault();

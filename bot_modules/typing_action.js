@@ -21,5 +21,4 @@ async function typingAction(sender_psid) {
   console.log(resp);
 } // end of typingAction
 
-
 module.exports = typingAction;

@@ -231,7 +231,6 @@ async function generateFacebookPosts(id, network) {
   return templates;
 }
 
-
 module.exports = {
   responseServices,
   dataNetworks1,
@@ -240,5 +239,5 @@ module.exports = {
   confrimDataPurchaseButton2,
   airtimeNetworks1,
   airtimeNetworks2,
-  generateFacebookPosts
-}
+  generateFacebookPosts,
+};

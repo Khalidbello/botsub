@@ -17,7 +17,6 @@ async function sendMail(mailOptions) {
       console.log('mail sent');
     }
   });
-};
-
+}
 
 module.exports = sendMail;

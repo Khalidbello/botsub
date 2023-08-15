@@ -248,7 +248,6 @@ async function reportIssue(event) {
   await collection.updateOne(filter, update);
 }
 
-
 module.exports = {
   defaultMessageHandler,
   sendEmailEnteredResponse,
@@ -256,5 +255,5 @@ module.exports = {
   sendPhoneNumberEnteredResponses,
   newEmailBeforeTransactResponse,
   newPhoneNumberBeforeTransactResponse,
-  reportIssue
+  reportIssue,
 };
