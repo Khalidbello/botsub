@@ -205,9 +205,12 @@ function showErroneousSurvey() {
 }
 
 //function to resetSurvey
-function resetSurvey() {
+function resetSurvey(event) {
+  console.log("reset target", event.target);
+  setTimeout(()=>   event.target.style["background-color"] = "red", 200)
   // resetting email field
   emailInput.value = '';
+  emailInput.style.borderColor = "#ccc";
 
   prevSlide((reset = true));
   errorBox.style.top = '-300px';

@@ -19,7 +19,7 @@ const createClient = require('./../modules/mongodb.js');
 const router = Router();
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_ADDRESS,
     pass: process.env.EMAIL_PASS,

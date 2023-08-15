@@ -114,6 +114,7 @@ header > img {
   padding: 10px;
   margin-top: 10px;
   border-radius: 10px;
+  position: relative;
 }
 
 .listing button {
@@ -148,6 +149,7 @@ header > img {
 .features {
   border-left: 2px solid darkorange;
   border-radius: 0 10px 10px 0;
+  position: relative;
 }
 
 .carousel {
