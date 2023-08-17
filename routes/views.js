@@ -47,19 +47,27 @@ router.get('/test', (req, res) => {
 });
 
 router.get('/success-mail', (req, res) => {
-  res.sendFile(`${__dirname + '/../modules/email-templates/successful-delivery.html'}`);
+  const file = path.join(__dirname, '../modules/email-templates/succesfull-mail.html');
+  res.sendFile(file);
 });
 
 router.get('/failed-mail', (req, res) => {
-  res.sendFile('/home/runner/qsub0/modules/email-templates/failed-delivery.html');
+  const file = path.join(__dirname, '../modules/email-templates/failed-delivery.html');
+  res.sendFile(file);
 });
 
 router.get('/refund-mail', (req, res) => {
-  res.sendFile('/home/runner/qsub0/modules/email-templates/refund-mail.html');
+  const file = path.join(__dirname, '../modules/email-templates/refund-email.html');
+  res.sendFile(file);
 });
 
 router.get('/survey-mail', (req, res) => {
-  res.sendFile('/home/runner/qsub0/modules/email-templates/survey-recieved-mail.html');
+  const file = path.join(__dirname, '../modules/email-templates/survey-mail.html');
+  res.sendFile(file);
+});
+
+router.get('/env-test', (req, res)=> {
+  res.send("variables: " + process.env);
 });
 
 module.exports = router;
