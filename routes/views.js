@@ -8,7 +8,7 @@ const { fileURLToPath } = require('url');
 
 const router = Router();
 
-const TEST = process.env.NODE_ENV === 'development';
+const TEST = false; //process.env.NODE_ENV === 'development';
 
 router.get('/', (req, res) => {
   res.render('home', { TEST });
