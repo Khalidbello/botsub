@@ -8,6 +8,12 @@
     "6": {"networkID": 1, "planID": 43, "size": "10GB", "price": 2300, "validity": "one month", "index": "6"}
   },
   "2": {
-    
+    "6": {"networkID": 1, "planID": 43, "size": "10GB", "price": 2300, "validity": "one month", "index": "6"}
+  },
+  "3": {
+    "6": {"networkID": 1, "planID": 43, "size": "10GB", "price": 2300, "validity": "one month", "index": "6"}
+  },
+  "4": {
+    "6": {"networkID": 1, "planID": 43, "size": "10GB", "price": 2300, "validity": "one month", "index": "6"}
   }
 }

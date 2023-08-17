@@ -166,17 +166,17 @@
               <th>Price</th>
               <th>Validity</th>
             </tr>
-            <% _.each(products, function(data, key) { %>
+            \{{#each products}}
               <tr>
-                <td><%- data.size %></td>
-                <td><%- data.price %></td>
-                <td><%- data.validity %></td>
-      </      </tr>
-            <% }); %>
+                <td>\{{this.size}}</td>
+                <td>\{{this.price}}</td>
+                <td>\{{this.validity}}</td>
+              </tr>
+            \{{/each}}
           </table>
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.1/underscore-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.min.js"></script>
 
     <script>
       const menuIcon = document.getElementById('menu-icon');
@@ -214,7 +214,7 @@
       }
 
       // forming tables
-      const tableTemplate = _.template(document.querySelector('#table-template').innerHTML);
+      const tableTemplate = Handlebars.compile(document.querySelector('#table-template').innerHTML);
       const mtnSect = document.querySelector('#mtn-table');
       const airtelSect = document.querySelector('#airtel-table');
       const gloSect = document.querySelector('#glo-table');
