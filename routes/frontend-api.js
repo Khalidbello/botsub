@@ -29,7 +29,7 @@ const transporter = nodemailer.createTransport({
 router.get('/data-offers', async (req, res) => {
   let dataOffers = await fsP.readFile('files/data-details.json');
   dataOffers = JSON.parse(dataOffers);
-  dataOffers.FLW_PB_KEY = process.env.FLW_PB_KEY;
+  dataOffers.FLW_PB_KEY = process.env.NODE_ENV;
   res.json(dataOffers);
 });
 
