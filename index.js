@@ -15,7 +15,7 @@ const fbBotRouter = require('./routes/fb-bot-webhook.js');
 
 // adding configurations for environment
 
-if (process.env.NODE_ENV == 'development') {
+if (process.env.NODE_ENV === 'Development') {
   console.log('in development mode');
   const env = process.env;
   env.FLW_PB_KEY = env.FLW_TEST_PB_KEY;
@@ -28,7 +28,7 @@ if (process.env.NODE_ENV == 'development') {
   env.USERS_COLLECTION = env.USERS_COLLECTION_TEST;
 } else if (process.env.NODE_ENV === 'staging') {
   console.log('in staging mode');
-} else if (process.env.NODE_ENV === 'production') {
+} else if (process.env.NODE_ENV === 'Production') {
   console.log('in production mode');
   const env = process.env;
   env.FLW_PB_KEY = process.env.F_P_K;
