@@ -67,7 +67,7 @@ router.get('/survey-mail', (req, res) => {
 });
 
 router.get('/env-test', (req, res)=> {
-  res.send("variables: " + process.env);
+  res.send("variables: " + process.env.NODE_ENV);
 });
 
 module.exports = router;
