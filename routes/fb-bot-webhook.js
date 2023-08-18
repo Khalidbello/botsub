@@ -16,7 +16,7 @@ router.get('/fb-hook', function (req, res) {
     res.status(200).send(req.query['hub.challenge']);
   } else {
     console.error('verification failed. Token mismatch.');
-    res.sendStatus(403);
+    res.sendStatus(403).send("403 does not match");
   }
 }); // end of webhook get req
 
