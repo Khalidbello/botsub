@@ -65,18 +65,12 @@ const noCacheMiddleware = (req, res, next) => {
   next();
 };
 
+// static middleware
+app.use(express.static('public'));
+
 // Use the middleware for all routes
 app.use(noCacheMiddleware);
 
-
-/*if (process.env.NODE_ENV !== 'production') {
-  app.use((req, res, next) => {
-    res.setHeader('Cache-Control', 'no-store');
-    next();
-  });
-}*/
-
-app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
