@@ -1,4 +1,5 @@
 // module to serve views
+const axios = require('axios');
 
 const { Router } = require('express');
 
@@ -16,6 +17,19 @@ router.get('/env-test', (req, res)=> {
   res.send("variables: " + process.env.NODE_ENV);
 });
 
+router.get('/test-1', async (req, res) => {
+  try {
+    // Make a request to the JSONPlaceholder API
+    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+
+    // Return the data to the frontend
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'An error occurred while fetching data' });
+  }
+});
+  
 router.get('/buy-data', (req, res) => {
   res.render('buy-data', { TEST: TEST });
 });
