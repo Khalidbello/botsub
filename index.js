@@ -60,13 +60,21 @@ app.engine(
 app.set('view engine', 'html');
 
 //locking in middlewares
+const noCacheMiddleware = (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  next();
+};
 
-if (process.env.NODE_ENV !== 'production') {
+// Use the middleware for all routes
+app.use(noCacheMiddleware);
+
+
+/*if (process.env.NODE_ENV !== 'production') {
   app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
     next();
   });
-}
+}*/
 
 app.use(express.static('public'));
 app.use(express.json());

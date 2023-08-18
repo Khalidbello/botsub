@@ -4,38 +4,40 @@ const { Router } = require('express');
 
 const path = require('path');
 
-const { fileURLToPath } = require('url');
-
 const router = Router();
 
 const TEST = false; //process.env.NODE_ENV === 'development';
 
 router.get('/', (req, res) => {
-  res.render('home', { TEST });
+  res.render('home', { TEST: TEST });
+});
+
+router.get('/env-test', (req, res)=> {
+  res.send("variables: " + process.env.NODE_ENV);
 });
 
 router.get('/buy-data', (req, res) => {
-  res.render('buy-data', { TEST });
+  res.render('buy-data', { TEST: TEST });
 });
 
 router.get('/buy-airtime', (req, res) => {
-  res.render('buy-airtime', { TEST });
+  res.render('buy-airtime', { TEST: TEST });
 });
 
 router.get('/after-pay', (req, res) => {
-  res.render('after-pay', { TEST });
+  res.render('after-pay', { TEST: TEST });
 });
 
 router.get('/data-pricing', (req, res) => {
-  res.render('data-pricing', { TEST });
+  res.render('data-pricing', { TEST: TEST });
 });
 
 router.get('/survey', (req, res) => {
-  res.render('survey', { TEST });
+  res.render('survey', { TEST: TEST });
 });
 
 router.get('/retry-failed-delivery', (req, res) => {
-  res.render('retry-failed-delivery', { TEST });
+  res.render('retry-failed-delivery', { TEST: TEST });
 });
 
 router.get('/privacy-policy', (req, res) => {
@@ -66,8 +68,5 @@ router.get('/survey-mail', (req, res) => {
   res.sendFile(file);
 });
 
-router.get('/env-test', (req, res)=> {
-  res.send("variables: " + process.env.NODE_ENV);
-});
 
 module.exports = router;
