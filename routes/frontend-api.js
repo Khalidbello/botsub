@@ -72,7 +72,7 @@ router.post('/survey', async (req, res) => {
     res.json({ status: 'success' });
   } catch (err) {
     console.log('survey error', err);
-    res.json({ status: 'error' });
+    res.json({ status: 'error', data: err});
   }
 });
 
