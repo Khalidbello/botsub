@@ -17,10 +17,12 @@ const sendMessage = require('./../bot_modules/send_message.js');
 const fsP = require('fs').promises;
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'mail.botsub.com.ng',  // Replace with your SMTP server hostname
+  port: 465,  // Port number for SMTP (e.g., 587 for TLS)
+  secure: true,  // Set to true if using SSL
   auth: {
-    user: process.env.EMAIL_ADDRESS,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.ADMIN_MAIL,
+    pass: process.env.ADMIN_MAIL_P,
   },
 }); // end of transporter
 

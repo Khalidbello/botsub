@@ -19,10 +19,12 @@ const createClient = require('./../modules/mongodb.js');
 const router = Router();
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: 'mail.botsub.com.ng',  // Replace with your SMTP server hostname
+  port: 465,  // Port number for SMTP (e.g., 587 for TLS)
+  secure: true,  // Set to true if using SSL
   auth: {
-    user: process.env.EMAIL_ADDRESS,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.ADMIN_MAIL,
+    pass: process.env.ADMIN_MAIL_P,
   },
 }); // end of transporter
 
@@ -72,7 +74,7 @@ router.post('/survey', async (req, res) => {
     res.json({ status: 'success' });
   } catch (err) {
     console.log('survey error', err);
-    res.json({ status: 'error', data: err});
+    res.json({ status: 'error'});
   }
 });
 
