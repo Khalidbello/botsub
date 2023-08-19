@@ -180,7 +180,8 @@ async function submitData() {
     });
 
     const resp = await response.json();
-
+    console.log(resp);
+    
     if (resp.status === 'success') {
       showSuccessfulSurvey();
     } else {
