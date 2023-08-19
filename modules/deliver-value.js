@@ -215,7 +215,7 @@ async function sendSuccessfulResponse(response, res) {
     };
 
     const mailOptions = {
-      from: 'qsub@gmail.com',
+      from: process.env.ADMIN_MAIL,
       to: response.data.customer.email,
       subject: 'BotSub Receipt',
       html: compiledSuccessfulMailTemplate(mailParams),
@@ -260,7 +260,7 @@ async function sendFailedToDeliverResponse(response, res) {
     };
 
     const mailOptions = {
-      from: 'qsub@gmail.com',
+      from: process.env.ADMIN_MAIL,
       to: response.data.customer.email,
       subject: 'BotSub Pending Transaction',
       html: compiledPendingMailTemplate(mailParams),

@@ -169,7 +169,7 @@ async function refundPayment(response, price) {
     }
 
     const mailOptions = {
-      from: process.env.EMAIL_ADDRESS,
+      from: process.env.ADMIN_MAIL,
       to: response.data.customer.email,
       subject: 'BotSub Payment Refund',
       html: mail(refundData),

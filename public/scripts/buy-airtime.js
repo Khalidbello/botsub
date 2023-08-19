@@ -336,7 +336,8 @@ function formValidate() {
     if (!validateNumber()) return showInvalidNumberBox();
   }
   eve.preventDefault();
-  makePayment(event);
+  eve.target.style.opacity = 0.5;
+  makePayment();
 }
 
 // helper function to show warning fields
@@ -393,7 +394,7 @@ hideInvalidNumberBox = function () {
 
 // function to initialise payment
 
-makePayment = function (event) {
+makePayment = function () {
   console.log(networkBox.dataset);
   FlutterwaveCheckout({
     public_key: key,
@@ -414,10 +415,9 @@ makePayment = function (event) {
     customizations: {
       title: 'BotSub',
       description: 'payment for data purchase',
-      logo: 'https://test.botsub.com.ng/images/chatbot.png',
+      logo: 'https://botsub.com.ng/images/chatbot.png',
     },
   });
-  event.preventDefault();
 }; // end of makePayment
 
 // function to generate tx_ref code

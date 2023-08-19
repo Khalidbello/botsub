@@ -496,6 +496,7 @@ function formValidate() {
     if (!validateNumber()) return showInvalidNumberBox();
   }
   eve.preventDefault();
+  eve.target.style.opacity = 0.5;
   makePayment();
 }
 
@@ -573,7 +574,7 @@ makePayment = function () {
     customizations: {
       title: 'BotSub',
       description: 'payment for data purchase',
-      logo: 'https://test.botsub.com.ng/images/chatbot.png',
+      logo: 'https://botsub.com.ng/images/chatbot.png',
     },
   });
 }; // end of makePayment

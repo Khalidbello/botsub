@@ -23,7 +23,7 @@ const transporter = nodemailer.createTransport({
   port: 465,  // Port number for SMTP (e.g., 587 for TLS)
   secure: true,  // Set to true if using SSL
   auth: {
-    user: process.env.ADMIN_MAIL,
+    user: 'admin@botsub.com.ng',
     pass: process.env.ADMIN_MAIL_P,
   },
 }); // end of transporter
@@ -50,7 +50,7 @@ router.post('/survey', async (req, res) => {
     );
     const mail = handlebars.compile(mailTemplate);
     const mailOptions = {
-      from: process.env.EMAIL_ADDRESS,
+      from: process.env.SURVEY_MAIL,
       to: req.body.email,
       subject: 'BotSub survey',
       html: mail({ chatBotUrl: process.env.CHATBOT_URL }),
