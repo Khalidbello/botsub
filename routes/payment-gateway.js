@@ -32,7 +32,7 @@ router.get('/confirm', async (req, res) => {
 
   const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const response = await flw.Transaction.verify({ id: req.query.transaction_id }).catch((err) => {
-    return res.json({ status: 'error', message: 'failed to check transaction' });
+    return res.json({ status: 'error', message: 'failed to check transaction', data: err});
   }); // end of check transaction call
 
   console.log('transaction details', response);

@@ -225,7 +225,7 @@ async function sendSuccessfulResponse(response, res) {
     return res.json({ status: 'successful', data: details });
   } catch (err) {
     console.log('send successful vtu response error', err);
-    return res.json({ status: 'error', data: err });
+    return res.json({ status: 'error', message: 'error send succesful rep air', data: err });
   }
 } // end of sendAirtimeResponse function
 
@@ -270,7 +270,7 @@ async function sendFailedToDeliverResponse(response, res) {
     return res.json({ status: 'pending', data: details });
   } catch (err) {
     console.log('send successfulvtu response error', err);
-    return res.json({ status: 'error', data: err });
+    return res.json({ status: 'error', message: 'send failed rep air', data: err });
     //return res.json({ status: 'failedDelivery', message: 'failed to deliver purchased product' });
   }
 } // end of sendFailedToDeliverResponse

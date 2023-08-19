@@ -29,8 +29,9 @@ router.get('/test-1', async (req, res) => {
     await client.connect();
     const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
 
-    const transacts = await collection.findOne({});
-    res.json(transacts)
+    const transacts = await collection.find({});
+    const array = await transacts.toArray();
+    res.json(array)
 
     //res.json(response.data);
   } catch (error) {
