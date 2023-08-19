@@ -1,6 +1,8 @@
 // module to serve views
 const axios = require('axios');
 
+const createClient = require("./../modules/mongodb.js");
+
 const { Router } = require('express');
 
 const path = require('path');
@@ -19,11 +21,18 @@ router.get('/env-test', (req, res)=> {
 
 router.get('/test-1', async (req, res) => {
   try {
-    // Make a request to the JSONPlaceholder API
+    /*/ Make a request to the JSONPlaceholder API
     const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
 
-    // Return the data to the frontend
-    res.json(response.data);
+    // Return the data to the frontend*/
+    const client = createClient();
+    await client.connect();
+    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
+
+    const transacts = await collection.findOne({});
+    res.json(transacts)
+
+    //res.json(response.data);
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'An error occurred while fetching data' });
