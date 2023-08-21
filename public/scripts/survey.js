@@ -209,7 +209,7 @@ function showErroneousSurvey() {
 function resetSurvey(event) {
   const target = event.target;
   console.log("reset target", target);
-  setTimeout(()=>   target.style.color = "red", 200)
+  target.style.backgroundColor = "red";
   // resetting email field
   emailInput.value = '';
   emailInput.style.borderColor = "#ccc";

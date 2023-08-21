@@ -23,7 +23,7 @@ const transporter = nodemailer.createTransport({
   port: 465,  // Port number for SMTP (e.g., 587 for TLS)
   secure: true,  // Set to true if using SSL
   auth: {
-    user: 'admin@botsub.com.ng',
+    user: process.env.SURVEY_MAIL,
     pass: process.env.ADMIN_MAIL_P,
   },
 }); // end of transporter
