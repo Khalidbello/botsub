@@ -18,6 +18,8 @@ const {
   reportIssue,
 } = require('./message_responses.js');
 
+const { ObjectId } = require('mongodb');
+
 const createClient = require('./../modules/mongodb.js');
 
 async function processMessage(event, res) {

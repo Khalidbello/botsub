@@ -39,7 +39,11 @@ async function sendNewConversationResponse(event) {
   sendTemplate(senderId, responseServices);
 
   // adding one
-  await collection.replaceOne({ id: senderId }, { id: senderId });
+  await collection.updateOne(
+    { id: senderId },
+    { $set: { id: senderId } },
+    { upsert: true }
+  );
   console.log('end of new conversation');
 } // end of newConversationResponse
 

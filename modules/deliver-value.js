@@ -8,7 +8,7 @@ const handlebars = require('handlebars');
 
 const nodemailer = require('nodemailer');
 
-const { generateRandomString } = require('./helper_functions.js');
+const { generateRandomString, dateFormatter } = require('./helper_functions.js');
 
 const createClient = require('./mongodb.js');
 
@@ -67,8 +67,11 @@ async function deliverData(response, req, res) {
       sendSuccessfulResponse(response, res);
 
       if (response.data.meta.bot) {
+        const date = new Date(response.data.customer.created_at);
+        const nigeriaTimeString = dateFormatter(date);
+  
         await sendMessage(response.data.meta.senderId, {
-          text: `Transaction Succesful \nTransaction ID: ${response.data.id}`,
+          text: `Transaction Succesful \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
       }
       //if (parseInt(body.balance_after) <= 5000) topUpBalance();
@@ -79,8 +82,11 @@ async function deliverData(response, req, res) {
       sendFailedToDeliverResponse(response, res);
 
       if (response.data.meta.bot) {
+        const date = new Date(response.data.customer.created_at);
+        const nigeriaTimeString = dateFormatter(date);
+  
         await sendMessage(response.data.meta.senderId, {
-          text: `Sorry your Transaction is Pending \nTransaction ID: ${response.data.id}`,
+          text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
       }
     }
@@ -122,8 +128,11 @@ async function deliverAirtime(response, req, res) {
       sendSuccessfulResponse(response, res);
 
       if (response.data.meta.bot) {
+        const date = new Date(response.data.customer.created_at);
+        const nigeriaTimeString = dateFormatter(date);
+  
         await sendMessage(response.data.meta.senderId, {
-          text: `Transaction Succesful \nTransaction ID: ${response.data.id}`,
+          text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
       }
       //if (parseInt(body.balance_after) <= 5000) topUpBalance();
@@ -132,8 +141,11 @@ async function deliverAirtime(response, req, res) {
       addToFailedToDeliver(req);
       sendFailedToDeliverResponse(response, res);
       if (response.data.meta.bot) {
+        const date = new Date(response.data.customer.created_at);
+        const nigeriaTimeString = dateFormatter(date);
+  
         await sendMessage(response.data.meta.senderId, {
-          text: `Sorry your Transaction is Pending \nTransaction ID: ${response.data.id}`,
+          text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
       }
     }
@@ -283,21 +295,8 @@ function formResponse(response) {
   const meta = response.data.meta;
   // create a Date object with the UTC time
   const date = new Date(response.data.customer.created_at);
-  // Create an Intl.DateTimeFormat object with the Nigeria time zone
-
-  const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
-    timeZone: 'Africa/Lagos',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-    hour12: true, // This will format the time in 12-hour format with AM/PM
-  });
-
-  // Format the Nigeria time using the formatter
-  const nigeriaTimeString = nigeriaFormatter.format(date);
+  const nigeriaTimeString = dateFormatter(date);
+  
   const details = {
     network: meta.network,
     number: meta.number,

@@ -18,8 +18,10 @@ const fbBotRouter = require('./routes/fb-bot-webhook.js');
 if (process.env.NODE_ENV === 'development') {
   console.log('in development mode');
   const env = process.env;
+  
   env.FLW_PB_KEY = env.FLW_TEST_PB_KEY;
   env.FLW_SCRT_KEY = env.FLW_TEST_SCRT_KEY;
+  env.FLW_H = env.FLW_H;
   env.WALLET_ACC_NUMBER = env.WALLET_ACC_NUMBER_TEST;
   env.WALLET_ACC_NAME = env.WALLET_ACC_NAME_TEST;
   env.SETTLED_COLLECTION = env.SETTLED_COLLECTION_TEST;
@@ -33,6 +35,7 @@ if (process.env.NODE_ENV === 'development') {
   const env = process.env;
   env.FLW_PB_KEY = process.env.F_P_K;
   env.FLW_SCRT_KEY = process.env.F_S_K;
+  env.FLW_H = env.F_H_K;
   env.SETTLED_COLLECTION = env.S_C_P;
   env.PENDING_COLLECTION = env.P_C_P;
   env.TOREFUND_COLLECTION = env.R_C_P;

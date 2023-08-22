@@ -4,10 +4,10 @@ const axios = require('axios');
 async function getUserName(userId) {
   try {
     const response = await axios.get(
-      `https://graph.facebook.com/${userId}?fields=name&access_token=${process.env.FBM_TOKEN}`
+      `https://graph.facebook.com/${userId}?fields=first_name&access_token=${process.env.FBM_TOKEN}`
     );
     console.log('user info reapnse ', response);
-    return response.data.name;
+    return response.data.first_name;
   } catch (error) {
     console.error('Error while fetching user information:', error);
     return null;

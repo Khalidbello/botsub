@@ -111,9 +111,9 @@ function checkEmail() {
   emailInput = document.querySelector('input[type="email"]');
   if (emailInput.checkValidity()) {
     return (emailInput.style.border = 'thin solid green');
-  }
+  };
   return (emailInput.style.border = 'thin solid #ddd');
-} // end of done
+}; // end of done
 // function to handle back click
 
 function showPrevious() {
@@ -132,7 +132,7 @@ function showPrevious() {
       surveyIntro.style.opacity = 1;
     }, 550);
     return;
-  }
+  };
 
   sections[currentIndex].style.left = '100%';
   sections[currentIndex - 1].style.display = 'block';
@@ -140,7 +140,7 @@ function showPrevious() {
     sections[currentIndex].style.display = 'none';
     sections[currentIndex - 1].style.left = 0;
   }, 500);
-} // end of showPrevious*/
+}; // end of showPrevious*/
 
 // function to handle submitting of data
 
@@ -156,7 +156,7 @@ async function submitData() {
 
   if (!emailInput.checkValidity()) {
     return (emailInput.style.border = 'thin solid red');
-  }
+  };
 
   // submittng data
   blur.style.display = 'block';
@@ -191,25 +191,28 @@ async function submitData() {
     console.log('an error occurred', err);
     showErroneousSurvey();
   }
-}
+};
 
 function showSuccessfulSurvey() {
   blur.style.opacity = 1;
   loader.style.display = 'none';
   successBox.style.top = '80px';
-}
+};
 
 function showErroneousSurvey() {
   blur.style.opacity = 1;
   loader.style.display = 'none';
   errorBox.style.top = '80px';
-}
+};
 
 //function to resetSurvey
 function resetSurvey(event) {
   const target = event.target;
   console.log("reset target", target);
-  target.style.backgroundColor = "red";
+  setTimeout(()=> {
+    target.style.backgroundColor = "darkorange";
+  }, 2000);
+  
   // resetting email field
   emailInput.value = '';
   emailInput.style.borderColor = "#ccc";
@@ -222,4 +225,4 @@ function resetSurvey(event) {
     blur.style.opacity = '0.4';
     blur.style.display = 'none';
   }, 1090);
-}
+};

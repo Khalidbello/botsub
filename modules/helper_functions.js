@@ -136,15 +136,9 @@ async function refundPayment(response, price) {
 
     console.log('payment refund response', resp);
     const date = new Date();
-    // Create an Intl.DateTimeFormat object with the Nigeria time zone
-    const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
-      timeZone: 'Africa/Lagos',
-      dateStyle: 'long',
-      timeStyle: 'medium',
-    });
-
+    
     // Format the Nigeria time using the formatter
-    const nigeriaTimeString = nigeriaFormatter.format(date);
+    const nigeriaTimeString = dateFormatter(date)
 
     const emailTemplate = await fsP.readFile('modules/email-templates/refund-mail.html', 'utf8');
     const mail = handlebars.compile(emailTemplate);
@@ -200,6 +194,25 @@ async function refundPayment(response, price) {
     console.log('regund error', err);
   }
 } // end of refundPayment
+
+
+// function to format dates
+function dateFormatter(date) {
+    const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
+    timeZone: 'Africa/Lagos',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true, // This will format the time in 12-hour format with AM/PM
+  });
+
+  // Format the Nigeria time using the formatter
+  return nigeriaFormatter.format(date);
+}; // end of date formatter
+
 
 // function to generate random Strings
 function generateRandomString(length = 15) {
@@ -277,4 +290,5 @@ module.exports = {
   generateRandomString,
   removeFromPendingAddToSettled,
   retryAllFailedDelivery,
+  dateFormatter,
 };
