@@ -193,11 +193,12 @@ function generatePostbackTemplate(buttons, network, i) {
     },
   };
   return template;
-}
+};
 
 async function generateFacebookPosts(id, network) {
   const file = JSON.parse(await fsP.readFile('files/data-details.json', 'utf-8'));
-  const data = file[id];
+  const data = file[id]; 
+  const length = Object.keys(data).length;
   const templates = [];
   let buttons = [];
   let i = 1; // variable use to limit number of buttons in each template
@@ -220,7 +221,7 @@ async function generateFacebookPosts(id, network) {
     const button = generatePostbackButton(title, payload);
     buttons.push(button);
 
-    if (i % 3 === 0 || i === data.length) {
+    if (i % 3 === 0 || i === length ) {
       const postbackTemplate = generatePostbackTemplate(buttons, network, i);
       templates.push(postbackTemplate);
       buttons = [];

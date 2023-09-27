@@ -104,12 +104,12 @@ async function renderOffers() {
     _helper(datas['2'][data], gloOffers);
   }
 
-  for (let data in datas['3']) {
-    _helper(datas['3'][data], airtelOffers);
+  for (let data in datas['4']) {
+    _helper(datas['4'][data], airtelOffers);
   }
 
-  for (let data in datas['4']) {
-    _helper(datas['4'][data], nineMobileOffers);
+  for (let data in datas['3']) {
+    _helper(datas['3'][data], nineMobileOffers);
   }
   // for (data of dummyData.airtel) { _helper(data, airtelOffers) };
 
@@ -332,7 +332,7 @@ function offerSelected() {
 
   offerBox.innerHTML =
     `<option value=${ele.dataset.plan_id} selected hidden` +
-    ` disabled>${ele.dataset.size} &nbsp;  &nbsp; &nbsp;  $${ele.dataset.price}</option>`;
+    ` disabled>${ele.dataset.size} &nbsp;  &nbsp; &nbsp;  ₦${ele.dataset.price}</option>`;
   hideBox();
 } // end of offerSelected
 

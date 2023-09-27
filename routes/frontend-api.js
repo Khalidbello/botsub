@@ -28,6 +28,8 @@ const transporter = nodemailer.createTransport({
   },
 }); // end of transporter
 
+
+  
 router.get('/data-offers', async (req, res) => {
   let dataOffers = await fsP.readFile('files/data-details.json');
   dataOffers = JSON.parse(dataOffers);
@@ -35,10 +37,14 @@ router.get('/data-offers', async (req, res) => {
   res.json(dataOffers);
 });
 
+
+    
 // to get key
 router.get('/get-key', (req, res) => {
   res.json({ key: process.env.FLW_PB_KEY });
 });
+
+
 
 // route to recieve and  save survey datas
 router.post('/survey', async (req, res) => {
@@ -75,9 +81,12 @@ router.post('/survey', async (req, res) => {
   } catch (err) {
     console.log('survey error', err);
     res.json({ status: 'error'});
-  }
+  };
 });
 
+
+
+    
 // routes for admin
 
 router.post('/retry', async (req, res) => {
@@ -94,20 +103,24 @@ router.post('/retry', async (req, res) => {
     // calling function to delete transaction from pemding and add to setled
     await removeFromPendingAddToSettled(transaction_id, tx_ref);
     return res.json(data);
-  }
+  };
 
   res.json(data);
 });
 
+
+                
 router.post('/retry-all', async (req, res) => {
   const statistic = await retryAllFailedDelivery(req);
   console.log('statistic', statistic);
   res.json(statistic);
 });
 
+
+                            
 router.get('/fetch-failed-transactions', async (req, res) => {
-  try {
-    const client = createClient();
+  const client = createClient();
+  try { 
     await client.connect();
     const collection = client
       .db(process.env.BOTSUB_DB)
@@ -121,6 +134,8 @@ router.get('/fetch-failed-transactions', async (req, res) => {
   } catch (err) {
     console.log('error fetching pemding transaction', err);
     res.json({ error: err });
+  } finally {
+    client.close();
   }
 });
 

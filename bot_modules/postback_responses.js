@@ -19,6 +19,8 @@ const {
 
 const createClient = require('./../modules/mongodb.js');
 
+
+
 // function to response to newConversations
 async function sendNewConversationResponse(event) {
   const senderId = event.sender.id;
@@ -45,7 +47,9 @@ async function sendNewConversationResponse(event) {
     { upsert: true }
   );
   console.log('end of new conversation');
-} // end of newConversationResponse
+}; // end of newConversationResponse
+
+
 
 // function to respond when buy data button is clicked
 async function sendPurchaseDataReponse(event) {
@@ -57,7 +61,9 @@ async function sendPurchaseDataReponse(event) {
   await sendMessage(senderId, message1);
   await sendTemplate(senderId, dataNetworks1);
   await sendTemplate(senderId, dataNetworks2);
-} // end of data purchaseResponse
+}; // end of data purchaseResponse
+
+
 
 // function to send mtn offers
 async function sendMtnOffers(event) {
@@ -73,8 +79,10 @@ async function sendMtnOffers(event) {
   for (let i = 0; i < offers.length; i++) {
     await sendTemplate(senderId, offers[i]);
     //i++;
-  }
-} // end sendMtnOffers
+  };
+}; // end sendMtnOffers
+
+
 
 // function to send airtel offers
 async function sendAirtelOffers(event) {
@@ -84,8 +92,8 @@ async function sendAirtelOffers(event) {
   };
 
   await sendMessage(senderId, message);
-  const offers = await generateFacebookPosts('3', 'Airtel');
-  console.log('Airtel offers', offers);
+  const offers = await generateFacebookPosts('4', 'Airtel');
+  console.log('Airtel offers', offers.length);
 
   for (let i = 0; i < offers.length; i++) {
     await sendTemplate(senderId, offers[i]);
@@ -101,7 +109,7 @@ async function sendGloOffers(event) {
   };
 
   await sendMessage(senderId, message);
-  const offers = await generateFacebookPosts('1', 'MTN');
+  const offers = await generateFacebookPosts('2', 'Glo');
   console.log('Glo offers', offers);
 
   for (let i = 0; i < offers.length; i++) {
@@ -118,14 +126,16 @@ async function sendNineMobileOffers(event) {
   };
 
   await sendMessage(senderId, message);
-  const offers = await generateFacebookPosts('1', 'MTN');
+  const offers = await generateFacebookPosts('3', '9mobile');
   console.log('9mobile offers', offers);
 
   for (let i = 0; i < offers.length; i++) {
     await sendTemplate(senderId, offers[i]);
     //i++;
-  }
-} // end sendNineMobileOffers
+  };
+}; // end sendNineMobileOffers
+
+
 
 // function to respond when an offer is selected
 async function offerSelected(event, payload) {
@@ -149,7 +159,7 @@ async function offerSelected(event, payload) {
 
   await collection.updateOne(filter, update);
   client.close();
-} // end of offerSelected
+}; // end of offerSelected
 
 // ================================================
 // section airtime purchase
@@ -245,10 +255,11 @@ async function generateAccountNumber(event) {
     const data = response.meta.authorization;
     await sendMessage(senderId, { text: 'make transfer to the account below' });
     await sendMessage(senderId, { text: 'value would be delivered once purchase is made' });
-    await sendMessage(senderId, { text: 'Account Name: ' + data.transfer_bank });
+    await sendMessage(senderId, { text: 'Bank Name: ' + data.transfer_bank });
+        await sendMessage(senderId, { text: 'Account Name: BotSub'});
     await sendMessage(senderId, { text: 'Account Number: 👇' });
     await sendMessage(senderId, { text: data.transfer_account });
-    await sendMessage(senderId, { text: 'Amount: #' + data.transfer_amount });
+    await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
     await sendMessage(senderId, {
       text: 'Account Expiry: ' + dateFormatter(data.account_expiration),
     });

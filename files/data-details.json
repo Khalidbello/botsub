@@ -8,12 +8,25 @@
     "6": {"networkID": 1, "planID": 43, "size": "10GB", "price": 2300, "validity": "one month", "index": "6"}
   },
   "2": {
-    "6": {"networkID": 1, "planID": 43, "size": "10GB", "price": 2300, "validity": "one month", "index": "6"}
+    "1": {"networkID": 2, "planID": 263, "size": "500MB", "price": 150, "validity": "one month", "index": "1"},
+    "2": {"networkID": 2, "planID": 259, "size": "1GB", "price": 280, "validity": "one month", "index": "2"},
+    "3": {"networkID": 2, "planID": 261, "size": "2GB", "price": 550, "validity": "one month", "index": "3"},
+    "4": {"networkID": 2, "planID": 262, "size": "3GB", "price": 750, "validity": "one month", "index": "4"},
+    "5": {"networkID": 2, "planID": 264, "size": "5GB", "price": 1250, "validity": "one month", "index": "5"},
+    "6": {"networkID": 2, "planID": 265, "size": "10GB", "price": 2400, "validity": "one month", "index": "6"}
   },
   "3": {
-    "6": {"networkID": 1, "planID": 43, "size": "10GB", "price": 2300, "validity": "one month", "index": "6"}
+    "1": {"networkID": 3, "planID": 187, "size": "1GB", "price": 200, "validity": "one month", "index": "1"},
+    "2": {"networkID": 3, "planID": 189, "size": "1.5GB", "price": 300, "validity": "one month", "index": "2"},
+    "3": {"networkID": 3, "planID": 190, "size": "2GB", "price": 400, "validity": "one month", "index": "3"},
+    "4": {"networkID": 3, "planID": 267, "size": "3GB", "price": 600, "validity": "one month", "index": "4"},
+    "5": {"networkID": 3, "planID": 241, "size": "40GB", "price": 4900, "validity": "one month", "index": "5"}
   },
   "4": {
-    "6": {"networkID": 1, "planID": 43, "size": "10GB", "price": 2300, "validity": "one month", "index": "6"}
+    "1": {"networkID": 4, "planID": 217, "size": "500MB", "price": 150, "validity": "one month", "index": "1"},
+    "2": {"networkID": 4, "planID": 218, "size": "1GB", "price": 250, "validity": "one month", "index": "2"},
+    "3": {"networkID": 4, "planID": 219, "size": "2GB", "price": 500, "validity": "one month", "index": "3"},
+    "4": {"networkID": 4, "planID": 220, "size": "5GB", "price": 1200, "validity": "one month", "index": "4"},
+    "5": {"networkID": 4, "planID": 249, "size": "10GB", "price": 2300, "validity": "one month", "index": "5"}
   }
 }

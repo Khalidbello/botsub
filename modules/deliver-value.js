@@ -39,7 +39,7 @@ function deliverValue(response, req, res, requirementMet) {
 async function deliverData(response, req, res) {
   let options = {
     method: 'POST',
-    url: 'https://dancitysub.com/api/data/',
+    url: 'https://opendatasub.com/api/data/',
     headers: {
       Authorization: 'Token ' + process.env.OPENSUB_KEY,
       'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ async function deliverData(response, req, res) {
 async function deliverAirtime(response, req, res) {
   let options = {
     method: 'POST',
-    url: 'https://dancitysub.com/api/topup/',
+    url: 'https://opendatasub.com/api/topup/',
     headers: {
       Authorization: 'Token ' + process.env.OPENSUB_KEY,
       'Content-Type': 'application/json',
