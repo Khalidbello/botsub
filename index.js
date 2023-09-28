@@ -19,14 +19,14 @@ const fbBotRouter = require('./routes/fb-bot-webhook.js');
 if (process.env.NODE_ENV === 'development') {
   console.log('in development mode');
   const env = process.env;
-  
+
   env.FLW_PB_KEY = env.FLW_TEST_PB_KEY;
   env.FLW_SCRT_KEY = env.FLW_TEST_SCRT_KEY;
-  env.FLW_H = env.FLW_H;
+  env.FLW_H = env.FLW_H_TEST;
   env.WALLET_ACC_NUMBER = env.WALLET_ACC_NUMBER_TEST;
   env.WALLET_ACC_NAME = env.WALLET_ACC_NAME_TEST;
   env.SETTLED_COLLECTION = env.SETTLED_COLLECTION_TEST;
-  env.FAILED_DELIVERY_COLLECTION = env.PENDING_COLLECTION_TEST;
+  env.FAILED_DELIVERY_COLLECTION = env.FAILED_DELIVERY_COLLECTION_TEST;
   env.TOREFUND_COLLECTION = env.TOREFUND_COLLECTION_TEST;
   env.USERS_COLLECTION = env.USERS_COLLECTION_TEST;
   env.FB_BOT_COLLECTION = env.FB_BOT_COLLECTION_TEST;
@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'development') {
 } else if (process.env.NODE_ENV === 'production') {
   console.log('in production mode');
   const env = process.env;
-  
+
   env.FLW_PB_KEY = process.env.F_P_K;
   env.FLW_SCRT_KEY = process.env.F_S_K;
   env.FLW_H = env.F_H_K;
@@ -90,7 +90,7 @@ app.use('/', viewsRouter);
 app.use('/', fbBotRouter);
 
 // handling 404
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.status(404).render('not-found');
 });
 

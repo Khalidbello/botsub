@@ -204,7 +204,7 @@ async function refundPayment(response, price) {
   } catch (err) {
     console.log('regund error', err);
   };
-} // end of refundPayment
+}; // end of refundPayment
 
 
 

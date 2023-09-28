@@ -84,14 +84,15 @@ async function deliverData(response, req, res) {
       if (response.data.meta.bot) {
         const date = new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
-  
+
+        console.log("bot feed back");
         await sendMessage(response.data.meta.senderId, {
           text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
-      }
-    }
+      };
+    };
   });
-} // end of deliver value function
+}; // end of deliver value function
 
 // function to make airtime purchase request
 
@@ -118,7 +119,7 @@ async function deliverAirtime(response, req, res) {
     if (error) {
       console.log(error);
       return res.send(error);
-    }
+    };
     //console.log('airtime purchase resp', resp.body);
     console.log('bodyof request ', body);
     // to do dependent transaction status
@@ -134,7 +135,7 @@ async function deliverAirtime(response, req, res) {
         await sendMessage(response.data.meta.senderId, {
           text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
-      }
+      };
       //if (parseInt(body.balance_after) <= 5000) topUpBalance();
       return;
     } else {
@@ -147,10 +148,10 @@ async function deliverAirtime(response, req, res) {
         await sendMessage(response.data.meta.senderId, {
           text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
-      }
-    }
+      };
+    };
   });
-} // end of deliverAirtime
+}; // end of deliverAirtime
 
 // function to add transaction to delivered transaction
 
@@ -160,7 +161,9 @@ async function addToDelivered(req) {
   const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
   const transact = await collection.findOne({ _id: req.query.transaction_id });
 
-  if (transact) return;
+  if (transact) {
+    return client.close();
+  };
 
   const response = await collection.insertOne({
     txRef: req.query.tx_ref,
@@ -171,7 +174,7 @@ async function addToDelivered(req) {
   client.close();
   console.log('add to delivered respomse', response);
   return response;
-} // end of addToDelivered
+}; // end of addToDelivered
 
 // function to add transaction to failed to deliver
 
@@ -183,7 +186,9 @@ async function addToFailedToDeliver(req) {
     .collection(process.env.FAILED_DELIVERY_COLLECTION);
   const transact = await collection.findOne({ _id: req.query.transaction_id });
 
-  if (transact) return;
+  if (transact) {
+    return  client.close();
+  };
 
   const date = new Date();
   const response = await collection.insertOne({
@@ -196,7 +201,7 @@ async function addToFailedToDeliver(req) {
   client.close();
   console.log('add to failed delivery respose', response);
   return response;
-} // end if add to failed to deliver
+}; // end if add to failed to deliver
 
 // function to send data purchase mail and response
 
@@ -212,7 +217,7 @@ async function sendSuccessfulResponse(response, res) {
 
     if (response.data.meta.type === 'airtime') {
       details.product = `₦${response.data.meta.amount} airtime`;
-    }
+    };
 
     const mailParams = {
       product: details.product,
@@ -240,8 +245,8 @@ async function sendSuccessfulResponse(response, res) {
   } catch (err) {
     console.log('send successful vtu response error', err);
     return res.json({ status: 'error', message: 'error send succesful rep air', data: err });
-  }
-} // end of sendAirtimeResponse function
+  };
+}; // end of sendAirtimeResponse function
 
 // function to form response on failed to deliver
 
@@ -257,7 +262,7 @@ async function sendFailedToDeliverResponse(response, res) {
 
     if (response.data.meta.type === 'airtime') {
       details.product = `₦${response.data.meta.amount} airtime`;
-    }
+    };
 
     const mailParams = {
       product: details.product,
@@ -286,8 +291,8 @@ async function sendFailedToDeliverResponse(response, res) {
     console.log('send successfulvtu response error', err);
     return res.json({ status: 'error', message: 'send failed rep air', data: err });
     //return res.json({ status: 'failedDelivery', message: 'failed to deliver purchased product' });
-  }
-} // end of sendFailedToDeliverResponse
+  };
+}; // end of sendFailedToDeliverResponse
 
 //function to form response for request
 
@@ -304,7 +309,7 @@ function formResponse(response) {
     date: nigeriaTimeString,
   };
   return details;
-} // end of formResponse
+}; // end of formResponse
 
 // function to check balance and add to it when necessary
 
@@ -327,7 +332,7 @@ async function topUpBalance() {
     console.log('wallet transfer response', response);
   } catch (err) {
     console.log('balance top up error', err);
-  }
+  };
 }
 
 module.exports = deliverValue;
