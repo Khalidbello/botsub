@@ -49,7 +49,7 @@ router.get('/set-persist', async (req, res) => {
   async function setPersistentMenu() {
     try {
       const response = await axios.post(
-        `https://graph.facebook.com/v17.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
+        `https://graph.facebook.com/v18.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
         {
           persistent_menu: [
             {
@@ -82,7 +82,7 @@ router.get('/set-persist', async (req, res) => {
         }
       );
 
-      console.log('Persistent menu set successfully.');
+      console.log('Persistent menu set successfully.', response.data);
       res.json('Persistent menu set successfully');
     } catch (error) {
       console.error('Error setting persistent menu:', error.response.data);

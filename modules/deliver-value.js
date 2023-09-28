@@ -8,7 +8,7 @@ const handlebars = require('handlebars');
 
 const nodemailer = require('nodemailer');
 
-const { generateRandomString, dateFormatter } = require('./helper_functions.js');
+const { generateRandomString, dateFormatter, fundWallet } = require('./helper_functions.js');
 
 const createClient = require('./mongodb.js');
 
@@ -57,9 +57,10 @@ async function deliverData(response, req, res) {
     if (error) {
       console.log(error);
       return res.send(error);
-    }
-    //console.log('data purchase resp', resp.body);
+    };
+    
     console.log('data purchase resp body: ', body);
+    
     // to do dependent transaction status
     if (body.Status === 'successful') {
       addToDelivered(req);
@@ -73,8 +74,9 @@ async function deliverData(response, req, res) {
         await sendMessage(response.data.meta.senderId, {
           text: `Transaction Succesful \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
-      }
-      //if (parseInt(body.balance_after) <= 5000) topUpBalance();
+      };
+      
+      if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, 5000);
       return;
     } else if (true) {
       console.log('got hrre failed');
@@ -120,8 +122,9 @@ async function deliverAirtime(response, req, res) {
       console.log(error);
       return res.send(error);
     };
-    //console.log('airtime purchase resp', resp.body);
+    
     console.log('bodyof request ', body);
+    
     // to do dependent transaction status
     if (body.Status === 'successful') {
       addToDelivered(req);
@@ -136,7 +139,8 @@ async function deliverAirtime(response, req, res) {
           text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
       };
-      //if (parseInt(body.balance_after) <= 5000) topUpBalance();
+      
+      if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, 5000);
       return;
     } else {
       addToFailedToDeliver(req);

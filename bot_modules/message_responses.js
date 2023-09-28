@@ -25,7 +25,7 @@ const createClient = require('./../modules/mongodb.js');
 // function to respond to unexpected message
 async function defaultMessageHandler(event) {
   const senderId = event.sender.id;
-  const userName = await getUserName(senderId);
+  const userName = null; //await getUserName(senderId);
 
   await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
   sendTemplate(senderId, responseServices);
@@ -62,18 +62,19 @@ async function sendEmailEnteredResponse(event) {
       text: 'the email format you entered is invalid \nPlease enter a valid email.',
     };
     await sendMessage(senderId, response);
-  }
-} // end of sendEmailEnteredResponse
+  };
+}; // end of sendEmailEnteredResponse
+
+
 
 //==================================================
 // airtime purchase response function
+
 
 // function to handle airtime amount entred
 async function sendAirtimeAmountReceived(event) {
   const senderId = event.sender.id;
   const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
   const amount = event.message.text.trim();
 
   if (await validateAmount(amount)) {
@@ -82,6 +83,8 @@ async function sendAirtimeAmountReceived(event) {
       text: 'Enter phone number for airtime purchase. \nEnter Q to cancel',
     });
 
+    await client.connect();
+    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
     const filter = { id: senderId };
     const update = {
       $set: {
@@ -94,26 +97,27 @@ async function sendAirtimeAmountReceived(event) {
     await collection.updateOne(filter, update);
     client.close();
     return null;
-  }
+  };
   await sendMessage(senderId, {
     text: 'Invalid amount entered \nPlease enter a valid amount. \nEnter Q to cancel',
   });
-  client.close();
-} // end of sendAirtimeAmountReceived
+}; // end of sendAirtimeAmountReceived
+
+
+
 
 // function to handle phone number entred
 async function sendPhoneNumberEnteredResponses(event) {
   const senderId = event.sender.id;
   const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
   const phoneNumber = event.message.text.trim();
   const validatedNum = validateNumber(phoneNumber);
 
   if (validatedNum) {
     await sendMessage(senderId, { text: 'phone  number recieved' });
+    await client.connect();
 
-    let nextAction = '';
+    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
     const user = await collection.findOne({ id: senderId });
     const filter = { id: senderId };
 
@@ -145,8 +149,7 @@ async function sendPhoneNumberEnteredResponses(event) {
   await sendMessage(senderId, {
     text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
   });
-  client.close();
-} // end of sendPhoneNumberEnteredResponses
+}; // end of sendPhoneNumberEnteredResponses
 
 // function to handle change of email before transaction
 async function newEmailBeforeTransactResponse(event, transactionType) {

@@ -311,7 +311,7 @@ async function fundWallet (bankCode, accNum, amount) {
     account_bank: bankCode,
     account_number: accNum,
     amount: amount,
-    narration: "Payment for things",
+    narration: "Funding wallet",
     currency: "NGN",
     debit_currency: "NGN"
   };
