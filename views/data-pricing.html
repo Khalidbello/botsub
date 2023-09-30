@@ -169,7 +169,7 @@
             \{{#each products}}
               <tr>
                 <td>\{{this.size}}</td>
-                <td>\{{this.price}}</td>
+                <td>₦\{{this.price}}</td>
                 <td>\{{this.validity}}</td>
               </tr>
             \{{/each}}
@@ -230,13 +230,13 @@
           const mtnTable = tableTemplate({ products: datas['1'] });
           mtnSect.innerHTML += mtnTable;
 
-          const airtelTable = tableTemplate({ products: datas['3'] });
+          const airtelTable = tableTemplate({ products: datas['4'] });
           airtelSect.innerHTML += airtelTable;
 
           const gloTable = tableTemplate({ products: datas['2'] });
           gloSect.innerHTML += gloTable;
 
-          const nineMobileTable = tableTemplate({ products: datas['4'] });
+          const nineMobileTable = tableTemplate({ products: datas['3'] });
           nineMobileSect.innerHTML += nineMobileTable;
         } catch (err) {
           console.log(err);
