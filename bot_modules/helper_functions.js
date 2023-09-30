@@ -16,7 +16,11 @@ const createClient = require('./../modules/mongodb.js');
 async function noTransactFound(senderId) {
   await sendMessage(senderId, { text: 'No transaction found \nInitiate new transaction' });
   await sendTemplate(senderId, responseServices);
-} // end of noFransactFound
+}; // end of noFransactFound
+
+
+
+// fucntion to validate number
 
 function validateNumber(phoneNumber) {
   const prefixes = {
@@ -34,7 +38,7 @@ function validateNumber(phoneNumber) {
       '0903',
       '0906',
     ],
-    Airtel: ['0911', '0802', '0808', '0708', '0812', '0902', '0907'],
+    Airtel: ['0901', '0911', '0802', '0808', '0708', '0812', '0902', '0907'],
     Glo: ['0805', '0811', '0915', '0705', '0905', '0807'],
     '9mobile': ['0809', '0817', '0818', '0909'],
   };
@@ -43,17 +47,19 @@ function validateNumber(phoneNumber) {
 
   if (cleanedNumber.length !== 11 || !/^\d+$/.test(cleanedNumber)) {
     return false; // Invalid number length or contains non-digit characters
-  }
+  };
 
   const prefix = cleanedNumber.slice(0, 4);
 
   for (const [network, networkPrefixes] of Object.entries(prefixes)) {
     if (networkPrefixes.includes(prefix)) {
       return true;
-    }
-  }
+    };
+  };
   return false; // Number does nrot match any network provider prefix
-} // end of validateNumbe4
+}; // end of validateNumbe4
+
+
 
 // function to form product response
 async function confirmDataPurchaseResponse(senderId) {
