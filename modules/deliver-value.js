@@ -76,7 +76,7 @@ async function deliverData(response, req, res) {
         });
       };
       
-      if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, 5000);
+      if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
       return;
     } else if (true) {
       console.log('got hrre failed');
@@ -140,7 +140,7 @@ async function deliverAirtime(response, req, res) {
         });
       };
       
-      if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, 5000);
+      if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
       return;
     } else {
       addToFailedToDeliver(req);

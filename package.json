@@ -1,11 +1,11 @@
 {
-  "name": "qsub",
+  "name": "BotSub",
   "version": "1.0.0",
   "description": "data and airtime top up vtu site",
   "main": "index.js",
   "scripts": {
     "test1": "NODE_ENV=development node index.js",
-    "start": "NODE_ENV=production node index.js"
+    "start": "NODE_ENV=development node index.js"
   },
   "repository": {
     "type": "git",
@@ -25,9 +25,7 @@
   },
   "homepage": "https://github.com/Khalidbello/qsub0#readme",
   "dependencies": {
-    "@cyclic.sh/dynamodb": "^0.0.34",
     "axios": "^1.2.3",
-    "cyclic-dynamodb": "^0.0.28",
     "dotenv": "^16.0.3",
     "email-validator": "^2.0.4",
     "express": "^4.18.2",

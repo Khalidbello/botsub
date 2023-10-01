@@ -49,7 +49,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // setting __filename since its not supported in type: module
-console.log(__filename);
+console.log(__filename, process.env.FLW_H);
 
 // // setting __dirname since its not supported in type: module
 console.log('directory-name 👉️', __dirname);
