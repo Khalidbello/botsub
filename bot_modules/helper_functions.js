@@ -40,7 +40,7 @@ function validateNumber(phoneNumber) {
     ],
     Airtel: ['0901', '0911', '0802', '0808', '0708', '0812', '0902', '0907'],
     Glo: ['0805', '0811', '0915', '0705', '0905', '0807'],
-    '9mobile': ['0809', '0817', '0818', '0909'],
+    '9mobile': ['0809', '0817', '0818', '0909', '0908'],
   };
 
   const cleanedNumber = phoneNumber.replace(/\s/g, '').replace('+234', '0'); // Cleaning phone number format

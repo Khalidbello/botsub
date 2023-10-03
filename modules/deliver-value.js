@@ -17,9 +17,9 @@ const sendMessage = require('./../bot_modules/send_message.js');
 const fsP = require('fs').promises;
 
 const transporter = nodemailer.createTransport({
-  host: 'mail.botsub.com.ng',  // Replace with your SMTP server hostname
-  port: 465,  // Port number for SMTP (e.g., 587 for TLS)
-  secure: true,  // Set to true if using SSL
+  host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
+  port: 465, // Port number for SMTP (e.g., 587 for TLS)
+  secure: true, // Set to true if using SSL
   auth: {
     user: process.env.ADMIN_MAIL,
     pass: process.env.ADMIN_MAIL_P,
@@ -52,49 +52,59 @@ async function deliverData(response, req, res) {
     },
     json: true,
   };
-  // making request
-  request(options, async (error, _, body) => {
-    if (error) {
-      console.log(error);
-      return res.send(error);
-    };
-    
-    console.log('data purchase resp body: ', body);
-    
-    // to do dependent transaction status
-    if (body.Status === 'successful') {
-      addToDelivered(req);
-      // calling function to send mail and json response object
-      sendSuccessfulResponse(response, res);
 
-      if (response.data.meta.bot) {
-        const date = new Date(response.data.customer.created_at);
-        const nigeriaTimeString = dateFormatter(date);
-  
-        await sendMessage(response.data.meta.senderId, {
-          text: `Transaction Succesful \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-        });
+  if (process.env.NODE_ENV === 'production') {
+    // making request
+    actualBuyData(response, res, req, options);
+    /*request(options, async (error, _, body) => {
+      if (error) {
+        console.log(error);
+        return res.send(error);
       };
-      
-      if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
-      return;
-    } else if (true) {
-      console.log('got hrre failed');
-      addToFailedToDeliver(req);
-      sendFailedToDeliverResponse(response, res);
 
-      if (response.data.meta.bot) {
-        const date = new Date(response.data.customer.created_at);
-        const nigeriaTimeString = dateFormatter(date);
+      console.log('data purchase resp body: ', body);
 
-        console.log("bot feed back");
-        await sendMessage(response.data.meta.senderId, {
-          text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-        });
+      // to do dependent transaction status
+      if (body.Status === 'successful') {
+        addToDelivered(req);
+        // calling function to send mail and json response object
+        sendSuccessfulResponse(response, res);
+
+        if (response.data.meta.bot) {
+          const date = new Date(response.data.customer.created_at);
+          const nigeriaTimeString = dateFormatter(date);
+
+          await sendMessage(response.data.meta.senderId, {
+            text: `Transaction Succesful \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          });
+        };
+
+        if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
+        return;
+      } else if (true) {
+        console.log('got hrre failed');
+        addToFailedToDeliver(req);
+        sendFailedToDeliverResponse(response, res);
+
+        if (response.data.meta.bot) {
+          const date = new Date(response.data.customer.created_at);
+          const nigeriaTimeString = dateFormatter(date);
+
+          console.log("bot feed back");
+          await sendMessage(response.data.meta.senderId, {
+            text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          });
+        };
       };
-    };
-  });
+    });*/
+  } else {
+    simulateBuyData(response, res, req, true);
+  };
 }; // end of deliver value function
+
+
+
+
 
 // function to make airtime purchase request
 
@@ -116,15 +126,70 @@ async function deliverAirtime(response, req, res) {
     json: true,
   };
 
-  // making request
+  if (process.env.NODE_ENV === 'production') {
+    actualBuyAirtime(response, req, res, options);
+    /* making request
+    request(options, async (error, _, body) => {
+      if (error) {
+        console.log(error);
+        return res.send(error);
+      }
+
+      console.log('bodyof request ', body);
+
+      // to do dependent transaction status
+      if (body.Status === 'successful') {
+        addToDelivered(req);
+        // calling function to send mail and json response object
+        sendSuccessfulResponse(response, res);
+
+        if (response.data.meta.bot) {
+          const date = new Date(response.data.customer.created_at);
+          const nigeriaTimeString = dateFormatter(date);
+
+          await sendMessage(response.data.meta.senderId, {
+            text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          });
+        }
+
+        if (parseInt(body.balance_after) <= 5000)
+          fundWallet(
+            '035',
+            process.env.WALLET_ACC_NUMBER,
+            parseInt(process.env.WALLET_TOPUP_AMOUNT)
+          );
+        return;
+      } else {
+        addToFailedToDeliver(req);
+        sendFailedToDeliverResponse(response, res);
+        if (response.data.meta.bot) {
+          const date = new Date(response.data.customer.created_at);
+          const nigeriaTimeString = dateFormatter(date);
+
+          await sendMessage(response.data.meta.senderId, {
+            text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          });
+        }
+      }
+    });*/
+  } else {
+    simulateBuyAirtime(response, res, req, true);
+  }
+} // end of deliverAirtime
+
+
+
+
+// function to make buy data request
+
+async function actualBuyData(response, res, req, options) {
   request(options, async (error, _, body) => {
     if (error) {
       console.log(error);
       return res.send(error);
-    };
-    
-    console.log('bodyof request ', body);
-    
+    }
+    console.log('data purchase resp body: ', body);
+
     // to do dependent transaction status
     if (body.Status === 'successful') {
       addToDelivered(req);
@@ -134,28 +199,167 @@ async function deliverAirtime(response, req, res) {
       if (response.data.meta.bot) {
         const date = new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
-  
+
         await sendMessage(response.data.meta.senderId, {
-          text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          text: `Transaction Succesful \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
       };
-      
-      if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
+
+      if (parseInt(body.balance_after) <= 5000)
+        fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
       return;
-    } else {
+    } else if (true) {
+      console.log('got hrre failed');
       addToFailedToDeliver(req);
       sendFailedToDeliverResponse(response, res);
+
       if (response.data.meta.bot) {
         const date = new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
-  
+
+        console.log('bot feed back');
         await sendMessage(response.data.meta.senderId, {
-          text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
-      };
-    };
+      }
+    }
   });
-}; // end of deliverAirtime
+} // end of actualBuyData
+
+
+
+
+// function to simulate buy data
+
+async function simulateBuyData(response, res, req, success) {
+  if (success) {
+    addToDelivered(req);
+    // calling function to send mail and json response object
+    sendSuccessfulResponse(response, res);
+
+    if (response.data.meta.bot) {
+      const date = new Date(response.data.customer.created_at);
+      const nigeriaTimeString = dateFormatter(date);
+
+      await sendMessage(response.data.meta.senderId, {
+        text: `Transaction Succesful \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+      });
+    }
+
+    //if (parseInt(body.balance_after) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
+    return;
+  } else if (true) {
+    console.log('got hrre failed');
+    addToFailedToDeliver(req);
+    sendFailedToDeliverResponse(response, res);
+
+    if (response.data.meta.bot) {
+      const date = new Date(response.data.customer.created_at);
+      const nigeriaTimeString = dateFormatter(date);
+
+      console.log('bot feed back');
+      await sendMessage(response.data.meta.senderId, {
+        text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+      });
+    };
+  };
+}; // end of simulateBuyData
+
+
+
+
+// function to buy airtime
+
+asyn function actualBuyAirtime(response, res, req, options) {
+      request(options, async (error, _, body) => {
+      if (error) {
+        console.log(error);
+        return res.send(error);
+      };
+
+      console.log('bodyof request ', body);
+
+      // to do dependent transaction status
+      if (body.Status === 'successful') {
+        addToDelivered(req);
+        // calling function to send mail and json response object
+        sendSuccessfulResponse(response, res);
+
+        if (response.data.meta.bot) {
+          const date = new Date(response.data.customer.created_at);
+          const nigeriaTimeString = dateFormatter(date);
+
+          await sendMessage(response.data.meta.senderId, {
+            text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          });
+        };
+
+        if (parseInt(body.balance_after) <= 5000)
+          fundWallet(
+            '035',
+            process.env.WALLET_ACC_NUMBER,
+            parseInt(process.env.WALLET_TOPUP_AMOUNT)
+          );
+        return;
+      } else {
+        addToFailedToDeliver(req);
+        sendFailedToDeliverResponse(response, res);
+        if (response.data.meta.bot) {
+          const date = new Date(response.data.customer.created_at);
+          const nigeriaTimeString = dateFormatter(date);
+
+          await sendMessage(response.data.meta.senderId, {
+            text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          });
+        };
+      };
+    });
+}; // end of actualBuyAirtime
+
+
+
+
+// function to simulate buy airtime
+
+async function simulateBuyAirtime(response, res, req, success) {
+      if (success) {
+        addToDelivered(req);
+        // calling function to send mail and json response object
+        sendSuccessfulResponse(response, res);
+
+        if (response.data.meta.bot) {
+          const date = new Date(response.data.customer.created_at);
+          const nigeriaTimeString = dateFormatter(date);
+
+          await sendMessage(response.data.meta.senderId, {
+            text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          });
+        };
+
+        if (parseInt(body.balance_after) <= 5000)
+          fundWallet(
+            '035',
+            process.env.WALLET_ACC_NUMBER,
+            parseInt(process.env.WALLET_TOPUP_AMOUNT)
+          );
+        return;
+      } else {
+        addToFailedToDeliver(req);
+        sendFailedToDeliverResponse(response, res);
+        if (response.data.meta.bot) {
+          const date = new Date(response.data.customer.created_at);
+          const nigeriaTimeString = dateFormatter(date);
+
+          await sendMessage(response.data.meta.senderId, {
+            text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+          });
+        };
+            };
+}; // end of buy airtime
+
+
+
+
 
 // function to add transaction to delivered transaction
 
@@ -167,7 +371,7 @@ async function addToDelivered(req) {
 
   if (transact) {
     return client.close();
-  };
+  }
 
   const response = await collection.insertOne({
     txRef: req.query.tx_ref,
@@ -178,7 +382,7 @@ async function addToDelivered(req) {
   client.close();
   console.log('add to delivered respomse', response);
   return response;
-}; // end of addToDelivered
+} // end of addToDelivered
 
 // function to add transaction to failed to deliver
 
@@ -191,8 +395,8 @@ async function addToFailedToDeliver(req) {
   const transact = await collection.findOne({ _id: req.query.transaction_id });
 
   if (transact) {
-    return  client.close();
-  };
+    return client.close();
+  }
 
   const date = new Date();
   const response = await collection.insertOne({
@@ -205,7 +409,7 @@ async function addToFailedToDeliver(req) {
   client.close();
   console.log('add to failed delivery respose', response);
   return response;
-}; // end if add to failed to deliver
+} // end if add to failed to deliver
 
 // function to send data purchase mail and response
 
@@ -221,7 +425,7 @@ async function sendSuccessfulResponse(response, res) {
 
     if (response.data.meta.type === 'airtime') {
       details.product = `₦${response.data.meta.amount} airtime`;
-    };
+    }
 
     const mailParams = {
       product: details.product,
@@ -233,6 +437,7 @@ async function sendSuccessfulResponse(response, res) {
       price: response.data.amount,
       recipientNumber: details.number,
       chatBotUrl: process.env.CHATBOT_URL,
+      host: process.env.HOST
     };
 
     const mailOptions = {
@@ -249,8 +454,8 @@ async function sendSuccessfulResponse(response, res) {
   } catch (err) {
     console.log('send successful vtu response error', err);
     return res.json({ status: 'error', message: 'error send succesful rep air', data: err });
-  };
-}; // end of sendAirtimeResponse function
+  }
+} // end of sendAirtimeResponse function
 
 // function to form response on failed to deliver
 
@@ -266,7 +471,7 @@ async function sendFailedToDeliverResponse(response, res) {
 
     if (response.data.meta.type === 'airtime') {
       details.product = `₦${response.data.meta.amount} airtime`;
-    };
+    }
 
     const mailParams = {
       product: details.product,
@@ -278,6 +483,7 @@ async function sendFailedToDeliverResponse(response, res) {
       price: response.data.amount,
       recipientNumber: details.number,
       chatBotUrl: process.env.CHATBOT_URL,
+      host: process.env.HOST
     };
 
     const mailOptions = {
@@ -295,8 +501,8 @@ async function sendFailedToDeliverResponse(response, res) {
     console.log('send successfulvtu response error', err);
     return res.json({ status: 'error', message: 'send failed rep air', data: err });
     //return res.json({ status: 'failedDelivery', message: 'failed to deliver purchased product' });
-  };
-}; // end of sendFailedToDeliverResponse
+  }
+} // end of sendFailedToDeliverResponse
 
 //function to form response for request
 
@@ -305,7 +511,7 @@ function formResponse(response) {
   // create a Date object with the UTC time
   const date = new Date(response.data.customer.created_at);
   const nigeriaTimeString = dateFormatter(date);
-  
+
   const details = {
     network: meta.network,
     number: meta.number,
@@ -313,30 +519,6 @@ function formResponse(response) {
     date: nigeriaTimeString,
   };
   return details;
-}; // end of formResponse
-
-// function to check balance and add to it when necessary
-
-async function topUpBalance() {
-  try {
-    const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-
-    const details = {
-      account_bank: process.env.WALLET_ACC_NAME,
-      account_number: process.env.WALLET_ACC_NUMBER,
-      amount: parseInt(process.env.WALLET_FUND_AMOUNT),
-      narration: 'REFUNDING WALLET',
-      currency: 'NGN',
-      reference: generateRandomString(),
-      debit_currency: 'NGN',
-      meta: { walletTopUp: true },
-    };
-
-    const response = await flw.Transfer.initiate(details);
-    console.log('wallet transfer response', response);
-  } catch (err) {
-    console.log('balance top up error', err);
-  };
-}
+} // end of formResponse
 
 module.exports = deliverValue;

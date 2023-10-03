@@ -13,19 +13,17 @@ const createClient = require('./mongodb.js');
 //onst uri = `mongodb+srv://bellokhalid74:${process.env.MONGO_PASS1}@botsubcluster.orij2vq.mongodb.net/?retryWrites=true&w=majority`;
 
 const transporter = nodemailer.createTransport({
-  host: 'mail.botsub.com.ng',  // Replace with your SMTP server hostname
-  port: 465,  // Port number for SMTP (e.g., 587 for TLS)
-  secure: true,  // Set to true if using SSL
+  host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
+  port: 465, // Port number for SMTP (e.g., 587 for TLS)
+  secure: true, // Set to true if using SSL
   auth: {
     user: process.env.ADMIN_MAIL,
     pass: process.env.ADMIN_MAIL_P,
   },
 }); // end of transporter
 
-
-
 // function to check if transaction has ever beign made
-async function checkIfPreviouslyDelivered (transactionId, tx_ref) {
+async function checkIfPreviouslyDelivered(transactionId, tx_ref) {
   const client = createClient();
   await client.connect();
   const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
@@ -37,13 +35,11 @@ async function checkIfPreviouslyDelivered (transactionId, tx_ref) {
   if (transact) {
     client.close();
     return transact.txRef === tx_ref && transact.status === 'settled';
-  };
+  }
 
   client.close();
   return false;
-}; //end of checkIfPreviouslyDelivered
-
-
+} //end of checkIfPreviouslyDelivered
 
 function returnPreviouslyDelivered(response) {
   const meta = response.data.meta;
@@ -66,16 +62,12 @@ function returnPreviouslyDelivered(response) {
   };
   if (meta.type == 'airtime') {
     details.product = `&#8358;${meta.amount} airtime`;
-  };
+  }
   if (meta.type == 'data') {
     details.product = `${meta.size} data`;
-  };
+  }
   return details;
-}; // end of returnPreviouslyDelivered
-
-
-
-
+} // end of returnPreviouslyDelivered
 
 // function to check if all requirements are met
 const checkRequirementMet = async function (response, req, res) {
@@ -93,15 +85,15 @@ const checkRequirementMet = async function (response, req, res) {
       price = Number(dataDetails[response.data.meta.networkID][response.data.meta.index]['price']);
     } catch (err) {
       returnFalse = true;
-    };
+    }
 
     if (returnFalse) {
       console.log('data plan with id not found');
       return { status: false, message: 'data plan with id not found' };
-    };
+    }
     let pricePaid = Number(response.data.amount);
 
-    console.log("passed all remaining last in data")
+    console.log('passed all remaining last in data');
     if (
       response.data.status === 'successful' &&
       pricePaid >= price &&
@@ -110,8 +102,8 @@ const checkRequirementMet = async function (response, req, res) {
     ) {
       let toRefund = pricePaid - price; //amount to be refunded
       return { status: true, refund: toRefund, type: 'data', price };
-    };
-  };
+    }
+  }
 
   if (response.data.meta.type === 'airtime') {
     price = Number(response.data.meta.amount);
@@ -126,13 +118,10 @@ const checkRequirementMet = async function (response, req, res) {
     ) {
       let toRefund = pricePaid - price;
       return { status: true, refund: toRefund, type: 'airtime', price };
-    };
-  };
+    }
+  }
   return { status: false, message: 'payment requirement not met', price };
 }; //end of checkRequiremtMet
-
-
-
 
 // helper function to refund payment
 async function refundPayment(response, price) {
@@ -146,9 +135,9 @@ async function refundPayment(response, price) {
 
     console.log('payment refund response IN REFUND', resp);
     const date = new Date();
-    
+
     // Format the Nigeria time using the formatter
-    const nigeriaTimeString = dateFormatter(date)
+    const nigeriaTimeString = dateFormatter(date);
 
     const emailTemplate = await fsP.readFile('modules/email-templates/refund-mail.html', 'utf8');
     const mail = handlebars.compile(emailTemplate);
@@ -170,7 +159,7 @@ async function refundPayment(response, price) {
 
     if (response.data.meta.type === 'airtime') {
       refundData.product = `₦${response.data.meta.amount} airtime`;
-    };
+    }
 
     const mailOptions = {
       from: process.env.ADMIN_MAIL,
@@ -194,7 +183,7 @@ async function refundPayment(response, price) {
       transactionId: response.data.id,
       status: 'pending',
     });
-    
+
     client.close();
     console.log('add to toRefund response', resp2);
 
@@ -203,15 +192,12 @@ async function refundPayment(response, price) {
     };
   } catch (err) {
     console.log('regund error', err);
-  };
-}; // end of refundPayment
-
-
-
+  }
+} // end of refundPayment
 
 // function to format dates
 function dateFormatter(date) {
-    const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
+  const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
     timeZone: 'Africa/Lagos',
     year: 'numeric',
     month: 'long',
@@ -224,10 +210,7 @@ function dateFormatter(date) {
 
   // Format the Nigeria time using the formatter
   return nigeriaFormatter.format(date);
-}; // end of date formatter
-
-
-
+} // end of date formatter
 
 // function to generate random Strings
 function generateRandomString(length = 15) {
@@ -246,18 +229,15 @@ async function removeFromPendingAddToSettled(transaction_id, tx_ref) {
   const client = createClient();
 
   await client.connect();
-  
+
   const pendingCollection = client
     .db(process.env.BOTSUB_DB)
     .collection(process.env.FAILED_DELIVERY_COLLECTION);
 
   await pendingCollection.deleteOne({ _id: transaction_id });
   client.close();
-};
+}
 
-
-
-  
 // function to retry all failed  transactions
 
 async function retryAllFailedDelivery(req) {
@@ -275,7 +255,7 @@ async function retryAllFailedDelivery(req) {
     failed: 0,
   };
 
-  for (let i = 0; i < 3; i ++) {
+  for (let i = 0; i < 3; i++) {
     const transacts = await collection.find().limit(20).toArray();
     console.log('transacts', transacts);
 
@@ -292,37 +272,31 @@ async function retryAllFailedDelivery(req) {
         await removeFromPendingAddToSettled(_id, txRef);
       } else {
         statistic.failed += 1;
-      };
+      }
     });
 
     // Wait for all transaction promises to resolve
     await Promise.all(transactionPromises);
-  }; // end of for loop
+  } // end of for loop
 
   client.close();
   return statistic;
-};
-
+}
 
 // function to fundvtu wallet
-async function fundWallet (bankCode, accNum, amount) {
+async function fundWallet(bankCode, accNum, amount) {
   const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const details = {
     account_bank: bankCode,
     account_number: accNum,
     amount: amount,
-    narration: "Funding wallet",
-    currency: "NGN",
-    debit_currency: "NGN"
+    narration: 'Funding wallet',
+    currency: 'NGN',
+    debit_currency: 'NGN',
   };
-  
-  flw.Transfer.initiate(details)
-    .then(console.log)
-    .catch(console.log);
-}; // end of fund wallet
 
-
-
+  flw.Transfer.initiate(details).then(console.log).catch(console.log);
+} // end of fund wallet
 
 module.exports = {
   checkIfPreviouslyDelivered,
