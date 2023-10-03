@@ -54,49 +54,7 @@ async function deliverData(response, req, res) {
   };
 
   if (process.env.NODE_ENV === 'production') {
-    // making request
     actualBuyData(response, res, req, options);
-    /*request(options, async (error, _, body) => {
-      if (error) {
-        console.log(error);
-        return res.send(error);
-      };
-
-      console.log('data purchase resp body: ', body);
-
-      // to do dependent transaction status
-      if (body.Status === 'successful') {
-        addToDelivered(req);
-        // calling function to send mail and json response object
-        sendSuccessfulResponse(response, res);
-
-        if (response.data.meta.bot) {
-          const date = new Date(response.data.customer.created_at);
-          const nigeriaTimeString = dateFormatter(date);
-
-          await sendMessage(response.data.meta.senderId, {
-            text: `Transaction Succesful \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-          });
-        };
-
-        if (parseInt(body.balance_after) <= 5000) fundWallet("035", process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
-        return;
-      } else if (true) {
-        console.log('got hrre failed');
-        addToFailedToDeliver(req);
-        sendFailedToDeliverResponse(response, res);
-
-        if (response.data.meta.bot) {
-          const date = new Date(response.data.customer.created_at);
-          const nigeriaTimeString = dateFormatter(date);
-
-          console.log("bot feed back");
-          await sendMessage(response.data.meta.senderId, {
-            text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-          });
-        };
-      };
-    });*/
   } else {
     simulateBuyData(response, res, req, true);
   };
