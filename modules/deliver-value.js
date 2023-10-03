@@ -270,7 +270,7 @@ async function simulateBuyData(response, res, req, success) {
 
 // function to buy airtime
 
-asyn function actualBuyAirtime(response, res, req, options) {
+async function actualBuyAirtime(response, res, req, options) {
       request(options, async (error, _, body) => {
       if (error) {
         console.log(error);
