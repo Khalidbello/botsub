@@ -57,11 +57,6 @@ router.get('/set-persist', async (req, res) => {
               composer_input_disabled: false,
               call_to_actions: [
                 {
-                  title: 'Get Started',
-                  type: 'postback',
-                  payload: 'newConversation',
-                },
-                {
                   title: 'Buy Data',
                   type: 'postback',
                   payload: '{"title": "dataPurchase"}',
@@ -70,6 +65,11 @@ router.get('/set-persist', async (req, res) => {
                   title: 'Buy Airtime',
                   type: 'postback',
                   payload: '{"title": "airtimePurchase"}',
+                },
+                {
+                  title: 'View Data Prices',
+                  type: 'postback',
+                  payload: '{"title": "dataPrices"}',
                 },
                 {
                   type: 'postback',

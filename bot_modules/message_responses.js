@@ -9,7 +9,7 @@ const { sendNewConversationResponse } = require('./postback_responses.js');
 
 const sendTemplate = require('./send_templates.js');
 
-const { responseServices } = require('./templates.js');
+const { responseServices, responseServices2 } = require('./templates.js');
 
 const {
   noTransactFound,
@@ -28,7 +28,8 @@ async function defaultMessageHandler(event) {
   const userName = null; //await getUserName(senderId);
 
   await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
-  sendTemplate(senderId, responseServices);
+  await sendTemplate(senderId, responseServices);
+  sendTemplate(senderId, responseServices2);
 } // end of defaultMessenger
 
 // function to handle first email

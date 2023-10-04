@@ -10,6 +10,7 @@ const { dateFormatter, noTransactFound } = require('./helper_functions.js');
 
 const {
   responseServices,
+  responseServices2,
   dataNetworks1,
   dataNetworks2,
   generateFacebookPosts,
@@ -38,8 +39,8 @@ async function sendNewConversationResponse(event) {
   };
   await sendMessage(senderId, response);
 
-  sendTemplate(senderId, responseServices);
-
+  await sendTemplate(senderId, responseServices);
+  sendTemplate(senderId, responseServices2);
   // adding one
   await collection.updateOne(
     { id: senderId },
@@ -197,7 +198,9 @@ async function airtimePurchase(event, payload) {
 
   await collection.updateOne(filter, update);
   client.close();
-} // end of mtnAirtimePurchase
+}; // end of mtnAirtimePurchase
+
+
 
 //============================================
 // issue Report responses
@@ -215,7 +218,9 @@ async function issueReport(event) {
   const update = { $set: { nextAction: 'enterIssue' } };
 
   await collection.updateOne(filter, update);
-}
+};
+
+    
 
 //===============================================
 // generic responses
@@ -259,7 +264,7 @@ async function generateAccountNumber(event) {
     await sendMessage(senderId, { text: 'make transfer to the account below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.' });
     await sendMessage(senderId, { text: 'value would be delivered once purchase is made' });
     await sendMessage(senderId, { text: 'Bank Name: ' + data.transfer_bank });
-    await sendMessage(senderId, { text: 'Account Name: BotSub'});
+    await sendMessage(senderId, { text: 'Account Name: BotSub' });
     await sendMessage(senderId, { text: 'Account Number: 👇' });
     await sendMessage(senderId, { text: data.transfer_account });
     await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
@@ -268,11 +273,13 @@ async function generateAccountNumber(event) {
     });*/
   } else {
     await sendMessage(senderId, { text: 'An error occured \nPlease start a new transaction' });
-  }
+  };
   // removing purchasePayload
   cancelTransaction(event, true);
   client.close();
-} // end of generateAccountNumber
+}; // end of generateAccountNumber
+
+
 
 // function to chanege email b4 transaction
 async function changeMailBeforeTransact(event) {
@@ -294,7 +301,7 @@ async function changeMailBeforeTransact(event) {
     await collection.updateOne(filter, update);
     client.close();
     return;
-  }
+  };
 
   await sendMessage(senderId, { text: 'Enter new email \n\nEnter Q to cancel' });
 
@@ -303,7 +310,9 @@ async function changeMailBeforeTransact(event) {
 
   await collection.updateOne(filter, update);
   client.close();
-} // end of changeMailBeforeTransact
+}; // end of changeMailBeforeTransact
+
+
 
 // function to changePhoneNumber
 async function changePhoneNumber(event) {
@@ -325,7 +334,7 @@ async function changePhoneNumber(event) {
     await collection.updateOne(filter, update);
     client.close();
     return;
-  }
+  };
 
   await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter Q to cancel' });
 
@@ -334,7 +343,10 @@ async function changePhoneNumber(event) {
 
   await collection.updateOne(filter, update);
   client.close();
-} // end of  changeNumber
+}; // end of  changeNumber
+
+
+
 
 // function to cancel transaction
 async function cancelTransaction(event, end = false) {
@@ -358,7 +370,7 @@ async function cancelTransaction(event, end = false) {
     await collection.updateOne(filter, update);
     client.close();
     return;
-  }
+  };
 
   await sendMessage(senderId, { text: 'Transaction Cancled' });
   await sendMessage(senderId, { text: 'What do you want to do next' });
@@ -374,7 +386,63 @@ async function cancelTransaction(event, end = false) {
 
   await collection.updateOne(filter, update);
   client.close();
-} // end of cancelTransaction
+}; // end of cancelTransaction
+
+
+
+// function to respond to view data prices
+async function showDataPrices(event) {
+  const senderId = event.sender.id;
+  const datas = {
+    MTN: "1",
+    Airtel: "4",
+    "9mobile": "3",
+    Glo: "2",
+  };
+
+  /*Object.keys(datas).map(async (key)=> {
+    const message = {
+      text: `${key} Data Offers`,
+    };
+
+    await sendMessage(senderId, message);
+    const offers = await generateFacebookPosts(datas[key], '9mobile');
+    console.log(`${key} offers`, offers);
+
+    for (let i = 0; i < offers.length; i++) {
+      await sendTemplate(senderId, offers[i]);
+    };
+  });*/
+  const keys = Object.keys(datas);
+
+  async function processKeysSequentially() {
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const message = {
+        text: `${i!==0 ? ".\n\n" : ""}${key} Data Offers`,
+      };
+
+      await sendMessage(senderId, message);
+      const offers = await generateFacebookPosts(datas[key], key);
+      console.log(`${key} offers`, offers);
+
+      for (let j = 0; j < offers.length; j++) {
+        await sendTemplate(senderId, offers[j]);
+      };
+    };
+  };
+
+  processKeysSequentially()
+    .then(() => {
+      console.log("All operations completed in order.");
+    })
+    .catch((error) => {
+      console.error("An error occurred:", error);
+    });
+}; // end of showDataPrices
+
+
+
 
 module.exports = {
   sendNewConversationResponse,
@@ -391,4 +459,5 @@ module.exports = {
   changeMailBeforeTransact,
   changePhoneNumber,
   cancelTransaction,
+  showDataPrices,
 };

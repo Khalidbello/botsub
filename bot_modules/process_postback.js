@@ -13,6 +13,7 @@ const {
   changePhoneNumber,
   cancelTransaction,
   issueReport,
+  showDataPrices,
 } = require('./postback_responses.js');
 
 //import {createClient} from "./../modules/mongodb.js";
@@ -38,9 +39,6 @@ async function processPostback(event, res) {
       break;
     case 'dataPurchase':
       sendPurchaseDataReponse(event);
-      break;
-    case 'selectNetworkForAirtime':
-      console.log("It's Friday. TGIF!");
       break;
     case 'mtnOffers':
       sendMtnOffers(event);
@@ -78,6 +76,9 @@ async function processPostback(event, res) {
       break;
     case 'issueReport':
       issueReport(event);
+      break;
+    case 'dataPrices':
+      showDataPrices(event);
       break;
     default:
       break;

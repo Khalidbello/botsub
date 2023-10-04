@@ -16,6 +16,21 @@ const responseServices = {
         title: 'Buy Airtime',
         payload: '{"title": "airtimePurchase"}',
       },
+    ],
+  },
+}; 
+
+const responseServices2 = {
+  type: 'template',
+  payload: {
+    template_type: 'button',
+    text: '....',
+    buttons: [
+      {
+        type: 'postback',
+        title: 'View Data Prices',
+        payload: '{"title": "dataPrices"}',
+      },
       {
         type: 'postback',
         title: 'Report Issue',
@@ -234,6 +249,7 @@ async function generateFacebookPosts(id, network) {
 
 module.exports = {
   responseServices,
+  responseServices2,
   dataNetworks1,
   dataNetworks2,
   confrimDataPurchaseButton1,
