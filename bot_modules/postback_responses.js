@@ -98,8 +98,8 @@ async function sendAirtelOffers(event) {
   for (let i = 0; i < offers.length; i++) {
     await sendTemplate(senderId, offers[i]);
     //i++;
-  }
-} // end sendAirtelOffers
+  };
+}; // end sendAirtelOffers
 
 // function to send glo offers
 async function sendGloOffers(event) {
@@ -115,8 +115,8 @@ async function sendGloOffers(event) {
   for (let i = 0; i < offers.length; i++) {
     await sendTemplate(senderId, offers[i]);
     //i++;
-  }
-} // end sendGloOffers
+  };
+}; // end sendGloOffers
 
 // functiin to send 9mobile offers
 async function sendNineMobileOffers(event) {
@@ -160,6 +160,9 @@ async function offerSelected(event, payload) {
   await collection.updateOne(filter, update);
   client.close();
 }; // end of offerSelected
+
+
+
 
 // ================================================
 // section airtime purchase
@@ -253,16 +256,16 @@ async function generateAccountNumber(event) {
 
   if (response.status === 'success') {
     const data = response.meta.authorization;
-    await sendMessage(senderId, { text: 'make transfer to the account below' });
+    await sendMessage(senderId, { text: 'make transfer to the account below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.' });
     await sendMessage(senderId, { text: 'value would be delivered once purchase is made' });
     await sendMessage(senderId, { text: 'Bank Name: ' + data.transfer_bank });
-        await sendMessage(senderId, { text: 'Account Name: BotSub'});
+    await sendMessage(senderId, { text: 'Account Name: BotSub'});
     await sendMessage(senderId, { text: 'Account Number: 👇' });
     await sendMessage(senderId, { text: data.transfer_account });
     await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
-    await sendMessage(senderId, {
+    /*await sendMessage(senderId, {
       text: 'Account Expiry: ' + dateFormatter(data.account_expiration),
-    });
+    });*/
   } else {
     await sendMessage(senderId, { text: 'An error occured \nPlease start a new transaction' });
   }

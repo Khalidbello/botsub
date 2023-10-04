@@ -329,7 +329,7 @@ async function addToDelivered(req) {
 
   if (transact) {
     return client.close();
-  }
+  };
 
   const response = await collection.insertOne({
     txRef: req.query.tx_ref,
@@ -340,7 +340,7 @@ async function addToDelivered(req) {
   client.close();
   console.log('add to delivered respomse', response);
   return response;
-} // end of addToDelivered
+}; // end of addToDelivered
 
 // function to add transaction to failed to deliver
 
@@ -354,7 +354,7 @@ async function addToFailedToDeliver(req) {
 
   if (transact) {
     return client.close();
-  }
+  };
 
   const date = new Date();
   const response = await collection.insertOne({
@@ -367,7 +367,10 @@ async function addToFailedToDeliver(req) {
   client.close();
   console.log('add to failed delivery respose', response);
   return response;
-} // end if add to failed to deliver
+}; // end if add to failed to deliver
+
+
+
 
 // function to send data purchase mail and response
 
@@ -383,7 +386,7 @@ async function sendSuccessfulResponse(response, res) {
 
     if (response.data.meta.type === 'airtime') {
       details.product = `₦${response.data.meta.amount} airtime`;
-    }
+    };
 
     const mailParams = {
       product: details.product,
@@ -412,8 +415,11 @@ async function sendSuccessfulResponse(response, res) {
   } catch (err) {
     console.log('send successful vtu response error', err);
     return res.json({ status: 'error', message: 'error send succesful rep air', data: err });
-  }
-} // end of sendAirtimeResponse function
+  };
+}; // end of sendAirtimeResponse function
+
+
+
 
 // function to form response on failed to deliver
 
