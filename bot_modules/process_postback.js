@@ -14,6 +14,7 @@ const {
   cancelTransaction,
   issueReport,
   showDataPrices,
+  retryFailed,
 } = require('./postback_responses.js');
 
 //import {createClient} from "./../modules/mongodb.js";
@@ -22,13 +23,13 @@ async function processPostback(event, res) {
   // first set nextAction to null
   if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);
-  }
+  };
 
   let payload = event.postback.payload;
   try {
     payload = JSON.parse(payload);
     console.log('postback payload', payload);
-  } catch (err) {}
+  } catch (err) {};
 
   const payloadTitle = payload.title;
   console.log('postback payload title', payloadTitle);
@@ -79,6 +80,9 @@ async function processPostback(event, res) {
       break;
     case 'dataPrices':
       showDataPrices(event);
+      break;
+    case 'retryFailed':
+      retryFailed(event, payload);
       break;
     default:
       break;

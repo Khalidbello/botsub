@@ -8,7 +8,7 @@ const handlebars = require('handlebars');
 const axios = require('axios');
 
 const {
-  removeFromPendingAddToSettled,
+   retryFailedHelper,
   retryAllFailedDelivery,
 } = require('./../modules/helper_functions.js');
 
@@ -93,20 +93,10 @@ router.post('/retry', async (req, res) => {
   const { transaction_id, tx_ref } = req.query;
   console.log('req.quer', req.query);
 
-  const response = await axios.get(
-    `https://${req.hostname}/gateway/confirm?retry=Retry&transaction_id=${transaction_id}&tx_ref=${tx_ref}`
-  );
-  const data = await response.data;
-  console.log('retry data', data);
-
-  if (data.status === 'successful') {
-    // calling function to delete transaction from pemding and add to setled
-    await removeFromPendingAddToSettled(transaction_id, tx_ref);
-    return res.json(data);
-  };
-
-  res.json(data);
+  return retryFailedHelper(transaction_id, tx_ref, res);
 });
+
+
 
 
                 

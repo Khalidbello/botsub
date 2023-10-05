@@ -62,6 +62,7 @@ function validateNumber(phoneNumber) {
 
 
 
+
 // function to form product response
 async function confirmDataPurchaseResponse(senderId) {
   const client = createClient();
@@ -132,7 +133,11 @@ function dateFormatter(date) {
   });
   // Format the Nigeria time using the formatter
   return nigeriaFormatter.format(date0);
-} // end of dateFormatter
+}; // end of dateFormatter
+
+
+
+
 
 // function to create tx_ref
 function txCode() {
@@ -141,9 +146,9 @@ function txCode() {
   for (let x = 0; x < 25; x++) {
     code += characters.charAt(Math.floor(Math.random() * characters.length));
     console.log(characters.length);
-  }
+  };
   return code + Date.now();
-} // end of txCode
+}; // end of txCode
 
 module.exports = {
   noTransactFound,

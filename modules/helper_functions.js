@@ -65,11 +65,16 @@ function returnPreviouslyDelivered(response) {
   }
   if (meta.type == 'data') {
     details.product = `${meta.size} data`;
-  }
+  };
   return details;
-} // end of returnPreviouslyDelivered
+}; // end of returnPreviouslyDelivered
+
+
+
+
 
 // function to check if all requirements are met
+
 const checkRequirementMet = async function (response, req, res) {
   let returnFalse = false;
   let price;
@@ -85,12 +90,12 @@ const checkRequirementMet = async function (response, req, res) {
       price = Number(dataDetails[response.data.meta.networkID][response.data.meta.index]['price']);
     } catch (err) {
       returnFalse = true;
-    }
+    };
 
     if (returnFalse) {
       console.log('data plan with id not found');
       return { status: false, message: 'data plan with id not found' };
-    }
+    };
     let pricePaid = Number(response.data.amount);
 
     console.log('passed all remaining last in data');
@@ -102,8 +107,8 @@ const checkRequirementMet = async function (response, req, res) {
     ) {
       let toRefund = pricePaid - price; //amount to be refunded
       return { status: true, refund: toRefund, type: 'data', price };
-    }
-  }
+    };
+  };
 
   if (response.data.meta.type === 'airtime') {
     price = Number(response.data.meta.amount);
@@ -118,7 +123,7 @@ const checkRequirementMet = async function (response, req, res) {
     ) {
       let toRefund = pricePaid - price;
       return { status: true, refund: toRefund, type: 'airtime', price };
-    }
+    };
   }
   return { status: false, message: 'payment requirement not met', price };
 }; //end of checkRequiremtMet
@@ -236,7 +241,26 @@ async function removeFromPendingAddToSettled(transaction_id, tx_ref) {
 
   await pendingCollection.deleteOne({ _id: transaction_id });
   client.close();
-}
+} // end of removeFromPendingAddTo
+
+// function to retry failed delivery
+
+async function retryFailedHelper(transaction_id, tx_ref, res) {
+  const response = await axios.get(
+    `https://${process.env.HOST}/gateway/confirm?retry=Retry&transaction_id=${transaction_id}&tx_ref=${tx_ref}`
+  );
+  const data = await response.data;
+  console.log('retry data', data);
+
+  if (data.status === 'successful') {
+    // calling function to delete transaction from pemding and add to setled
+    await removeFromPendingAddToSettled(transaction_id, tx_ref);
+    if (res) res.json(data);
+    return;
+  }
+
+  if (res) res.json(data);
+} // end of retryFailedHelper
 
 // function to retry all failed  transactions
 
@@ -306,6 +330,7 @@ module.exports = {
   generateRandomString,
   removeFromPendingAddToSettled,
   retryAllFailedDelivery,
+  retryFailedHelper,
   dateFormatter,
   fundWallet,
 };

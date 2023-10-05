@@ -245,7 +245,26 @@ async function generateFacebookPosts(id, network) {
   });
 
   return templates;
-}
+};
+
+
+
+function retryFailedTemplate(transaction_id, tx_ref) {
+  return {
+    type: 'template',
+    payload: {
+      template_type: 'button',
+      text: 'Select request',
+      buttons: [{
+        type: 'postback',
+        title: 'Reinitiate Transaction',
+        payload: `{"title": "retryFailed", "transaction_id": "${transaction_id}", "tx_ref": "${tx_ref}"}`,
+      }],
+    }
+  };
+};
+
+
 
 module.exports = {
   responseServices,
@@ -257,4 +276,5 @@ module.exports = {
   airtimeNetworks1,
   airtimeNetworks2,
   generateFacebookPosts,
+  retryFailedTemplate,
 };

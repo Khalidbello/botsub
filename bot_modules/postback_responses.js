@@ -4,6 +4,8 @@ const sendTemplate = require('./send_templates.js');
 
 const axios = require('axios');
 
+const { retryFailedHelper } = require('./../modules/helper_functions.js')
+
 const getUserName = require('./get_user_info.js');
 
 const { dateFormatter, noTransactFound } = require('./helper_functions.js');
@@ -254,7 +256,7 @@ async function generateAccountNumber(event) {
     await sendMessage(senderId, { text: 'Ana error occured \nPlease start a new transaction' });
     await cancelTransaction(event, true);
     return;
-  }
+  };
 
   response = await response.data;
   console.log(response);
@@ -400,19 +402,6 @@ async function showDataPrices(event) {
     Glo: "2",
   };
 
-  /*Object.keys(datas).map(async (key)=> {
-    const message = {
-      text: `${key} Data Offers`,
-    };
-
-    await sendMessage(senderId, message);
-    const offers = await generateFacebookPosts(datas[key], '9mobile');
-    console.log(`${key} offers`, offers);
-
-    for (let i = 0; i < offers.length; i++) {
-      await sendTemplate(senderId, offers[i]);
-    };
-  });*/
   const keys = Object.keys(datas);
 
   async function processKeysSequentially() {
@@ -443,6 +432,17 @@ async function showDataPrices(event) {
 
 
 
+async function retryFailed(event, payload) {
+  const senderId = event.sender.id;
+  
+  await sendMessage(senderId, {
+    text: "Reinitiating transaction....."
+  });
+
+  retryFailedHelper(payload.transaction_id, payload.tx_ref, false);
+};
+
+
 
 module.exports = {
   sendNewConversationResponse,
@@ -460,4 +460,5 @@ module.exports = {
   changePhoneNumber,
   cancelTransaction,
   showDataPrices,
+  retryFailed,
 };

@@ -14,6 +14,10 @@ const createClient = require('./mongodb.js');
 
 const sendMessage = require('./../bot_modules/send_message.js');
 
+const sendTemplate = require('./../bot_modules/send_templates.js');
+
+const { retryFailedTemplate } = require('./../bot_modules/templates.js');
+
 const fsP = require('fs').promises;
 
 const transporter = nodemailer.createTransport({
@@ -31,8 +35,8 @@ function deliverValue(response, req, res, requirementMet) {
     return deliverData(response, req, res);
   } else if (requirementMet.type == 'airtime') {
     return deliverAirtime(response, req, res);
-  }
-}
+  };
+};
 
 // function to make data purchase request
 
@@ -56,10 +60,9 @@ async function deliverData(response, req, res) {
   if (process.env.NODE_ENV === 'production') {
     actualBuyData(response, res, req, options);
   } else {
-    simulateBuyData(response, res, req, true);
+    simulateBuyData(response, res, req, false);
   };
 }; // end of deliver value function
-
 
 
 
@@ -86,54 +89,10 @@ async function deliverAirtime(response, req, res) {
 
   if (process.env.NODE_ENV === 'production') {
     actualBuyAirtime(response, req, res, options);
-    /* making request
-    request(options, async (error, _, body) => {
-      if (error) {
-        console.log(error);
-        return res.send(error);
-      }
-
-      console.log('bodyof request ', body);
-
-      // to do dependent transaction status
-      if (body.Status === 'successful') {
-        addToDelivered(req);
-        // calling function to send mail and json response object
-        sendSuccessfulResponse(response, res);
-
-        if (response.data.meta.bot) {
-          const date = new Date(response.data.customer.created_at);
-          const nigeriaTimeString = dateFormatter(date);
-
-          await sendMessage(response.data.meta.senderId, {
-            text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-          });
-        }
-
-        if (parseInt(body.balance_after) <= 5000)
-          fundWallet(
-            '035',
-            process.env.WALLET_ACC_NUMBER,
-            parseInt(process.env.WALLET_TOPUP_AMOUNT)
-          );
-        return;
-      } else {
-        addToFailedToDeliver(req);
-        sendFailedToDeliverResponse(response, res);
-        if (response.data.meta.bot) {
-          const date = new Date(response.data.customer.created_at);
-          const nigeriaTimeString = dateFormatter(date);
-
-          await sendMessage(response.data.meta.senderId, {
-            text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-          });
-        }
-      }
-    });*/
   } else {
     simulateBuyAirtime(response, res, req, true);
-  }
-} // end of deliverAirtime
+  };
+}; // end of deliverAirtime
 
 
 
@@ -145,7 +104,7 @@ async function actualBuyData(response, res, req, options) {
     if (error) {
       console.log(error);
       return res.send(error);
-    }
+    };
     console.log('data purchase resp body: ', body);
 
     // to do dependent transaction status
@@ -179,11 +138,14 @@ async function actualBuyData(response, res, req, options) {
         await sendMessage(response.data.meta.senderId, {
           text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
         });
-      }
-    }
+        await sendTemplate(
+          response.data.meta.senderId,
+          retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
+        );
+      };
+    };
   });
-} // end of actualBuyData
-
+}; // end of actualBuyData
 
 
 
@@ -202,7 +164,7 @@ async function simulateBuyData(response, res, req, success) {
       await sendMessage(response.data.meta.senderId, {
         text: `Transaction Succesful \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
       });
-    }
+    };
 
     //if (parseInt(body.balance_after) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
     return;
@@ -219,59 +181,60 @@ async function simulateBuyData(response, res, req, success) {
       await sendMessage(response.data.meta.senderId, {
         text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
       });
+      await sendTemplate(
+        response.data.meta.senderId,
+        retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
+      );
     };
   };
 }; // end of simulateBuyData
 
-
-
-
 // function to buy airtime
 
 async function actualBuyAirtime(response, res, req, options) {
-      request(options, async (error, _, body) => {
-      if (error) {
-        console.log(error);
-        return res.send(error);
+  request(options, async (error, _, body) => {
+    if (error) {
+      console.log(error);
+      return res.send(error);
+    };
+
+    console.log('bodyof request ', body);
+
+    // to do dependent transaction status
+    if (body.Status === 'successful') {
+      addToDelivered(req);
+      // calling function to send mail and json response object
+      sendSuccessfulResponse(response, res);
+
+      if (response.data.meta.bot) {
+        const date = new Date(response.data.customer.created_at);
+        const nigeriaTimeString = dateFormatter(date);
+
+        await sendMessage(response.data.meta.senderId, {
+          text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+        });
       };
 
-      console.log('bodyof request ', body);
+      if (parseInt(body.balance_after) <= 5000)
+        fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
+      return;
+    } else {
+      addToFailedToDeliver(req);
+      sendFailedToDeliverResponse(response, res);
+      if (response.data.meta.bot) {
+        const date = new Date(response.data.customer.created_at);
+        const nigeriaTimeString = dateFormatter(date);
 
-      // to do dependent transaction status
-      if (body.Status === 'successful') {
-        addToDelivered(req);
-        // calling function to send mail and json response object
-        sendSuccessfulResponse(response, res);
-
-        if (response.data.meta.bot) {
-          const date = new Date(response.data.customer.created_at);
-          const nigeriaTimeString = dateFormatter(date);
-
-          await sendMessage(response.data.meta.senderId, {
-            text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-          });
-        };
-
-        if (parseInt(body.balance_after) <= 5000)
-          fundWallet(
-            '035',
-            process.env.WALLET_ACC_NUMBER,
-            parseInt(process.env.WALLET_TOPUP_AMOUNT)
-          );
-        return;
-      } else {
-        addToFailedToDeliver(req);
-        sendFailedToDeliverResponse(response, res);
-        if (response.data.meta.bot) {
-          const date = new Date(response.data.customer.created_at);
-          const nigeriaTimeString = dateFormatter(date);
-
-          await sendMessage(response.data.meta.senderId, {
-            text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-          });
-        };
+        await sendMessage(response.data.meta.senderId, {
+          text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+        });
+        await sendTemplate(
+          response.data.meta.senderId,
+          retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
+        );
       };
-    });
+    };
+  });
 }; // end of actualBuyAirtime
 
 
@@ -280,41 +243,40 @@ async function actualBuyAirtime(response, res, req, options) {
 // function to simulate buy airtime
 
 async function simulateBuyAirtime(response, res, req, success) {
-      if (success) {
-        addToDelivered(req);
-        // calling function to send mail and json response object
-        sendSuccessfulResponse(response, res);
+  if (success) {
+    addToDelivered(req);
+    // calling function to send mail and json response object
+    sendSuccessfulResponse(response, res);
 
-        if (response.data.meta.bot) {
-          const date = new Date(response.data.customer.created_at);
-          const nigeriaTimeString = dateFormatter(date);
+    if (response.data.meta.bot) {
+      const date = new Date(response.data.customer.created_at);
+      const nigeriaTimeString = dateFormatter(date);
 
-          await sendMessage(response.data.meta.senderId, {
-            text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-          });
-        };
+      await sendMessage(response.data.meta.senderId, {
+        text: `Transaction Succesful \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+      });
+    };
 
-        if (parseInt(body.balance_after) <= 5000)
-          fundWallet(
-            '035',
-            process.env.WALLET_ACC_NUMBER,
-            parseInt(process.env.WALLET_TOPUP_AMOUNT)
-          );
-        return;
-      } else {
-        addToFailedToDeliver(req);
-        sendFailedToDeliverResponse(response, res);
-        if (response.data.meta.bot) {
-          const date = new Date(response.data.customer.created_at);
-          const nigeriaTimeString = dateFormatter(date);
+    if (parseInt(body.balance_after) <= 5000)
+      fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
+    return;
+  } else {
+    addToFailedToDeliver(req);
+    sendFailedToDeliverResponse(response, res);
+    if (response.data.meta.bot) {
+      const date = new Date(response.data.customer.created_at);
+      const nigeriaTimeString = dateFormatter(date);
 
-          await sendMessage(response.data.meta.senderId, {
-            text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-          });
-        };
-            };
+      await sendMessage(response.data.meta.senderId, {
+        text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.amount} ${response.data.meta.network} airtime\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+      });
+      await sendTemplate(
+        response.data.meta.senderId,
+        retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
+      );
+    };
+  };
 }; // end of buy airtime
-
 
 
 
@@ -342,6 +304,9 @@ async function addToDelivered(req) {
   return response;
 }; // end of addToDelivered
 
+
+
+
 // function to add transaction to failed to deliver
 
 async function addToFailedToDeliver(req) {
@@ -351,7 +316,12 @@ async function addToFailedToDeliver(req) {
     .db(process.env.BOTSUB_DB)
     .collection(process.env.FAILED_DELIVERY_COLLECTION);
   const transact = await collection.findOne({ _id: req.query.transaction_id });
-
+  /*try {
+    await collection.drop();
+  } catch (err) {
+    console.log("errorin drop", err);
+  };*/
+  
   if (transact) {
     return client.close();
   };
@@ -367,10 +337,7 @@ async function addToFailedToDeliver(req) {
   client.close();
   console.log('add to failed delivery respose', response);
   return response;
-}; // end if add to failed to deliver
-
-
-
+} // end if add to failed to deliver
 
 // function to send data purchase mail and response
 
@@ -386,7 +353,7 @@ async function sendSuccessfulResponse(response, res) {
 
     if (response.data.meta.type === 'airtime') {
       details.product = `₦${response.data.meta.amount} airtime`;
-    };
+    }
 
     const mailParams = {
       product: details.product,
@@ -398,7 +365,7 @@ async function sendSuccessfulResponse(response, res) {
       price: response.data.amount,
       recipientNumber: details.number,
       chatBotUrl: process.env.CHATBOT_URL,
-      host: process.env.HOST
+      host: process.env.HOST,
     };
 
     const mailOptions = {
@@ -415,11 +382,8 @@ async function sendSuccessfulResponse(response, res) {
   } catch (err) {
     console.log('send successful vtu response error', err);
     return res.json({ status: 'error', message: 'error send succesful rep air', data: err });
-  };
-}; // end of sendAirtimeResponse function
-
-
-
+  }
+} // end of sendAirtimeResponse function
 
 // function to form response on failed to deliver
 
@@ -447,7 +411,7 @@ async function sendFailedToDeliverResponse(response, res) {
       price: response.data.amount,
       recipientNumber: details.number,
       chatBotUrl: process.env.CHATBOT_URL,
-      host: process.env.HOST
+      host: process.env.HOST,
     };
 
     const mailOptions = {

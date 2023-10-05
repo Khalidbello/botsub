@@ -1,4 +1,4 @@
-// entry file for qsub
+// entry file for BotSub
 
 // making configurations for different environmet
 
