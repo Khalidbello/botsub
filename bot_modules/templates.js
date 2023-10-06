@@ -195,7 +195,9 @@ function generatePostbackButton(title, payload) {
     payload: json,
   };
   return button;
-}
+};
+
+    
 
 function generatePostbackTemplate(buttons, network, i) {
   const title = i === 3 ? `Select ${network} offer` : '...';
@@ -209,6 +211,8 @@ function generatePostbackTemplate(buttons, network, i) {
   };
   return template;
 };
+
+
 
 async function generateFacebookPosts(id, network) {
   const file = JSON.parse(await fsP.readFile('files/data-details.json', 'utf-8'));
@@ -254,10 +258,10 @@ function retryFailedTemplate(transaction_id, tx_ref) {
     type: 'template',
     payload: {
       template_type: 'button',
-      text: 'Select request',
+      text: 'Click To Retry Transaction',
       buttons: [{
         type: 'postback',
-        title: 'Reinitiate Transaction',
+        title: 'Retry Transaction',
         payload: `{"title": "retryFailed", "transaction_id": "${transaction_id}", "tx_ref": "${tx_ref}"}`,
       }],
     }

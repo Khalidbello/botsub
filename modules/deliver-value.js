@@ -60,7 +60,7 @@ async function deliverData(response, req, res) {
   if (process.env.NODE_ENV === 'production') {
     actualBuyData(response, res, req, options);
   } else {
-    simulateBuyData(response, res, req, false);
+    simulateBuyData(response, res, req, true);
   };
 }; // end of deliver value function
 
