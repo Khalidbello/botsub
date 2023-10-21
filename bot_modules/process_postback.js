@@ -17,6 +17,8 @@ const {
   retryFailed,
 } = require('./postback_responses.js');
 
+const sendMessage = require('./send_message.js');
+
 //import {createClient} from "./../modules/mongodb.js";
 
 async function processPostback(event, res) {
@@ -24,7 +26,8 @@ async function processPostback(event, res) {
   if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);
   };
-
+  return sendMessage(event.sender.id, {"text": "sorry botsub is currently maintenance"});
+  
   let payload = event.postback.payload;
   try {
     payload = JSON.parse(payload);
