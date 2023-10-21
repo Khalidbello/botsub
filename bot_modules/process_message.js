@@ -25,7 +25,7 @@ const createClient = require('./../modules/mongodb.js');
 async function processMessage(event, res) {
   // check user previousky stored action to determine
   // how to respond to user messages
-  return sendMessage(event.sender.id, {"text": "sorry botsub is currently maintenance"});
+  //return sendMessage(event.sender.id, {"text": "sorry botsub is currently maintenance"});
   
   const senderId = event.sender.id;
   const client = createClient();
