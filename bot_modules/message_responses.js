@@ -126,13 +126,13 @@ async function sendPhoneNumberEnteredResponses(event) {
       const update = {
         $set: {
           nextAction: null,
-          'purchasePayload.phoneNumber': phoneNumber,
+          'purchasePayload.phoneNumber': validatedNum,
         },
       };
       await collection.updateOne(filter, update);
       await confirmDataPurchaseResponse(senderId);
       return;
-    }
+    };
 
     await sendMessage(senderId, {
       text: 'Please enter your email. \nReciept would be sent to the provided email',
@@ -146,12 +146,15 @@ async function sendPhoneNumberEnteredResponses(event) {
     };
     await collection.updateOne(filter, update);
     return null;
-  }
+  };
   await sendMessage(senderId, {
     text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
   });
 }; // end of sendPhoneNumberEnteredResponses
 
+
+
+// function to handle email entred
 // function to handle change of email before transaction
 async function newEmailBeforeTransactResponse(event, transactionType) {
   const senderId = event.sender.id;
@@ -192,6 +195,9 @@ async function newEmailBeforeTransactResponse(event, transactionType) {
   client.close();
 } // end of newEmailBeforeTransactResponse
 
+
+
+
 // function to handle change of phoneNumber
 async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
   const senderId = event.sender.id;
@@ -203,14 +209,15 @@ async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
   if (!user.purchasePayload) return noTransactFound(senderId);
 
   const phoneNumber = event.message.text.trim();
-
-  if (validateNumber(phoneNumber)) {
+  const validatedNum = validateNumber(phoneNumber);
+  
+  if (validatedNum) {
     // updating database
     const filter = { id: senderId };
     const update = {
       $set: {
         nextAction: null,
-        'purchasePayload.phoneNumber': phoneNumber,
+        'purchasePayload.phoneNumber': validatedNum,
       },
     };
 
@@ -223,14 +230,16 @@ async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
       await confirmDataPurchaseResponse(senderId);
     } else if (transactionType === 'airtime') {
       confirmDataPurchaseResponse(senderId);
-    }
+    };
   } else {
     const response = {
       text: 'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
     };
     await sendMessage(senderId, response);
-  }
-} // end of newPhoneNumberBeforeTransactResponse
+  };
+}; // end of newPhoneNumberBeforeTransactResponse
+
+
 
 async function reportIssue(event) {
   const senderId = event.sender.id;
@@ -250,7 +259,9 @@ async function reportIssue(event) {
   };
 
   await collection.updateOne(filter, update);
-}
+};
+
+
 
 module.exports = {
   defaultMessageHandler,

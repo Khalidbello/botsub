@@ -1,11 +1,8 @@
 // entry file for BotSub
 
-// making configurations for different environmet
-
 const express = require('express');
 const handlebars = require('express-handlebars');
-//const path = require('path');
-//const { fileURLToPath } = require('url');
+
 
 // importing modules to handle different routes
 const viewsRouter = require('./routes/views.js');
@@ -14,7 +11,7 @@ const paymentGateWayRouter = require('./routes/payment-gateway.js');
 const fbBotRouter = require('./routes/fb-bot-webhook.js');
 
 
-// adding configurations for environment
+// setting  configurations for different environment
 
 if (process.env.NODE_ENV === 'development') {
   console.log('in development mode');

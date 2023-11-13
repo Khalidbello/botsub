@@ -54,7 +54,7 @@ function validateNumber(phoneNumber) {
 
   for (const [network, networkPrefixes] of Object.entries(prefixes)) {
     if (networkPrefixes.includes(prefix)) {
-      return true;
+      return cleanedNumber;
     };
   };
   return false; // Number does nrot match any network provider prefix

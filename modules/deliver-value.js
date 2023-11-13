@@ -114,7 +114,7 @@ async function actualBuyData(response, res, req, options) {
       sendSuccessfulResponse(response, res);
 
       if (response.data.meta.bot) {
-        const date = new Date(response.data.customer.created_at);
+        const date = new Date() //new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
 
         await sendMessage(response.data.meta.senderId, {
@@ -131,7 +131,7 @@ async function actualBuyData(response, res, req, options) {
       sendFailedToDeliverResponse(response, res);
 
       if (response.data.meta.bot) {
-        const date = new Date(response.data.customer.created_at);
+        const date = new Date() //new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
 
         console.log('bot feed back');
@@ -158,7 +158,7 @@ async function simulateBuyData(response, res, req, success) {
     sendSuccessfulResponse(response, res);
 
     if (response.data.meta.bot) {
-      const date = new Date(response.data.customer.created_at);
+      const date = new Date() //new Date(response.data.customer.created_at);
       const nigeriaTimeString = dateFormatter(date);
 
       await sendMessage(response.data.meta.senderId, {
@@ -174,7 +174,7 @@ async function simulateBuyData(response, res, req, success) {
     sendFailedToDeliverResponse(response, res);
 
     if (response.data.meta.bot) {
-      const date = new Date(response.data.customer.created_at);
+      const date = new Date() //new Date(response.data.customer.created_at);
       const nigeriaTimeString = dateFormatter(date);
 
       console.log('bot feed back');
@@ -207,7 +207,7 @@ async function actualBuyAirtime(response, res, req, options) {
       sendSuccessfulResponse(response, res);
 
       if (response.data.meta.bot) {
-        const date = new Date(response.data.customer.created_at);
+        const date = new Date() //new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
 
         await sendMessage(response.data.meta.senderId, {
@@ -222,7 +222,7 @@ async function actualBuyAirtime(response, res, req, options) {
       addToFailedToDeliver(req);
       sendFailedToDeliverResponse(response, res);
       if (response.data.meta.bot) {
-        const date = new Date(response.data.customer.created_at);
+        const date = new Date() //new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
 
         await sendMessage(response.data.meta.senderId, {
