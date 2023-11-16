@@ -438,8 +438,11 @@ async function retryFailed(event, payload) {
   await sendMessage(senderId, {
     text: "Reinitiating transaction....."
   });
-
-  retryFailedHelper(payload.transaction_id, payload.tx_ref, false);
+  
+  await axios
+  .post(`https://${host}/front-api/retry?transaction_id=${payload.transaction_id}&tx_ref=${payload.tx_ref}`)
+  .catch((error) => console.log(error));
+  //retryFailedHelper(payload.transaction_id, payload.tx_ref, false);
 };
 
 
