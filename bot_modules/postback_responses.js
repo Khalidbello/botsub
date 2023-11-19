@@ -244,6 +244,9 @@ async function generateAccountNumber(event) {
   payload.bot = true;
   payload.senderId = senderId;
 
+  await sendMessage(senderId, { text: 'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.' });
+  await sendMessage(senderId, { text: 'Value would automatically delivered by our system once payment is made' });
+
   let response = await axios
     .post(`https://${process.env.HOST}/gateway/transfer-account`, payload)
     .catch((error) => {
@@ -263,8 +266,6 @@ async function generateAccountNumber(event) {
 
   if (response.status === 'success') {
     const data = response.meta.authorization;
-    await sendMessage(senderId, { text: 'make transfer to the account below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.' });
-    await sendMessage(senderId, { text: 'value would be delivered once purchase is made' });
     await sendMessage(senderId, { text: 'Bank Name: ' + data.transfer_bank });
     await sendMessage(senderId, { text: 'Account Name: BotSub' });
     await sendMessage(senderId, { text: 'Account Number: 👇' });
@@ -440,7 +441,7 @@ async function retryFailed(event, payload) {
   });
   
   await axios
-  .post(`https://${host}/front-api/retry?transaction_id=${payload.transaction_id}&tx_ref=${payload.tx_ref}`)
+  .post(`https://${process.env.HOST}/front-api/retry?transaction_id=${payload.transaction_id}&tx_ref=${payload.tx_ref}`)
   .catch((error) => console.log(error));
   //retryFailedHelper(payload.transaction_id, payload.tx_ref, false);
 };
