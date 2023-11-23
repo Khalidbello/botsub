@@ -340,6 +340,8 @@ async function addToFailedToDeliver(req) {
 } // end if add to failed to deliver
 
 // function to send data purchase mail and response
+ 
+
 
 async function sendSuccessfulResponse(response, res) {
   try {

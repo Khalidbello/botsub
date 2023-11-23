@@ -125,6 +125,7 @@ router.post('/transfer-account', async (req, res) => {
       tx_ref: generateRandomString(),
       amount: datas.price,
       email: datas.email,
+      fullname: datas.email,
       currency: 'NGN',
       meta: payload,
     };
