@@ -36,7 +36,7 @@ router.get('/confirm', async (req, res) => {
 
   const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const response = await flw.Transaction.verify({ id: req.query.transaction_id }).catch((err) => {
-    return res.json({ status: 'error', message: 'failed to check transaction', data: err});
+    return res.json({ status: 'error', message: 'failed to check transaction', data: err });
   }); // end of check transaction call
 
   console.log('transaction details', response);
@@ -45,7 +45,8 @@ router.get('/confirm', async (req, res) => {
   };
   console.log('transaction details', response);
 
-  // calling function to check if transaction has ever beign made befor3
+  // calling function to check if transaction has ever beign made before
+
   const previouslyDelivered = await checkIfPreviouslyDelivered(
     req.query.transaction_id,
     req.query.tx_ref
@@ -58,10 +59,10 @@ router.get('/confirm', async (req, res) => {
     if (response.data.meta.bot) {
       console.log('bot feedback for already delivered transaction');
       await sendMessage(response.data.meta.senderId, {
-        text: `Sorry thid transaction has already been deliverd \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data 
-        \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+        text: `Sorry thid transaction has already been deliverd \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
       });
-    }
+    };
+    return
   };
 
   // calling function to ccheck if all transaction requirement were met
@@ -180,7 +181,7 @@ router.get('/test', async (req, res) => {
 });
 
 
-router.get('/test-2', async ()=> {
+router.get('/test-2', async () => {
   var request = require('request');
   var options = {
     'method': 'GET',
@@ -189,8 +190,8 @@ router.get('/test-2', async ()=> {
       'Authorization': 'Bearer FLWSECK_TEST-SANDBOXDEMOKEY-X'
     }
   };
-  
-  request(options, function (error, response) {
+
+  request(options, function(error, response) {
     if (error) throw new Error(error);
     console.log(response.body);
   });

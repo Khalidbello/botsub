@@ -129,7 +129,7 @@ async function actualBuyData(response, res, req, options) {
       console.log('got hrre failed');
       addToFailedToDeliver(req);
       sendFailedToDeliverResponse(response, res);
-re
+      re
       if (sponse.data.meta.bot) {
         const date = new Date() //new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
@@ -321,7 +321,7 @@ async function addToFailedToDeliver(req) {
   } catch (err) {
     console.log("errorin drop", err);
   };*/
-  
+
   if (transact) {
     return client.close();
   };
