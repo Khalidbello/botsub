@@ -4,12 +4,12 @@
   "description": "data and airtime top up vtu site",
   "main": "index.js",
   "scripts": {
-    "test1": "NODE_ENV=development node index.js",
-    "start": "NODE_ENV=development node index.js"
+    "test1": "node index.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Khalidbello/qsub0.git"
+    "url": "git+https://github.com/Khalidbello/botsub.git"
   },
   "keywords": [
     "data",
@@ -21,9 +21,9 @@
   "author": "Khalid Bello",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Khalidbello/qsub0/issues"
+    "url": "https://github.com/Khalidbello/botsub/issues"
   },
-  "homepage": "https://github.com/Khalidbello/qsub0#readme",
+  "homepage": "https://github.com/Khalidbello/botsub#readme",
   "dependencies": {
     "axios": "^1.2.3",
     "dotenv": "^16.0.3",

@@ -10,6 +10,13 @@ const axios = require('axios');
 
 const createClient = require('./mongodb.js');
 
+
+
+
+
+
+
+
 //onst uri = `mongodb+srv://bellokhalid74:${process.env.MONGO_PASS1}@botsubcluster.orij2vq.mongodb.net/?retryWrites=true&w=majority`;
 
 const transporter = nodemailer.createTransport({
@@ -39,7 +46,14 @@ async function checkIfPreviouslyDelivered(transactionId, tx_ref) {
 
   client.close();
   return false;
-} //end of checkIfPreviouslyDelivered
+}; //end of checkIfPreviouslyDelivered
+
+
+
+
+
+
+
 
 function returnPreviouslyDelivered(response) {
   const meta = response.data.meta;
@@ -51,15 +65,17 @@ function returnPreviouslyDelivered(response) {
     dateStyle: 'long',
     timeStyle: 'medium',
   });
+ 
   // Format the Nigeria time using the formatter
   const nigeriaTimeString = nigeriaFormatter.format(date);
 
-  const details = {
+   const details = {
     network: meta.network,
     number: meta.number,
     email: response.data.customer.email,
     date: nigeriaTimeString,
   };
+
   if (meta.type == 'airtime') {
     details.product = `&#8358;${meta.amount} airtime`;
   }
@@ -68,6 +84,7 @@ function returnPreviouslyDelivered(response) {
   };
   return details;
 }; // end of returnPreviouslyDelivered
+
 
 
 
@@ -127,6 +144,12 @@ const checkRequirementMet = async function (response, req, res) {
   }
   return { status: false, message: 'payment requirement not met', price };
 }; //end of checkRequiremtMet
+
+
+
+
+
+
 
 // helper function to refund payment
 async function refundPayment(response, price) {

@@ -53,7 +53,15 @@ router.get('/confirm', async (req, res) => {
 
   if (previouslyDelivered) {
     let details = returnPreviouslyDelivered(response);
-    return res.json({ status: 'settled', data: details });
+    res.json({ status: 'settled', data: details });
+
+    if (response.data.meta.bot) {
+      console.log('bot feedback for already delivered transaction');
+      await sendMessage(response.data.meta.senderId, {
+        text: `Sorry thid transaction has already been deliverd \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data 
+        \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+      });
+    }
   };
 
   // calling function to ccheck if all transaction requirement were met
@@ -62,6 +70,7 @@ router.get('/confirm', async (req, res) => {
     return deliverValue(response, req, res, requirementMet);
     //return res.json({status:"success", message:"requirement met", data: requirementMet.type});
   };
+
   console.log('requirement status', requirementMet);
   // calling refund payment if proper conditions were not met
   const finalResp = await refundPayment(response, requirementMet.price);

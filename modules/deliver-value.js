@@ -8,7 +8,7 @@ const handlebars = require('handlebars');
 
 const nodemailer = require('nodemailer');
 
-const { generateRandomString, dateFormatter, fundWallet } = require('./helper_functions.js');
+const { dateFormatter, fundWallet } = require('./helper_functions.js');
 
 const createClient = require('./mongodb.js');
 
@@ -129,8 +129,8 @@ async function actualBuyData(response, res, req, options) {
       console.log('got hrre failed');
       addToFailedToDeliver(req);
       sendFailedToDeliverResponse(response, res);
-
-      if (response.data.meta.bot) {
+re
+      if (sponse.data.meta.bot) {
         const date = new Date() //new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
 

@@ -12,6 +12,7 @@ const router = Router();
 const TEST = process.env.NODE_ENV === 'development';
 
 router.get('/', (req, res) => {
+  console.log('am serving home');
   res.render('home', { TEST: TEST });
 });
 

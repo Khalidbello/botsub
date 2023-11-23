@@ -91,6 +91,6 @@ app.use(function(req, res, next) {
   res.status(404).render('not-found');
 });
 
-const port = process.env.PORT || 7270;
+const port = process.env.PORT || 8080;
 
 app.listen(port, () => console.log('running on port ' + port));

@@ -1,12 +1,8 @@
-@font-face {
-  font-family: 'MyFantasyFont';
-  src: url('path-to-font/myfantasyfont.ttf') format('truetype');
-}
 
 * {
   padding: 0;
   margin: 0;
-  font-family: 'MyFantasyFont', fantasy, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 html,
 body {
