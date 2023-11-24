@@ -56,7 +56,7 @@ async function processPostback(event, res) {
     case '9mobileOffers':
       sendNineMobileOffers(event);
       break;
-    case 'offerSelected':
+    case 'offerSelect':
       offerSelected(event, payload);
       break;
     case 'airtimePurchase':
@@ -88,6 +88,7 @@ async function processPostback(event, res) {
       retryFailed(event, payload);
       break;
     default:
+      sendNewConversationResponse(event)
       break;
   }
 } // end of processPostback
