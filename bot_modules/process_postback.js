@@ -23,6 +23,8 @@ const sendMessage = require('./send_message.js');
 
 async function processPostback(event, res) {
   // first set nextAction to null
+  return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' });
+
   if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);
   };
