@@ -1,17 +1,14 @@
 const processPostback = require('./../bot_modules/process_postback.js');
-
 const processMessage = require('./../bot_modules/process_message.js');
-
 const axios = require('axios');
-
 const { Router } = require('express');
-
 const router = Router();
 
 router.get('/fb-hook', function (req, res) {
-  console.log(process.env.FB_VERIFY_TOKEN);
+  const token = '1234';
+  console.log(token);
   console.log(req.query['hub.verify_token']);
-  if (req.query['hub.verify_token'] === process.env.FB_VERIFY_TOKEN) {
+  if (req.query['hub.verify_token'] === token) {
     console.log('webhook verified');
     res.status(200).send(req.query['hub.challenge']);
   } else {
