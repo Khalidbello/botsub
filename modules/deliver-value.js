@@ -71,7 +71,8 @@ async function deliverData(response, req, res) {
 
 
 // function to make airtime purchase request
-async function deliverAirtime(response, req, res) {
+async 
+  function deliverAirtime(response, req, res) {
   let options = {
     method: 'POST',
     url: 'https://opendatasub.com/api/topup/',
@@ -95,6 +96,7 @@ async function deliverAirtime(response, req, res) {
     simulateBuyAirtime(response, res, req, true);
   };
 }; // end of deliverAirtime
+
 
 
 
