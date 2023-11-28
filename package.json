@@ -4,7 +4,6 @@
   "description": "data and airtime top up vtu site",
   "main": "index.js",
   "scripts": {
-    "test1": "node index.js",
     "start": "node index.js"
   },
   "repository": {
@@ -33,6 +32,7 @@
     "flutterwave-node-v3": "^1.0.12",
     "handlebars": "^4.7.7",
     "mongodb": "^5.7.0",
+    "mongoose": "^8.0.1",
     "nodemailer": "^6.9.1",
     "request": "^2.88.2"
   },

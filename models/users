@@ -1,0 +1,16 @@
+const mongoose = require('mongoose');
+const validator = require('validator');
+
+// defining users schema
+const Schema = mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        validate: (value) => {
+            return validator.isEmail(value);
+        }
+    },
+    lastTransct: Date,
+});
+
+module.exports = mongoose('users', Schema)
