@@ -154,11 +154,10 @@ router.post('/webhook', (req, res) => {
 
   if (!signature || signature != mySecret) {
     // This request isn't from Flutterwave; discard
-    console.log('in ashhh');
+    console.log('in webhook');
     return res.status(401).end();
   };
-  res.status(200);
-
+  
   const payload = req.body;
   const host = req.hostname;
 
@@ -171,6 +170,8 @@ router.post('/webhook', (req, res) => {
     .then((response) => console.log('webhook response', response.data))
     .catch((error) => console.error('webhook error', error));
   console.log('end hook');
+  
+  res.status(200).end();
 }); // end of flw webhook
 
 

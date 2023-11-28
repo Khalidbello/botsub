@@ -71,8 +71,7 @@ async function deliverData(response, req, res) {
 
 
 // function to make airtime purchase request
-async 
-  function deliverAirtime(response, req, res) {
+function deliverAirtime(response, req, res) {
   let options = {
     method: 'POST',
     url: 'https://opendatasub.com/api/topup/',
@@ -174,7 +173,7 @@ async function simulateBuyData(response, res, req, success) {
       addToFailedToDeliver(req);
       sendFailedToDeliverResponse(response, res);
 
-      if (sponse.data.meta.bot) {
+      if (response.data.meta.bot) {
         const date = new Date() //new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
 
