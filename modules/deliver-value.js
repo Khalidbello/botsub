@@ -30,6 +30,8 @@ const transporter = nodemailer.createTransport({
   },
 }); // end of transporter
 
+
+// function to initiate delvering of values 
 function deliverValue(response, req, res, requirementMet) {
   if (requirementMet.type == 'data') {
     return deliverData(response, req, res);
@@ -38,8 +40,9 @@ function deliverValue(response, req, res, requirementMet) {
   };
 };
 
-// function to make data purchase request
 
+
+// function to make data purchase request
 async function deliverData(response, req, res) {
   let options = {
     method: 'POST',
@@ -68,7 +71,6 @@ async function deliverData(response, req, res) {
 
 
 // function to make airtime purchase request
-
 async function deliverAirtime(response, req, res) {
   let options = {
     method: 'POST',
@@ -96,9 +98,7 @@ async function deliverAirtime(response, req, res) {
 
 
 
-
 // function to make buy data request
-
 async function actualBuyData(response, res, req, options) {
   request(options, async (error, _, body) => {
     if (error) {
@@ -129,7 +129,7 @@ async function actualBuyData(response, res, req, options) {
       console.log('got hrre failed');
       addToFailedToDeliver(req);
       sendFailedToDeliverResponse(response, res);
-      re
+      
       if (sponse.data.meta.bot) {
         const date = new Date() //new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
@@ -150,7 +150,6 @@ async function actualBuyData(response, res, req, options) {
 
 
 // function to simulate buy data
-
 async function simulateBuyData(response, res, req, success) {
   if (success) {
     addToDelivered(req);
@@ -169,28 +168,29 @@ async function simulateBuyData(response, res, req, success) {
     //if (parseInt(body.balance_after) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
     return;
   } else if (true) {
-    console.log('got hrre failed');
-    addToFailedToDeliver(req);
-    sendFailedToDeliverResponse(response, res);
+      console.log('got hrre failed');
+      addToFailedToDeliver(req);
+      sendFailedToDeliverResponse(response, res);
 
-    if (response.data.meta.bot) {
-      const date = new Date() //new Date(response.data.customer.created_at);
-      const nigeriaTimeString = dateFormatter(date);
+      if (sponse.data.meta.bot) {
+        const date = new Date() //new Date(response.data.customer.created_at);
+        const nigeriaTimeString = dateFormatter(date);
 
-      console.log('bot feed back');
-      await sendMessage(response.data.meta.senderId, {
-        text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-      });
-      await sendTemplate(
-        response.data.meta.senderId,
-        retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
-      );
+        console.log('bot feed back');
+        await sendMessage(response.data.meta.senderId, {
+          text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+        });
+        await sendTemplate(
+          response.data.meta.senderId,
+          retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
+        );
     };
   };
 }; // end of simulateBuyData
 
-// function to buy airtime
 
+
+// function to buy airtime
 async function actualBuyAirtime(response, res, req, options) {
   request(options, async (error, _, body) => {
     if (error) {
@@ -241,7 +241,6 @@ async function actualBuyAirtime(response, res, req, options) {
 
 
 // function to simulate buy airtime
-
 async function simulateBuyAirtime(response, res, req, success) {
   if (success) {
     addToDelivered(req);
@@ -282,7 +281,6 @@ async function simulateBuyAirtime(response, res, req, success) {
 
 
 // function to add transaction to delivered transaction
-
 async function addToDelivered(req) {
   const client = createClient();
   await client.connect();
@@ -308,7 +306,6 @@ async function addToDelivered(req) {
 
 
 // function to add transaction to failed to deliver
-
 async function addToFailedToDeliver(req) {
   const client = createClient();
   await client.connect();
@@ -316,15 +313,8 @@ async function addToFailedToDeliver(req) {
     .db(process.env.BOTSUB_DB)
     .collection(process.env.FAILED_DELIVERY_COLLECTION);
   const transact = await collection.findOne({ _id: req.query.transaction_id });
-  /*try {
-    await collection.drop();
-  } catch (err) {
-    console.log("errorin drop", err);
-  };*/
 
-  if (transact) {
-    return client.close();
-  };
+  if (transact) return client.close();
 
   const date = new Date();
   const response = await collection.insertOne({
@@ -339,10 +329,9 @@ async function addToFailedToDeliver(req) {
   return response;
 } // end if add to failed to deliver
 
+
+
 // function to send data purchase mail and response
- 
-
-
 async function sendSuccessfulResponse(response, res) {
   try {
     const successfulMailTemplate = await fsP.readFile(
@@ -387,8 +376,9 @@ async function sendSuccessfulResponse(response, res) {
   }
 } // end of sendAirtimeResponse function
 
-// function to form response on failed to deliver
 
+
+// function to form response on failed to deliver
 async function sendFailedToDeliverResponse(response, res) {
   try {
     const pendingMailTemplate = await fsP.readFile(
@@ -434,8 +424,9 @@ async function sendFailedToDeliverResponse(response, res) {
   }
 } // end of sendFailedToDeliverResponse
 
-//function to form response for request
 
+
+//function to form response for request
 function formResponse(response) {
   const meta = response.data.meta;
   // create a Date object with the UTC time
