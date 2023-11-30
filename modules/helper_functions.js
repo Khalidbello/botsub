@@ -1,23 +1,13 @@
 const fsP = require('fs').promises;
-
 const nodemailer = require('nodemailer');
-
 const handlebars = require('handlebars');
-
 const flutterwave = require('flutterwave-node-v3');
-
 const axios = require('axios');
-
 const createClient = require('./mongodb.js');
+const { ObjectId } = require('mongodb');
+const Transactions = require('./../models/transactions.js');
 
-
-
-
-
-
-
-
-//onst uri = `mongodb+srv://bellokhalid74:${process.env.MONGO_PASS1}@botsubcluster.orij2vq.mongodb.net/?retryWrites=true&w=majority`;
+//const uri = `mongodb+srv://bellokhalid74:${process.env.MONGO_PASS1}@botsubcluster.orij2vq.mongodb.net/?retryWrites=true&w=majority`;
 
 const transporter = nodemailer.createTransport({
   host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
@@ -29,29 +19,16 @@ const transporter = nodemailer.createTransport({
   },
 }); // end of transporter
 
+
+
 // function to check if transaction has ever beign made
-async function checkIfPreviouslyDelivered(transactionId, tx_ref) {
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
-
-  const transact = await collection.findOne({ _id: transactionId });
-
-  console.log('transaction in check if previous', transact);
-
-  if (transact) {
-    client.close();
-    return transact.txRef === tx_ref && transact.status === 'settled';
-  }
-
-  client.close();
+async function checkIfPreviouslyDelivered(transactionId) {
+  const transaction = await Transactions.findOne({ id: transactionId });
+  if (transaction) {
+    return transaction.status === true;
+  };
   return false;
 }; //end of checkIfPreviouslyDelivered
-
-
-
-
-
 
 
 
@@ -78,7 +55,7 @@ function returnPreviouslyDelivered(response) {
 
   if (meta.type == 'airtime') {
     details.product = `&#8358;${meta.amount} airtime`;
-  }
+  };
   if (meta.type == 'data') {
     details.product = `${meta.size} data`;
   };
@@ -87,12 +64,8 @@ function returnPreviouslyDelivered(response) {
 
 
 
-
-
-
 // function to check if all requirements are met
-
-const checkRequirementMet = async function (response, req, res) {
+const checkRequirementMet = async function (response, req) {
   let returnFalse = false;
   let price;
   if (response.data.meta.type === 'data') {
@@ -147,10 +120,6 @@ const checkRequirementMet = async function (response, req, res) {
 
 
 
-
-
-
-
 // helper function to refund payment
 async function refundPayment(response, price) {
   try {
@@ -161,7 +130,7 @@ async function refundPayment(response, price) {
       comments: 'transaction requirement not met',
     });
 
-    console.log('payment refund response IN REFUND', resp);
+    console.log('payment refund response in refundPayment function', resp);
     const date = new Date();
 
     // Format the Nigeria time using the formatter
@@ -221,7 +190,9 @@ async function refundPayment(response, price) {
   } catch (err) {
     console.log('regund error', err);
   }
-} // end of refundPayment
+}; // end of refundPayment
+
+
 
 // function to format dates
 function dateFormatter(date) {
@@ -238,7 +209,9 @@ function dateFormatter(date) {
 
   // Format the Nigeria time using the formatter
   return nigeriaFormatter.format(date);
-} // end of date formatter
+}; // end of date formatter
+
+
 
 // function to generate random Strings
 function generateRandomString(length = 15) {
@@ -249,86 +222,59 @@ function generateRandomString(length = 15) {
     randomString += characters.charAt(randomIndex);
   }
   return randomString;
-} // end of generateRandomString
+}; // end of generateRandomString
 
-// finction to add transact to settled collection and remove from pending collection
 
-async function removeFromPendingAddToSettled(transaction_id, tx_ref) {
-  const client = createClient();
-
-  await client.connect();
-
-  const pendingCollection = client
-    .db(process.env.BOTSUB_DB)
-    .collection(process.env.FAILED_DELIVERY_COLLECTION);
-
-  await pendingCollection.deleteOne({ _id: transaction_id });
-  client.close();
-} // end of removeFromPendingAddTo
 
 // function to retry failed delivery
-
 async function retryFailedHelper(transaction_id, tx_ref, res) {
   const response = await axios.get(
     `https://${process.env.HOST}/gateway/confirm?retry=Retry&transaction_id=${transaction_id}&tx_ref=${tx_ref}`
   );
   const data = await response.data;
   console.log('retry data', data);
+  res.json(data);
+}; // end of retryFailedHelper
 
-  if (data.status === 'successful') {
-    // calling function to delete transaction from pemding and add to setled
-    await removeFromPendingAddToSettled(transaction_id, tx_ref);
-    if (res) res.json(data);
-    return;
-  }
 
-  if (res) res.json(data);
-} // end of retryFailedHelper
 
 // function to retry all failed  transactions
-
 async function retryAllFailedDelivery(req) {
-  const client = createClient();
-  await client.connect();
-  const collection = client
-    .db(process.env.BOTSUB_DB)
-    .collection(process.env.FAILED_DELIVERY_COLLECTION);
-  const length = await collection.countDocuments();
-  const flag = Math.round(length / 20) + 1;
-  console.log('flag', flag);
   const statistic = {
-    total: length,
+    total: null,
     successful: 0,
     failed: 0,
   };
-
-  for (let i = 0; i < 3; i++) {
-    const transacts = await collection.find().limit(20).toArray();
-    console.log('transacts', transacts);
+  let loop = true;
+  while (loop) {
+    const transactions = await Transactions.find({ status: false }).limit(20)
+    if (transactions.length < 20) loop = false;
+    console.log('transacts', transactions);
 
     // Create an array to store the promises for each transaction
-    const transactionPromises = transacts.map(async (transact) => {
-      const { _id, txRef } = transact;
+    const transactionPromises = transactions.map(async (transaction) => {
+      const { id, txRef } = transaction;
       const response = await axios.get(
-        `https://${req.hostname}/gateway/confirm?transaction_id=${_id}&tx_ref=${txRef}`
+        `https://${req.hostname}/gateway/confirm?transaction_id=${id}&tx_ref=${txRef}`
       );
       const data = response.data;
+      console.log(data);
 
       if (data.status === 'successful' || data.status === 'settled') {
         statistic.successful += 1;
-        await removeFromPendingAddToSettled(_id, txRef);
       } else {
         statistic.failed += 1;
-      }
+      };
     });
 
     // Wait for all transaction promises to resolve
     await Promise.all(transactionPromises);
-  } // end of for loop
-
-  client.close();
+  }; // end of for loop
+  statistic.total = statistic.failed + statistic.successful;
   return statistic;
-}
+};
+
+
 
 // function to fundvtu wallet
 async function fundWallet(bankCode, accNum, amount) {
@@ -345,13 +291,13 @@ async function fundWallet(bankCode, accNum, amount) {
   flw.Transfer.initiate(details).then(console.log).catch(console.log);
 } // end of fund wallet
 
+
 module.exports = {
   checkIfPreviouslyDelivered,
   returnPreviouslyDelivered,
   checkRequirementMet,
   refundPayment,
   generateRandomString,
-  removeFromPendingAddToSettled,
   retryAllFailedDelivery,
   retryFailedHelper,
   dateFormatter,

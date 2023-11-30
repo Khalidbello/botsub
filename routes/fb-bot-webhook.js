@@ -4,6 +4,8 @@ const axios = require('axios');
 const { Router } = require('express');
 const router = Router();
 
+
+
 router.get('/fb-hook', function (req, res) {
   const token = '1234';
   console.log(token);
@@ -16,6 +18,8 @@ router.get('/fb-hook', function (req, res) {
     res.sendStatus(403).send("403 does not match");
   }
 }); // end of webhook get req
+
+
 
 router.post('/fb-hook', async function (req, res) {
   //checking for page subscription.

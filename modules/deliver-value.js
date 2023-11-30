@@ -1,24 +1,17 @@
 // module to deliver value
 
 const Flutterwave = require('flutterwave-node-v3');
-
 const request = require('request');
-
 const handlebars = require('handlebars');
-
 const nodemailer = require('nodemailer');
-
 const { dateFormatter, fundWallet } = require('./helper_functions.js');
-
-const createClient = require('./mongodb.js');
-
 const sendMessage = require('./../bot_modules/send_message.js');
-
 const sendTemplate = require('./../bot_modules/send_templates.js');
-
-const { retryFailedTemplate } = require('./../bot_modules/templates.js');
-
+const { retryFailedTemplate, responseServices2 } = require('./../bot_modules/templates.js');
 const fsP = require('fs').promises;
+const Transactions = require('./../models/transactions.js');
+const Users = require('./../models/users.js');
+const { ObjectId } = require('mongodb');
 
 const transporter = nodemailer.createTransport({
   host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
@@ -33,9 +26,9 @@ const transporter = nodemailer.createTransport({
 
 // function to initiate delvering of values 
 function deliverValue(response, req, res, requirementMet) {
-  if (requirementMet.type == 'data') {
+  if (requirementMet.type === 'data') {
     return deliverData(response, req, res);
-  } else if (requirementMet.type == 'airtime') {
+  } else if (requirementMet.type === 'airtime') {
     return deliverAirtime(response, req, res);
   };
 };
@@ -63,7 +56,7 @@ async function deliverData(response, req, res) {
   if (process.env.NODE_ENV === 'production') {
     actualBuyData(response, res, req, options);
   } else {
-    simulateBuyData(response, res, req, true);
+    simulateBuyData(response, res, req, process.env.TEST);
   };
 }; // end of deliver value function
 
@@ -92,7 +85,7 @@ async function deliverAirtime(response, req, res) {
   if (process.env.NODE_ENV === 'production') {
     actualBuyAirtime(response, req, res, options);
   } else {
-    simulateBuyAirtime(response, res, req, true);
+    simulateBuyAirtime(response, res, req, process.env.TEST);
   };
 }; // end of deliverAirtime
 
@@ -107,9 +100,9 @@ async function actualBuyData(response, res, req, options) {
     };
     console.log('data purchase resp body: ', body);
 
-    // to do dependent transaction status
+    // to do dependent on transaction status
     if (body.Status === 'successful') {
-      addToDelivered(req);
+      addToDelivered(req, response);
       // calling function to send mail and json response object
       sendSuccessfulResponse(response, res);
 
@@ -126,11 +119,11 @@ async function actualBuyData(response, res, req, options) {
         fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
       return;
     } else if (true) {
-      console.log('got hrre failed');
-      addToFailedToDeliver(req);
+      console.log('got hrre failed in actual buy data');
+      addToFailedToDeliver(req, response);
       sendFailedToDeliverResponse(response, res);
-      
-      if (sponse.data.meta.bot) {
+
+      if (response.data.meta.bot) {
         const date = new Date() //new Date(response.data.customer.created_at);
         const nigeriaTimeString = dateFormatter(date);
 
@@ -150,9 +143,9 @@ async function actualBuyData(response, res, req, options) {
 
 
 // function to simulate buy data
-async function simulateBuyData(response, res, req, success) {
-  if (success) {
-    addToDelivered(req);
+async function simulateBuyData(response, res, req, test) {
+  if (test === 'pass') {
+    addToDelivered(req, response);
     // calling function to send mail and json response object
     sendSuccessfulResponse(response, res);
 
@@ -167,23 +160,23 @@ async function simulateBuyData(response, res, req, success) {
 
     //if (parseInt(body.balance_after) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
     return;
-  } else if (true) {
-      console.log('got hrre failed');
-      addToFailedToDeliver(req);
-      sendFailedToDeliverResponse(response, res);
+  } else {
+    console.log('got hrre failed in simulate buy data');
+    addToFailedToDeliver(req, response);
+    sendFailedToDeliverResponse(response, res);
 
-      if (sponse.data.meta.bot) {
-        const date = new Date() //new Date(response.data.customer.created_at);
-        const nigeriaTimeString = dateFormatter(date);
+    if (response.data.meta.bot) {
+      const date = new Date() //new Date(response.data.customer.created_at);
+      const nigeriaTimeString = dateFormatter(date);
 
-        console.log('bot feed back');
-        await sendMessage(response.data.meta.senderId, {
-          text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-        });
-        await sendTemplate(
-          response.data.meta.senderId,
-          retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
-        );
+      console.log('bot feed back');
+      await sendMessage(response.data.meta.senderId, {
+        text: `Sorry your transaction is pending \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+      });
+      await sendTemplate(
+        response.data.meta.senderId,
+        retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
+      );
     };
   };
 }; // end of simulateBuyData
@@ -202,7 +195,7 @@ async function actualBuyAirtime(response, res, req, options) {
 
     // to do dependent transaction status
     if (body.Status === 'successful') {
-      addToDelivered(req);
+      addToDelivered(req, response);
       // calling function to send mail and json response object
       sendSuccessfulResponse(response, res);
 
@@ -219,7 +212,7 @@ async function actualBuyAirtime(response, res, req, options) {
         fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
       return;
     } else {
-      addToFailedToDeliver(req);
+      addToFailedToDeliver(req, response);
       sendFailedToDeliverResponse(response, res);
       if (response.data.meta.bot) {
         const date = new Date() //new Date(response.data.customer.created_at);
@@ -241,9 +234,9 @@ async function actualBuyAirtime(response, res, req, options) {
 
 
 // function to simulate buy airtime
-async function simulateBuyAirtime(response, res, req, success) {
-  if (success) {
-    addToDelivered(req);
+async function simulateBuyAirtime(response, res, req, test) {
+  if (test === 'pass') {
+    addToDelivered(req, response);
     // calling function to send mail and json response object
     sendSuccessfulResponse(response, res);
 
@@ -256,11 +249,10 @@ async function simulateBuyAirtime(response, res, req, success) {
       });
     };
 
-    if (parseInt(body.balance_after) <= 5000)
-      fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
+    //if (parseInt(body.balance_after) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
     return;
   } else {
-    addToFailedToDeliver(req);
+    addToFailedToDeliver(req, response);
     sendFailedToDeliverResponse(response, res);
     if (response.data.meta.bot) {
       const date = new Date(response.data.customer.created_at);
@@ -278,56 +270,60 @@ async function simulateBuyAirtime(response, res, req, success) {
 }; // end of buy airtime
 
 
-
-
 // function to add transaction to delivered transaction
-async function addToDelivered(req) {
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
-  const transact = await collection.findOne({ _id: req.query.transaction_id });
-
-  if (transact) {
-    return client.close();
+async function addToDelivered(req, response) {
+  const transaction = await Transactions.findOne({ id: req.query.transaction_id })
+  if (transaction) {
+    if (transaction.status === true) return;
+    const response = transaction.updateOne({ status: true });
+    return response;
   };
 
-  const response = await collection.insertOne({
-    txRef: req.query.tx_ref,
-    _id: req.query.transaction_id,
-    status: 'settled',
-  });
+  let product = `${response.data.meta.size} data`;
+  if (response.data.meta.type === 'airtime') product = `₦${response.data.meta.amount} airtime`;
 
-  client.close();
-  console.log('add to delivered respomse', response);
-  return response;
+  newTransaction = new Transactions({
+    id: req.query.transaction_id,
+    email: response.data.customer.email,
+    txRef: req.query.tx_ref,
+    status: true,
+    date: Date(),
+    product: product + ' ' + response.data.meta.network,
+    beneficiary: parseInt(response.data.meta.number)
+  });
+  const response2 = await newTransaction.save()
+
+  console.log('add to delivered response', response2);
+  return responseServices2;
 }; // end of addToDelivered
 
 
 
-
 // function to add transaction to failed to deliver
-async function addToFailedToDeliver(req) {
-  const client = createClient();
-  await client.connect();
-  const collection = client
-    .db(process.env.BOTSUB_DB)
-    .collection(process.env.FAILED_DELIVERY_COLLECTION);
-  const transact = await collection.findOne({ _id: req.query.transaction_id });
+async function addToFailedToDeliver(req, response) {
+  try {
+    let transaction = await Transactions.findOne({ id: req.query.transaction_id })
+    if (transaction) return console.log('failed transaction already exists', transaction);
 
-  if (transact) return client.close();
+    let product = `${response.data.meta.size} data`;
+    if (response.data.meta.type === 'airtime') product = `₦${response.data.meta.amount} airtime`;
 
-  const date = new Date();
-  const response = await collection.insertOne({
-    txRef: req.query.tx_ref,
-    _id: req.query.transaction_id,
-    status: 'pending',
-    date: date,
-  });
+    newTransaction = new Transactions({
+      id: req.query.transaction_id,
+      email: response.data.customer.email,
+      txRef: req.query.tx_ref,
+      status: false,
+      date: Date(),
+      product: product + ' ' + response.data.meta.network,
+      beneficiary: parseInt(response.data.meta.number)
+    });
 
-  client.close();
-  console.log('add to failed delivery respose', response);
-  return response;
-} // end if add to failed to deliver
+    response2 = await newTransaction.save();
+
+    console.log('add to failed delivery response', response2);
+    return response2;
+  } catch (err) { console.log('error occured while adding new trnasaction to databasae', err) };
+}; // end if add to failed to deliver
 
 
 
@@ -366,15 +362,16 @@ async function sendSuccessfulResponse(response, res) {
       html: compiledSuccessfulMailTemplate(mailParams),
     };
 
-    const resp = await transporter.sendMail(mailOptions);
+    //const resp = await transporter.sendMail(mailOptions);
 
-    console.log('successful delivery function', resp);
+    //console.log('successful delivery function', resp);
+    console.log('in sucess');
     return res.json({ status: 'successful', data: details });
   } catch (err) {
     console.log('send successful vtu response error', err);
-    return res.json({ status: 'error', message: 'error send succesful rep air', data: err });
-  }
-} // end of sendAirtimeResponse function
+    return res.json({ status: 'error', message: 'error sending succesfull response', data: err });
+  };
+}; // end of sendAirtimeResponse function
 
 
 
@@ -413,9 +410,9 @@ async function sendFailedToDeliverResponse(response, res) {
       html: compiledPendingMailTemplate(mailParams),
     };
 
-    const resp = await transporter.sendMail(mailOptions);
+    //const resp = await transporter.sendMail(mailOptions);
 
-    console.log('in failed to deliver function', resp);
+    //sconsole.log('in failed to deliver function', resp);
     return res.json({ status: 'pending', data: details });
   } catch (err) {
     console.log('send successfulvtu response error', err);

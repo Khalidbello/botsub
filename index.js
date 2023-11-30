@@ -1,19 +1,19 @@
 // entry file for BotSub
-//require('dotenv').config();
+// ngrok http --domain=weekly-settled-falcon.ngrok-free.app 8080
 //  https://weekly-settled-falcon.ngrok-free.app
+
+require('dotenv').config();
 const express = require('express');
 const handlebars = require('express-handlebars');
-
 
 // importing modules to handle different routes
 const viewsRouter = require('./routes/views.js');
 const frontEndApiRouter = require('./routes/frontend-api.js');
 const paymentGateWayRouter = require('./routes/payment-gateway.js');
 const fbBotRouter = require('./routes/fb-bot-webhook.js');
-
+const connectDB = require('./models/connectdb.js');
 
 // setting  configurations for different environment
-
 if (process.env.NODE_ENV === 'development') {
   console.log('in development mode');
   const env = process.env;
@@ -44,7 +44,7 @@ if (process.env.NODE_ENV === 'development') {
   env.TOREFUND_COLLECTION = env.R_C_P;
   env.USERS_COLLECTION = env.U_C_P;
   env.FB_BOT_COLLECTION = env.FB_BOT_C;
-}
+};
 
 // setting __filename since its not supported in type: module
 console.log(__filename, process.env.FLW_H);
@@ -80,6 +80,9 @@ app.use(noCacheMiddleware);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// connecting db
+connectDB();
 
 //locking in middlewares for route handling
 app.use('/gateway', paymentGateWayRouter);

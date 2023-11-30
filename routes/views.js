@@ -1,15 +1,11 @@
 // module to serve views
 const axios = require('axios');
-
 const createClient = require("./../modules/mongodb.js");
-
 const { Router } = require('express');
-
 const path = require('path');
-
 const router = Router();
-
 const TEST = process.env.NODE_ENV === 'development';
+const Users = require('./../models/users.js');
 
 router.get('/', (req, res) => {
   console.log('am serving home');
@@ -22,10 +18,6 @@ router.get('/env-test', (req, res)=> {
 
 router.get('/test-1', async (req, res) => {
   try {
-    /*/ Make a request to the JSONPlaceholder API
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
-
-    // Return the data to the frontend*/
     const client = createClient();
     await client.connect();
     const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
@@ -38,9 +30,16 @@ router.get('/test-1', async (req, res) => {
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'An error occurred while fetching data' });
-  }
+  };
 });
   
+router.get('/users', async (req, res)=> {
+  const user = new Users({ 'email': 'bellokhalid7000004@gmail.com'});
+  const response = await user.save();
+  console.log(response);
+  res.json(response);
+});
+
 router.get('/buy-data', (req, res) => {
   res.render('buy-data', { TEST: TEST });
 });

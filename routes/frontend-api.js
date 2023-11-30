@@ -1,22 +1,19 @@
 // module for frontend api
 const { Router } = require('express');
-
 const nodemailer = require('nodemailer');
-
 const handlebars = require('handlebars');
-
-const axios = require('axios');
-
+const axios = require('axios')
+const Transactions = require('./../models/transactions.js');
+const Survey = require('./../models/survey.js');
+const Users = require('./../models/users.js');
+const { ObjectId } = require('mongodb');
 const {
-   retryFailedHelper,
+  retryFailedHelper,
   retryAllFailedDelivery,
 } = require('./../modules/helper_functions.js');
-
 const fsP = require('fs').promises;
-
-const createClient = require('./../modules/mongodb.js');
-
 const router = Router();
+
 
 const transporter = nodemailer.createTransport({
   host: 'mail.botsub.com.ng',  // Replace with your SMTP server hostname
@@ -29,7 +26,7 @@ const transporter = nodemailer.createTransport({
 }); // end of transporter
 
 
-  
+
 router.get('/data-offers', async (req, res) => {
   let dataOffers = await fsP.readFile('files/data-details.json');
   dataOffers = JSON.parse(dataOffers);
@@ -38,7 +35,7 @@ router.get('/data-offers', async (req, res) => {
 });
 
 
-    
+
 // to get key
 router.get('/get-key', (req, res) => {
   res.json({ key: process.env.FLW_PB_KEY });
@@ -50,56 +47,45 @@ router.get('/get-key', (req, res) => {
 router.post('/survey', async (req, res) => {
   try {
     console.log('survey payload', req.body);
+    const data = req.body;
+    const toSave = {
+      network: data.network,
+      dataSize: data.dataSize,
+      dataFrequency: data.dataFrequency,
+      gender: data.gender
+    };
+
     const mailTemplate = await fsP.readFile(
       'modules/email-templates/survey-recieved-mail.html',
       'utf8'
     );
-    const mail = handlebars.compile(mailTemplate);
-    const mailOptions = {
-      from: process.env.SURVEY_MAIL,
-      to: req.body.email,
-      subject: 'BotSub survey',
-      html: mail({ chatBotUrl: process.env.CHATBOT_URL }),
-    };
 
-    const resp = await transporter.sendMail(mailOptions);
-    console.log('mail send response', resp);
-
-    const client = createClient();
-    await client.connect();
-    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.USERS_COLLECTION);
-
-    const filter = { user: req.body.emai };
-    const update = { $set: { survey: req.body } };
-    const option = { upsert: true };
-    const survey = await collection.updateOne(filter, update, option);
-
-    console.log('survey stored', survey);
-    client.close();
-
-    res.json({ status: 'success' });
+    const user = await Users.updateOne(
+      { email: data.email },
+      { $set: {survey: toSave} },
+      { upsert: true }
+    );
+    console.log('updated: ', user)
+    res.json({ status: 'successful' });
   } catch (err) {
     console.log('survey error', err);
-    res.json({ status: 'error'});
+    res.json({ status: 'error' });
   };
 });
 
 
 
-    
-// routes for admin
 
+// routes for admin
 router.post('/retry', async (req, res) => {
   const { transaction_id, tx_ref } = req.query;
-  console.log('req.quer', req.query);
+  console.log('req.query', req.query);
 
   return retryFailedHelper(transaction_id, tx_ref, res);
 });
 
 
 
-
-                
 router.post('/retry-all', async (req, res) => {
   const statistic = await retryAllFailedDelivery(req);
   console.log('statistic', statistic);
@@ -107,26 +93,18 @@ router.post('/retry-all', async (req, res) => {
 });
 
 
-                            
-router.get('/fetch-failed-transactions', async (req, res) => {
-  const client = createClient();
-  try { 
-    await client.connect();
-    const collection = client
-      .db(process.env.BOTSUB_DB)
-      .collection(process.env.FAILED_DELIVERY_COLLECTION);
 
+router.get('/fetch-failed-transactions', async (req, res) => {
+  try {
     const { toSkip, limit } = req.query;
-    const data = await collection.find().skip(parseInt(toSkip)).limit(parseInt(limit)).toArray();
+    const data = await Transactions.find({ status: false });
 
     console.log('failed transact', data);
     res.json(data);
   } catch (err) {
     console.log('error fetching pemding transaction', err);
     res.json({ error: err });
-  } finally {
-    client.close();
-  }
+  };
 });
 
 module.exports = router;
