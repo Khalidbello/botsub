@@ -182,7 +182,7 @@ async function submitData() {
     const resp = await response.json();
     console.log(resp);
     
-    if (resp.status === 'success') {
+    if (resp.status === 'successful') {
       showSuccessfulSurvey();
     } else {
       showErroneousSurvey();
