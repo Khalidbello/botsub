@@ -13,6 +13,7 @@ const {
   refundPayment,
   generateRandomString,
   fundWallet,
+  sleep,
 } = require('./../modules/helper_functions.js');
 
 const deliverValue = require('./../modules/deliver-value.js');
@@ -33,7 +34,7 @@ router.get('/confirm', async (req, res) => {
   if (!req.query.transaction_id || !req.query.tx_ref) {
     return res.json({ status: 'error', message: 'query parameters missing' });
   };
-
+  
   const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const response = await flw.Transaction.verify({ id: req.query.transaction_id }).catch((err) => {
     return res.json({ status: 'error', message: 'failed to check transaction', data: err });
@@ -46,7 +47,6 @@ router.get('/confirm', async (req, res) => {
   console.log('transaction details', response);
 
   // calling function to check if transaction has ever beign made before
-
   const previouslyDelivered = await checkIfPreviouslyDelivered(
     req.query.transaction_id,
     req.query.tx_ref
