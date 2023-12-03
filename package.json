@@ -4,7 +4,8 @@
   "description": "data and airtime top up vtu site",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -32,12 +33,13 @@
     "flutterwave-node-v3": "^1.0.12",
     "handlebars": "^4.7.7",
     "mongodb": "^5.7.0",
-    "mongoose": "^8.0.1",
+    "mongoose": "^8.0.2",
     "nodemailer": "^6.9.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20",
+    "nodemon": "^2.0.22",
     "prettier": "^2.8.8"
   }
 }

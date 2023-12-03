@@ -1,11 +1,8 @@
 // module for things related to payment gate ways
 
 const flutterwave = require('flutterwave-node-v3');
-
 const sendMessage = require('./../bot_modules/send_message.js');
-
 const { Router } = require('express');
-
 const {
   checkIfPreviouslyDelivered,
   returnPreviouslyDelivered,
@@ -15,43 +12,46 @@ const {
   fundWallet,
   sleep,
 } = require('./../modules/helper_functions.js');
-
 const deliverValue = require('./../modules/deliver-value.js');
-
-//import nodemailer from "nodemailer";
-
-const axios = require('axios');
-
+const axios = 
+require('axios');
 const router = Router();
 
 
-
 // route for confirming payment and calling payment deliver function
-
 router.get('/confirm', async (req, res) => {
-  //console.log(req.query.webhook);
+  //console.log('node environment', process.env.NODE_ENV);
   console.log('req body', req.query);
+<<<<<<< HEAD
   if (!req.query.transaction_id || !req.query.tx_ref) {
     return res.json({ status: 'error', message: 'query parameters missing' });
   };
   
+=======
+  if (!req.query.transaction_id || !req.query.tx_ref) return res.json({ status: 'error', message: 'query parameters missing' }).status(404);
+
+>>>>>>> schema
   const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-  const response = await flw.Transaction.verify({ id: req.query.transaction_id }).catch((err) => {
-    return res.json({ status: 'error', message: 'failed to check transaction', data: err });
-  }); // end of check transaction call
+
+  const response = await flw.Transaction.verify({ id: req.query.transaction_id })
+    .catch((err) => {
+      return res.json({ status: 'error', message: 'failed to check transaction', data: err });
+    }); // end of check transaction call
 
   console.log('transaction details', response);
-  if (response.status == 'error') {
-    return res.json({ status: 'error', message: 'error fetching transaction' });
-  };
-  console.log('transaction details', response);
+
+  if (response.status === 'error') return res.json({ status: 'error', message: 'error fetching transaction' });
 
   // calling function to check if transaction has ever beign made before
+<<<<<<< HEAD
   const previouslyDelivered = await checkIfPreviouslyDelivered(
     req.query.transaction_id,
     req.query.tx_ref
   );
 
+=======
+  const previouslyDelivered = await checkIfPreviouslyDelivered(req.query.transaction_id);
+>>>>>>> schema
   if (previouslyDelivered) {
     let details = returnPreviouslyDelivered(response);
     res.json({ status: 'settled', data: details });
@@ -59,21 +59,18 @@ router.get('/confirm', async (req, res) => {
     if (response.data.meta.bot) {
       console.log('bot feedback for already delivered transaction');
       await sendMessage(response.data.meta.senderId, {
-        text: `Sorry thid transaction has already been deliverd \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
+        text: `Sorry this transaction has already been deliverd \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
       });
     };
     return
   };
 
   // calling function to ccheck if all transaction requirement were met
-  let requirementMet = await checkRequirementMet(response, req, res);
-  if (requirementMet.status) {
-    return deliverValue(response, req, res, requirementMet);
-    //return res.json({status:"success", message:"requirement met", data: requirementMet.type});
-  };
+  let requirementMet = await checkRequirementMet(response, req);
+  if (requirementMet.status) return deliverValue(response, req, res, requirementMet);
 
   console.log('requirement status', requirementMet);
-  // calling refund payment if proper conditions were not met
+  //calling refund payment if proper conditions were not met
   const finalResp = await refundPayment(response, requirementMet.price);
   console.log('refunding payment', finalResp);
 
@@ -82,7 +79,6 @@ router.get('/confirm', async (req, res) => {
       text: `Sorry your Transaction failed, Payment will be refunded. \nTransaction ID: ${response.data.id}`,
     });
   };
-
   return res.json(finalResp);
 }); //end of confirm payment routes
 
@@ -142,14 +138,12 @@ router.post('/transfer-account', async (req, res) => {
 
 
 
-
-
 // route for flutterwave webhook
-
 router.post('/webhook', (req, res) => {
   console.log('am in webhook');
   // If you specified a secret hash, check for the signature
   const mySecret = process.env.FLW_H;
+  console.log(mySecret);
   const signature = req.headers['verif-hash'];
 
   if (!signature || signature != mySecret) {
@@ -183,6 +177,7 @@ router.get('/test', async (req, res) => {
 });
 
 
+
 router.get('/test-2', async () => {
   var request = require('request');
   var options = {
@@ -193,7 +188,7 @@ router.get('/test-2', async () => {
     }
   };
 
-  request(options, function(error, response) {
+  request(options, function (error, response) {
     if (error) throw new Error(error);
     console.log(response.body);
   });

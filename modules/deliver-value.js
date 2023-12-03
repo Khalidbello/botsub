@@ -4,11 +4,14 @@ const request = require('request');
 const handlebars = require('handlebars');
 const nodemailer = require('nodemailer');
 const { dateFormatter, fundWallet } = require('./helper_functions.js');
-const createClient = require('./mongodb.js');
 const sendMessage = require('./../bot_modules/send_message.js');
 const sendTemplate = require('./../bot_modules/send_templates.js');
-const { retryFailedTemplate } = require('./../bot_modules/templates.js');
+const { retryFailedTemplate, responseServices2 } = require('./../bot_modules/templates.js');
 const fsP = require('fs').promises;
+const Transactions = require('./../models/transactions.js');
+const Users = require('./../models/users.js');
+const { ObjectId } = require('mongodb');
+
 const transporter = nodemailer.createTransport({
   host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
   port: 465, // Port number for SMTP (e.g., 587 for TLS)
@@ -22,9 +25,9 @@ const transporter = nodemailer.createTransport({
 
 // function to initiate delvering of values 
 function deliverValue(response, req, res, requirementMet) {
-  if (requirementMet.type == 'data') {
+  if (requirementMet.type === 'data') {
     return deliverData(response, req, res);
-  } else if (requirementMet.type == 'airtime') {
+  } else if (requirementMet.type === 'airtime') {
     return deliverAirtime(response, req, res);
   };
 };
@@ -159,50 +162,57 @@ async function helpFailedDelivery(req, res, response) {
 
 
 // function to add transaction to delivered transaction
-async function addToDelivered(req) {
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
-  const transact = await collection.findOne({ _id: req.query.transaction_id });
-
-  if (transact) {
-    return client.close();
+async function addToDelivered(req, response) {
+  const transaction = await Transactions.findOne({ id: req.query.transaction_id })
+  if (transaction) {
+    if (transaction.status === true) return;
+    const response = transaction.updateOne({ status: true });
+    return response;
   };
 
-  const response = await collection.insertOne({
-    txRef: req.query.tx_ref,
-    _id: req.query.transaction_id,
-    status: 'settled',
-  });
+  let product = `${response.data.meta.size} data`;
+  if (response.data.meta.type === 'airtime') product = `₦${response.data.meta.amount} airtime`;
 
-  client.close();
-  console.log('add to delivered respomse', response);
-  return response;
+  newTransaction = new Transactions({
+    id: req.query.transaction_id,
+    email: response.data.customer.email,
+    txRef: req.query.tx_ref,
+    status: true,
+    date: Date(),
+    product: product + ' ' + response.data.meta.network,
+    beneficiary: parseInt(response.data.meta.number)
+  });
+  const response2 = await newTransaction.save()
+
+  console.log('add to delivered response', response2);
+  return responseServices2;
 }; // end of addToDelivered
 
 
 // function to add transaction to failed to deliver
-async function addToFailedToDeliver(req) {
-  const client = createClient();
-  await client.connect();
-  const collection = client
-    .db(process.env.BOTSUB_DB)
-    .collection(process.env.FAILED_DELIVERY_COLLECTION);
-  const transact = await collection.findOne({ _id: req.query.transaction_id });
+async function addToFailedToDeliver(req, response) {
+  try {
+    let transaction = await Transactions.findOne({ id: req.query.transaction_id })
+    if (transaction) return console.log('failed transaction already exists', transaction);
 
-  if (transact) return client.close();
+    let product = `${response.data.meta.size} data`;
+    if (response.data.meta.type === 'airtime') product = `₦${response.data.meta.amount} airtime`;
 
-  const date = new Date();
-  const response = await collection.insertOne({
-    txRef: req.query.tx_ref,
-    _id: req.query.transaction_id,
-    status: 'pending',
-    date: date,
-  });
+    newTransaction = new Transactions({
+      id: req.query.transaction_id,
+      email: response.data.customer.email,
+      txRef: req.query.tx_ref,
+      status: false,
+      date: Date(),
+      product: product + ' ' + response.data.meta.network,
+      beneficiary: parseInt(response.data.meta.number)
+    });
 
-  client.close();
-  console.log('add to failed delivery respose', response);
-  return response;
+    response2 = await newTransaction.save();
+
+    console.log('add to failed delivery response', response2);
+    return response2;
+  } catch (err) { console.log('error occured while adding new trnasaction to databasae', err) };
 }; // end if add to failed to deliver
 
 
@@ -247,13 +257,14 @@ async function sendSuccessfulResponse(response, res) {
       html: compiledSuccessfulMailTemplate(mailParams),
     };
 
-    const resp = await transporter.sendMail(mailOptions);
+    //const resp = await transporter.sendMail(mailOptions);
 
-    console.log('successful delivery function', resp);
+    //console.log('successful delivery function', resp);
+    console.log('in sucess');
     return res.json({ status: 'successful', data: details });
   } catch (err) {
     console.log('send successful vtu response error', err);
-    return res.json({ status: 'error', message: 'error send succesful rep air', data: err });
+    return res.json({ status: 'error', message: 'error sending succesfull response', data: err });
   };
 }; // end of sendAirtimeResponse function
 
@@ -292,9 +303,10 @@ async function sendFailedToDeliverResponse(response, res) {
       subject: 'BotSub Pending Transaction',
       html: compiledPendingMailTemplate(mailParams),
     };
-    const resp = await transporter.sendMail(mailOptions);
 
-    console.log('in failed to deliver function', resp);
+    //const resp = await transporter.sendMail(mailOptions);
+
+    //sconsole.log('in failed to deliver function', resp);
     return res.json({ status: 'pending', data: details });
   } catch (err) {
     console.log('send successful vtu response error', err);

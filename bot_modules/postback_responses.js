@@ -1,15 +1,9 @@
 const sendMessage = require('./send_message.js');
-
 const sendTemplate = require('./send_templates.js');
-
 const axios = require('axios');
-
 const { retryFailedHelper } = require('./../modules/helper_functions.js')
-
 const getUserName = require('./get_user_info.js');
-
 const { dateFormatter, noTransactFound } = require('./helper_functions.js');
-
 const {
   responseServices,
   responseServices2,
@@ -19,39 +13,31 @@ const {
   airtimeNetworks1,
   airtimeNetworks2,
 } = require('./templates.js');
-
-const createClient = require('./../modules/mongodb.js');
-
+const BotUsers = require('./../models/bot_users.js');
 
 
 // function to response to newConversations
 async function sendNewConversationResponse(event) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-  const userName = await getUserName(senderId);
+  const userName = null //await getUserName(senderId);
   let response = {
     text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.`,
   };
   await sendMessage(senderId, response);
 
-  response = {
-    text: `What can i do for you today`,
-  };
+  response = { text: `What can i do for you today` };
   await sendMessage(senderId, response);
 
   await sendTemplate(senderId, responseServices);
   sendTemplate(senderId, responseServices2);
   // adding one
-  await collection.updateOne(
+  await BotUsers.updateOne(
     { id: senderId },
     { $set: { id: senderId } },
     { upsert: true }
   );
-  console.log('end of new conversation');
+  console.log('end of new conversation ');
 }; // end of newConversationResponse
-
 
 
 // function to respond when buy data button is clicked
@@ -65,7 +51,6 @@ async function sendPurchaseDataReponse(event) {
   await sendTemplate(senderId, dataNetworks1);
   await sendTemplate(senderId, dataNetworks2);
 }; // end of data purchaseResponse
-
 
 
 // function to send mtn offers
@@ -86,7 +71,6 @@ async function sendMtnOffers(event) {
 }; // end sendMtnOffers
 
 
-
 // function to send airtel offers
 async function sendAirtelOffers(event) {
   const senderId = event.sender.id;
@@ -104,6 +88,7 @@ async function sendAirtelOffers(event) {
   };
 }; // end sendAirtelOffers
 
+
 // function to send glo offers
 async function sendGloOffers(event) {
   const senderId = event.sender.id;
@@ -120,6 +105,7 @@ async function sendGloOffers(event) {
     //i++;
   };
 }; // end sendGloOffers
+
 
 // functiin to send 9mobile offers
 async function sendNineMobileOffers(event) {
@@ -139,37 +125,22 @@ async function sendNineMobileOffers(event) {
 }; // end sendNineMobileOffers
 
 
-
 // function to respond when an offer is selected
 async function offerSelected(event, payload) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-
-  const message = {
-    text: 'Enter phone number to deliver value to',
-  };
+  const message = { text: 'Enter phone number to deliver value to' };
+  console.log('in offerselected', payload);
   await sendMessage(senderId, message);
-
-  const filter = { id: senderId };
-  const update = {
+  await BotUsers.updateOne({ id: senderId }, {
     $set: {
       nextAction: 'phoneNumber',
-      purchasePayload: payload,
-    },
-  };
-
-  await collection.updateOne(filter, update);
-  client.close();
+      purchasePayload: payload
+    }
+  });
 }; // end of offerSelected
 
 
-
-
-// ================================================
-// section airtime purchase
-
+// ==============================================================
 // function to respond to purchaseAirtime
 async function sendPurchaseAirtimeResponse(event) {
   const senderId = event.sender.id;
@@ -177,73 +148,57 @@ async function sendPurchaseAirtimeResponse(event) {
   await sendMessage(senderId, { text: 'Select network for airtime purchase' });
   await sendTemplate(senderId, airtimeNetworks1);
   await sendTemplate(senderId, airtimeNetworks2);
-} // end of sendPurchaseAirtimeResponse
+}; // end of sendPurchaseAirtimeResponse
+
 
 // function to handdle mtnAirtime
 async function airtimePurchase(event, payload) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-  console.log('in airtime purchase');
+  payload.transactionType = 'airtime';
+  console.log('in airtime purchase', payload);
 
   await sendMessage(senderId, { text: `Enter ${payload.network} airtime amount` });
-
-  // updating database
-  const filter = { id: senderId };
-  const update = {
+  await BotUsers.updateOne({ id: senderId }, {
     $set: {
       nextAction: 'enterAirtimeAmount',
       purchasePayload: payload,
     },
-  };
-
-  await collection.updateOne(filter, update);
-  client.close();
+  });
 }; // end of mtnAirtimePurchase
 
 
-
 //============================================
-// issue Report responses
 
+// issue Report responses
 async function issueReport(event) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-
-  await sendMessage(senderId, { text: 'Pls enter a detailed explation of your issue' });
-
-  // updating database
-  const filter = { id: senderId };
-  const update = { $set: { nextAction: 'enterIssue' } };
-
-  await collection.updateOne(filter, update);
-};
-
+  
+  await sendMessage(senderId, { text: 'Please enter a detailed explation of your issue' });
+  await BotUsers.updateOne( { id: senderId },  {
+    $set: { nextAction: 'enterIssue' }
+  });
+}; // end of issueReport
     
 
 //===============================================
-// generic responses
+// generic responsese
 
 // function to generate account number
 async function generateAccountNumber(event) {
   let returnFalse;
+  let payload;
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-  const user = await collection.findOne({ id: senderId });
-  console.log('generateAccountNumber', user);
+  const botUser = await BotUsers.findOne({ id: senderId });
+  console.log('generateAccountNumber', botUser);
 
-  if (!user.purchasePayload) return noTransactFound(senderId);
+  if (botUser.purchasePayload.$isEmpty()) return noTransactFound(senderId);
 
-  const payload = user.purchasePayload;
-  payload.email = user.email;
+  payload = botUser.purchasePayload.toObject();
+  payload.email = botUser.email;
   payload.bot = true;
-  payload.senderId = senderId;
-
+  payload['senderId'] = senderId;
+  let test = payload;
+  console.log('in generate account number: ', payload, test);
   await sendMessage(senderId, { text: 'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.' });
   await sendMessage(senderId, { text: 'Value would automatically delivered by our system once payment is made' });
 
@@ -255,8 +210,7 @@ async function generateAccountNumber(event) {
     });
 
   if (returnFalse) {
-    client.close();
-    await sendMessage(senderId, { text: 'Ana error occured \nPlease start a new transaction' });
+    await sendMessage(senderId, { text: 'An error occured \nPlease start a new transaction' });
     await cancelTransaction(event, true);
     return;
   };
@@ -271,48 +225,33 @@ async function generateAccountNumber(event) {
     await sendMessage(senderId, { text: 'Account Number: 👇' });
     await sendMessage(senderId, { text: data.transfer_account });
     await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
-    /*await sendMessage(senderId, {
-      text: 'Account Expiry: ' + dateFormatter(data.account_expiration),
-    });*/
   } else {
     await sendMessage(senderId, { text: 'An error occured \nPlease start a new transaction' });
   };
   // removing purchasePayload
   cancelTransaction(event, true);
-  client.close();
 }; // end of generateAccountNumber
-
 
 
 // function to chanege email b4 transaction
 async function changeMailBeforeTransact(event) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
+  const user = await BotUsers.findOne({ id: senderId });
+  console.log('changeEmailBeforeTransact', !user.purchasePayload);
 
-  const user = await collection.findOne({ id: senderId });
-  console.log('changeEmailBeforeTransact', user);
-
-  if (!user.purchasePayload) {
+  if (user.purchasePayload.$isEmpty()) {
     noTransactFound(senderId);
-
     // updating database
-    const filter = { id: senderId };
-    const update = { $set: { nextAction: null } };
-
-    await collection.updateOne(filter, update);
-    client.close();
+    await BotUsers.updateOne( { id: senderId }, {
+      $set: { nextAction: null } 
+    });
     return;
   };
 
   await sendMessage(senderId, { text: 'Enter new email \n\nEnter Q to cancel' });
-
-  const filter = { id: senderId };
-  const update = { $set: { nextAction: 'changeEmailBeforeTransact' } };
-
-  await collection.updateOne(filter, update);
-  client.close();
+  await BotUsers.updateOne({ id: senderId }, {
+    $set: { nextAction: 'changeEmailBeforeTransact' }
+  });
 }; // end of changeMailBeforeTransact
 
 
@@ -320,77 +259,50 @@ async function changeMailBeforeTransact(event) {
 // function to changePhoneNumber
 async function changePhoneNumber(event) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
+  const user = await BotUsers.findOne({ id: senderId });
 
-  const user = await collection.findOne({ id: senderId });
-  console.log('changePhoneNumber', user);
-
-  if (!user.purchasePayload) {
+  if (user.purchasePayload.$isEmpty()) {
     noTransactFound(senderId);
-
     // updating database
-    const filter = { id: senderId };
-    const update = { $set: { nextAction: null } };
-
-    await collection.updateOne(filter, update);
-    client.close();
+    await BotUsers.updateOne({ id: senderId }, {
+      $set: { nextAction: null } 
+    });
     return;
   };
 
   await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter Q to cancel' });
-
-  const filter = { id: senderId };
-  const update = { $set: { nextAction: 'changePhoneNumberBeforeTransact' } };
-
-  await collection.updateOne(filter, update);
-  client.close();
+  await BotUsers.updateOne({ id: senderId }, { 
+    $set: { nextAction: 'changePhoneNumberBeforeTransact' } 
+  });
 }; // end of  changeNumber
 
 
-
-
 // function to cancel transaction
-async function cancelTransaction(event, end = false) {
+async function cancelTransaction(event, end=false) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-  //const user = collection.findOne({_id: senderId});
-
+ 
   // delete purchase payload here
   if (end) {
-    //await sendMessage(senderId, { text: 'Transaction Concluded' });
-    const filter = { id: senderId };
-    const update = {
-      $set: {
-        nextAction: null,
-        purchasePayload: null,
-      },
-    };
-
-    await collection.updateOne(filter, update);
-    client.close();
-    return;
+    return await reset(senderId);
   };
 
   await sendMessage(senderId, { text: 'Transaction Cancled' });
   await sendMessage(senderId, { text: 'What do you want to do next' });
   await sendTemplate(senderId, responseServices);
-
-  const filter = { id: senderId };
-  const update = {
-    $set: {
-      nextAction: null,
-      purchasePayload: null,
-    },
-  };
-
-  await collection.updateOne(filter, update);
-  client.close();
+  await sendTemplate(senderId, responseServices2);
+  await reset(senderId);
 }; // end of cancelTransaction
 
+
+// helper to help in resetting
+const reset = async (senderId)=> {
+  await BotUsers.updateOne({ id: senderId }, {
+    $set: {
+      nextAction: null,
+      purchasePayload: {},
+    },
+  });
+}; // end of reset helpers
 
 
 // function to respond to view data prices
@@ -402,7 +314,6 @@ async function showDataPrices(event) {
     "9mobile": "3",
     Glo: "2",
   };
-
   const keys = Object.keys(datas);
 
   async function processKeysSequentially() {
@@ -432,7 +343,7 @@ async function showDataPrices(event) {
 }; // end of showDataPrices
 
 
-
+// function to retry failed delivery
 async function retryFailed(event, payload) {
   const senderId = event.sender.id;
   
@@ -444,8 +355,7 @@ async function retryFailed(event, payload) {
   .post(`https://${process.env.HOST}/front-api/retry?transaction_id=${payload.transaction_id}&tx_ref=${payload.tx_ref}`)
   .catch((error) => console.log(error));
   //retryFailedHelper(payload.transaction_id, payload.tx_ref, false);
-};
-
+}; // end of retry failed delivery
 
 
 module.exports = {

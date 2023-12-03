@@ -17,13 +17,9 @@ const {
   retryFailed,
 } = require('./postback_responses.js');
 
-const sendMessage = require('./send_message.js');
-
-//import {createClient} from "./../modules/mongodb.js";
-
 async function processPostback(event, res) {
   // first set nextAction to null
-  ///return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' });
+  ///return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' }); // emergency response incase of bug fixes
 
   if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);

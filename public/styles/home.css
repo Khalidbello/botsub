@@ -374,13 +374,12 @@ header > img {
     max-width: 600px;
     margin: 10px;
     flex-grow: 1;
-    width: 200px;
   }
   .carousel {
     height: 200px;
     overflow: hidden;
     position: relative;
-    width: 700px;
+    max-width: 1200px;
     margin: auto auto;
   }
 }
