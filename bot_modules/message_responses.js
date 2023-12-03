@@ -1,26 +1,17 @@
 // message responses
-const fsP = require('fs').promises;
-
 const emailValidator = require('email-validator');
-
 const sendMessage = require('./send_message.js');
-
-const { sendNewConversationResponse } = require('./postback_responses.js');
-
 const sendTemplate = require('./send_templates.js');
-
 const { responseServices, responseServices2 } = require('./templates.js');
-
 const {
   noTransactFound,
   validateNumber,
   confirmDataPurchaseResponse,
   validateAmount,
 } = require('./helper_functions.js');
-
 const getUserName = require('./get_user_info.js');
+const BotUsers = require('./../models/bot_users.js');
 
-const createClient = require('./../modules/mongodb.js');
 
 // function to respond to unexpected message
 async function defaultMessageHandler(event) {
@@ -30,13 +21,13 @@ async function defaultMessageHandler(event) {
   await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
   await sendTemplate(senderId, responseServices);
   sendTemplate(senderId, responseServices2);
-} // end of defaultMessenger
+}; // end of defaultMessenger
+
 
 // function to handle first email
 async function sendEmailEnteredResponse(event) {
   const senderId = event.sender.id;
-  const client = createClient();
-  const email = event.message.text;
+  const email = event.message.text.trim();
 
   if (emailValidator.validate(email)) {
     const response = {
@@ -44,19 +35,16 @@ async function sendEmailEnteredResponse(event) {
     };
     await sendMessage(senderId, response);
 
-    // updatimg database
-    await client.connect();
-    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-    const filter = { id: senderId };
-    const update = {
-      $set: {
-        email: email,
-        nextAction: null,
+    const saveEmail = await BotUsers.updateOne({ id: senderId },
+      {
+        $set: {
+          email: email,
+          nextAction: null
+        }
       },
-    };
-    await collection.updateOne(filter, update);
-    client.close();
-
+      { upsert: true }
+    );
+    console.log('in save enail', saveEmail)
     await confirmDataPurchaseResponse(senderId);
   } else {
     const response = {
@@ -71,11 +59,9 @@ async function sendEmailEnteredResponse(event) {
 //==================================================
 // airtime purchase response function
 
-
 // function to handle airtime amount entred
 async function sendAirtimeAmountReceived(event) {
   const senderId = event.sender.id;
-  const client = createClient();
   const amount = event.message.text.trim();
 
   if (await validateAmount(amount)) {
@@ -84,19 +70,14 @@ async function sendAirtimeAmountReceived(event) {
       text: 'Enter phone number for airtime purchase. \nEnter Q to cancel',
     });
 
-    await client.connect();
-    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-    const filter = { id: senderId };
-    const update = {
+    await BotUsers.updateOne({ id: senderId }, {
       $set: {
         nextAction: 'phoneNumber',
-        'purchasePayload.price': amount,
+        'purchasePayload.price': parseInt(amount),
         'purchasePayload.product': `₦${amount} Airtime`,
-      },
-    };
-
-    await collection.updateOne(filter, update);
-    client.close();
+        'purchasePayload.transactionType': 'airtime',
+      } 
+    });
     return null;
   };
   await sendMessage(senderId, {
@@ -105,31 +86,23 @@ async function sendAirtimeAmountReceived(event) {
 }; // end of sendAirtimeAmountReceived
 
 
-
-
 // function to handle phone number entred
 async function sendPhoneNumberEnteredResponses(event) {
   const senderId = event.sender.id;
-  const client = createClient();
   const phoneNumber = event.message.text.trim();
   const validatedNum = validateNumber(phoneNumber);
+  let user;
 
   if (validatedNum) {
     await sendMessage(senderId, { text: 'phone  number recieved' });
-    await client.connect();
-
-    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-    const user = await collection.findOne({ id: senderId });
-    const filter = { id: senderId };
-
+    user = await BotUsers.findOne({ id: senderId });
     if (user.email) {
-      const update = {
+      await BotUsers.updateOne({ id: senderId }, {
         $set: {
           nextAction: null,
           'purchasePayload.phoneNumber': validatedNum,
-        },
-      };
-      await collection.updateOne(filter, update);
+        }
+      });
       await confirmDataPurchaseResponse(senderId);
       return;
     };
@@ -138,14 +111,13 @@ async function sendPhoneNumberEnteredResponses(event) {
       text: 'Please enter your email. \nReciept would be sent to the provided email',
     });
 
-    const update = {
+    await BotUsers.updateOne({ id: senderId }, {
       $set: {
         nextAction: 'enterEmailFirst',
         'purchasePayload.phoneNumber': phoneNumber,
-      },
-    };
-    await collection.updateOne(filter, update);
-    return null;
+      }
+    });
+    return;
   };
   await sendMessage(senderId, {
     text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
@@ -153,47 +125,33 @@ async function sendPhoneNumberEnteredResponses(event) {
 }; // end of sendPhoneNumberEnteredResponses
 
 
-
-// function to handle email entred
 // function to handle change of email before transaction
 async function newEmailBeforeTransactResponse(event, transactionType) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-  const user = await collection.findOne({ id: senderId });
-
-  if (!user.purchasePayload) return noTransactFound(senderId);
-
   const email = event.message.text.trim();
 
   if (emailValidator.validate(email)) {
-    // updating database
-    const filter = { id: senderId };
-    const update = {
+    await BotUsers.updateOne({ id: senderId }, {
       $set: {
         nextAction: null,
         email: email,
-      },
-    };
-
-    await collection.updateOne(filter, update);
-
+      }
+    });
     await sendMessage(senderId, { text: 'Email changed successfully.' });
+
     // peform next action dependent on trasactionType
     if (transactionType === 'data') {
       await confirmDataPurchaseResponse(senderId);
     } else if (transactionType === 'airtime') {
       confirmDataPurchaseResponse(senderId);
-    }
+    };
   } else {
     const response = {
       text: 'the email format you entered is invalid. \nPlease enter a valid email. \nEnter Q to cancel.',
     };
     await sendMessage(senderId, response);
-  }
-  client.close();
-} // end of newEmailBeforeTransactResponse
+  };
+}; // end of newEmailBeforeTransactResponse
 
 
 
@@ -201,29 +159,18 @@ async function newEmailBeforeTransactResponse(event, transactionType) {
 // function to handle change of phoneNumber
 async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
-  const user = await collection.findOne({ id: senderId });
-
-  if (!user.purchasePayload) return noTransactFound(senderId);
-
   const phoneNumber = event.message.text.trim();
   const validatedNum = validateNumber(phoneNumber);
-  
+
   if (validatedNum) {
-    // updating database
-    const filter = { id: senderId };
-    const update = {
+    await BotUsers.updateOne({ id: senderId }, {
       $set: {
         nextAction: null,
         'purchasePayload.phoneNumber': validatedNum,
-      },
-    };
-
-    await collection.updateOne(filter, update);
-
+      }
+    });
     await sendMessage(senderId, { text: 'Phone number changed successfully' });
+
     console.log('transactionType', transactionType);
     // peform next action dependent on trasactionType
     if (transactionType === 'data') {
@@ -240,25 +187,17 @@ async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
 }; // end of newPhoneNumberBeforeTransactResponse
 
 
-
 async function reportIssue(event) {
   const senderId = event.sender.id;
-  const client = createClient();
-  await client.connect();
-  const collection = client.db(process.env.BOTSUB_DB).collection(process.env.FB_BOT_COLLECTION);
 
   await sendMessage(senderId, {
     text: 'Your issue have beign directed to BotSub support team. \nSorry for any inconveniences caused.',
   });
-
-  const filter = { id: senderId };
-  const update = {
+  await BotUsers.updateOne({ id: senderId }, {
     $set: {
       nextAction: null,
-    },
-  };
-
-  await collection.updateOne(filter, update);
+    }
+  });
 };
 
 

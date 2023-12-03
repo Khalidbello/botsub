@@ -1,11 +1,11 @@
 // module to serve views
 const axios = require('axios');
-const createClient = require("./../modules/mongodb.js");
 const { Router } = require('express');
 const path = require('path');
 const router = Router();
 const TEST = process.env.NODE_ENV === 'development';
 const Users = require('./../models/users.js');
+const Transactions = require('flutterwave-node-v3/lib/rave.transactions.js');
 
 router.get('/', (req, res) => {
   console.log('am serving home');
@@ -18,11 +18,7 @@ router.get('/env-test', (req, res)=> {
 
 router.get('/test-1', async (req, res) => {
   try {
-    const client = createClient();
-    await client.connect();
-    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.SETTLED_COLLECTION);
-
-    const transacts = await collection.find({});
+    const transacts = await Transactions.find({});
     const array = await transacts.toArray();
     res.json(array)
 

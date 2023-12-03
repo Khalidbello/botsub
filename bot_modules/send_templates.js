@@ -16,7 +16,7 @@ async function sendTemplates(senderId, template) {
       headers: { 'Content-Type': 'application/json' },
     })
     .catch((error) => {
-      console.log('Error sending message:', error.response.data.error.message);
+      console.log('Error sending message:', error);
     });
 } // end of sendTemplates
 

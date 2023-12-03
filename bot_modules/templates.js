@@ -147,7 +147,7 @@ const airtimeNetworks1 = {
           "title": "enterAirtimeAmount",
           "network": "airtel",
           "networkID": "4",
-          "transactionType": "airtime",
+          "transactionType": "airtime"
         }`,
       },
     ],

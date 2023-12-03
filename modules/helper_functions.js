@@ -3,7 +3,6 @@ const nodemailer = require('nodemailer');
 const handlebars = require('handlebars');
 const flutterwave = require('flutterwave-node-v3');
 const axios = require('axios');
-const createClient = require('./mongodb.js');
 const { ObjectId } = require('mongodb');
 const Transactions = require('./../models/transactions.js');
 
@@ -170,7 +169,7 @@ async function refundPayment(response, price) {
     console.log('refund mail response', resp1);
 
     // adding transaction to toRefundDb
-    const client = createClient();
+    const client = lient();
 
     await client.connect();
     const collection = client.db(process.env.BOTSUB_DB).collection(process.env.TOREFUND_COLLECTION);
