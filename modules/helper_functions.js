@@ -7,13 +7,7 @@ const handlebars = require('handlebars');
 const flutterwave = require('flutterwave-node-v3');
 
 const axios = require('axios');
-
 const createClient = require('./mongodb.js');
-
-
-
-
-
 
 
 
@@ -270,7 +264,7 @@ async function removeFromPendingAddToSettled(transaction_id, tx_ref) {
 
 async function retryFailedHelper(transaction_id, tx_ref, res) {
   const response = await axios.get(
-    `https://${process.env.HOST}/gateway/confirm?retry=Retry&transaction_id=${transaction_id}&tx_ref=${tx_ref}`
+    `https://${process.env.HOST}/gateway/confirm?retry=Retry&transaction_id=${transaction_id}&tx_ref=${tx_ref}&retry=true`
   );
   const data = await response.data;
   console.log('retry data', data);
@@ -280,13 +274,12 @@ async function retryFailedHelper(transaction_id, tx_ref, res) {
     await removeFromPendingAddToSettled(transaction_id, tx_ref);
     if (res) res.json(data);
     return;
-  }
+  };
 
   if (res) res.json(data);
-} // end of retryFailedHelper
+}; // end of retryFailedHelper
 
 // function to retry all failed  transactions
-
 async function retryAllFailedDelivery(req) {
   const client = createClient();
   await client.connect();
@@ -310,7 +303,7 @@ async function retryAllFailedDelivery(req) {
     const transactionPromises = transacts.map(async (transact) => {
       const { _id, txRef } = transact;
       const response = await axios.get(
-        `https://${req.hostname}/gateway/confirm?transaction_id=${_id}&tx_ref=${txRef}`
+        `https://${req.hostname}/gateway/confirm?transaction_id=${_id}&tx_ref=${txRef}&retry=true`
       );
       const data = response.data;
 
@@ -345,6 +338,13 @@ async function fundWallet(bankCode, accNum, amount) {
   flw.Transfer.initiate(details).then(console.log).catch(console.log);
 } // end of fund wallet
 
+
+// helpr function to imitate sleep
+async function sleep(delay) {
+  return new Promise(resolve => setTimeout(resolve, delay));
+}; // end of sleep
+
+
 module.exports = {
   checkIfPreviouslyDelivered,
   returnPreviouslyDelivered,
@@ -356,4 +356,5 @@ module.exports = {
   retryFailedHelper,
   dateFormatter,
   fundWallet,
+  sleep,
 };

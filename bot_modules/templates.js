@@ -147,7 +147,7 @@ const airtimeNetworks1 = {
           "title": "enterAirtimeAmount",
           "network": "airtel",
           "networkID": "4",
-          "transactionType": "airtime",
+          "transactionType": "airtime"
         }`,
       },
     ],
@@ -226,7 +226,7 @@ async function generateFacebookPosts(id, network) {
     const { size, price, validity, index, planID, networkID } = data[key];
     const title = `${size} ₦${price} ${validity}`;
     const payload = {
-      title: 'offerSelect',
+      title: 'offerSelec',
       network: network,
       networkID,
       planID,

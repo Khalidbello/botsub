@@ -13,6 +13,7 @@ const {
   refundPayment,
   generateRandomString,
   fundWallet,
+  sleep,
 } = require('./../modules/helper_functions.js');
 
 const deliverValue = require('./../modules/deliver-value.js');
@@ -33,7 +34,7 @@ router.get('/confirm', async (req, res) => {
   if (!req.query.transaction_id || !req.query.tx_ref) {
     return res.json({ status: 'error', message: 'query parameters missing' });
   };
-
+  
   const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const response = await flw.Transaction.verify({ id: req.query.transaction_id }).catch((err) => {
     return res.json({ status: 'error', message: 'failed to check transaction', data: err });
@@ -46,7 +47,6 @@ router.get('/confirm', async (req, res) => {
   console.log('transaction details', response);
 
   // calling function to check if transaction has ever beign made before
-
   const previouslyDelivered = await checkIfPreviouslyDelivered(
     req.query.transaction_id,
     req.query.tx_ref
@@ -154,11 +154,10 @@ router.post('/webhook', (req, res) => {
 
   if (!signature || signature != mySecret) {
     // This request isn't from Flutterwave; discard
-    console.log('in ashhh');
+    console.log('in webhook');
     return res.status(401).end();
   };
-  res.status(200);
-
+  
   const payload = req.body;
   const host = req.hostname;
 
@@ -171,6 +170,8 @@ router.post('/webhook', (req, res) => {
     .then((response) => console.log('webhook response', response.data))
     .catch((error) => console.error('webhook error', error));
   console.log('end hook');
+  
+  res.status(200).end();
 }); // end of flw webhook
 
 
