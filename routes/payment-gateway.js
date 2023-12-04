@@ -128,7 +128,7 @@ router.post('/webhook', (req, res) => {
   console.log('am in webhook');
   // If you specified a secret hash, check for the signature
   const mySecret = process.env.FLW_H;
-  console.log(mySecret);
+  console.log('smy screte', mySecret);
   const signature = req.headers['verif-hash'];
 
   if (!signature || signature != mySecret) {

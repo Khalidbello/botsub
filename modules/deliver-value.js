@@ -85,20 +85,19 @@ function deliverAirtime(response, req, res) {
 
 // function to make product purchase request
 async function makePurchaseRequest(response, res, req, options) {
+  console.log('in make purchase')
   try {
     request(options, async (error, _, body) => {
-      if (error) {
-        throw error
-      };
       console.log('data purchase resp body: ', body);
       // to do dependent transaction status
       if (body.Status === 'successful') {
         consle.log('in succesfull make purchase request');
         return helpSuccesfulDelivery(req, res, response)
       };
-      throw 'product purchas request not successful';
+      console.log('failed in request block:', error);
+      helpFailedDelivery(req, res, response);
     });
-  } catch(error) {
+  } catch (error) {
     console.log('n make purchase request failed in cacth error block:', error);
     helpFailedDelivery(req, res, response);
   };
@@ -106,13 +105,13 @@ async function makePurchaseRequest(response, res, req, options) {
 
 
 // function to make product purchase request simulation
-async function simulateMakePurchaseRequest(response, res, req, condition=false) {
+async function simulateMakePurchaseRequest(response, res, req, condition = false) {
   try {
     if (condition) {
-      return helpSuccesfulDelivery(req, res, response, {balance_after: 6000})
+      return helpSuccesfulDelivery(req, res, response, { balance_after: 6000 })
     };
     throw 'product purchas request not successful';
-  } catch(error) {
+  } catch (error) {
     console.log('make purchase request simulation failed in cacth error block:', error);
     helpFailedDelivery(req, res, response);
   };

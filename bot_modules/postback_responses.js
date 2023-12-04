@@ -1,7 +1,7 @@
 const sendMessage = require('./send_message.js');
 const sendTemplate = require('./send_templates.js');
 const axios = require('axios');
-const { retryFailedHelper } = require('./../modules/helper_functions.js')
+const { confirmDataPurchaseResponse } = require('./../bot_modules/helper_functions.js')
 const getUserName = require('./get_user_info.js');
 const { dateFormatter, noTransactFound } = require('./helper_functions.js');
 const {
@@ -211,7 +211,7 @@ async function generateAccountNumber(event) {
 
   if (returnFalse) {
     await sendMessage(senderId, { text: 'An error occured \nPlease start a new transaction' });
-    await cancelTransaction(event, true);
+    await confirmDataPurchaseResponse(senderId);
     return;
   };
 
