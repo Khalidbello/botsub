@@ -9,9 +9,6 @@ const sendTemplate = require('./../bot_modules/send_templates.js');
 const { retryFailedTemplate, responseServices2 } = require('./../bot_modules/templates.js');
 const fsP = require('fs').promises;
 const Transactions = require('./../models/transactions.js');
-const Users = require('./../models/users.js');
-const { ObjectId } = require('mongodb');
-
 const transporter = nodemailer.createTransport({
   host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
   port: 465, // Port number for SMTP (e.g., 587 for TLS)
@@ -97,7 +94,7 @@ async function makePurchaseRequest(response, res, req, options) {
       // to do dependent transaction status
       if (body.Status === 'successful') {
         consle.log('in succesfull make purchase request');
-        return helpSuccesfulDelivery(req, res, response, b)
+        return helpSuccesfulDelivery(req, res, response)
       };
       throw 'product purchas request not successful';
     });
@@ -124,7 +121,7 @@ async function simulateMakePurchaseRequest(response, res, req, condition=false) 
 
 // helper function for succesfull response
 async function helpSuccesfulDelivery(req, res, response, body) {
-  addToDelivered(req);
+  addToDelivered(req, response);
   // calling function to send mail and json response object
   sendSuccessfulResponse(response, res);
 
@@ -142,7 +139,7 @@ async function helpSuccesfulDelivery(req, res, response, body) {
 
 // helper function  for failed delivery
 async function helpFailedDelivery(req, res, response) {
-  addToFailedToDeliver(req);
+  addToFailedToDeliver(req, response);
   sendFailedToDeliverResponse(response, res);
 
   if (response.data.meta.bot) {
@@ -158,7 +155,7 @@ async function helpFailedDelivery(req, res, response) {
       retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
     );
   };
-}; // end of failed delivery hwelper
+}; // end of failed delivery helper
 
 
 // function to add transaction to delivered transaction

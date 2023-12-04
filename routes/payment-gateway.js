@@ -22,15 +22,8 @@ const router = Router();
 router.get('/confirm', async (req, res) => {
   //console.log('node environment', process.env.NODE_ENV);
   console.log('req body', req.query);
-<<<<<<< HEAD
-  if (!req.query.transaction_id || !req.query.tx_ref) {
-    return res.json({ status: 'error', message: 'query parameters missing' });
-  };
-  
-=======
   if (!req.query.transaction_id || !req.query.tx_ref) return res.json({ status: 'error', message: 'query parameters missing' }).status(404);
 
->>>>>>> schema
   const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
 
   const response = await flw.Transaction.verify({ id: req.query.transaction_id })
@@ -43,15 +36,7 @@ router.get('/confirm', async (req, res) => {
   if (response.status === 'error') return res.json({ status: 'error', message: 'error fetching transaction' });
 
   // calling function to check if transaction has ever beign made before
-<<<<<<< HEAD
-  const previouslyDelivered = await checkIfPreviouslyDelivered(
-    req.query.transaction_id,
-    req.query.tx_ref
-  );
-
-=======
   const previouslyDelivered = await checkIfPreviouslyDelivered(req.query.transaction_id);
->>>>>>> schema
   if (previouslyDelivered) {
     let details = returnPreviouslyDelivered(response);
     res.json({ status: 'settled', data: details });

@@ -1,9 +1,13 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const dbName = process.env.NODE_ENV === 'production' ? 'botsub' : 'develpment';
 
 const connectDB = async () => {
+  console.log('dbName: ', dbName);
     try {
-      const conn = await mongoose.connect(process.env.MONGO_URI, {
+      const conn = await mongoose.connect(process.env.DB_CONNECTION_STR, {
         useNewUrlParser: true,
+        dbName: dbName,
+        autoIndex: true
       });
       console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
@@ -12,4 +16,4 @@ const connectDB = async () => {
     };
 };
 
-module.exports = connectDB
+module.exports = connectDB;

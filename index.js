@@ -74,10 +74,8 @@ const noCacheMiddleware = (req, res, next) => {
 
 // static middleware
 app.use(express.static('public'));
-
 // Use the middleware for all routes
 app.use(noCacheMiddleware);
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
