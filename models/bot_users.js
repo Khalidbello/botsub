@@ -17,7 +17,8 @@ const Schema = new mongoose.Schema({
        index: String,
        planID: Number,
        networkID: Number
-    }
+    },
+    lastTransact: String
 });
 
 module.exports = mongoose.model('botUsers', Schema);

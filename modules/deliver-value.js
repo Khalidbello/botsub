@@ -1,14 +1,14 @@
 // module to deliver value
-const Flutterwave = require('flutterwave-node-v3');
-const request = require('request');
 const handlebars = require('handlebars');
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 const { dateFormatter, fundWallet } = require('./helper_functions.js');
 const sendMessage = require('./../bot_modules/send_message.js');
 const sendTemplate = require('./../bot_modules/send_templates.js');
 const { retryFailedTemplate, responseServices2 } = require('./../bot_modules/templates.js');
 const fsP = require('fs').promises;
 const Transactions = require('./../models/transactions.js');
+const handleFirstMonthBonus = require('./monthly_bonuses.js');
 const transporter = nodemailer.createTransport({
   host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
   port: 465, // Port number for SMTP (e.g., 587 for TLS)
@@ -33,25 +33,23 @@ function deliverValue(response, req, res, requirementMet) {
 // function to make data purchase request
 async function deliverData(response, req, res) {
   let options = {
-    method: 'POST',
     url: 'https://opendatasub.com/api/data/',
     headers: {
       Authorization: 'Token ' + process.env.OPENSUB_KEY,
       'Content-Type': 'application/json',
     },
-    body: {
+    payload: {
       network: Number(response.data.meta.networkID),
       mobile_number: response.data.meta.number,
       plan: Number(response.data.meta.planID),
       Ported_number: true,
-    },
-    json: true,
+    }
   };
 
   if (process.env.NODE_ENV === 'production') {
-    makePurchaseRequest(response, res, req, options);
+    makePurchaseRequest(response, res, req, options, type='data');
   } else {
-    simulateMakePurchaseRequest(response, res, req, true);
+    simulateMakePurchaseRequest(response, res, req, true, type='data');
   };
 }; // end of deliver value function
 
@@ -59,57 +57,50 @@ async function deliverData(response, req, res) {
 // function to make airtime purchase request
 function deliverAirtime(response, req, res) {
   let options = {
-    method: 'POST',
     url: 'https://opendatasub.com/api/topup/',
     headers: {
       Authorization: 'Token ' + process.env.OPENSUB_KEY,
       'Content-Type': 'application/json',
     },
-    body: {
+    payload: {
       network: Number(response.data.meta.networkID),
       amount: Number(response.data.meta.amount),
       mobile_number: response.data.meta.number,
       Ported_number: true,
       airtime_type: 'VTU',
-    },
-    json: true,
+    }
   };
 
   if (process.env.NODE_ENV === 'production') {
-    makePurchaseRequest(response, req, res, options);
+    makePurchaseRequest(response, req, res, options, type='airtime');
   } else {
-    simulateMakePurchaseRequest(response, res, req, true);
+    simulateMakePurchaseRequest(response, res, req, true, type='airtime');
   };
 }; // end of deliverAirtime
 
 
 // function to make product purchase request
-async function makePurchaseRequest(response, res, req, options) {
-  console.log('in make purchase')
+async function makePurchaseRequest(response, res, req, options, type) {
+  console.log('in make purchase request')
   try {
-    request(options, async (error, _, body) => {
-      console.log('data purchase resp body: ', body);
-      // to do dependent transaction status
-      if (body.Status === 'successful') {
-        consle.log('in succesfull make purchase request');
-        return helpSuccesfulDelivery(req, res, response)
-      };
-      console.log('failed in request block:', error);
-      helpFailedDelivery(req, res, response);
-    });
+    const response = await  axios.post(options.url, options.payload, { headers: options.headers});
+
+    if (response.data.Status === 'successful') {
+      consle.log('in succesfull make purchase request');
+      return helpSuccesfulDelivery(req, res, response, response.data.balance_after, type);
+    };
+    throw 'could not deliver value';
   } catch (error) {
-    console.log('n make purchase request failed in cacth error block:', error);
+    console.log('in make purchase request failed in cacth error block:', error);
     helpFailedDelivery(req, res, response);
   };
 }; // end of actualBuyData
 
 
 // function to make product purchase request simulation
-async function simulateMakePurchaseRequest(response, res, req, condition = false) {
+async function simulateMakePurchaseRequest(response, res, req, condition = false, type) {
   try {
-    if (condition) {
-      return helpSuccesfulDelivery(req, res, response, { balance_after: 6000 })
-    };
+    if (condition) return helpSuccesfulDelivery(req, res, response, 6000, type);
     throw 'product purchas request not successful';
   } catch (error) {
     console.log('make purchase request simulation failed in cacth error block:', error);
@@ -119,8 +110,8 @@ async function simulateMakePurchaseRequest(response, res, req, condition = false
 
 
 // helper function for succesfull response
-async function helpSuccesfulDelivery(req, res, response, body) {
-  addToDelivered(req, response);
+async function helpSuccesfulDelivery(req, res, response, balance, type) {
+  addToDelivered(req, response, type);
   // calling function to send mail and json response object
   sendSuccessfulResponse(response, res);
 
@@ -132,7 +123,7 @@ async function helpSuccesfulDelivery(req, res, response, body) {
       text: `Transaction Succesful \nProduct: ${product(response)}\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
     });
   };
-  if (parseInt(body.balance_after) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
+  if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
 }; // end of helpSuccesfulDelivery
 
 
@@ -158,7 +149,7 @@ async function helpFailedDelivery(req, res, response) {
 
 
 // function to add transaction to delivered transaction
-async function addToDelivered(req, response) {
+async function addToDelivered(req, response, type) {
   const transaction = await Transactions.findOne({ id: req.query.transaction_id })
   if (transaction) {
     if (transaction.status === true) return;
@@ -166,23 +157,23 @@ async function addToDelivered(req, response) {
     return response;
   };
 
-  let product = `${response.data.meta.size} data`;
-  if (response.data.meta.type === 'airtime') product = `₦${response.data.meta.amount} airtime`;
+  let prod = product(response);
 
-  newTransaction = new Transactions({
+  const newTransaction = new Transactions({
     id: req.query.transaction_id,
     email: response.data.customer.email,
     txRef: req.query.tx_ref,
     status: true,
     date: Date(),
-    product: product + ' ' + response.data.meta.network,
-    beneficiary: parseInt(response.data.meta.number)
+    product: prod,
+    beneficiary: parseInt(response.data.meta.number, )
   });
-  const response2 = await newTransaction.save()
-
+  const response2 = await newTransaction.save();
   console.log('add to delivered response', response2);
-  return responseServices2;
+  if(type === 'data') await handleFirstMonthBonus(response.data.customer.email,  response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
+  return;
 }; // end of addToDelivered
+
 
 
 // function to add transaction to failed to deliver
@@ -191,10 +182,8 @@ async function addToFailedToDeliver(req, response) {
     let transaction = await Transactions.findOne({ id: req.query.transaction_id })
     if (transaction) return console.log('failed transaction already exists', transaction);
 
-    let product = `${response.data.meta.size} data`;
-    if (response.data.meta.type === 'airtime') product = `₦${response.data.meta.amount} airtime`;
-
-    newTransaction = new Transactions({
+    let product = product(response);
+    const newTransaction = new Transactions({
       id: req.query.transaction_id,
       email: response.data.customer.email,
       txRef: req.query.tx_ref,
@@ -203,14 +192,11 @@ async function addToFailedToDeliver(req, response) {
       product: product + ' ' + response.data.meta.network,
       beneficiary: parseInt(response.data.meta.number)
     });
-
-    response2 = await newTransaction.save();
-
+    const response2 = await newTransaction.save();
     console.log('add to failed delivery response', response2);
-    return response2;
+    return;
   } catch (err) { console.log('error occured while adding new trnasaction to databasae', err) };
 }; // end if add to failed to deliver
-
 
 
 // helper function to form product
@@ -222,6 +208,7 @@ function product(response) {
   };
   return product
 }; // end of procuct
+
 
 // function to send data purchase mail and response
 async function sendSuccessfulResponse(response, res) {
@@ -263,7 +250,6 @@ async function sendSuccessfulResponse(response, res) {
     return res.json({ status: 'error', message: 'error sending succesfull response', data: err });
   };
 }; // end of sendAirtimeResponse function
-
 
 
 // function to form response on failed to deliver
@@ -310,7 +296,6 @@ async function sendFailedToDeliverResponse(response, res) {
     //return res.json({ status: 'failedDelivery', message: 'failed to deliver purchased product' });
   };
 }; // end of sendFailedToDeliverResponse
-
 
 
 //function to form response for request

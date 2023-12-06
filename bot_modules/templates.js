@@ -18,7 +18,7 @@ const responseServices = {
       },
     ],
   },
-}; 
+};
 
 const responseServices2 = {
   type: 'template',
@@ -197,7 +197,7 @@ function generatePostbackButton(title, payload) {
   return button;
 };
 
-    
+
 
 function generatePostbackTemplate(buttons, network, i) {
   const title = i === 3 ? `Select ${network} offer` : '...';
@@ -216,7 +216,7 @@ function generatePostbackTemplate(buttons, network, i) {
 
 async function generateFacebookPosts(id, network) {
   const file = JSON.parse(await fsP.readFile('files/data-details.json', 'utf-8'));
-  const data = file[id]; 
+  const data = file[id];
   const length = Object.keys(data).length;
   const templates = [];
   let buttons = [];
@@ -240,7 +240,7 @@ async function generateFacebookPosts(id, network) {
     const button = generatePostbackButton(title, payload);
     buttons.push(button);
 
-    if (i % 3 === 0 || i === length ) {
+    if (i % 3 === 0 || i === length) {
       const postbackTemplate = generatePostbackTemplate(buttons, network, i);
       templates.push(postbackTemplate);
       buttons = [];
@@ -266,7 +266,25 @@ function retryFailedTemplate(transaction_id, tx_ref) {
       }],
     }
   };
-};
+}; // end of failedDeliveryTemplate
+
+
+function failedMonthlyBonusTemplate(email, number, networkID) {
+  return {
+    type: 'template',
+    payload: {
+      template_type: 'button',
+      text: 'Reclaim monthly bonus',
+      buttons: [
+        {
+          type: 'postback',
+          title: 'Reclaim',
+          payload: `{"title": "failedMonthlyBonusRetry", "email": "${email}", "number": "${number}", "networkID": "${networkID}"}`,
+        }
+      ],
+    },
+  };
+}; // end of failedMonthlyBonusTemplate
 
 
 
@@ -281,4 +299,5 @@ module.exports = {
   airtimeNetworks2,
   generateFacebookPosts,
   retryFailedTemplate,
+  failedMonthlyBonusTemplate
 };

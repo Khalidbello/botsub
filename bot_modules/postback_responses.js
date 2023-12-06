@@ -14,6 +14,7 @@ const {
   airtimeNetworks2,
 } = require('./templates.js');
 const BotUsers = require('./../models/bot_users.js');
+const handleFirstMonthBonus = require('./../modules/monthly_bonuses.js');
 
 
 // function to response to newConversations
@@ -226,7 +227,7 @@ async function generateAccountNumber(event) {
     await sendMessage(senderId, { text: data.transfer_account });
     await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
   } else {
-    await sendMessage(senderId, { text: 'An error occured \nPlease start a new transaction' });
+    await sendMessage(senderId, { text: 'An error occured \nPlease reclick make purchase button' });
   };
   // removing purchasePayload
   cancelTransaction(event, true);
@@ -253,7 +254,6 @@ async function changeMailBeforeTransact(event) {
     $set: { nextAction: 'changeEmailBeforeTransact' }
   });
 }; // end of changeMailBeforeTransact
-
 
 
 // function to changePhoneNumber
@@ -347,15 +347,20 @@ async function showDataPrices(event) {
 async function retryFailed(event, payload) {
   const senderId = event.sender.id;
   
-  await sendMessage(senderId, {
-    text: "Reinitiating transaction....."
-  });
-  
+  await sendMessage(senderId, { text: "Reinitiating transaction....." });
   await axios
   .post(`https://${process.env.HOST}/front-api/retry?transaction_id=${payload.transaction_id}&tx_ref=${payload.tx_ref}`)
   .catch((error) => console.log(error));
   //retryFailedHelper(payload.transaction_id, payload.tx_ref, false);
 }; // end of retry failed delivery
+
+
+// functon to handle failedMonthlyDeliveryBonus
+async function handleRetryFailedMonthlyDelivery(event, payload) {
+  const senderId = event.sender.id;
+  console.log('in handle monthlty failed');
+  return handleFirstMonthBonus(payload.email, payload.number, payload.networkID, senderId);
+};  // end of handleRetryFailedMonthlyDelivery
 
 
 module.exports = {
@@ -375,4 +380,5 @@ module.exports = {
   cancelTransaction,
   showDataPrices,
   retryFailed,
+  handleRetryFailedMonthlyDelivery,
 };

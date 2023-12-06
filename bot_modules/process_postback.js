@@ -15,6 +15,7 @@ const {
   issueReport,
   showDataPrices,
   retryFailed,
+  handleRetryFailedMonthlyDelivery,
 } = require('./postback_responses.js');
 
 async function processPostback(event, res) {
@@ -30,7 +31,7 @@ async function processPostback(event, res) {
   try {
     payload = JSON.parse(payload);
     console.log('postback payload', payload);
-  } catch (err) {};
+  } catch (err) { console.log('no payload') };
 
   const payloadTitle = payload.title;
   console.log('postback payload title', payloadTitle);
@@ -85,8 +86,11 @@ async function processPostback(event, res) {
     case 'retryFailed':
       retryFailed(event, payload);
       break;
+    case 'failedMonthlyBonusRetry':
+      handleRetryFailedMonthlyDelivery(event, payload);
+      break;
     default:
-      sendNewConversationResponse(event)
+      sendNewConversationResponse(event);
       break;
   }
 } // end of processPostback

@@ -11,12 +11,16 @@ const schema = new mongoose.Schema({
             return validator.isEmail(value);
         }
     },
-    lastTransct: Date,
+    lastTransact: Date,
     survey: {
         network: String,
         dataSize: String,
         dataFrequency: Number,
         gender: String,
+    },
+    failedMonthlyBonus: {
+        number: Number,
+        netwrok: Number
     }
 });
 
