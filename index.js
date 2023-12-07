@@ -10,7 +10,7 @@ const viewsRouter = require('./routes/views.js');
 const frontEndApiRouter = require('./routes/frontend-api.js');
 const paymentGateWayRouter = require('./routes/payment-gateway.js');
 const fbBotRouter = require('./routes/fb-bot-webhook.js');
-//const connectDB = require('./models/connectdb.js');
+const connectDB = require('./models/connectdb.js');
 
 // setting  configurations for different environment
 if (process.env.NODE_ENV === 'development') {
@@ -79,7 +79,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // connecting db
-//connectDB();
+connectDB();
 
 //locking in middlewares for route handling
 app.use('/gateway', paymentGateWayRouter);
