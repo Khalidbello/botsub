@@ -359,7 +359,7 @@ async function retryFailed(event, payload) {
 async function handleRetryFailedMonthlyDelivery(event, payload) {
   const senderId = event.sender.id;
   console.log('in handle monthlty failed');
-  return handleFirstMonthBonus(payload.email, payload.number, payload.networkID, senderId);
+  return handleFirstMonthBonus(payload.email, payload.number, payload.networkID, senderId, payload.retry);
 };  // end of handleRetryFailedMonthlyDelivery
 
 

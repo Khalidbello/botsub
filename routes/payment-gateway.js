@@ -147,7 +147,7 @@ router.post('/webhook', (req, res) => {
       `https://${host}/gateway/confirm?transaction_id=${payload.id || payload.data.id}&tx_ref=${payload.txRef || payload.data.tx_ref}&webhook=webhooyouu`
     )
     .then((response) => console.log('webhook response', response.data))
-    .catch((error) => {
+    .catch((err) => {
       if (err.response) {
         console.log('Error response:', err.response.data);
       } else if (err.request) {
@@ -159,9 +159,8 @@ router.post('/webhook', (req, res) => {
   console.log('end hook');
 
   res.status(200).end();
-}); // end of flw webhook
-
-
+}); // end of flw webhook 
+ 
 
 router.get('/test', async (req, res) => {
   // Install with: npm i flutterwave-node-v3

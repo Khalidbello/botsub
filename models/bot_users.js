@@ -18,7 +18,7 @@ const Schema = new mongoose.Schema({
        planID: Number,
        networkID: Number
     },
-    lastTransact: String
+    firstTransactOfMonth: Date
 });
 
 module.exports = mongoose.model('botUsers', Schema);

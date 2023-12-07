@@ -1,5 +1,6 @@
 require('dotenv').config();
 const Users = require('./../models/users.js');
+const BotUsers = require('./../models/bot_users.js')
 const axios = require('axios');
 const sendMessage = require('./../bot_modules/send_message.js');
 const sendTemplate = require('./../bot_modules/send_templates.js');
@@ -13,16 +14,22 @@ const bonuses = {
 
 
 // function to handle giving users free hundred mb for every new month first purchase
-async function handleFirstMonthBonus(email, number, networkID, senderId = rfalse, retry = false) {
-    console.log('in monthly bonuses');
-    let flag;
+async function handleFirstMonthBonus(email, number, networkID, senderId = false, retry = false) {
+    console.log('in monthly bonuses retry: ', retry);
+    let flagUser;
+    let flagBotUser = true;
     const user = await Users.findOne({ email: email });
-    console.log('user collection', user);
+    flagUser = await checkUserValidity(user, email);
 
-    flag = await checkUserValidity(user, email);
-    console.log('user collection flag=========== ', flag);
-    if (flag) return deliverBonus(email, number, networkID, senderId);
+    if (senderId) {
+        const botUser = await BotUsers.findOne({ id: senderId });
+        if (botUser.firstTransactOfMonth) flagBotUser = validateDate(botUser.firstTransactOfMonth);
+    };
+
+    console.log('user collection flag=========== ', flagUser, flagBotUser);
+    if (flagUser && flagBotUser) deliverBonus(email, number, networkID, senderId);
     if (retry) sendMessage(senderId, { text: "Sorry you have already recieved for first month purchase bonus for this month" });
+    return;
 }; // end of first month purchase
 
 
@@ -33,27 +40,37 @@ async function checkUserValidity(user, email) {
         return true;
     };
 
-    if (!user.lastTransact) return true;
-    console.log('user.lastTransact', user.lastTransact);
-    const date = new Date();
-    const prevDate = new Date(user.lastTransact);
-
-    console.log('yera diff: ', date.getFullYear() - prevDate.getFullYear());
-    console.log('month diff: ', date.getMonth() - prevDate.getMonth())
-    if ((date.getFullYear() - prevDate.getFullYear() > 0) && (date.getMonth() - prevDate.getMonth() > 0)) return true;
-    return false;
+    if (!user.firstTransactOfMonth) return true;
+    return validateDate(user.firstTransactOfMonth);
 }; // end of checkUserVlidity
 
 
+// function to validate date
+function validateDate(lastDate) {
+    const date = new Date();
+    const prevDate = new Date(lastDate);
+
+    if ((date.getFullYear() - prevDate.getFullYear() > 0) && (date.getMonth() - prevDate.getMonth() > 0)) return true;
+    return false;
+}; // end of validateDates
+
+
 // function to set laastPurchase date
-async function setLastPurchase(email) {
-    await Users.updateOne({ email: email }, {
-        $set: {
-            lastTransact: Date(),
-            failedMonthlyBonus: {}
-        }
-    });
-}; // end of setLastTransact
+async function firstTransactOfMonth(toUse, type) {
+    if (type === 'user') {
+        await Users.updateOne({ email: toUse }, {
+            $set: {
+                firstTransactOfMonth: Date()
+            }
+        });
+    } else if (type === 'botUser') {
+        await BotUsers.updateOne({ id: toUse }, {
+            $set: {
+                firstTransactOfMonth: Date()
+            }
+        });
+    };
+}; // end of setfirstTransactOfMonth
 
 
 // function to deliver bonus
@@ -76,8 +93,11 @@ async function deliverBonus(email, number, networkID, senderId) {
             });
         };
         if (true || response.data.Status === 'successful') {
-            setLastPurchase(email); // function to update user info to prevent double delivery
-            return await sendMessage(senderId, { text: `you've recieved 100MB on your ${number} line for your first transaction of the month...` });
+            await firstTransactOfMonth(email, type = 'user'); // function to update user info to prevent double delivery
+            if (senderId) {
+                await firstTransactOfMonth(senderId, type = 'botUser');
+                return await sendMessage(senderId, { text: `you've recieved 100MB on your ${number} line for your first transaction of the month...` });
+            };
         };
     } catch (err) {
         if (err.response) {

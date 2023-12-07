@@ -5,7 +5,6 @@ const connectDB = async () => {
   console.log('dbName: ', dbName);
     try {
       const conn = await mongoose.connect(process.env.DB_CONNECTION_STR, {
-        useNewUrlParser: true,
         dbName: dbName,
         autoIndex: true
       });
@@ -16,4 +15,4 @@ const connectDB = async () => {
     };
 };
 
-module.exports = connectDB;
+module.exports = connectDB; 

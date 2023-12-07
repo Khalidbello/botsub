@@ -11,7 +11,7 @@ const schema = new mongoose.Schema({
             return validator.isEmail(value);
         }
     },
-    lastTransact: Date,
+    firstTransactOfMonth: Date,
     survey: {
         network: String,
         dataSize: String,
