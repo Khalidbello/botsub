@@ -19,7 +19,7 @@ const BotUsers = require('./../models/bot_users.js');
 async function processMessage(event, res) {
   // check user previousky stored action to determine
   // how to respond to user messages
-  //return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' });  // message incase of emmergency bug fixes
+  return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' });  // message incase of emmergency bug fixes
 
   const senderId = event.sender.id;
   const user = await BotUsers.findOne({  'id': senderId })
