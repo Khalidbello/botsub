@@ -170,7 +170,7 @@ async function addToDelivered(req, response, type) {
   });
   const response2 = await newTransaction.save();
   console.log('add to delivered response', response2);
-  if(type === 'data') await handleFirstMonthBonus(response.data.customer.email,  response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
+  ///if(type === 'data') await handleFirstMonthBonus(response.data.customer.email,  response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
   return;
 }; // end of addToDelivered
 
