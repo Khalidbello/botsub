@@ -79,7 +79,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // connecting db
-connectDB();
+//connectDB();
 
 //locking in middlewares for route handling
 app.use('/gateway', paymentGateWayRouter);
