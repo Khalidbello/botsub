@@ -5,7 +5,6 @@ const path = require('path');
 const router = Router();
 const TEST = process.env.NODE_ENV === 'development';
 const Users = require('./../models/users.js');
-const Transactions = require('flutterwave-node-v3/lib/rave.transactions.js');
 
 router.get('/', (req, res) => {
   console.log('am serving home');
@@ -18,11 +17,7 @@ router.get('/env-test', (req, res)=> {
 
 router.get('/test-1', async (req, res) => {
   try {
-    const transacts = await Transactions.find({});
-    const array = await transacts.toArray();
-    res.json(array)
-
-    //res.json(response.data);
+    res.json({ 'test-1': 'in testing of views js test-1'});
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'An error occurred while fetching data' });
@@ -30,10 +25,9 @@ router.get('/test-1', async (req, res) => {
 });
   
 router.get('/users', async (req, res)=> {
-  const user = new Users({ 'email': 'bellokhalid7000004@gmail.com'});
-  const response = await user.save();
-  console.log(response);
-  res.json(response);
+  const user = await Users.findOne({ 'email': 'bellokhali74@gmail.com'});
+  console.log(user);
+  res.json(user);
 });
 
 router.get('/buy-data', (req, res) => {
