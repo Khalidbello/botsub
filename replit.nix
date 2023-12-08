@@ -1,5 +1,6 @@
 { pkgs }: {
 	deps = [
+   pkgs.nettools
   pkgs.unzip
   pkgs.run
   pkgs.nodejs-18_x

@@ -6,7 +6,7 @@ const router = Router();
 
 
 
-router.get('/fb-hook', function (req, res) {
+router.get('/fb-hooks', function (req, res) {
   const token = '1234';
   console.log(token);
   console.log(req.query['hub.verify_token']);
@@ -21,7 +21,7 @@ router.get('/fb-hook', function (req, res) {
 
 
 
-router.post('/fb-hook', async function (req, res) {
+router.post('/fb-hooks', async function (req, res) {
   //checking for page subscription.
   if (req.body.object === 'page') {
     /* Iterate over each entry, there can be multiple entries allbacks are batched. */
