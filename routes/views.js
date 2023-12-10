@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/env-test', (req, res)=> {
-  res.send("variables: testing git update" + process.env.NODE_ENV);
+  res.send("variables: testing git update alhamdulilah:::::::::: " + process.env.NODE_ENV);
 });
 
 router.get('/test-1', async (req, res) => {
