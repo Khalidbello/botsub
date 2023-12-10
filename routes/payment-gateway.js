@@ -150,7 +150,7 @@ router.post('/webhook', async (req, res) => {
     console.log('end hook');
     res.status(200).end();
   } catch (err) {
-    res.statusMessage(300).send('an error occured');
+    res.status(300).send('an error occured');
     if (err.response) {
       console.log('Error response:', err.response.data);
     } else if (err.request) {

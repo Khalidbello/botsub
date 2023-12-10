@@ -173,64 +173,58 @@ async function airtimePurchase(event, payload) {
 // issue Report responses
 async function issueReport(event) {
   const senderId = event.sender.id;
-  
+
   await sendMessage(senderId, { text: 'Please enter a detailed explation of your issue' });
-  await BotUsers.updateOne( { id: senderId },  {
+  await BotUsers.updateOne({ id: senderId }, {
     $set: { nextAction: 'enterIssue' }
   });
 }; // end of issueReport
-    
+
 
 //===============================================
 // generic responsese
 
 // function to generate account number
 async function generateAccountNumber(event) {
-  let returnFalse;
   let payload;
+  let response;
   const senderId = event.sender.id;
-  const botUser = await BotUsers.findOne({ id: senderId });
-  console.log('generateAccountNumber', botUser);
+  try {
+    const botUser = await BotUsers.findOne({ id: senderId });
+    console.log('generateAccountNumber', botUser);
 
-  if (botUser.purchasePayload.$isEmpty()) return noTransactFound(senderId);
+    if (botUser.purchasePayload.$isEmpty()) return noTransactFound(senderId);
 
-  payload = botUser.purchasePayload.toObject();
-  payload.email = botUser.email;
-  payload.bot = true;
-  payload['senderId'] = senderId;
-  let test = payload;
-  console.log('in generate account number: ', payload, test);
-  await sendMessage(senderId, { text: 'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.' });
-  await sendMessage(senderId, { text: 'Value would automatically delivered by our system once payment is made' });
+    payload = botUser.purchasePayload.toObject();
+    payload.email = botUser.email;
+    payload.bot = true;
+    payload['senderId'] = senderId;
+    let test = payload;
+    console.log('in generate account number: ', payload, test);
+    await sendMessage(senderId, { text: 'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.' });
+    await sendMessage(senderId, { text: 'Value would automatically delivered by our system once payment is made' });
 
-  let response = await axios
-    .post(`https://${process.env.HOST}/gateway/transfer-account`, payload)
-    .catch((error) => {
-      returnFalse = true;
-      console.log('Error getting transfer account:', error);
-    });
+    response = await axios.post(`https://${process.env.HOST}/gateway/transfer-account`, payload);
+    response = await response.data;
+    console.log(response);
 
-  if (returnFalse) {
+    if (response.status === 'success') {
+      const data = response.meta.authorization;
+      await sendMessage(senderId, { text: 'Bank Name: ' + data.transfer_bank });
+      await sendMessage(senderId, { text: 'Account Name: BotSub' });
+      await sendMessage(senderId, { text: 'Account Number: 👇' });
+      await sendMessage(senderId, { text: data.transfer_account });
+      await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
+    } else {
+      await sendMessage(senderId, { text: 'An error occured \nPlease reclick make purchase button' });
+    };
+    // removing purchasePayload
+    cancelTransaction(event, true);
+  } catch (err) {
     await sendMessage(senderId, { text: 'An error occured \nPlease start a new transaction' });
     await confirmDataPurchaseResponse(senderId);
-    return;
+    console.log('Error getting transfer account:', err);
   };
-
-  response = await response.data;
-  console.log(response);
-
-  if (response.status === 'success') {
-    const data = response.meta.authorization;
-    await sendMessage(senderId, { text: 'Bank Name: ' + data.transfer_bank });
-    await sendMessage(senderId, { text: 'Account Name: BotSub' });
-    await sendMessage(senderId, { text: 'Account Number: 👇' });
-    await sendMessage(senderId, { text: data.transfer_account });
-    await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
-  } else {
-    await sendMessage(senderId, { text: 'An error occured \nPlease reclick make purchase button' });
-  };
-  // removing purchasePayload
-  cancelTransaction(event, true);
 }; // end of generateAccountNumber
 
 
@@ -243,8 +237,8 @@ async function changeMailBeforeTransact(event) {
   if (user.purchasePayload.$isEmpty()) {
     noTransactFound(senderId);
     // updating database
-    await BotUsers.updateOne( { id: senderId }, {
-      $set: { nextAction: null } 
+    await BotUsers.updateOne({ id: senderId }, {
+      $set: { nextAction: null }
     });
     return;
   };
@@ -265,22 +259,22 @@ async function changePhoneNumber(event) {
     noTransactFound(senderId);
     // updating database
     await BotUsers.updateOne({ id: senderId }, {
-      $set: { nextAction: null } 
+      $set: { nextAction: null }
     });
     return;
   };
 
   await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter Q to cancel' });
-  await BotUsers.updateOne({ id: senderId }, { 
-    $set: { nextAction: 'changePhoneNumberBeforeTransact' } 
+  await BotUsers.updateOne({ id: senderId }, {
+    $set: { nextAction: 'changePhoneNumberBeforeTransact' }
   });
 }; // end of  changeNumber
 
 
 // function to cancel transaction
-async function cancelTransaction(event, end=false) {
+async function cancelTransaction(event, end = false) {
   const senderId = event.sender.id;
- 
+
   // delete purchase payload here
   if (end) {
     return await reset(senderId);
@@ -295,7 +289,7 @@ async function cancelTransaction(event, end=false) {
 
 
 // helper to help in resetting
-const reset = async (senderId)=> {
+const reset = async (senderId) => {
   await BotUsers.updateOne({ id: senderId }, {
     $set: {
       nextAction: null,
@@ -320,7 +314,7 @@ async function showDataPrices(event) {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const message = {
-        text: `${i!==0 ? ".\n\n" : ""}${key} Data Offers`,
+        text: `${i !== 0 ? ".\n\n" : ""}${key} Data Offers`,
       };
 
       await sendMessage(senderId, message);
@@ -346,11 +340,11 @@ async function showDataPrices(event) {
 // function to retry failed delivery
 async function retryFailed(event, payload) {
   const senderId = event.sender.id;
-  
+
   await sendMessage(senderId, { text: "Reinitiating transaction....." });
   await axios
-  .post(`https://${process.env.HOST}/front-api/retry?transaction_id=${payload.transaction_id}&tx_ref=${payload.tx_ref}`)
-  .catch((error) => console.log(error));
+    .post(`https://${process.env.HOST}/front-api/retry?transaction_id=${payload.transaction_id}&tx_ref=${payload.tx_ref}`)
+    .catch((error) => console.log(error));
   //retryFailedHelper(payload.transaction_id, payload.tx_ref, false);
 }; // end of retry failed delivery
 
