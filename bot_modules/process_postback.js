@@ -20,12 +20,11 @@ const {
 
 async function processPostback(event, res) {
   // first set nextAction to null
-  return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' }); // emergency response incase of bug fixes
+  if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' }); // emergency response incase of bug fixes
 
   if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);
   };
-  //return sendMessage(event.sender.id, {"text": "sorry botsub is currently maintenance"});
   
   let payload = event.postback.payload;
   try {
