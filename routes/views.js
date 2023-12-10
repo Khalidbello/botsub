@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/env-test', (req, res)=> {
-  res.send("variables: flutter wave keys: " + process.env.FLW_PB_KEY + '  ||||  ' + process.env.FLW_SCRT_KEY);
+  res.send("variables: flutter wave keys: " + process.env.PASS + '  ||||  ' + process.env.NODE_ENV);
 });
 
 router.get('/test-1', async (req, res) => {

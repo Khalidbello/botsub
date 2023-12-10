@@ -124,43 +124,43 @@ router.post('/transfer-account', async (req, res) => {
 
 
 // route for flutterwave webhook
-router.post('/webhook', (req, res) => {
-  console.log('am in webhook');
-  // If you specified a secret hash, check for the signature
-  const mySecret = process.env.FLW_H;
-  console.log('smy screte', mySecret);
-  const signature = req.headers['verif-hash'];
+router.post('/webhook', async (req, res) => {
+  try {
+    console.log('am in webhook');
+    // If you specified a secret hash, check for the signature
+    const mySecret = process.env.FLW_H;
+    console.log('smy screte', mySecret);
+    const signature = req.headers['verif-hash'];
 
-  if (!signature || signature != mySecret) {
-    // This request isn't from Flutterwave; discard
-    console.log('in webhook');
-    return res.status(401).end();
-  };
+    if (!signature || signature != mySecret) {
+      // This request isn't from Flutterwave; discard
+      console.log('in webhook');
+      return res.status(401).end();
+    };
 
-  const payload = req.body;
-  const host = req.hostname;
+    const payload = req.body;
+    const host = req.hostname;
 
-  console.log('btw hook body', payload);
+    console.log('btw hook body', payload);
 
-  axios
-    .get(
+    const response = await axios.get(
       `https://${host}/gateway/confirm?transaction_id=${payload.id || payload.data.id}&tx_ref=${payload.txRef || payload.data.tx_ref}&webhook=webhooyouu`
-    )
-    .then((response) => console.log('webhook response', response.data))
-    .catch((err) => {
-      if (err.response) {
-        console.log('Error response:', err.response.data);
-      } else if (err.request) {
-        console.log('No response received:', err.request);
-      } else {
-        console.log('Error:', err.message);
-      };
-    });
-  console.log('end hook');
-
-  res.status(200).end();
+    );
+    console.log('webhook response', response.data);
+    console.log('end hook');
+    res.status(200).end();
+  } catch (err) {
+    res.statusMessage(300).send('an error occured');
+    if (err.response) {
+      console.log('Error response:', err.response.data);
+    } else if (err.request) {
+      console.log('No response received:', err.request);
+    } else {
+      console.log('Error:', err.message);
+    };
+  };
 }); // end of flw webhook 
- 
+
 
 router.get('/test', async (req, res) => {
   // Install with: npm i flutterwave-node-v3
