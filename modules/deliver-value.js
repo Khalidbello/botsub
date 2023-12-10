@@ -84,12 +84,13 @@ async function makePurchaseRequest(response, res, req, options, type) {
   console.log('in make purchase request')
   try {
     const response = await  axios.post(options.url, options.payload, { headers: options.headers});
+    console.log('response: ', response);
 
     if (response.data.Status === 'successful') {
       consle.log('in succesfull make purchase request');
       return helpSuccesfulDelivery(req, res, response, response.data.balance_after, type);
     };
-    throw 'could not deliver value';
+    //throw 'could not deliver value';
   } catch (error) {
     console.log('in make purchase request failed in cacth error block:', error);
     helpFailedDelivery(req, res, response);
