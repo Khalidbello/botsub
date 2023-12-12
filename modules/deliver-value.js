@@ -46,7 +46,7 @@ async function deliverData(response, req, res) {
     }
   };
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'production') {
     makePurchaseRequest(response, res, req, options, type='data');
   } else {
     simulateMakePurchaseRequest(response, res, req, true, type='data');
