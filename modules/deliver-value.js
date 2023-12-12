@@ -46,7 +46,7 @@ async function deliverData(response, req, res) {
     }
   };
 
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'development') {
     makePurchaseRequest(response, res, req, options, type='data');
   } else {
     simulateMakePurchaseRequest(response, res, req, true, type='data');
@@ -83,14 +83,16 @@ function deliverAirtime(response, req, res) {
 async function makePurchaseRequest(response, res, req, options, type) {
   console.log('in make purchase request')
   try {
-    const response = await  axios.post(options.url, options.payload, { headers: options.headers});
-    console.log('response: ', response);
+    const resp = await  axios.post(options.url, options.payload, { headers: options.headers});
+    console.log('response: ', resp.data);
 
-    if (response.data.Status === 'successful') {
-      consle.log('in succesfull make purchase request');
-      return helpSuccesfulDelivery(req, res, response, response.data.balance_after, type);
+    if (resp.data.Status == 'successful') {
+      console.log('in succesfull make purchase request');
+      helpSuccesfulDelivery(req, res, response, resp.data.balance_after, type);
+    } else {
+      console.log('response value::::::::::::::: ', resp.data.Status);
+      throw 'could not deliver data'
     };
-    //throw 'could not deliver value';
   } catch (error) {
     console.log('in make purchase request failed in cacth error block:', error);
     helpFailedDelivery(req, res, response);
@@ -183,14 +185,14 @@ async function addToFailedToDeliver(req, response) {
     let transaction = await Transactions.findOne({ id: req.query.transaction_id })
     if (transaction) return console.log('failed transaction already exists', transaction);
 
-    let product = product(response);
+    let prod = product(response);
     const newTransaction = new Transactions({
       id: req.query.transaction_id,
       email: response.data.customer.email,
       txRef: req.query.tx_ref,
       status: false,
       date: Date(),
-      product: product + ' ' + response.data.meta.network,
+      product: prod + ' ' + response.data.meta.network,
       beneficiary: parseInt(response.data.meta.number)
     });
     const response2 = await newTransaction.save();
