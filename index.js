@@ -1,5 +1,5 @@
 // entry file for BotSub
-// ngrok http --domain=weekly-settled-falcon.ngrok-free.app 8080
+// ngrok http --domain=weekly-settled-falcon.ngrok-free.app 4040
 // https://weekly-settled-falcon.ngrok-free.app
 
 require('dotenv').config();
