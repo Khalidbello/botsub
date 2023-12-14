@@ -18,7 +18,12 @@ const Schema = new mongoose.Schema({
        planID: Number,
        networkID: Number
     },
-    firstTransactOfMonth: Date
+    firstTransactOfMonth: Date,
+    referrer: String,
+    referrals: [{
+        senderId: Number,
+        status: String
+    }]
 });
 
 module.exports = mongoose.model('botUsers', Schema);

@@ -11,6 +11,8 @@ const {
   sendAirtimeAmountReceived,
   defaultMessageHandler,
   reportIssue,
+  sendReferralCodeRecieved,
+  recieveReferralBonusPhone,
 } = require('./message_responses.js');
 const { ObjectId } = require('mongodb');
 const BotUsers = require('./../models/bot_users.js');
@@ -22,7 +24,7 @@ async function processMessage(event, res) {
   if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' }); // emergency response incase of bug fixes
 
   const senderId = event.sender.id;
-  const user = await BotUsers.findOne({  'id': senderId })
+  const user = await BotUsers.findOne({ 'id': senderId })
   console.log('user mongo db payload process message', user);
 
   if (!user) {
@@ -41,6 +43,9 @@ async function processMessage(event, res) {
   };
 
   switch (user.nextAction) {
+    case 'referralCode':
+      sendReferralCodeRecieved(event);
+      break;
     case 'enterEmailFirst':
       sendEmailEnteredResponse(event);
       break;
@@ -58,6 +63,9 @@ async function processMessage(event, res) {
       break;
     case 'enterIssue':
       reportIssue(event);
+      break;
+    case 'enterReferralBonusPhone':
+      recieveReferralBonusPhone(event);
       break;
     default:
       defaultMessageHandler(event);

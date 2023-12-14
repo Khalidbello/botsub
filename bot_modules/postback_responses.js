@@ -15,29 +15,25 @@ const {
 } = require('./templates.js');
 const BotUsers = require('./../models/bot_users.js');
 const handleFirstMonthBonus = require('./../modules/monthly_bonuses.js');
+const { text } = require('express');
+const { promises } = require('nodemailer/lib/xoauth2/index.js');
 
 
 // function to response to newConversations
 async function sendNewConversationResponse(event) {
   const senderId = event.sender.id;
   const userName = null //await getUserName(senderId);
-  let response = {
-    text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.`,
-  };
-  await sendMessage(senderId, response);
 
-  response = { text: `What can i do for you today` };
-  await sendMessage(senderId, response);
+  await sendMessage(senderId, { text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.` });
+  await sendMessage(senderId, { text: `Kindly enter referral code below \nIf no referral code enter 0` });
 
-  await sendTemplate(senderId, responseServices);
-  sendTemplate(senderId, responseServices2);
-  // adding one
-  await BotUsers.updateOne(
-    { id: senderId },
-    { $set: { id: senderId } },
-    { upsert: true }
-  );
-  console.log('end of new conversation ');
+  // adding new botuser
+  const newBotUser = new BotUsers.create({
+    id: senderId,
+    nextAction: 'referralCode'
+  });
+  await newBotUser.save();
+  console.log('end of new bot user');
 }; // end of newConversationResponse
 
 
@@ -357,6 +353,7 @@ async function handleRetryFailedMonthlyDelivery(event, payload) {
 };  // end of handleRetryFailedMonthlyDelivery
 
 
+
 module.exports = {
   sendNewConversationResponse,
   sendPurchaseDataReponse,
@@ -374,5 +371,5 @@ module.exports = {
   cancelTransaction,
   showDataPrices,
   retryFailed,
-  handleRetryFailedMonthlyDelivery,
+  handleRetryFailedMonthlyDelivery
 };

@@ -8,10 +8,28 @@ const {
   validateNumber,
   confirmDataPurchaseResponse,
   validateAmount,
+  confirmClaimReferralBonus,
 } = require('./helper_functions.js');
 const getUserName = require('./get_user_info.js');
 const BotUsers = require('./../models/bot_users.js');
 
+// function to handle recieval of referral code\
+async function sendReferralCodeRecieved(event) {
+  const senderId = event.sender.id
+  const referralCode = event.message.text.trim();
+  const referrer = await BotUsers.find({ id: referralCode });
+
+  if (!referrer) {
+    await sendMessage(senderId, { text: 'The provided referral code is invalid'});
+    return sendMessage(senderId, { text: 'Enter a valid referral code. \nIf no referrer enter 0'});
+  } else {
+    await sendTemplate(senderId, responseServices);
+    await sendTemplate(senderId, responseServices2);
+    BotUsers.updateOne({ id: senderId }, {
+      $set: { nextAction: null }
+    });
+  };
+}; // end of sendeReferralCodeRecieved
 
 // function to respond to unexpected message
 async function defaultMessageHandler(event) {
@@ -201,9 +219,21 @@ async function reportIssue(event) {
 };
 
 
+// function to handle recieve referralBonus phone number
+async function recieveReferralBonusPhone(event) {
+  const senderId = event.sender.is;
+  const referralBonusPhoneNumber = event.message.text.trim();
+  const validateNum = validateNumber(referralBonusPhoneNumber);
+
+  if (validateNum) return sendMessage(senderId, { text: 'Phone number entred not valid. \nplease enter a valid phone number. \nEnter Q to cancel'});
+  await sendMessage(senderId, { text: 'Number to deliver referral bonus to recieved.'});
+  confirmClaimReferralBonus(event);
+}; // end of recieveReferralBonusPhone
+
 
 module.exports = {
   defaultMessageHandler,
+  sendReferralCodeRecieved,
   sendEmailEnteredResponse,
   sendAirtimeAmountReceived,
   sendPhoneNumberEnteredResponses,

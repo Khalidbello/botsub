@@ -131,6 +131,13 @@ function txCode() {
   return code + Date.now();
 }; // end of txCode
 
+// function to confirm claim referral bonus
+async function confirmClaimReferralBonus(event) {
+  const senderId = event.sender.id;
+
+  // check if user has a valid referall bonus and deliver if true
+}; // end of confirmClaimReferralBonus
+
 
 module.exports = {
   noTransactFound,

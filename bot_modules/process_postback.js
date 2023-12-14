@@ -17,6 +17,12 @@ const {
   retryFailed,
   handleRetryFailedMonthlyDelivery,
 } = require('./postback_responses.js');
+const {
+  selectReferralOffers,
+  showReferralCode,
+  showMyReferrals,
+  remindReferree } = require('./postback_responses_2.js');
+const { defaultMessageHandler } = require('./message_responses.js');
 
 async function processPostback(event, res) {
   // first set nextAction to null
@@ -25,7 +31,7 @@ async function processPostback(event, res) {
   if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);
   };
-  
+
   let payload = event.postback.payload;
   try {
     payload = JSON.parse(payload);
@@ -36,9 +42,6 @@ async function processPostback(event, res) {
   console.log('postback payload title', payloadTitle);
 
   switch (payloadTitle) {
-    case 'newConversation':
-      sendNewConversationResponse(event);
-      break;
     case 'dataPurchase':
       sendPurchaseDataReponse(event);
       break;
@@ -88,8 +91,26 @@ async function processPostback(event, res) {
     case 'failedMonthlyBonusRetry':
       handleRetryFailedMonthlyDelivery(event, payload);
       break;
+    case 'referAFriend':
+      showReferralCode(event);
+      break;
+    case 'myReferrals':
+      showMyReferrals(event, payload);
+      break;
+    case 'remindReferree':
+      remindReferree(event, payload);
+      break;
+    case 'selectReferralBonusOffer':
+      selectReferralOffers(event);
+      break;
+    case 'referralBonusOfferSelected':
+      referralBonusOfferSelected(event);
+      break;
+    case 'deliverReferralBons':
+      deliverReferralBonus(event);
+      break;
     default:
-      sendNewConversationResponse(event);
+      defaultMessageHandler(event);
       break;
   }
 } // end of processPostback
