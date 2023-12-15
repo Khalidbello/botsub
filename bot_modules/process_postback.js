@@ -21,7 +21,9 @@ const {
   selectReferralOffers,
   showReferralCode,
   showMyReferrals,
-  remindReferree } = require('./postback_responses_2.js');
+  remindReferree,
+  activateReferral,
+ } = require('./postback_responses_2.js');
 const { defaultMessageHandler } = require('./message_responses.js');
 
 async function processPostback(event, res) {
@@ -96,6 +98,9 @@ async function processPostback(event, res) {
       break;
     case 'myReferrals':
       showMyReferrals(event, payload);
+      break;
+    case 'activateReferral':
+      activateReferral(event, payload);
       break;
     case 'remindReferree':
       remindReferree(event, payload);

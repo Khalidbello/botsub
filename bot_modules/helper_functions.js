@@ -131,6 +131,52 @@ function txCode() {
   return code + Date.now();
 }; // end of txCode
 
+
+// function to form active referral templates
+function formActiveReferralTemp(datas) {
+  const tempList = datas.map((data)=> {
+    return {
+      type: 'template',
+      payload: {
+        template_type: 'button',
+        text: 'Statua: active',
+        buttons: [
+          {
+            type: 'postback',
+            title: 'claim bonus',
+            payload: `{"title": "", "selectReferralBonusOffer"}`,
+          }
+        ],
+      },
+    }
+  });
+  return tempList;
+}; // end of formActiveReferralTemp
+
+
+// function to form unactive referral temp
+// function to form active referral templates
+function formUnactiveReferralTemp(datas) {
+  const tempList = datas.map((data)=> {
+    return {
+      type: 'template',
+      payload: {
+        template_type: 'button',
+        text: 'Statua: active',
+        buttons: [
+          {
+            type: 'postback',
+            title: 'Activate',
+            payload: `{"title": "activateReferral"}`,
+          }
+        ],
+      },
+    }
+  });
+  return tempList;
+}; // end of formUnactiveReferralTemp
+
+
 // function to confirm claim referral bonus
 async function confirmClaimReferralBonus(event) {
   const senderId = event.sender.id;

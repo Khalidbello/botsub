@@ -59,13 +59,21 @@ async function remindReferree(event, payload) {
     const senderId = event.sender.id;
 
 }; // end of remindeReferree
+
+
 // function to respond to select referral bonus network
 async function selectReferralOffers(event) {
     const senderId = event.sender.id;
 
     await sendTemplates(senderId, referralOffers1);
     await sendTemplates(senderId, referralOffers2);
-};
+}; // end of selectReferralOffers
+
+
+// function to activate bonus
+async function activateReferral(event, payload) {
+
+}; // activateReferral
 
 
 module.exports = {
