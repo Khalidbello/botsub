@@ -54,7 +54,7 @@ async function processPostback(event, res) {
     case '9mobileOffers':
       sendNineMobileOffers(event);
       break;
-    case 'offerSelected':
+    case 'offerSelectedd':
       offerSelected(event, payload);
       break;
     case 'airtimePurchase':

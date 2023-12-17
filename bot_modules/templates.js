@@ -226,7 +226,7 @@ async function generateFacebookPosts(id, network) {
     const { size, price, validity, index, planID, networkID } = data[key];
     const title = `${size} ₦${price} ${validity}`;
     const payload = {
-      title: 'offerSelected',
+      title: 'offerSelectedd',
       network: network,
       networkID,
       planID,
