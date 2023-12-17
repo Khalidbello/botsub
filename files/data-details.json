@@ -4,7 +4,7 @@
       "networkID": 1,
       "planID": 6,
       "size": "500MB",
-      "price": 160,
+      "price": 170,
       "validity": "one month",
       "index": "1"
     },
@@ -20,7 +20,7 @@
       "networkID": 1,
       "planID": 8,
       "size": "2GB",
-      "price": 550,
+      "price": 590,
       "validity": "one month",
       "index": "3"
     },
@@ -28,7 +28,7 @@
       "networkID": 1,
       "planID": 44,
       "size": "3GB",
-      "price": 800,
+      "price": 850,
       "validity": "one month",
       "index": "4"
     },
@@ -36,7 +36,7 @@
       "networkID": 1,
       "planID": 11,
       "size": "5GB",
-      "price": 1350,
+      "price": 1400,
       "validity": "one month",
       "index": "5"
     },
@@ -44,10 +44,13 @@
       "networkID": 1,
       "planID": 43,
       "size": "10GB",
-      "price": 2600,
+      "price": 2700,
       "validity": "one month",
       "index": "6"
     }
+  },
+  "2": {
+
   },
   "3": {
     "1": {
