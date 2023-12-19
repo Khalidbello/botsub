@@ -142,13 +142,13 @@ router.post('/webhook', async (req, res) => {
     const host = req.hostname;
 
     console.log('btw hook body', payload);
-
+    
+    res.status(200).send();
     const response = await axios.get(
       `https://${host}/gateway/confirm?transaction_id=${payload.id || payload.data.id}&tx_ref=${payload.txRef || payload.data.tx_ref}&webhook=webhooyouu`
     );
     console.log('webhook response', response.data);
     console.log('end hook');
-    res.status(200).end();
   } catch (err) {
     res.status(300).send('an error occured');
     if (err.response) {
