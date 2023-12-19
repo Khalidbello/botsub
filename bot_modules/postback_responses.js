@@ -13,7 +13,7 @@ const {
   airtimeNetworks1,
   airtimeNetworks2,
 } = require('./templates.js');
-const BotUsers = require('./../models/bot_users.js');
+const BotUsers = require('../models/fb_bot_users.js');
 const handleFirstMonthBonus = require('./../modules/monthly_bonuses.js');
 const { text } = require('express');
 const { promises } = require('nodemailer/lib/xoauth2/index.js');

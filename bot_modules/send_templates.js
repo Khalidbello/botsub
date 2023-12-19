@@ -16,8 +16,17 @@ async function sendTemplates(senderId, template) {
       headers: { 'Content-Type': 'application/json' },
     })
     .catch((error) => {
-      console.log('Error sending message:', error);
+      if (error.response) {
+        console.error('Response Error:', error.response.data);
+        console.error('Status Code:', error.response.status);
+        console.error('Headers:', error.response.headers);
+      } else if (error.request) {
+        console.error('Request Error:', error.request);
+      } else {
+        console.error('Error:', error.message);
+      }
+      console.error('error sending template ,,,,,,,,, Config:', error.config);
     });
-} // end of sendTemplates
+}; // end of sendTemplates
 
 module.exports = sendTemplates;

@@ -15,7 +15,7 @@ const {
   recieveReferralBonusPhone,
 } = require('./message_responses.js');
 const { ObjectId } = require('mongodb');
-const BotUsers = require('./../models/bot_users.js');
+const BotUsers = require('../models/fb_bot_users.js');
 
 
 async function processMessage(event, res) {

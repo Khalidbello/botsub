@@ -11,7 +11,7 @@ const {
   confirmClaimReferralBonus,
 } = require('./helper_functions.js');
 const getUserName = require('./get_user_info.js');
-const BotUsers = require('./../models/bot_users.js');
+const BotUsers = require('../models/fb_bot_users.js');
 
 // function to handle recieval of referral code\
 async function sendReferralCodeRecieved(event) {

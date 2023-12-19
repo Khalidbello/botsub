@@ -1,6 +1,6 @@
 require('dotenv').config();
 const Users = require('./../models/users.js');
-const BotUsers = require('./../models/bot_users.js')
+const BotUsers = require('../models/fb_bot_users.js')
 const axios = require('axios');
 const sendMessage = require('./../bot_modules/send_message.js');
 const sendTemplate = require('./../bot_modules/send_templates.js');

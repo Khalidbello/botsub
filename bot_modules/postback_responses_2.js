@@ -2,7 +2,9 @@
 const sendTemplates = require('./send_templates');
 const sendMessage = require('./send_message.js');
 const { referralOffers1, referralOffers2 } = require('./templates_2');
-const BotUsers = require('./../models/bot_users.js');
+const BotUsers = require('../models/fb_bot_users.js');
+const { formUnactiveReferralTemp, formActiveReferralTemp } = require('./helper_functions.js');
+const { seedFbBotUsers } = require('./seed_database.js');
 
 
 // funnctions to handle referal related stufss =================================================================================================
@@ -21,41 +23,40 @@ async function showReferralCode(event) {
 // function to show users referrals and claim button
 async function showMyReferrals(event) {
     const senderId = event.sender.id;
-    const activatedReferrals = await BotUsers.aggregate([
-        { $match: { id: senderId } }, // Match the document with the specified id
-        { $unwind: "$referrals" }, // Deconstruct the referrals array
-        { $match: { "referrals.status": "activated" } }, // Match only activated referr
-    ]);
+    const referrals = await BotUsers.findOne(
+        { id: senderId, 'referrals.status': 'unactivated'}, // Match the document with the specified id
+    );
+    const activatedReferrals = referrals.referrals.filter((referral)=> referral.status === 'activated');
+    const unactivatedReferrals = referrals.referrals.filter((referral)=> referral.status === 'unactivated');
+    
     console.log('acivated referral: ', activatedReferrals);
 
-    if (activatedReferrals.lenght > 0) {
+    if (activatedReferrals.length > 0) {
         await sendMessage(senderId, { text: 'Activated referrals:::: ' });
         const activeReferralsTemp = formActiveReferralTemp(activatedReferrals);
-        let tempPromises = activeReferralsTemp.map(async (temp) => await sendTemplate(sender, temp));
+        let tempPromises = activeReferralsTemp.map(async (temp) => await sendTemplates(senderId, temp));
         await Promise.all(tempPromises);
     } else {
-        sendMessage(senderId, { text: 'You do not have any active referrals..' });
+        await sendMessage(senderId, { text: 'You do not have any active referrals..' });
     };
 
-    const unactivatedReferrals = await BotUsers.aggregate([
-        { $match: { id: senderId } }, // Match the document with the specified id
-        { $unwind: "$referrals" }, // Deconstruct the referrals array
-        { $match: { "referrals.status": "unactivated" } }, // Match only activated referr
-    ]);
-    console.log('acivated referral: ', unactivatedReferrals);
+    console.log('Unacivated referral: ', unactivatedReferrals);
     
-    if (unactivatedReferrals.lenght > 0) {
-        await sendMessage(senderId, { text: '\nYour unactivated referral bonus:::: ' });
-        let unactivatedReferraltemp = formUnactivatedreferralTemp(unactivatedReferrals);
-        let tempPromises = unactivatedReferraltemp.map(async (temp) => await sendTemplate(senderId, temp));
+    if (unactivatedReferrals.length > 0) {
+        await sendMessage(senderId, { text: '.\nYour unactivated referral bonus:::: ' });
+        let unactivatedReferraltemp = formUnactiveReferralTemp(unactivatedReferrals);
+        let tempPromises = unactivatedReferraltemp.map(async (temp) => await sendTemplates(senderId, temp));
         return await Promise.all(tempPromises);
     };
-    if (activatedReferrals.length < 1 && unactivatedReferrals.lenght < 1) return sendMessage(senderId, { text: 'refer a friend now to get free referal data bonuses.'})
+    if (Object.values(activatedReferrals).length < 1 && Object.values(unactivatedReferrals).length < 1) {
+        //await seedFbBotUsers(senderId);
+        return showReferralCode(event);
+    }; 
 }; // end of showMyReferrals
 
 
 // function to remind referee to make purchase
-async function remindReferree(event, payload) {
+async function remindReferree(event, payload) {s
     const senderId = event.sender.id;
 
 }; // end of remindeReferree
@@ -63,10 +64,11 @@ async function remindReferree(event, payload) {
 
 // function to respond to select referral bonus network
 async function selectReferralOffers(event) {
+    console.log('in referrals offer')
     const senderId = event.sender.id;
 
-    await sendTemplates(senderId, referralOffers1);
-    await sendTemplates(senderId, referralOffers2);
+    await sendTemplates(senderId, referralOffers1());
+    await sendTemplates(senderId, referralOffers2());
 }; // end of selectReferralOffers
 
 

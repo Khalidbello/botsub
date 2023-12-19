@@ -7,7 +7,7 @@ const {
   responseServices,
   responseServices2
 } = require('./templates.js');
-const BotUsers = require('./../models/bot_users.js');
+const BotUsers = require('../models/fb_bot_users.js');
 
 // function to respond to cases when no purchase payload is found for a transact
 async function noTransactFound(senderId) {
@@ -134,17 +134,19 @@ function txCode() {
 
 // function to form active referral templates
 function formActiveReferralTemp(datas) {
+  let num = 0;
   const tempList = datas.map((data)=> {
+    num ++;
     return {
       type: 'template',
       payload: {
         template_type: 'button',
-        text: 'Statua: active',
+        text: `Status: active --- Index: ${num}`,
         buttons: [
           {
             type: 'postback',
             title: 'claim bonus',
-            payload: `{"title": "", "selectReferralBonusOffer"}`,
+            payload: `{"title": "claimReferralBonus", "referralId": "${data.id}"}`,
           }
         ],
       },
@@ -157,22 +159,25 @@ function formActiveReferralTemp(datas) {
 // function to form unactive referral temp
 // function to form active referral templates
 function formUnactiveReferralTemp(datas) {
+  let num = 0;
   const tempList = datas.map((data)=> {
+    num ++;
     return {
       type: 'template',
       payload: {
         template_type: 'button',
-        text: 'Statua: active',
+        text: `Status: unactive --- Index: ${num}`,
         buttons: [
           {
             type: 'postback',
             title: 'Activate',
-            payload: `{"title": "activateReferral"}`,
+            payload: `{"title": "activateReferral", "referralId": ${data.id}}`,
           }
         ],
       },
-    }
+    };
   });
+
   return tempList;
 }; // end of formUnactiveReferralTemp
 
@@ -191,5 +196,7 @@ module.exports = {
   confirmDataPurchaseResponse,
   validateAmount,
   dateFormatter,
+  formUnactiveReferralTemp,
+  formActiveReferralTemp,
   txCode,
 };
