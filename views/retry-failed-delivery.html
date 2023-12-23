@@ -118,7 +118,6 @@
     <script id="template-holder" type="text/x-handlebars-template">
       <div
         class='transaction l-border padding-10'
-        onclick='retry();'
         data-id='\{{id}}'
         data-tx_ref='\{{txRef}}'
       >
@@ -135,11 +134,15 @@
         <div class="padding-5">\{{product}}</div>
         <div class="padding-5">beneficiary: \{{beneficiary}}</div>
 
-        <div class='flex flex-sp-btw flex-al-end padding-5'>
+        <div class='flex flex-col flex-sp-btw flex-al-end padding-5'>
           <span class='small'> \{{date}} </span>
-          <button class='clrw bold l-border darkorange no-bg'>Retry</button>
+          <div class="flex flex-sp-btw flex-al-cent padding-5">
+          <button onclick='retry();' class='clrw bold l-border darkorange no-bg'>Retry</button>
+          <button onclick='settled();' class='clrw bold background-color bg-blue'> Settled </button>
+          <button onclick='remove();' class='clrw bold bg-red'>Delete</button>
         </div>
-        <span class='response small'></span>
+        </div>
+        <span id='response' class='response small'></span>
       </div>
     </script>
 
@@ -213,16 +216,17 @@
           holder.innerHTML += ele;
         });
         paginator++;
-      }
+      }; // end of renderrer function
+
+      // callling the renderer function to render pending transactions
       renderer();
 
       // function to retry transaction
       async function retry() {
-        const parent = event.currentTarget;
         const ele = event.target;
-
-        if (ele.tagName != 'BUTTON') return null;
-        const lastChild = parent.children[parent.children.length - 1];
+        const parent = ele.parentNode.parentNode.parentNode;
+        const lastChild = parent.children[parent.children.length - 1];;
+        alert(lastChild)
         lastChild.style.color = 'purple';
         lastChild.innerHTML = 'Retrying....';
         ele.style.backgroundColor = '#eef';
@@ -254,6 +258,42 @@
         };
         ele.style.backgroundColor = 'transparent';
       }; // end of retry
+
+
+      // function to change transacton status to settled
+      async function settled() {
+        const ele = event.target;
+        const parent = ele.parentNode.parentNode.parentNode;
+        const lastChild = parent.children[parent.children.length - 1];;
+        alert(lastChild)
+        lastChild.style.color = 'purple';
+        lastChild.innerHTML = 'Retrying....';
+        ele.style.backgroundColor = '#eef';
+
+        try {
+          const response = await fetch(
+            `https://${host}/front-api/change-to-setlled?transaction_id=${parent.dataset.id}&tx_ref=${parent.dataset.tx_ref}`,
+            {
+              method: 'POST',
+            }
+          );
+
+          const data = await response.json();
+          console.log(data);
+          if (data.status === 'successful') {
+            lastChild.innerHTML = 'successfully settled';
+            lastChild.style.color = 'green';
+          } else {
+            lastChild.innerHTML = 'something went wrong while trying to change to setled';
+            lastChild.style.color = 'red';
+          };
+        } catch (err) {
+          console.log(err);
+          lastChild.innerHTML = `an error occured`;
+          lastChild.style.color = 'red';
+        };
+        ele.style.backgroundColor = 'blue';
+      }; // end of change to settle 
 
 
       const retryAllResponseField = document.querySelector('#retry-all-response-field');

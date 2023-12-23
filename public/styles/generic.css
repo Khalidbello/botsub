@@ -145,6 +145,12 @@ header #menu-icon {
 .bg-white {
   background-color: white;
 }
+.bg-blue {
+  background-color: blue;
+}
+.bg-red {
+  background-color: red;
+}
 .border-r20 {
   border-radius: 20px;
 }

@@ -93,6 +93,19 @@ router.post('/retry-all', async (req, res) => {
 });
 
 
+// route to changed transaction status to settled
+router.post('/change-to-setlled', async (req, res) => {
+  console.log('got in changed to settled')
+  try {
+    await Transactions.updateOne(
+      { id: req.query.transaction_id },
+      { $set: { status: true }}
+    );
+    res.json({ status: 'successful' });
+  } catch (err) {
+    res.json({ status: 'error' });
+  }
+});
 
 router.get('/fetch-failed-transactions', async (req, res) => {
   try {
