@@ -29,7 +29,7 @@ const { defaultMessageHandler } = require('./message_responses.js');
 
 async function processPostback(event, res) {
   // first set nextAction to null
-  if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' }); // emergency response incase of bug fixes
+  if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry network services are currenly down and would be restored by 10:30 PM' });
 
   if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);

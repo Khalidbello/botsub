@@ -23,7 +23,7 @@ const BotUsers = require('../models/fb_bot_users.js');
 async function processMessage(event, res) {
   // check user previousky stored action to determine
   // how to respond to user messages
-  if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' }); // emergency response incase of bug fixes
+  if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry network services are currenly down and would be restored by 10:30 PM' }); // emergency response incase of bug fixes
 
   const senderId = event.sender.id;
   const user = await BotUsers.findOne({ 'id': senderId }).select('_id purchasePayload nextAction');
