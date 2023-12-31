@@ -21,8 +21,7 @@ async function simulateBuyData(response, res, req, condition) {
     } else {
         console.log('Actual buy data failed');
         helpFailedDelivery(req, response);
-      };
-    });
+    };
   } catch(error) {
     console.log('Actual buy data failed in cacth error block:', error);
     helpFailedDelivery(req, response);

@@ -1,7 +1,7 @@
 // second templates file as first template file got too long
 
 // referral bonus network template
-function referralOffers1(referralId) {
+function referralOffers1(refereeId) {
     const temp = {
         type: 'template',
         payload: {
@@ -11,12 +11,12 @@ function referralOffers1(referralId) {
                 {
                     type: 'postback',
                     title: 'MTN 100MB',
-                    payload: `{"title": "referralMtnOffers", "networkID": "1", "plandID": "40004", "referralId": "${referralId}"}`,
+                    payload: `{"title": "referralBonusOfferSelected", "network": "MTN", "size": "100MB", "networkID": "1", "planID": "40004", "refereeId": "${refereeId}"}`,
                 },
                 {
                     type: 'postback',
                     title: 'Airtel 100MB',
-                    payload: '{"title": "referralAirtelOffers", "networkID": "3", "plandID": "40004", "referralId": "${referralId}"}'
+                    payload: '{"title": "referralBonusOfferSelected", "network": "Airtel", "size": "100MB", "networkID": "3", "planID": "40004", "refereeId": "${refereeId}"}'
                 },
             ],
         },
@@ -25,7 +25,7 @@ function referralOffers1(referralId) {
 }; // end of referralOffers1
 
 
-function referralOffers2(referralId) {
+function referralOffers2(refereeId) {
     const temp = {
         type: 'template',
         payload: {
@@ -35,12 +35,12 @@ function referralOffers2(referralId) {
                 {
                     type: 'postback',
                     title: 'Glo 200MB',
-                    payload: `{"title": "referralGloOffers", "networkID": "2", "plandID": "40004", "referralId": "${referralId}"}`,
+                    payload: `{"title": "referralBonusOfferSelected", "network": "Glo", "size": "200MB", "networkID": "2", "planID": "40004", "refereeId": "${refereeId}"}`,
                 },
                 {
                     type: 'postback',
                     title: '9mobile 500MB',
-                    payload: '{"title": "referral9mobileOffers", "networkID": "4", "plandID": "40004", "referralId": "${referralId}"}'
+                    payload: '{"title": "referralBonusOfferSelected", "network": "9mobile", "size": "500MB", "networkID": "4", "planID": "40004", "refereeId": "${refereeId}"}'
                 },
             ],
         },
@@ -49,7 +49,36 @@ function referralOffers2(referralId) {
 }; // end of referralOffers2
 
 
+// function to form confirm referral bonus template
+const referralTemp = {
+    type: 'template',
+    payload: {
+        template_type: 'button',
+        text: 'Select action',
+        buttons: [
+            {
+                type: 'postback',
+                title: 'Claim Bonus',
+                payload: `{"title": "deliverReferralBonus"}`,
+            },
+            {
+                type: 'postback',
+                title: 'Change Phone Number',
+                payload: '{"title": "changeReferralBonusPhoneNumber"}'
+            },
+            {
+                type: 'postback',
+                title: 'Cancle',
+                payload: `{"title": "cancel"}`,
+            }
+        ],
+    },
+};
+
+
+
 module.exports = {
     referralOffers1,
-    referralOffers2
+    referralOffers2,
+    referralTemp,
 };

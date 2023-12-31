@@ -5,6 +5,7 @@ const Schema = new mongoose.Schema({
         type: Number,
         unique: true
     },
+    firstPurchase: Boolean, // this particular property is use to check if its a user first time purchasing so as to credit the referrer
     email: String,
     nextAction: String,
     purchasePayload: {
@@ -16,14 +17,13 @@ const Schema = new mongoose.Schema({
        size: String,
        index: String,
        planID: Number,
-       networkID: Number
+       networkID: Number,
+       refereeId: Number,
     },
     firstTransactOfMonth: Date,
-    referrer: String,
-    referrals: [{
-        senderId: Number,
-        status: String
-    }]
+    referrer: Number,
+    referrals: [{ id: Number }],
+    claimedReferrals: [{ id: Number }]
 });
 
 module.exports = mongoose.model('botUsers', Schema);

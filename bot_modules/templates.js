@@ -295,7 +295,7 @@ function failedMonthlyBonusTemplate(email, number, networkID) {
         {
           type: 'postback',
           title: 'Reclaim',
-          payload: `{"title": "failedMonthlyBonusRetry", "email": "${email}", "number": "${number}", "networkID": "${networkID}"}, "retry": "retry"`,
+          payload: `{"title": "failedMonthlyBonusRetry", "email": "${email}", "number": "${number}", "networkID": "${networkID}", "retry": "retry"}`,
         }
       ],
     },

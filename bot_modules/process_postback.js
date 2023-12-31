@@ -21,9 +21,10 @@ const {
   selectReferralOffers,
   showReferralCode,
   showMyReferrals,
-  remindReferree,
-  activateReferral,
- } = require('./postback_responses_2.js');
+  referralBonusOfferSelected,
+  changeReferralBonusPhoneNumber,
+  deliverReferralBonus,
+} = require('./referral_postback_responses.js');
 const { defaultMessageHandler } = require('./message_responses.js');
 
 async function processPostback(event, res) {
@@ -93,26 +94,26 @@ async function processPostback(event, res) {
     case 'failedMonthlyBonusRetry':
       handleRetryFailedMonthlyDelivery(event, payload);
       break;
+
+
+    // referral related
     case 'referAFriend':
       showReferralCode(event);
-      break;
+      break;s
     case 'myReferrals':
       showMyReferrals(event, payload);
       break;
-    case 'activateReferral':
-      activateReferral(event, payload);
-      break;
-    case 'remindReferree':
-      remindReferree(event, payload);
-      break;
     case 'claimReferralBonus':
-      selectReferralOffers(event);
+      selectReferralOffers(event, payload);
       break;
     case 'referralBonusOfferSelected':
-      referralBonusOfferSelected(event);
+      referralBonusOfferSelected(event, payload);
       break;
-    case 'deliverReferralBons':
+    case 'deliverReferralBonus':
       deliverReferralBonus(event);
+      break;
+    case 'changeReferralBonusPhoneNumber':
+      changeReferralBonusPhoneNumber(event);
       break;
     default:
       defaultMessageHandler(event);

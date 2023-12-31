@@ -9,8 +9,7 @@ const {
   checkRequirementMet,
   refundPayment,
   generateRandomString,
-  fundWallet,
-  sleep,
+  fundWallet
 } = require('./../modules/helper_functions.js');
 const deliverValue = require('./../modules/deliver-value.js');
 const axios =
@@ -88,6 +87,7 @@ router.post('/transfer-account', async (req, res) => {
         size: datas.size,
         bot: datas.bot,
         senderId: datas.senderId,
+        firstPurchase: datas.firstPurchase
       };
     } else if (datas.transactionType == 'airtime') {
       payload = {
@@ -98,6 +98,7 @@ router.post('/transfer-account', async (req, res) => {
         number: datas.phoneNumber,
         bot: datas.bot,
         senderId: datas.senderId,
+        firstPurchase: datas.firstPurchase,
       };
     };
     console.log('bot purchase payload', payload);

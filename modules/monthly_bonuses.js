@@ -6,10 +6,10 @@ const sendMessage = require('./../bot_modules/send_message.js');
 const sendTemplate = require('./../bot_modules/send_templates.js');
 const { failedMonthlyBonusTemplate } = require('./../bot_modules/templates.js');
 const bonuses = {
-    '1': '12',
-    '2': '12',
-    '3': '12',
-    '4': '12'
+    '1': { planID: 287, size: '100MB', network: 'MTN' },
+    '2': { planID: 266, size: '200MB', network: 'GLO' },
+    '3': { planID: 268, size: '500MB', network: '9mobile' },
+    '4': { planID: 225, size: '100MB', network: 'Airtel' }
 };
 
 
@@ -27,7 +27,7 @@ async function handleFirstMonthBonus(email, number, networkID, senderId = false,
     };
 
     console.log('user collection flag=========== ', flagUser, flagBotUser);
-    if (flagUser && flagBotUser) deliverBonus(email, number, networkID, senderId);
+    if (flagUser && flagBotUser) return deliverBonus(email, number, networkID, senderId);
     if (retry) sendMessage(senderId, { text: "Sorry you have already recieved for first month purchase bonus for this month" });
     return;
 }; // end of first month purchase
@@ -76,6 +76,7 @@ async function firstTransactOfMonth(toUse, type) {
 // function to deliver bonus
 async function deliverBonus(email, number, networkID, senderId) {
     console.log('datas', email, number, networkID, senderId);
+    const bonus = bonuses[networkID];
     try {
         let response;
         if (process.env.NODE_ENV === 'production') {
@@ -83,7 +84,7 @@ async function deliverBonus(email, number, networkID, senderId) {
                 {
                     network: Number(networkID),
                     mobile_number: number,
-                    plan: Number(bonuses[networkID]),
+                    plan: bonus.planID,
                     Ported_number: true,
                 }, {
                 headers: {
@@ -92,13 +93,14 @@ async function deliverBonus(email, number, networkID, senderId) {
                 }
             });
         };
-        if (true || response.data.Status === 'successful') {
+        if (process.env.TEST === 'pass' || response.data.Status === 'successful') {
             await firstTransactOfMonth(email, type = 'user'); // function to update user info to prevent double delivery
             if (senderId) {
                 await firstTransactOfMonth(senderId, type = 'botUser');
-                return await sendMessage(senderId, { text: `you've recieved 100MB on your ${number} line for your first transaction of the month...` });
+                return await sendMessage(senderId, { text: `you've recieved ${bonus.size} on your ${number} ${bonus.network} line for your first transaction of the month...` });
             };
         };
+        throw 'bonus delivery failed';
     } catch (err) {
         if (err.response) {
             console.log('Error response: ', err.response.data);

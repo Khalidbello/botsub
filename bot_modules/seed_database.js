@@ -4,8 +4,7 @@ const FbBotUsers = require('./../models/fb_bot_users.js');
 async function seedFbBotUsers() {
     const senderId = 6083883438362251;
     const data = {
-        senderId: senderId,
-        status: 'activated'
+        id: 24366293102985176
     };
     const response = await FbBotUsers.updateOne(
         { id: senderId }, 

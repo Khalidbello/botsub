@@ -190,6 +190,17 @@ async function confirmClaimReferralBonus(event) {
 }; // end of confirmClaimReferralBonus
 
 
+ // helper function to return confirm purchase
+ async function helperConfirmPurchase(transactionType, senderId) {
+  // peform next action dependent on trasactionType
+  if (transactionType === 'data') {
+    await confirmDataPurchaseResponse(senderId);
+  } else if (transactionType === 'airtime') {
+    confirmDataPurchaseResponse(senderId);
+  };
+}; // end of helperConfirmPurchase
+
+
 module.exports = {
   noTransactFound,
   validateNumber,
@@ -199,4 +210,5 @@ module.exports = {
   formUnactiveReferralTemp,
   formActiveReferralTemp,
   txCode,
+  helperConfirmPurchase,
 };

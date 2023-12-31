@@ -8,6 +8,7 @@ const sendTemplate = require('./../bot_modules/send_templates.js');
 const { retryFailedTemplate, responseServices2 } = require('./../bot_modules/templates.js');
 const fsP = require('fs').promises;
 const Transactions = require('./../models/transactions.js');
+const { creditReferrer } = require('./credit_referrer.js');
 const handleFirstMonthBonus = require('./monthly_bonuses.js');
 const transporter = nodemailer.createTransport({
   host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
@@ -71,7 +72,7 @@ function deliverAirtime(response, req, res) {
     }
   };
 
-  if (process.env.NODE_ENV === 'production') {
+  if ( true || process.env.NODE_ENV === 'production') {
     makePurchaseRequest(response, req, res, options, type='airtime');
   } else {
     simulateMakePurchaseRequest(response, res, req, true, type='airtime');
@@ -173,7 +174,8 @@ async function addToDelivered(req, response, type) {
   });
   const response2 = await newTransaction.save();
   console.log('add to delivered response', response2);
-  ///if(type === 'data') await handleFirstMonthBonus(response.data.customer.email,  response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
+  if (Number(response.data.meta.firstPurchase) === 1) await creditReferrer(response.data.meta.senderId);
+  if (type === 'data') await handleFirstMonthBonus(response.data.customer.email,  response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
   return;
 }; // end of addToDelivered
 

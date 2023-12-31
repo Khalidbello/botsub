@@ -11,10 +11,12 @@ const {
   sendAirtimeAmountReceived,
   defaultMessageHandler,
   reportIssue,
-  sendReferralCodeRecieved,
-  recieveReferralBonusPhone,
 } = require('./message_responses.js');
-const { ObjectId } = require('mongodb');
+const {
+  sendReferralCodeRecieved,
+  referralBonusPhoneNumberRecieved,
+  changeReferralBonusPhoneNumber,
+} = require('./referral_message_responses.js');
 const BotUsers = require('../models/fb_bot_users.js');
 
 
@@ -24,15 +26,12 @@ async function processMessage(event, res) {
   if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry BotSub is currently under maintenance' }); // emergency response incase of bug fixes
 
   const senderId = event.sender.id;
-  const user = await BotUsers.findOne({ 'id': senderId })
+  const user = await BotUsers.findOne({ 'id': senderId }).select('_id purchasePayload nextAction');
   console.log('user mongo db payload process message', user);
 
   if (!user) {
     return sendNewConversationResponse(event);
   };
-
-  // check if its a cancel request
-  if (event.message.text.toLowerCase() === 'q') return cancelTransaction(event);
 
   //const user = await usersAction.get(senderId);
   let transactionType;
@@ -43,9 +42,6 @@ async function processMessage(event, res) {
   };
 
   switch (user.nextAction) {
-    case 'referralCode':
-      sendReferralCodeRecieved(event);
-      break;
     case 'enterEmailFirst':
       sendEmailEnteredResponse(event);
       break;
@@ -64,8 +60,17 @@ async function processMessage(event, res) {
     case 'enterIssue':
       reportIssue(event);
       break;
-    case 'enterReferralBonusPhone':
-      recieveReferralBonusPhone(event);
+    
+
+    // rferral related switch
+    case 'referralCode':
+      sendReferralCodeRecieved(event);
+      break;
+    case 'referralBonusPhoneNumber':
+      referralBonusPhoneNumberRecieved(event);
+      break;
+    case 'changeReferralBonusPhoneNumber':
+      changeReferralBonusPhoneNumber(event);
       break;
     default:
       defaultMessageHandler(event);
