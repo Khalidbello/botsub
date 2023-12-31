@@ -2,17 +2,13 @@ const FbBotUsers = require('./../models/fb_bot_users.js');
 
 // function to seed fb-bot-users with referaklls
 async function seedFbBotUsers() {
-    const senderId = 6083883438362251;
-    const data = {
-        id: 24366293102985176
-    };
-    const response = await FbBotUsers.updateOne(
-        { id: senderId }, 
-        { $push: { referrals: data }}
+    const response = await FbBotUsers.updateMany(
+        {},
+        { $set: { referrer: 0, firstPurchase: false } }
     );
     console.log(response);
 }; // end of seedFb\botUs
 
 module.exports = {
-seedFbBotUsers
+    seedFbBotUsers
 };
