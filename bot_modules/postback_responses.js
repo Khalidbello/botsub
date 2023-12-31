@@ -213,7 +213,7 @@ async function generateAccountNumber(event) {
       await sendMessage(senderId, { text: data.transfer_account });
       await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
       // removing purchasePayload
-      cancelTransaction(event);
+      cancelTransaction(event, true);
       return;
     };
     throw 'error occured while trying to transfer account'
@@ -269,16 +269,16 @@ async function changePhoneNumber(event) {
 
 
 // function to  transaction
-async function cancelTransaction(event) {
+async function cancelTransaction(event, end=false) {
   const senderId = event.sender.id;
 
   // delete purchase payload here
   await reset(senderId);
+  if (end) return;
   await sendMessage(senderId, { text: 'Transaction Cancled' });
   await sendMessage(senderId, { text: 'What do you want to do next' });
   await sendTemplate(senderId, responseServices);
   await sendTemplate(senderId, responseServices2);
-  await reset(senderId);
 }; // end of cancelTransaction
 
 

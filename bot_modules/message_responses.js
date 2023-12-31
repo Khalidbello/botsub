@@ -62,12 +62,13 @@ async function sendEmailEnteredResponse(event) {
 async function sendAirtimeAmountReceived(event) {
   const senderId = event.sender.id;
   const amount = event.message.text.trim();
+  const userData = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
 
   if (amount.toLowerCase() === 'q') return cancelTransaction(event);
   if (await validateAmount(amount)) {
     await sendMessage(senderId, { text: 'Amount recieved' });
     await sendMessage(senderId, {
-      text: 'Enter phone number for airtime purchase. \nEnter Q to cancel',
+      text: ` Enter ${userData.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancel`,
     });
 
     await BotUsers.updateOne({ id: senderId }, {

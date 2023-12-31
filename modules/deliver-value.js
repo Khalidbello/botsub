@@ -72,8 +72,8 @@ function deliverAirtime(response, req, res) {
     }
   };
 
-  if ( true || process.env.NODE_ENV === 'production') {
-    makePurchaseRequest(response, req, res, options, type='airtime');
+  if (process.env.NODE_ENV === 'production') {
+    makePurchaseRequest(response, res, req, options, type='airtime');
   } else {
     simulateMakePurchaseRequest(response, res, req, true, type='airtime');
   };
@@ -174,7 +174,7 @@ async function addToDelivered(req, response, type) {
   });
   const response2 = await newTransaction.save();
   console.log('add to delivered response', response2);
-  if (Number(response.data.meta.firstPurchase) === 1) await creditReferrer(response.data.meta.senderId);
+  if (Number(response.data.meta.firstPurchase)===1 && type==='data') await creditReferrer(response.data.meta.senderId);
   if (type === 'data') await handleFirstMonthBonus(response.data.customer.email,  response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
   return;
 }; // end of addToDelivered

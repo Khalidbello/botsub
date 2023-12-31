@@ -33,7 +33,7 @@ async function showMyReferrals(event) {
     const response = await BotUsers.findOne({ id: senderId }).select('referrals');
     console.log('esponse my referrals: ', response);
 
-    if (!response || response.$isEmpty()) {
+    if (!response || response.referrals.length===0) {
         await sendMessage(senderId, { text: 'You do not have any active referrals..' });
         return showReferralCode(event);
     };
@@ -99,12 +99,15 @@ async function changeReferralBonusPhoneNumber(event) {
 // function to deliver referral bonuses
 async function deliverReferralBonus(event) {
     const senderId = event.sender.id;
+    const resp = await BotUsers.findOne({ id: senderId }).select('referrals purchasePayload');
+    let filtredArray;
     // check if there exist any referral with specific id
-    const resp = await BotUsers.findOne(
-        { id: senderId, 'referrals.id': payload.refereeId },
-        { 'referrals.$': 1}
-    );
-    if (!resp || resp.$isEmpty()) return sendMessage(senderId, { text: 'Invalid referral please try again.'});
+    if (!resp || !resp.referrals || resp.referrals.length===0) return sendMessage(senderId, { text: 'Invalid referral please try again.'});
+    // filtering array
+    filtredArray = resp.referrals.filter(referral => {
+        return referral.id === resp.purchasePayload.refereeId;
+    });
+    if (!filtredArray) return sendMessage(senderId, { text: 'Invalid referral please try again.'});
 
     const response = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
     console.log('purchasePayload for dliver referraal bonuses: ', response);
