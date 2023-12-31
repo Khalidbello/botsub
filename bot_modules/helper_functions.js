@@ -7,7 +7,7 @@ const {
   responseServices,
   responseServices2
 } = require('./templates.js');
-const BotUsers = require('./../models/bot_users.js');
+const BotUsers = require('../models/fb_bot_users.js');
 
 // function to respond to cases when no purchase payload is found for a transact
 async function noTransactFound(senderId) {
@@ -132,11 +132,83 @@ function txCode() {
 }; // end of txCode
 
 
+// function to form active referral templates
+function formActiveReferralTemp(datas) {
+  let num = 0;
+  const tempList = datas.map((data)=> {
+    num ++;
+    return {
+      type: 'template',
+      payload: {
+        template_type: 'button',
+        text: `Status: active --- Index: ${num}`,
+        buttons: [
+          {
+            type: 'postback',
+            title: 'claim bonus',
+            payload: `{"title": "claimReferralBonus", "referralId": "${data.id}"}`,
+          }
+        ],
+      },
+    }
+  });
+  return tempList;
+}; // end of formActiveReferralTemp
+
+
+// function to form unactive referral temp
+// function to form active referral templates
+function formUnactiveReferralTemp(datas) {
+  let num = 0;
+  const tempList = datas.map((data)=> {
+    num ++;
+    return {
+      type: 'template',
+      payload: {
+        template_type: 'button',
+        text: `Status: unactive --- Index: ${num}`,
+        buttons: [
+          {
+            type: 'postback',
+            title: 'Activate',
+            payload: `{"title": "activateReferral", "referralId": ${data.id}}`,
+          }
+        ],
+      },
+    };
+  });
+
+  return tempList;
+}; // end of formUnactiveReferralTemp
+
+
+// function to confirm claim referral bonus
+async function confirmClaimReferralBonus(event) {
+  const senderId = event.sender.id;
+
+  // check if user has a valid referall bonus and deliver if true
+}; // end of confirmClaimReferralBonus
+
+
+ // helper function to return confirm purchase
+ async function helperConfirmPurchase(transactionType, senderId) {
+  // peform next action dependent on trasactionType
+  if (transactionType === 'data') {
+    await confirmDataPurchaseResponse(senderId);
+  } else if (transactionType === 'airtime') {
+    confirmDataPurchaseResponse(senderId);
+  };
+}; // end of helperConfirmPurchase
+
+
 module.exports = {
   noTransactFound,
   validateNumber,
   confirmDataPurchaseResponse,
   validateAmount,
   dateFormatter,
+  formUnactiveReferralTemp,
+  formActiveReferralTemp,
   txCode,
+  helperConfirmPurchase,
 };

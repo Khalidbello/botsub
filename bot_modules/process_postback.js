@@ -17,6 +17,15 @@ const {
   retryFailed,
   handleRetryFailedMonthlyDelivery,
 } = require('./postback_responses.js');
+const {
+  selectReferralOffers,
+  showReferralCode,
+  showMyReferrals,
+  referralBonusOfferSelected,
+  changeReferralBonusPhoneNumber,
+  deliverReferralBonus,
+} = require('./referral_postback_responses.js');
+const { defaultMessageHandler } = require('./message_responses.js');
 
 async function processPostback(event, res) {
   // first set nextAction to null
@@ -25,20 +34,17 @@ async function processPostback(event, res) {
   if (event.postback.payload == 'newConversation') {
     return sendNewConversationResponse(event);
   };
-  
+
   let payload = event.postback.payload;
   try {
     payload = JSON.parse(payload);
     console.log('postback payload', payload);
-  } catch (err) { console.log('no payload') };
+  } catch (err) { console.log(err, 'no payload') };
 
   const payloadTitle = payload.title;
   console.log('postback payload title', payloadTitle);
 
   switch (payloadTitle) {
-    case 'newConversation':
-      sendNewConversationResponse(event);
-      break;
     case 'dataPurchase':
       sendPurchaseDataReponse(event);
       break;
@@ -88,8 +94,29 @@ async function processPostback(event, res) {
     case 'failedMonthlyBonusRetry':
       handleRetryFailedMonthlyDelivery(event, payload);
       break;
+
+
+    // referral related
+    case 'referAFriend':
+      showReferralCode(event);
+      break;s
+    case 'myReferrals':
+      showMyReferrals(event, payload);
+      break;
+    case 'claimReferralBonus':
+      selectReferralOffers(event, payload);
+      break;
+    case 'referralBonusOfferSelected':
+      referralBonusOfferSelected(event, payload);
+      break;
+    case 'deliverReferralBonus':
+      deliverReferralBonus(event);
+      break;
+    case 'changeReferralBonusPhoneNumber':
+      changeReferralBonusPhoneNumber(event);
+      break;
     default:
-      sendNewConversationResponse(event);
+      defaultMessageHandler(event);
       break;
   }
 } // end of processPostback

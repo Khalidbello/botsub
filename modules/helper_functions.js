@@ -270,7 +270,7 @@ async function retryAllFailedDelivery(req) {
   }; // end of for loop
   statistic.total = statistic.failed + statistic.successful;
   return statistic;
-};
+}; // end  of retryAllFailed
 
 
 

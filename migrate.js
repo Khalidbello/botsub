@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const transactions = require('./models/transactions');
-const botUsers = require('./models/bot_users');
+const botUsers = require('./models/fb_bot_users.js');
 const connectDB = require('./models/connectdb.js');
 
 //const uri = `mongodb+srv://bellokhalid74:${process.env.MONGO_PASS1}@botsubcluster.orij2vq.mongodb.net/?retryWrites=true&w=majority`;

@@ -6,11 +6,13 @@ const { responseServices, responseServices2 } = require('./templates.js');
 const {
   noTransactFound,
   validateNumber,
-  confirmDataPurchaseResponse,
   validateAmount,
+  confirmDataPurchaseResponse,
+  helperConfirmPurchase,
 } = require('./helper_functions.js');
 const getUserName = require('./get_user_info.js');
-const BotUsers = require('./../models/bot_users.js');
+const BotUsers = require('../models/fb_bot_users.js');
+const { cancelTransaction } = require('./postback_responses.js');
 
 
 // function to respond to unexpected message
@@ -29,12 +31,9 @@ async function sendEmailEnteredResponse(event) {
   const senderId = event.sender.id;
   const email = event.message.text.trim();
 
+  if (email.toLowerCase() === 'q') return cancelTransaction(event);
   if (emailValidator.validate(email)) {
-    const response = {
-      text: 'email saved \nYou can change email when ever you want',
-    };
-    await sendMessage(senderId, response);
-
+    await sendMessage(senderId, { text: 'email saved \nYou can change email when ever you want' });
     const saveEmail = await BotUsers.updateOne({ id: senderId },
       {
         $set: {
@@ -44,7 +43,7 @@ async function sendEmailEnteredResponse(event) {
       },
       { upsert: true }
     );
-    console.log('in save enail', saveEmail)
+    console.log('in save enail', saveEmail);
     await confirmDataPurchaseResponse(senderId);
   } else {
     const response = {
@@ -63,11 +62,13 @@ async function sendEmailEnteredResponse(event) {
 async function sendAirtimeAmountReceived(event) {
   const senderId = event.sender.id;
   const amount = event.message.text.trim();
+  const userData = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
 
+  if (amount.toLowerCase() === 'q') return cancelTransaction(event);
   if (await validateAmount(amount)) {
     await sendMessage(senderId, { text: 'Amount recieved' });
     await sendMessage(senderId, {
-      text: 'Enter phone number for airtime purchase. \nEnter Q to cancel',
+      text: ` Enter ${userData.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancel`,
     });
 
     await BotUsers.updateOne({ id: senderId }, {
@@ -76,7 +77,7 @@ async function sendAirtimeAmountReceived(event) {
         'purchasePayload.price': parseInt(amount),
         'purchasePayload.product': `₦${amount} Airtime`,
         'purchasePayload.transactionType': 'airtime',
-      } 
+      }
     });
     return null;
   };
@@ -93,6 +94,7 @@ async function sendPhoneNumberEnteredResponses(event) {
   const validatedNum = validateNumber(phoneNumber);
   let user;
 
+  if (phoneNumber.toLowerCase() === 'q') return cancelTransaction(event);
   if (validatedNum) {
     await sendMessage(senderId, { text: 'phone  number recieved' });
     user = await BotUsers.findOne({ id: senderId });
@@ -130,6 +132,11 @@ async function newEmailBeforeTransactResponse(event, transactionType) {
   const senderId = event.sender.id;
   const email = event.message.text.trim();
 
+  if (email.toLowerCase() === 'q') {
+    await sendMessage(senderId, { text: 'Change email cancled' });
+    return await helperConfirmPurchase(transactionType, senderId);
+  };
+  
   if (emailValidator.validate(email)) {
     await BotUsers.updateOne({ id: senderId }, {
       $set: {
@@ -138,13 +145,7 @@ async function newEmailBeforeTransactResponse(event, transactionType) {
       }
     });
     await sendMessage(senderId, { text: 'Email changed successfully.' });
-
-    // peform next action dependent on trasactionType
-    if (transactionType === 'data') {
-      await confirmDataPurchaseResponse(senderId);
-    } else if (transactionType === 'airtime') {
-      confirmDataPurchaseResponse(senderId);
-    };
+    return helperConfirmPurchase(transactionType, senderId);
   } else {
     const response = {
       text: 'the email format you entered is invalid. \nPlease enter a valid email. \nEnter Q to cancel.',
@@ -162,6 +163,11 @@ async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
   const phoneNumber = event.message.text.trim();
   const validatedNum = validateNumber(phoneNumber);
 
+  if (phoneNumber.toLowerCase() === 'q') {
+    await sendMessage(senderId, { 'text': 'Change phone number cancled'});
+    return await helperConfirmPurchase(transactionType, senderId);
+  };
+
   if (validatedNum) {
     await BotUsers.updateOne({ id: senderId }, {
       $set: {
@@ -170,14 +176,8 @@ async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
       }
     });
     await sendMessage(senderId, { text: 'Phone number changed successfully' });
-
     console.log('transactionType', transactionType);
-    // peform next action dependent on trasactionType
-    if (transactionType === 'data') {
-      await confirmDataPurchaseResponse(senderId);
-    } else if (transactionType === 'airtime') {
-      confirmDataPurchaseResponse(senderId);
-    };
+    helperConfirmPurchase(transactionType, senderId);
   } else {
     const response = {
       text: 'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
@@ -187,6 +187,7 @@ async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
 }; // end of newPhoneNumberBeforeTransactResponse
 
 
+// function to handle issue reporting
 async function reportIssue(event) {
   const senderId = event.sender.id;
 
@@ -198,8 +199,7 @@ async function reportIssue(event) {
       nextAction: null,
     }
   });
-};
-
+};  // end of report issue function
 
 
 module.exports = {

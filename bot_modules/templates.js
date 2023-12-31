@@ -16,9 +16,15 @@ const responseServices = {
         title: 'Buy Airtime',
         payload: '{"title": "airtimePurchase"}',
       },
+      {
+        type: 'postback',
+        title: 'View Data Prices',
+        payload: '{"title": "dataPrices"}',
+      }
     ],
   },
 };
+
 
 const responseServices2 = {
   type: 'template',
@@ -28,8 +34,13 @@ const responseServices2 = {
     buttons: [
       {
         type: 'postback',
-        title: 'View Data Prices',
-        payload: '{"title": "dataPrices"}',
+        title: 'Refer a friend',
+        payload: '{"title": "referAFriend"}',
+      },
+      {
+        type: 'postback',
+        title: 'My referrals',
+        payload: '{"title": "myReferrals"}',
       },
       {
         type: 'postback',
@@ -39,6 +50,7 @@ const responseServices2 = {
     ],
   },
 }; // end of responseServices
+
 
 const dataNetworks1 = {
   type: 'template',
@@ -60,6 +72,7 @@ const dataNetworks1 = {
   },
 };
 
+
 const dataNetworks2 = {
   type: 'template',
   payload: {
@@ -79,6 +92,7 @@ const dataNetworks2 = {
     ],
   },
 }; // end of dataNetworks
+
 
 // button for comfirm data purchase
 const confrimDataPurchaseButton1 = {
@@ -101,6 +115,7 @@ const confrimDataPurchaseButton1 = {
   },
 }; // end of confrimDataPurchaseButton
 
+
 const confrimDataPurchaseButton2 = {
   type: 'template',
   payload: {
@@ -120,6 +135,7 @@ const confrimDataPurchaseButton2 = {
     ],
   },
 }; // end of confrimDataPurchaseButton2
+
 
 //=================================================
 // section for airtime templates
@@ -154,6 +170,7 @@ const airtimeNetworks1 = {
   },
 }; // end of dataNetworks1
 
+
 const airtimeNetworks2 = {
   type: 'template',
   payload: {
@@ -184,6 +201,7 @@ const airtimeNetworks2 = {
   },
 }; // end of dataNetworks2
 
+
 // function to generate offers
 function generatePostbackButton(title, payload) {
   const json = JSON.stringify(payload);
@@ -198,7 +216,6 @@ function generatePostbackButton(title, payload) {
 };
 
 
-
 function generatePostbackTemplate(buttons, network, i) {
   const title = i === 3 ? `Select ${network} offer` : '...';
   const template = {
@@ -211,7 +228,6 @@ function generatePostbackTemplate(buttons, network, i) {
   };
   return template;
 };
-
 
 
 async function generateFacebookPosts(id, network) {
@@ -279,7 +295,7 @@ function failedMonthlyBonusTemplate(email, number, networkID) {
         {
           type: 'postback',
           title: 'Reclaim',
-          payload: `{"title": "failedMonthlyBonusRetry", "email": "${email}", "number": "${number}", "networkID": "${networkID}"}, "retry": "retry"`,
+          payload: `{"title": "failedMonthlyBonusRetry", "email": "${email}", "number": "${number}", "networkID": "${networkID}", "retry": "retry"}`,
         }
       ],
     },

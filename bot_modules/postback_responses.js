@@ -1,7 +1,7 @@
 const sendMessage = require('./send_message.js');
 const sendTemplate = require('./send_templates.js');
 const axios = require('axios');
-const { confirmDataPurchaseResponse } = require('./../bot_modules/helper_functions.js')
+const { confirmDataPurchaseResponse } = require('./helper_functions.js')
 const getUserName = require('./get_user_info.js');
 const { dateFormatter, noTransactFound } = require('./helper_functions.js');
 const {
@@ -13,31 +13,27 @@ const {
   airtimeNetworks1,
   airtimeNetworks2,
 } = require('./templates.js');
-const BotUsers = require('./../models/bot_users.js');
-const handleFirstMonthBonus = require('./../modules/monthly_bonuses.js');
+const BotUsers = require('../models/fb_bot_users.js');
+const handleFirstMonthBonus = require('../modules/monthly_bonuses.js');
+const { text } = require('express');
+const { promises } = require('nodemailer/lib/xoauth2/index.js');
 
 
 // function to response to newConversations
 async function sendNewConversationResponse(event) {
   const senderId = event.sender.id;
   const userName = null //await getUserName(senderId);
-  let response = {
-    text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.`,
-  };
-  await sendMessage(senderId, response);
 
-  response = { text: `What can i do for you today` };
-  await sendMessage(senderId, response);
+  await sendMessage(senderId, { text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.` });
+  await sendMessage(senderId, { text: `Kindly enter referral code below \nIf no referral code enter 0` });
 
-  await sendTemplate(senderId, responseServices);
-  sendTemplate(senderId, responseServices2);
-  // adding one
-  await BotUsers.updateOne(
-    { id: senderId },
-    { $set: { id: senderId } },
-    { upsert: true }
-  );
-  console.log('end of new conversation ');
+  // adding new botuser
+  const newBotUser = new BotUsers({
+    id: senderId,
+    nextAction: 'referralCode'
+  });
+  await newBotUser.save();
+  console.log('end of new bot user', newBotUser);
 }; // end of newConversationResponse
 
 
@@ -190,7 +186,7 @@ async function generateAccountNumber(event) {
   let response;
   const senderId = event.sender.id;
   try {
-    const botUser = await BotUsers.findOne({ id: senderId });
+    const botUser = await BotUsers.findOne({ id: senderId }).select('email purchasePayload referrer firstPurchase');
     console.log('generateAccountNumber', botUser);
 
     if (botUser.purchasePayload.$isEmpty()) return noTransactFound(senderId);
@@ -198,6 +194,7 @@ async function generateAccountNumber(event) {
     payload = botUser.purchasePayload.toObject();
     payload.email = botUser.email;
     payload.bot = true;
+    payload.firstPurchase = botUser.firstPurchase;
     payload['senderId'] = senderId;
     let test = payload;
     console.log('in generate account number: ', payload, test);
@@ -215,13 +212,13 @@ async function generateAccountNumber(event) {
       await sendMessage(senderId, { text: 'Account Number: 👇' });
       await sendMessage(senderId, { text: data.transfer_account });
       await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
-    } else {
-      await sendMessage(senderId, { text: 'An error occured \nPlease reclick make purchase button' });
+      // removing purchasePayload
+      cancelTransaction(event, true);
+      return;
     };
-    // removing purchasePayload
-    cancelTransaction(event, true);
+    throw 'error occured while trying to transfer account'
   } catch (err) {
-    await sendMessage(senderId, { text: 'An error occured \nPlease start a new transaction' });
+    await sendMessage(senderId, { text: 'An error occured \nPlease reclick make purchase button' });
     await confirmDataPurchaseResponse(senderId);
     console.log('Error getting transfer account:', err);
   };
@@ -271,20 +268,17 @@ async function changePhoneNumber(event) {
 }; // end of  changeNumber
 
 
-// function to cancel transaction
-async function cancelTransaction(event, end = false) {
+// function to  transaction
+async function cancelTransaction(event, end=false) {
   const senderId = event.sender.id;
 
   // delete purchase payload here
-  if (end) {
-    return await reset(senderId);
-  };
-
+  await reset(senderId);
+  if (end) return;
   await sendMessage(senderId, { text: 'Transaction Cancled' });
   await sendMessage(senderId, { text: 'What do you want to do next' });
   await sendTemplate(senderId, responseServices);
   await sendTemplate(senderId, responseServices2);
-  await reset(senderId);
 }; // end of cancelTransaction
 
 
@@ -357,6 +351,7 @@ async function handleRetryFailedMonthlyDelivery(event, payload) {
 };  // end of handleRetryFailedMonthlyDelivery
 
 
+
 module.exports = {
   sendNewConversationResponse,
   sendPurchaseDataReponse,
@@ -374,5 +369,5 @@ module.exports = {
   cancelTransaction,
   showDataPrices,
   retryFailed,
-  handleRetryFailedMonthlyDelivery,
+  handleRetryFailedMonthlyDelivery
 };
