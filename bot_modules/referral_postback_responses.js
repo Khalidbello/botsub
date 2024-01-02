@@ -6,7 +6,7 @@ const BotUsers = require('../models/fb_bot_users.js');
 const { formUnactiveReferralTemp, formActiveReferralTemp } = require('./helper_functions.js');
 const { seedFbBotUsers } = require('./seed_database.js');
 const bonuses = {
-    '1': { planID: 287, size: '100MB', network: 'MTN' },
+    '1': { planID: 253, size: '150MB', network: 'MTN' },
     '2': { planID: 266, size: '200MB', network: 'GLO' },
     '3': { planID: 268, size: '500MB', network: '9mobile' },
     '4': { planID: 225, size: '100MB', network: 'Airtel' }
@@ -22,7 +22,7 @@ async function showReferralCode(event) {
     await sendMessage(senderId, { text: 'Invite a friend and earn free data!!!' });
     await sendMessage(senderId, { text: `Your referral code is:` });
     await sendMessage(senderId, { text: `${senderId}` });
-    await sendMessage(senderId, { text: 'For each referral you earn: \n100MB for MTN. \n100MB for Airtel. \n200MB for Glo. \n500MB for 9mobile' });
+    await sendMessage(senderId, { text: 'For each referral you earn: \n100MB for Airtel. \n150MB for MTN. \n200MB for Glo. \n500MB for 9mobile' });
 }; // end of showReferralCode
 
 

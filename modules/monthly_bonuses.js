@@ -6,7 +6,7 @@ const sendMessage = require('./../bot_modules/send_message.js');
 const sendTemplate = require('./../bot_modules/send_templates.js');
 const { failedMonthlyBonusTemplate } = require('./../bot_modules/templates.js');
 const bonuses = {
-    '1': { planID: 287, size: '100MB', network: 'MTN' },
+    '1': { planID: 253, size: '150MB', network: 'MTN' },
     '2': { planID: 266, size: '200MB', network: 'GLO' },
     '3': { planID: 268, size: '500MB', network: '9mobile' },
     '4': { planID: 225, size: '100MB', network: 'Airtel' }

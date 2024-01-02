@@ -87,7 +87,7 @@ async function makePurchaseRequest(response, res, req, options, type) {
     const resp = await  axios.post(options.url, options.payload, { headers: options.headers});
     console.log('response: ', resp.data);
 
-    if (resp.data.Status == 'successful') {
+    if (resp.data.Status === 'successful') {
       console.log('in succesfull make purchase request');
       helpSuccesfulDelivery(req, res, response, resp.data.balance_after, type);
     } else {

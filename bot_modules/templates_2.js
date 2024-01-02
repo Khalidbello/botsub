@@ -10,8 +10,8 @@ function referralOffers1(refereeId) {
             buttons: [
                 {
                     type: 'postback',
-                    title: 'MTN 100MB',
-                    payload: `{"title": "referralBonusOfferSelected", "network": "MTN", "size": "100MB", "networkID": "1", "planID": "40004", "refereeId": "${refereeId}"}`,
+                    title: 'MTN 150MB',
+                    payload: `{"title": "referralBonusOfferSelected", "network": "MTN", "size": "150MB", "networkID": "1", "planID": "40004", "refereeId": "${refereeId}"}`,
                 },
                 {
                     type: 'postback',
