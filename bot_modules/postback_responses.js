@@ -22,7 +22,7 @@ const { promises } = require('nodemailer/lib/xoauth2/index.js');
 // function to response to newConversations
 async function sendNewConversationResponse(event) {
   const senderId = event.sender.id;
-  const userName = null //await getUserName(senderId);
+  const userName = await getUserName(senderId);
 
   await sendMessage(senderId, { text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.` });
   await sendMessage(senderId, { text: `Kindly enter referral code below \nIf no referral code enter 0` });

@@ -18,7 +18,7 @@ const { cancelTransaction } = require('./postback_responses.js');
 // function to respond to unexpected message
 async function defaultMessageHandler(event) {
   const senderId = event.sender.id;
-  const userName = null; //await getUserName(senderId);
+  const userName = await getUserName(senderId);
 
   await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
   await sendTemplate(senderId, responseServices);

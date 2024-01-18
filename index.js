@@ -1,5 +1,5 @@
 // entry file for BotSub
-// ngrok http --domain=weekly-settled-falcon.ngrok-free.app 4040
+// ngrok http --domain=weekly-settled-falcon.ngrok-free.app 8080
 // https://weekly-settled-falcon.ngrok-free.app
 
 require('dotenv').config();
@@ -94,6 +94,6 @@ app.use(function(req, res, next) {
   res.status(404).render('not-found');
 });
 
-const port = process.env.PORT || 4040;
+const port = process.env.PORT || 8080;
 
 app.listen(port, () => console.log('running on port ' + port));
