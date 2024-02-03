@@ -13,8 +13,10 @@ const {
   airtimeNetworks1,
   airtimeNetworks2,
 } = require('./templates.js');
+const PaymentAccounts = require('./../models/payment-accounts.js');
 const BotUsers = require('../models/fb_bot_users.js');
 const handleFirstMonthBonus = require('../modules/monthly_bonuses.js');
+const makePurchase = require('./../modules/v-account-make-purcchase.js');
 const { text } = require('express');
 const { promises } = require('nodemailer/lib/xoauth2/index.js');
 
@@ -66,6 +68,7 @@ async function sendMtnOffers(event) {
     //i++;
   };
 }; // end sendMtnOffers
+
 
 
 // function to send airtel offers
@@ -122,6 +125,7 @@ async function sendNineMobileOffers(event) {
 }; // end sendNineMobileOffers
 
 
+
 // function to respond when an offer is selected
 async function offerSelected(event, payload) {
   const senderId = event.sender.id;
@@ -137,6 +141,7 @@ async function offerSelected(event, payload) {
 }; // end of offerSelected
 
 
+
 // ==============================================================
 // function to respond to purchaseAirtime
 async function sendPurchaseAirtimeResponse(event) {
@@ -146,6 +151,7 @@ async function sendPurchaseAirtimeResponse(event) {
   await sendTemplate(senderId, airtimeNetworks1);
   await sendTemplate(senderId, airtimeNetworks2);
 }; // end of sendPurchaseAirtimeResponse
+
 
 
 // function to handdle mtnAirtime
@@ -177,6 +183,7 @@ async function issueReport(event) {
 }; // end of issueReport
 
 
+
 //===============================================
 // generic responsese
 
@@ -203,7 +210,7 @@ async function generateAccountNumber(event) {
 
     response = await axios.post(`https://${process.env.HOST}/gateway/transfer-account`, payload);
     response = await response.data;
-    console.log(response);
+    console.log('get payment account respinse::::::::::::::; ', response);
 
     if (response.status === 'success') {
       const data = response.meta.authorization;
@@ -223,6 +230,45 @@ async function generateAccountNumber(event) {
     console.log('Error getting transfer account:', err);
   };
 }; // end of generateAccountNumber
+
+
+
+// function to decide hoe the transaction would be carried out depedent wether user has a virtual account or not
+async function selectPurchaseMethod(event) {
+  const senderId = event.sender.id;
+  const userAcount = await PaymentAccounts.findOne({ refrence: senderId });
+
+  if (userAcount) return initMakePurchase(senderId);
+
+  await generateAccountNumber(event);
+}; // end of selectPurchaseMehod
+
+
+
+// functin to initiate tranacion for users with viertul account
+async function initMakePurchase(senderId, times = 0) {
+  if (times > 5) return console.log('init make purchase threshold reached: ');
+  const userDet = BotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
+  const userAcount = PaymentAccounts.findOne({ refrence: senderId });
+  const promises = [userDet, userAcount];
+  const data = await Promise.all(promises);
+  const purchasePayload = data[0].purchasePayload; console.log('purchase ayload in initmakePurchase', purchasePayload);
+
+  console.log('prchase payload: ', purchasePayload);
+  if (!purchasePayload.type) {
+    await sendMessage(senderId, { text: 'No transaction found' });
+    await sendMessage(senderId, { text: 'Please intiate a new transaction.' });
+    await sendTemplates(senderId, responseServices);
+    await sendTemplates(senderId, responseServices2);
+    await sendTemplates(senderId, responseServices3);
+    return;
+  };
+
+  if (purchasePayload.price > data[1].balance) return remindToFundWallet(senderId, data[1].balance - purchasePayload.price, data[1].balance, data[1]); // returning function to remind user to fund wallet
+
+  //makePurchase(purchasePayload, 'facebook', senderId);   // calling function to make function
+}; // end of function to initialise function
+
 
 
 // function to chanege email b4 transaction
@@ -247,6 +293,7 @@ async function changeMailBeforeTransact(event) {
 }; // end of changeMailBeforeTransact
 
 
+
 // function to changePhoneNumber
 async function changePhoneNumber(event) {
   const senderId = event.sender.id;
@@ -269,7 +316,7 @@ async function changePhoneNumber(event) {
 
 
 // function to  transaction
-async function cancelTransaction(event, end=false) {
+async function cancelTransaction(event, end = false) {
   const senderId = event.sender.id;
 
   // delete purchase payload here
@@ -331,6 +378,7 @@ async function showDataPrices(event) {
 }; // end of showDataPrices
 
 
+
 // function to retry failed delivery
 async function retryFailed(event, payload) {
   const senderId = event.sender.id;
@@ -343,12 +391,48 @@ async function retryFailed(event, payload) {
 }; // end of retry failed delivery
 
 
+
 // functon to handle failedMonthlyDeliveryBonus
 async function handleRetryFailedMonthlyDelivery(event, payload) {
   const senderId = event.sender.id;
   console.log('in handle monthlty failed');
   return handleFirstMonthBonus(payload.email, payload.number, payload.networkID, senderId, payload.retry);
 };  // end of handleRetryFailedMonthlyDelivery
+
+
+// function to show user account details
+async function showAccountDetails(event) {
+  const senderId = event.sender.id;
+  let account = await PaymentAccounts.findOne({ refrence: senderId });
+
+  if (!account) {
+    const user = await BotUsers.findOne({ id: senderId }).select('email');
+    if (!user.email) {
+      await sendMessage(senderId, { text: 'You do not have a virtual account yet. \nKindly enter your email to create your virtual accont. \nEnter Q to quit' });
+      await BotUsers.updateOne(
+        { id: senderId },
+        { $set: { nextAction: 'enterMailForAccount' } }
+      );
+      return;
+    };
+
+    await sendMessage(senderId, { text: 'You do not a virtual account yet. \Kindly enter your BVN to create a virtul accunt. \nYour BVN is required in compliance with CBN regualation. \nEnter Q to quit.' });
+    await BotUsers.updateOne(
+      { id: senderId },
+      { $set: { nextAction: 'enterBvn' } }
+    );
+    return;
+  };
+  console.log('senderId:::::::;;;;; ', senderId, account);
+
+  await sendMessage(senderId, { text: 'Your dedicated virtual account details: ' });
+  await sendMessage(senderId, { text: `Bank Name: ${account.bankName}` });
+  await sendMessage(senderId, { text: `Account Name: ${account.accountName}` });
+  await sendMessage(senderId, { text: 'Acccount Number: ' });
+  await sendMessage(senderId, { text: account.accountNumber });
+  await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
+  sendMessage(senderId, { text: 'Fund your dedicated virtual account andd make purchase seamlessly' });
+}; // end of showAccountDetails
 
 
 
@@ -363,11 +447,12 @@ module.exports = {
   sendPurchaseAirtimeResponse,
   airtimePurchase,
   issueReport,
-  generateAccountNumber,
+  selectPurchaseMethod,
   changeMailBeforeTransact,
   changePhoneNumber,
   cancelTransaction,
   showDataPrices,
   retryFailed,
-  handleRetryFailedMonthlyDelivery
+  handleRetryFailedMonthlyDelivery,
+  showAccountDetails
 };

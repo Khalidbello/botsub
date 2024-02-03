@@ -8,7 +8,6 @@ const {
   offerSelected,
   sendPurchaseAirtimeResponse,
   airtimePurchase,
-  generateAccountNumber,
   changeMailBeforeTransact,
   changePhoneNumber,
   cancelTransaction,
@@ -16,6 +15,8 @@ const {
   showDataPrices,
   retryFailed,
   handleRetryFailedMonthlyDelivery,
+  selectPurchaseMethod,
+  showAccountDetails,
 } = require('./postback_responses.js');
 const {
   selectReferralOffers,
@@ -70,8 +71,8 @@ async function processPostback(event, res) {
       console.log('airtume amount');
       airtimePurchase(event, payload);
       break;
-    case 'generateAccountNumber':
-      generateAccountNumber(event);
+    case 'makePurchase':
+      selectPurchaseMethod(event);
       break;
     case 'changeMailBeforeTransact':
       changeMailBeforeTransact(event);
@@ -94,6 +95,9 @@ async function processPostback(event, res) {
     case 'failedMonthlyBonusRetry':
       handleRetryFailedMonthlyDelivery(event, payload);
       break;
+      case 'myAccount':
+        showAccountDetails(event);
+        break;
 
 
     // referral related

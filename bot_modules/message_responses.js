@@ -2,7 +2,7 @@
 const emailValidator = require('email-validator');
 const sendMessage = require('./send_message.js');
 const sendTemplate = require('./send_templates.js');
-const { responseServices, responseServices2 } = require('./templates.js');
+const { responseServices, responseServices2, responseServices3 } = require('./templates.js');
 const {
   noTransactFound,
   validateNumber,
@@ -22,7 +22,8 @@ async function defaultMessageHandler(event) {
 
   await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
   await sendTemplate(senderId, responseServices);
-  sendTemplate(senderId, responseServices2);
+  await sendTemplate(senderId, responseServices2);
+  sendTemplate(senderId, responseServices3);
 }; // end of defaultMessenger
 
 
@@ -54,6 +55,43 @@ async function sendEmailEnteredResponse(event) {
 }; // end of sendEmailEnteredResponse
 
 
+// function to respod to emal entred, this function also calls create virtual acount function
+async function enteredEmailForAccount(event) {
+  const senderId = event.sender.id;
+  const email = event.message.text.trim();
+
+  if (email.toLowerCase() === 'q') {
+    await sendMessage(senderId, { text: 'Creatioin of virtiual account cancled.' });
+    await sendMessage(senderId, { text: 'what do you want to do next.' });
+    await sendTemplates(senderId, responseServices);
+    await sendTemplates(senderId, responseServices2);
+    await sendTemplates(senderId, responseServices3);
+
+    // updaet user colletion
+    await BotUsers.updateOne(
+      { id: senderId },
+      { $set: { nextAction: null } }
+    );
+    return;
+  };
+
+  if (emailValidator.validate(email.toLowerCase())) {
+    const saveEmail = await BotUsers.updateOne({ id: senderId },
+      {
+        $set: {
+          email: email,
+          nextAction: 'enterBvn'
+        }
+      },
+      { upsert: true }
+    );
+
+    await sendMessage(senderId, { text: 'please enter your BVN.' });
+    return sendMessage(senderId, { text: 'In accordeance with the central stipulated rules, your BVN is required to create a virtual account. \nEnter Q to  cancel' });
+  } else {
+    sendMessage(senderId, { text: "The email you entred is invalid. \nPlease enter a valid email." });
+  };
+}; // end of sendEmailEntere
 
 //==================================================
 // airtime purchase response function
@@ -209,5 +247,6 @@ module.exports = {
   sendPhoneNumberEnteredResponses,
   newEmailBeforeTransactResponse,
   newPhoneNumberBeforeTransactResponse,
+  enteredEmailForAccount,
   reportIssue,
 };

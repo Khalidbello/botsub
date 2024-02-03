@@ -10,6 +10,8 @@ const {
   newPhoneNumberBeforeTransactResponse,
   sendAirtimeAmountReceived,
   defaultMessageHandler,
+  enteredEmailForAccount,
+  bvnEntered,
   reportIssue,
 } = require('./message_responses.js');
 const {
@@ -56,6 +58,12 @@ async function processMessage(event, res) {
       break;
     case 'changePhoneNumberBeforeTransact':
       newPhoneNumberBeforeTransactResponse(event, transactionType);
+      break;
+    case 'enterMailForAccount':
+      enteredEmailForAccount(event);
+      break;
+    case 'enterBvn':
+      bvnEntered(event);
       break;
     case 'enterIssue':
       reportIssue(event);

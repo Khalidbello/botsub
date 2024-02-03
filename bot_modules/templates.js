@@ -41,17 +41,31 @@ const responseServices2 = {
         type: 'postback',
         title: 'My referrals',
         payload: '{"title": "myReferrals"}',
-      },
-      {
-        type: 'postback',
-        title: 'Report Issue',
-        payload: '{"title": "issueReport"}',
-      },
+      }
     ],
   },
 }; // end of responseServices
 
 
+const responseServices3 = {
+  type: 'template',
+  payload: {
+    template_type: 'button',
+    text: '....',
+    buttons: [
+      {
+        type: 'postback',
+        title: 'My Account',
+        payload: '{"title": "myAccount"}',
+      },
+      {
+        type: 'postback',
+        title: 'Report Issue',
+        payload: '{"title": "issueReport"}',
+      }
+    ],
+  },
+};
 const dataNetworks1 = {
   type: 'template',
   payload: {
@@ -104,7 +118,7 @@ const confrimDataPurchaseButton1 = {
       {
         type: 'postback',
         title: 'Make Purchase',
-        payload: `{"title": "generateAccountNumber"}`,
+        payload: `{"title": "makePurchase"}`,
       },
       {
         type: 'postback',
@@ -307,6 +321,7 @@ function failedMonthlyBonusTemplate(email, number, networkID) {
 module.exports = {
   responseServices,
   responseServices2,
+  responseServices3,
   dataNetworks1,
   dataNetworks2,
   confrimDataPurchaseButton1,
