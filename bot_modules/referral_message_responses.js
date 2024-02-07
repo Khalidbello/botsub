@@ -3,7 +3,7 @@ const sendMessage = require('./send_message');
 const sendTemplate = require('./send_templates.js');
 const BotUsers = require('../models/fb_bot_users.js');
 const { referralTemp } = require('./templates_2.js'); const { text } = require('express');
-const { responseServices, responseServices2 } = require('./templates.js')
+const { responseServices, responseServices2, responseServices3 } = require('./templates.js')
 
 
 // function to handle recieval of referral code\
@@ -19,6 +19,7 @@ async function sendReferralCodeRecieved(event) {
             await sendMessage(senderId, { text: 'You will also be credited with free data bonuses for your all your first purchase of the month' });
             await sendTemplate(senderId, responseServices);
             await sendTemplate(senderId, responseServices2);
+            await sendTemplate(senderId, responseServices3);
             await BotUsers.updateOne(
                 { id: senderId },
                 { $set: { nextAction: null, referrer: 0, firstPurchase: true } }
@@ -37,6 +38,7 @@ async function sendReferralCodeRecieved(event) {
             await sendMessage(senderId, { text: 'You will also be credited with free data bonuses for your all your first purchase of the month' });
             await sendTemplate(senderId, responseServices);
             await sendTemplate(senderId, responseServices2);
+            await sendTemplate(senderId, responseServices3);
             await BotUsers.updateOne({ id: senderId }, {
                 $set: { nextAction: null, referrer: Number(referralCode), firstPurchase: true }
             });

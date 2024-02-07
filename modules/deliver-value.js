@@ -5,6 +5,7 @@ const axios = require('axios');
 const { dateFormatter, fundWallet } = require('./helper_functions.js');
 const sendMessage = require('./../bot_modules/send_message.js');
 const sendTemplate = require('./../bot_modules/send_templates.js');
+const { getVirtualAccountTemp } = require('./../bot_modules/templates.js');
 const { retryFailedTemplate, responseServices2 } = require('./../bot_modules/templates.js');
 const fsP = require('fs').promises;
 const Transactions = require('./../models/transactions.js');
@@ -126,6 +127,8 @@ async function helpSuccesfulDelivery(req, res, response, balance, type) {
     await sendMessage(response.data.meta.senderId, {
       text: `Transaction Succesful \nProduct: ${product(response)}\nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
     });
+    await sendMessage(response.data.meta.senderId, { text: '\nElevate your top-ups with a dedicated virtual account! Fund once, enjoy infinite purchases. \nGet your permanent account number now!'})
+    await sendTemplate(response.data.meta.senderId, getVirtualAccountTemp);
   };
   if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
 }; // end of helpSuccesfulDelivery

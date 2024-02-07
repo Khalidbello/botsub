@@ -317,6 +317,21 @@ function failedMonthlyBonusTemplate(email, number, networkID) {
 }; // end of failedMonthlyBonusTemplate
 
 
+// get virtualacount template
+const getVirtualAccountTemp = {
+  type: 'template',
+  payload: {
+    template_type: 'button',
+    text: 'Click to get virtual account',
+    buttons: [
+      {
+        type: 'postback',
+        title: 'Get virtual account.',
+        payload: `{"title": "myAccount"}`
+      }
+    ],
+  },
+}; // end of getVirtualAccountemp
 
 module.exports = {
   responseServices,
@@ -330,5 +345,6 @@ module.exports = {
   airtimeNetworks2,
   generateFacebookPosts,
   retryFailedTemplate,
-  failedMonthlyBonusTemplate
+  failedMonthlyBonusTemplate,
+  getVirtualAccountTemp,
 };

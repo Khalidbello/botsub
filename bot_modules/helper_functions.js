@@ -7,7 +7,7 @@ const {
   responseServices,
   responseServices2
 } = require('./templates.js');
-const BotUsers = require('../models/fb_bot_users.js');
+const FBBotUsers = require('../models/fb_bot_users.js');
 
 // function to respond to cases when no purchase payload is found for a transact
 async function noTransactFound(senderId) {
@@ -57,7 +57,7 @@ function validateNumber(phoneNumber) {
 
 // function to form product response
 async function confirmDataPurchaseResponse(senderId) {
-  const user = await BotUsers.findOne({ id: senderId });
+  const user = await FBBotUsers.findOne({ id: senderId });
   console.log('in confirmdatapurchase', user);
   const message1 = {
     text:
@@ -201,6 +201,23 @@ async function confirmClaimReferralBonus(event) {
 }; // end of helperConfirmPurchase
 
 
+
+// function to remind user to fund wallet
+async function remindToFundWallet(senderId, amount, balance, accountDetails) {
+  await sendMessage(senderId, { text: 'Sorry your account balance is currently low.'});
+  await sendMessage(senderId, { text: `Your current account number is: ₦${balance}`});
+  await sendMessage(senderId, { text: `Kindly fund your account with a minimum amount of ₦${Math.abs(amount)}`});
+  await sendMessage(senderId, { text: `Bank Name: ${accountDetails.bankName}`});
+  await sendMessage(senderId, { text: `Account Name: ${accountDetails.accountName}`});
+  await sendMessage(senderId, { text: 'Account Number:'})
+  await sendMessage(senderId, { text: `${accountDetails.accountNumber}`});
+  await sendMessage(senderId, { text: 'purchase would be automatically made once account is funded.'});
+  await sendMessage(senderId, { text: 'Enter Q to cancle auto delivering on wallet funding.'})
+  await FBBotUsers.updateOne({ id: senderId }, { $set: { 'purchasePayload.outStanding': true }});
+}; // end of remind to fund wallet
+
+
+
 module.exports = {
   noTransactFound,
   validateNumber,
@@ -211,4 +228,5 @@ module.exports = {
   formActiveReferralTemp,
   txCode,
   helperConfirmPurchase,
+  remindToFundWallet,
 };

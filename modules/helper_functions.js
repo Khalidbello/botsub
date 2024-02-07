@@ -123,11 +123,12 @@ const checkRequirementMet = async function (response, req) {
 async function refundPayment(response, price) {
   try {
     const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-    const resp = await flw.Transaction.refund({
+    // commented out refund transacttion
+    /*const resp = await flw.Transaction.refund({
       id: response.data.id,
       amount: null,
       comments: 'transaction requirement not met',
-    });
+    });*/
 
     console.log('payment refund response in refundPayment function', resp);
     const date = new Date();

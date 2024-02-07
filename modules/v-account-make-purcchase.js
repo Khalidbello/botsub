@@ -5,7 +5,7 @@ const sendMessage = require('./../bot_modules/send_message.js');
 const randomstring = require('randomstring');
 const { dateFormatter } = require('./helper_functions.js');
 const Transactions = require('./../models/transactions.js');
-const PaymentAccounts = require('./../modules/v-account-make-purcchase.js');
+const PaymentAccounts = require('./../models/payment-accounts.js');
 const { creditReferrer } = require('./credit_referrer.js');
 const handleFirstMonthBonus = require('./monthly_bonuses.js');
 
@@ -13,8 +13,9 @@ const handleFirstMonthBonus = require('./monthly_bonuses.js');
 // function to carryout purchase
 async function makePurchase(purchasePayload, bot, senderId) {
     console.log('in make purchase')
-    if (purchasePayload.type === 'data') return deliverData(purchasePayload, bot, senderId);
-    if (purchasePayload.type === 'airtime') return deliverAirtime(purchasePayload, bot, senderId);
+    if (purchasePayload.transactionType === 'data') return deliverData(purchasePayload, bot, senderId);
+    if (purchasePayload.transactionType === 'airtime') return deliverAirtime(purchasePayload, bot, senderId);
+    console.log('no matched transaction type::::::::::::::::::::::::   ');
 }; // end of function to make purchase
 
 
@@ -71,8 +72,8 @@ function deliverAirtime(purchasePayload, bot, senderId) {
 
 
 // function to make product purchase request
-async function makePurchaseRequest(purchasePayload, options, bot, type, senderId) {
-    console.log('in make purchase request')
+async function makePurchaseRequest(purchasePayload, options, bot, transactionType, senderId) {
+    console.log('in make purchase request');
     try {
         const resp = await axios.post(options.url, options.payload, { headers: options.headers });
         console.log('response: ', resp.data);
@@ -168,17 +169,18 @@ async function addToDelivered(id, purchasePayload, senderId) {
     response2 = await newTransaction.save();
     console.log('add to delivered response', response2);
     cancelTransaction(senderId, true);
-    if (Number(purchasePayload.firstPurchase) === 1 && purchasePayload.type === 'data') await creditReferrer(senderId);
-    if (purchasePayload.type === 'data') await handleFirstMonthBonus(purchasePayload.email, purchasePayload.phoneNumber, purchasePayload.networkID, senderId);
+    if (Number(purchasePayload.firstPurchase) === 1 && purchasePayload.transactionType === 'data') await creditReferrer(senderId);
+    if (purchasePayload.transactionType === 'data') await handleFirstMonthBonus(purchasePayload.email, purchasePayload.phoneNumber, purchasePayload.networkID, senderId);
     return;
 }; // end of addToDelivered
+
 
 
 // helper function to form product
 function formProduct(payload) {
     let product = `${payload.size}  ${payload.network} data`;
 
-    if (payload.type === 'airtime') {
+    if (payload.transactionType === 'airtime') {
         product = `₦${payload.price} ${payload.network} airtime`;
     };
     return product

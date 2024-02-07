@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/env-test', (req, res)=> {
-  res.send("variables: added name customisation to facebook bot" + process.env.TEST + '  ||||  ' + process.env.NODE_ENV);
+  res.send("change::::::::::::::: added v-account " + process.env.TEST + '  ||||  ' + process.env.NODE_ENV);
 });
 
 router.get('/test-1', async (req, res) => {

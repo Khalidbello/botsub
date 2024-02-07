@@ -11,7 +11,7 @@ const {
   sendAirtimeAmountReceived,
   defaultMessageHandler,
   enteredEmailForAccount,
-  bvnEntered,
+  bvnEntred,
   reportIssue,
 } = require('./message_responses.js');
 const {
@@ -63,7 +63,7 @@ async function processMessage(event, res) {
       enteredEmailForAccount(event);
       break;
     case 'enterBvn':
-      bvnEntered(event);
+      bvnEntred(event);
       break;
     case 'enterIssue':
       reportIssue(event);

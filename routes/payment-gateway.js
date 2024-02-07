@@ -1,7 +1,6 @@
 // module for things related to payment gate ways
 
 const flutterwave = require('flutterwave-node-v3');
-const sendMessage = require('./../bot_modules/send_message.js');
 const { Router } = require('express');
 const {
   checkIfPreviouslyDelivered,
@@ -12,9 +11,10 @@ const {
   fundWallet
 } = require('./../modules/helper_functions.js');
 const deliverValue = require('./../modules/deliver-value.js');
-const axios =
-  require('axios');
+const { respondToWebhook } = require('./../modules/gateway.js');
+const sendMessage = require('./../bot_modules/send_message.js');
 const router = Router();
+
 
 
 // route for confirming payment and calling payment deliver function
@@ -126,32 +126,25 @@ router.post('/transfer-account', async (req, res) => {
 
 // route for flutterwave webhook
 router.post('/webhook', async (req, res) => {
+  const payload = req.body;
+  const host = req.hostname;
+  let flag; // variable to determine how webhook would be handld i.e wallet funding or direct payme
   try {
     console.log('am in webhook');
-    // If you specified a secret hash, check for the signature
-    const mySecret = process.env.FLW_H;
-    console.log('smy screte', mySecret);
     const signature = req.headers['verif-hash'];
 
-    if (!signature || signature != mySecret) {
+    if (!signature || signature != process.env.FLW_H) {
       // This request isn't from Flutterwave; discard
-      console.log('in webhook');
+      console.log('webhook rejectd not from a trusted source');
       return res.status(401).end();
     };
 
-    const payload = req.body;
-    const host = req.hostname;
-
     console.log('btw hook body', payload);
     
-    res.status(200).send();
-    const response = await axios.get(
-      `https://${host}/gateway/confirm?transaction_id=${payload.id || payload.data.id}&tx_ref=${payload.txRef || payload.data.tx_ref}&webhook=webhooyouu`
-    );
-    console.log('webhook response', response.data);
-    console.log('end hook');
+    respondToWebhook(payload, res, req.hostname);
   } catch (err) {
     res.status(300).send('an error occured');
+    consle.log('error in webhook::::::::::::::::::::::::::    value of flag:::::::::   ', flag);
     if (err.response) {
       console.log('Error response:', err.response.data);
     } else if (err.request) {

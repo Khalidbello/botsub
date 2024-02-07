@@ -554,12 +554,12 @@ hideInvalidNumberBox = function () {
 makePayment = function () {
   FlutterwaveCheckout({
     public_key: flwKey,
-    tx_ref: txCode(),
+    tx_ref: "6083883438362251",//txCode(),
     amount: parseInt(offerBox.dataset.price),
     currency: 'NGN',
     redirect_url: 'after-pay',
     payment_options: 'card, banktransfer, ussd',
-    meta: {
+    /*meta: {
       network: networkBox.dataset.network,
       networkID: offerBox.dataset.networkID,
       planID: offerBox.dataset.planID,
@@ -567,7 +567,7 @@ makePayment = function () {
       index: offerBox.dataset.index,
       number: number.value,
       type: 'data',
-    },
+    },*/
     customer: {
       email: email.value,
     },

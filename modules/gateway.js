@@ -1,9 +1,12 @@
 // module to  hold all payment related functions relating to users with virtual account
 
+const axios = require('axios');
 const Flutterwave = require('flutterwave-node-v3');
 const sendMessage = require('./../bot_modules/send_message.js');
-const PaymentAccounts = require("./../models/payment_accounts.js");
+const PaymentAccounts = require("./../models/payment-accounts.js");
 const FBotUsers = require("./../models/fb_bot_users.js");
+const sendTemplate = require('../bot_modules/send_templates.js');
+const { responseServices3 } = require('../bot_modules/templates.js');
 const { initMakePurchase } = require('./../bot_modules/postback_responses.js');
 
 
@@ -12,7 +15,11 @@ const { initMakePurchase } = require('./../bot_modules/postback_responses.js');
 async function createVAccount(email, reference, bvn, botType, currentCount = 0) {
     console.log('viertual account current count is: ', currentCount);
 
-    if (currentCount > 5) return console.log("thrshold reached creation of virtual account failed::");
+    if (currentCount > 5) {
+        await sendMessage(reference, { text: 'Creation of dedicated virtual account failed.' });
+        await sendMessage(senderId, { text: 'Please kindly click my account to restart process and ensure all provided infrmations are accurate ' });
+        sendTemplate(reference, responseServices3);
+    };
 
     // first check to confirm no account with specific referance occurs
     const existing = await PaymentAccounts.findOne({ refrence: reference });
@@ -39,32 +46,40 @@ async function createVAccount(email, reference, bvn, botType, currentCount = 0) 
         let account = {
             refrence: reference,
             balance: 0,
-            accountName: "Botsub " +'FLW00' + `${num + 1}`,
+            accountName: "Botsub " + 'FLW00' + `${num + 1}`,
             accountNumber: accountDetails.data.account_number,
             botType: botType,
             bankName: accountDetails.data.bank_name,
             bvn: bvn
         };
         const vAccount = new PaymentAccounts(account);
+
         await vAccount.save();
-        return account;
+        await sendMessage(reference, { text: 'Creation of dedicated virtual account succesful.' });
+        await sendMessage(reference, { text: 'Your dedicated virtual account details: ' });
+        await sendMessage(reference, { text: `Bank Name: ${account.bankName}` });
+        await sendMessage(reference, { text: `Account Name: ${account.accountName}` });
+        await sendMessage(reference, { text: 'Acccount Number: ' });
+        await sendMessage(reference, { text: account.accountNumber });
+        await sendMessage(reference, { text: `Account Balance: ₦${account.balance}` });
+        sendMessage(reference, { text: 'Fund your dedicated virtual account once andd make mutltiple purchases seamlessly' });
     } catch (error) {
         console.log('in virtual account catch error:::', currentCount, error);
-        return createVAccount(email, reference, botType, currentCount + 1);
+        return createVAccount(email, reference, bvn, botType, currentCount + 1);
     };
 }; // end of create virtual account
 
 
 
 // webhook handler function to handle updating user balance
-async function respondToWebhook(webhookPayload, res) {
-    console.log('webhook virtual account purchase payload:::::::;;;;', webhookPayload);
+async function respondToWebhook(webhookPayload, res, host) {
     const data = webhookPayload.data || webhookPayload;
-    if (data.status !== "successful") return fconsole.log('transaction nit succesful::::::::::::: account funding not sucesfully carried out'); // check if transaction was succesful 
+    if (data.status !== "successful") return console.log('transaction not succesful::::::::::::: account funding not sucesfully carried out'); // check if transaction was succesful 
     const id = data.id;
     const reference = Number(data.txRef) || Number(data.tx_ref); // this vlaue is same as that of bot user sender id
     const amount = Number(data.amount);
     try {
+        res.status(200).send(); // return ok response to webhook
         // verify if payment was made
         const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
 
@@ -73,15 +88,22 @@ async function respondToWebhook(webhookPayload, res) {
 
         if (response.status === 'error') return res.json({ status: 'error', message: 'error fetching transaction' });
 
-
         console.log('reference in wallet topup: ', reference, data);
+
+        // check if transaction was made by user with no virtual account
+        if (response.data.meta) {
+            return await axios.get(
+                `https://${host}/gateway/confirm?transaction_id=${data.id}&tx_ref=${data.txRef}&webhook=webhooyouu`
+            );
+        };
+
+
         // fetch user account and update user balance
         const account = await PaymentAccounts.findOneAndUpdate(
             { refrence: reference },
             { $inc: { balance: amount } },
             { new: true }
         );
-        res.status(200).send('ok');
 
         console.log('account in wallet topup', account);
         if (account.botType === "facebook") {

@@ -81,7 +81,7 @@ async function processPostback(event, res) {
       changePhoneNumber(event);
       break;
     case 'cancel':
-      cancelTransaction(event);
+      cancelTransaction(event.sender.id);
       break;
     case 'issueReport':
       issueReport(event);

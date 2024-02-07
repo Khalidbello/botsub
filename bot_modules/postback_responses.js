@@ -3,10 +3,11 @@ const sendTemplate = require('./send_templates.js');
 const axios = require('axios');
 const { confirmDataPurchaseResponse } = require('./helper_functions.js')
 const getUserName = require('./get_user_info.js');
-const { dateFormatter, noTransactFound } = require('./helper_functions.js');
+const { dateFormatter, noTransactFound, remindToFundWallet } = require('./helper_functions.js');
 const {
   responseServices,
   responseServices2,
+  responseServices3,
   dataNetworks1,
   dataNetworks2,
   generateFacebookPosts,
@@ -17,8 +18,7 @@ const PaymentAccounts = require('./../models/payment-accounts.js');
 const BotUsers = require('../models/fb_bot_users.js');
 const handleFirstMonthBonus = require('../modules/monthly_bonuses.js');
 const makePurchase = require('./../modules/v-account-make-purcchase.js');
-const { text } = require('express');
-const { promises } = require('nodemailer/lib/xoauth2/index.js');
+
 
 
 // function to response to newConversations
@@ -196,7 +196,7 @@ async function generateAccountNumber(event) {
     const botUser = await BotUsers.findOne({ id: senderId }).select('email purchasePayload referrer firstPurchase');
     console.log('generateAccountNumber', botUser);
 
-    if (botUser.purchasePayload.$isEmpty()) return noTransactFound(senderId);
+    if (!botUser.purchasePayload.transactionType) return noTransactFound(senderId);
 
     payload = botUser.purchasePayload.toObject();
     payload.email = botUser.email;
@@ -220,7 +220,7 @@ async function generateAccountNumber(event) {
       await sendMessage(senderId, { text: data.transfer_account });
       await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
       // removing purchasePayload
-      cancelTransaction(event, true);
+      cancelTransaction(senderId, true);
       return;
     };
     throw 'error occured while trying to transfer account'
@@ -246,8 +246,7 @@ async function selectPurchaseMethod(event) {
 
 
 // functin to initiate tranacion for users with viertul account
-async function initMakePurchase(senderId, times = 0) {
-  if (times > 5) return console.log('init make purchase threshold reached: ');
+async function initMakePurchase(senderId) {
   const userDet = BotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
   const userAcount = PaymentAccounts.findOne({ refrence: senderId });
   const promises = [userDet, userAcount];
@@ -255,18 +254,18 @@ async function initMakePurchase(senderId, times = 0) {
   const purchasePayload = data[0].purchasePayload; console.log('purchase ayload in initmakePurchase', purchasePayload);
 
   console.log('prchase payload: ', purchasePayload);
-  if (!purchasePayload.type) {
+  if (!purchasePayload.transactionType) {
     await sendMessage(senderId, { text: 'No transaction found' });
     await sendMessage(senderId, { text: 'Please intiate a new transaction.' });
-    await sendTemplates(senderId, responseServices);
-    await sendTemplates(senderId, responseServices2);
-    await sendTemplates(senderId, responseServices3);
+    await sendTemplate(senderId, responseServices);
+    await sendTemplate(senderId, responseServices2);
+    await sendTemplate(senderId, responseServices3);
     return;
   };
 
   if (purchasePayload.price > data[1].balance) return remindToFundWallet(senderId, data[1].balance - purchasePayload.price, data[1].balance, data[1]); // returning function to remind user to fund wallet
-
-  //makePurchase(purchasePayload, 'facebook', senderId);   // calling function to make function
+  
+  makePurchase(purchasePayload, 'facebook', senderId);   // calling function to make function
 }; // end of function to initialise function
 
 
@@ -315,17 +314,15 @@ async function changePhoneNumber(event) {
 }; // end of  changeNumber
 
 
-// function to  transaction
-async function cancelTransaction(event, end = false) {
-  const senderId = event.sender.id;
-
-  // delete purchase payload here
+// function to reset user payload
+async function cancelTransaction(senderId, end = false) {
   await reset(senderId);
   if (end) return;
   await sendMessage(senderId, { text: 'Transaction Cancled' });
   await sendMessage(senderId, { text: 'What do you want to do next' });
   await sendTemplate(senderId, responseServices);
   await sendTemplate(senderId, responseServices2);
+  await sendTemplate(senderId, responseServices3);
 }; // end of cancelTransaction
 
 
@@ -408,7 +405,8 @@ async function showAccountDetails(event) {
   if (!account) {
     const user = await BotUsers.findOne({ id: senderId }).select('email');
     if (!user.email) {
-      await sendMessage(senderId, { text: 'You do not have a virtual account yet. \nKindly enter your email to create your virtual accont. \nEnter Q to quit' });
+      await sendMessage(senderId, { text: 'You do not have a dedicated virtual account yet.' });
+      await sendMessage(senderId, { text: 'Kindly enter your email to create your virtual accont. \nEnter Q to quit' });
       await BotUsers.updateOne(
         { id: senderId },
         { $set: { nextAction: 'enterMailForAccount' } }
@@ -416,7 +414,8 @@ async function showAccountDetails(event) {
       return;
     };
 
-    await sendMessage(senderId, { text: 'You do not a virtual account yet. \Kindly enter your BVN to create a virtul accunt. \nYour BVN is required in compliance with CBN regualation. \nEnter Q to quit.' });
+    await sendMessage(senderId, { text: 'You do not a dedicated virtual account yet.' });
+    sendMessage(senderId, { text: ' \Kindly enter your BVN to create a virtul accunt. \n\nYour BVN is required in compliance with CBN regualation. \n\nEnter Q to quit.' });
     await BotUsers.updateOne(
       { id: senderId },
       { $set: { nextAction: 'enterBvn' } }
@@ -431,7 +430,7 @@ async function showAccountDetails(event) {
   await sendMessage(senderId, { text: 'Acccount Number: ' });
   await sendMessage(senderId, { text: account.accountNumber });
   await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
-  sendMessage(senderId, { text: 'Fund your dedicated virtual account andd make purchase seamlessly' });
+  sendMessage(senderId, { text: 'Fund your dedicated virtual account once and make mutltiple purchases seamlessly' });
 }; // end of showAccountDetails
 
 
@@ -454,5 +453,6 @@ module.exports = {
   showDataPrices,
   retryFailed,
   handleRetryFailedMonthlyDelivery,
-  showAccountDetails
+  showAccountDetails,
+  initMakePurchase
 };

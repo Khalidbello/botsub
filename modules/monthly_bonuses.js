@@ -18,8 +18,8 @@ async function handleFirstMonthBonus(email, number, networkID, senderId = false,
     console.log('in monthly bonuses retry: ', retry);
     let flagUser;
     let flagBotUser = true;
-    const user = await Users.findOne({ email: email });
-    flagUser = await checkUserValidity(user, email);
+    //const user = await Users.findOne({ email: email });
+    //flagUser = await checkUserValidity(user, email);
 
     if (senderId) {
         const botUser = await BotUsers.findOne({ id: senderId });
@@ -27,7 +27,7 @@ async function handleFirstMonthBonus(email, number, networkID, senderId = false,
     };
 
     console.log('user collection flag=========== ', flagUser, flagBotUser);
-    if (flagUser && flagBotUser) return deliverBonus(email, number, networkID, senderId);
+    if (flagBotUser) return deliverBonus(email, number, networkID, senderId);
     if (retry) sendMessage(senderId, { text: "Sorry you have already recieved for first month purchase bonus for this month" });
     return;
 }; // end of first month purchase

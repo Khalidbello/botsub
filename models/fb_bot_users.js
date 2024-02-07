@@ -1,5 +1,20 @@
 const mongoose = require('mongoose');
 
+const purchasePayload = new mongoose.Schema({
+    product: String,
+    network: String,
+    price: Number,
+    phoneNumber: String,
+    transactionType: String,
+    size: String,
+    index: String,
+    planID: Number,
+    networkID: Number,
+    refereeId: Number,
+    outStanding: Boolean,
+});
+
+
 const Schema = new mongoose.Schema({
     id: {
         type: Number,
@@ -8,18 +23,7 @@ const Schema = new mongoose.Schema({
     firstPurchase: Boolean, // this particular property is use to check if its a user first time purchasing so as to credit the referrer
     email: String,
     nextAction: String,
-    purchasePayload: {
-       product: String,
-       network: String,
-       price: Number,
-       phoneNumber: String,
-       transactionType: String,
-       size: String,
-       index: String,
-       planID: Number,
-       networkID: Number,
-       refereeId: Number,
-    },
+    purchasePayload: purchasePayload,
     firstTransactOfMonth: Date,
     referrer: Number,
     referrals: [{ id: Number }],
