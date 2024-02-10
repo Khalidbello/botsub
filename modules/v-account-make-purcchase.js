@@ -147,7 +147,7 @@ async function helpSuccesfulDelivery(purchasePayload, balance, senderId, bot) {
         await sendMessage(senderId, { 
             text: `Your current account balance is:   ₦${accBalance.balance}` 
         });
-        await sendMessage(response.data.meta.senderId, {
+        await sendMessage(senderId, {
             text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
         
         });
