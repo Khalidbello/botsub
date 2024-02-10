@@ -123,7 +123,7 @@ async function bvnEntred(event) {
   // Check if the parsed number is an integer and has exactly 11 digits
   if (!isNaN(parsedBvn) && Number.isInteger(parsedBvn) && bvn.length === 11) {
     const user = await BotUsers.findOne({ id: senderId }).select('email');
-    createVAccount(user.email, senderId, parsedBvn, 'facebook');
+    createVAccount(user.email, senderId, bvn, 'facebook');
 
     // upate user database
     await BotUsers.updateOne(

@@ -19,6 +19,7 @@ async function createVAccount(email, reference, bvn, botType, currentCount = 0) 
         await sendMessage(reference, { text: 'Creation of dedicated virtual account failed.' });
         await sendMessage(senderId, { text: 'Please kindly click my account to restart process and ensure all provided infrmations are accurate ' });
         sendTemplate(reference, responseServices3);
+        return;
     };
 
     // first check to confirm no account with specific referance occurs
@@ -40,7 +41,7 @@ async function createVAccount(email, reference, bvn, botType, currentCount = 0) 
     try {
         const accountDetails = await flw.VirtualAcct.create(details);
         console.log("create virtual account deatails::::::::: ", accountDetails);
-        if (accountDetails.status !== "success") return createVAccount(email, reference, botType, currentCount + 1);
+        if (accountDetails.status !== "success") return createVAccount(email, reference, bvn, botType, currentCount + 1);
 
         // save user account in vrtual accounts db
         let account = {

@@ -143,8 +143,16 @@ async function helpSuccesfulDelivery(purchasePayload, balance, senderId, bot) {
     //sendSuccessfulResponse(purchasePayload); // functio to send succsful delivery response
 
     if (bot === 'facebook') {
-        await sendMessage(senderId, { text: `Transaction Succesful \nProduct: ${product}\nTransaction ID: ${id} \nDate: ${nigeriaTimeString}` });
-        await sendMessage(senderId, { text: `Your current account balance is:   ₦${accBalance.balance}` });
+        //await sendMessage(senderId, { text: `Transaction Succesful \nProduct: ${product}\nTransaction ID: ${id} \nDate: ${nigeriaTimeString}` });
+        await sendMessage(senderId, { 
+            text: `Your current account balance is:   ₦${accBalance.balance}` 
+        });
+        await sendMessage(response.data.meta.senderId, {
+            text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
+        
+        });
+          await sendMessage(senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n-BotSub'})
+         
     };
 
     if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
