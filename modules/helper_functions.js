@@ -130,7 +130,7 @@ async function refundPayment(response, price) {
       comments: 'transaction requirement not met',
     });*/
 
-    console.log('payment refund response in refundPayment function', resp);
+    //console.log('payment refund response in refundPayment function', resp);
     const date = new Date();
 
     // Format the Nigeria time using the formatter

@@ -54,7 +54,7 @@ console.log(__filename, process.env.FLW_H);
 console.log('directory-name 👉️', __dirname);
 
 // initialising app
-const app = express();
+const app = new express();
 
 // configuring handlebars as app templating engine
 app.engine(

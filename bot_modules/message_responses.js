@@ -16,9 +16,18 @@ const { createVAccount } = require('./../modules/gateway.js');
 
 
 // function to respond to unexpected message
-async function defaultMessageHandler(event) {
+async function defaultMessageHandler(event, message=false) {
   const senderId = event.sender.id;
+  let text;
   const userName = await getUserName(senderId);
+
+  if (message)  {
+    text = event.message.text.trim();
+    if (text.toLowerCase() === 'q') {
+      await cancelTransaction(senderId);
+      return;
+    };
+  };
 
   await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
   await sendTemplate(senderId, responseServices);

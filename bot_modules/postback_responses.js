@@ -317,6 +317,8 @@ async function changePhoneNumber(event) {
 // function to reset user payload
 async function cancelTransaction(senderId, end = false) {
   await reset(senderId);
+
+  console.log('condition in cancelTraanscation::::::  ', end);
   if (end) return;
   await sendMessage(senderId, { text: 'Transaction Cancled' });
   await sendMessage(senderId, { text: 'What do you want to do next' });

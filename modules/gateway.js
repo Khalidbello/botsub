@@ -75,7 +75,11 @@ async function createVAccount(email, reference, bvn, botType, currentCount = 0) 
 // webhook handler function to handle updating user balance
 async function respondToWebhook(webhookPayload, res, host) {
     const data = webhookPayload.data || webhookPayload;
-    if (data.status !== "successful") return console.log('transaction not succesful::::::::::::: account funding not sucesfully carried out'); // check if transaction was succesful 
+    if (data.status.toLowerCase() !== "successful") {
+      console.log('transaction not succesful::::::::::::: account funding not sucesfully carried out'); // check if transaction was succesful 
+      return;
+    };
+
     const id = data.id;
     const reference = Number(data.txRef) || Number(data.tx_ref); // this vlaue is same as that of bot user sender id
     const amount = Number(data.amount);
@@ -87,12 +91,20 @@ async function respondToWebhook(webhookPayload, res, host) {
         const response = await flw.Transaction.verify({ id: id }); // check again if transaction is succesful
         console.log('transaction details', response);
 
-        if (response.status === 'error') return res.json({ status: 'error', message: 'error fetching transaction' });
+        if (response.status === 'error') {
+            console.log('error occured while cnfirming tansacion');
+            return;
+        };
+
+        if ( response.data.status.toLowerCase() !== "successful") {
+            console.log("transaction not successfully carried out: in wallet top up");
+            return;
+        }
 
         console.log('reference in wallet topup: ', reference, data);
 
         // check if transaction was made by user with no virtual account
-        if (response.data.meta) {
+        if (response.data.meta && response.data.meta.type) {
             return await axios.get(
                 `https://${host}/gateway/confirm?transaction_id=${data.id}&tx_ref=${data.txRef}&webhook=webhooyouu`
             );
@@ -109,6 +121,7 @@ async function respondToWebhook(webhookPayload, res, host) {
         console.log('account in wallet topup', account);
         if (account.botType === "facebook") {
             // send botuser a notification to
+            await sendMessage(reference, { text: 'Your account account topup was successful.' });
             await sendMessage(reference, { text: `Your new account balance is: ${account.balance}` });
 
             // check if user has an outsanding transaction and automatic initiate if any

@@ -20,6 +20,7 @@ const {
   changeReferralBonusPhoneNumber,
 } = require('./referral_message_responses.js');
 const BotUsers = require('../models/fb_bot_users.js');
+const { trusted } = require('mongoose');
 
 
 async function processMessage(event, res) {
@@ -81,7 +82,7 @@ async function processMessage(event, res) {
       changeReferralBonusPhoneNumber(event);
       break;
     default:
-      defaultMessageHandler(event);
+      defaultMessageHandler(event, true);
   };
 }; // end of process message switch
 
