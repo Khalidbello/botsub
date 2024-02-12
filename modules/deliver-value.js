@@ -127,11 +127,11 @@ async function helpSuccesfulDelivery(req, res, response, balance, type) {
     await sendMessage(response.data.meta.senderId, {
       text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${response.data.meta.number} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
     });
-    await sendMessage(response.data.meta.senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n-BotSub'})
-    await sendMessage(response.data.meta.senderId, { text: '\nElevate your top-ups with a dedicated virtual account! Fund once, enjoy infinite purchases. \nGet your permanent account number now!'})
+    await sendMessage(response.data.meta.senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub'});
+    await sendMessage(response.data.meta.senderId, { text: '\nElevate your top-ups with a dedicated virtual account! Fund once, enjoy infinite purchases. \n\nGet your permanent account number now!'});
     await sendTemplate(response.data.meta.senderId, getVirtualAccountTemp);
   };
-  if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
+  //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
 }; // end of helpSuccesfulDelivery
 
 

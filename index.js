@@ -90,7 +90,7 @@ app.use('/', viewsRouter);
 app.use('/', fbBotRouter);
 
 // handling 404
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.status(404).render('not-found');
 });
 

@@ -215,7 +215,7 @@ async function generateAccountNumber(event) {
     if (response.status === 'success') {
       const data = response.meta.authorization;
       await sendMessage(senderId, { text: 'Bank Name: ' + data.transfer_bank });
-      await sendMessage(senderId, { text: 'Account Name: BotSub' });
+      await sendMessage(senderId, { text: 'Account Name: BotSub FLW' });
       await sendMessage(senderId, { text: 'Account Number: 👇' });
       await sendMessage(senderId, { text: data.transfer_account });
       await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });

@@ -35,6 +35,7 @@ function validateNumber(phoneNumber) {
       '0704',
       '0912',
       '0904',
+      '0914',
     ],
     Airtel: ['0901', '0701', '0911', '0802', '0808', '0708', '0812', '0902', '0907'],
     Glo: ['0805', '0811', '0915', '0705', '0905', '0807', '0815'],
@@ -205,7 +206,7 @@ async function confirmClaimReferralBonus(event) {
 // function to remind user to fund wallet
 async function remindToFundWallet(senderId, amount, balance, accountDetails) {
   await sendMessage(senderId, { text: 'Sorry your account balance is currently low.'});
-  await sendMessage(senderId, { text: `Your current account number is: ₦${balance}`});
+  await sendMessage(senderId, { text: `Your current account balance is: ₦${balance}`});
   await sendMessage(senderId, { text: `Kindly fund your account with a minimum amount of ₦${Math.abs(amount)}`});
   await sendMessage(senderId, { text: `Bank Name: ${accountDetails.bankName}`});
   await sendMessage(senderId, { text: `Account Name: ${accountDetails.accountName}`});

@@ -8,6 +8,7 @@ const Transactions = require('./../models/transactions.js');
 const PaymentAccounts = require('./../models/payment-accounts.js');
 const { creditReferrer } = require('./credit_referrer.js');
 const handleFirstMonthBonus = require('./monthly_bonuses.js');
+const axios = require('axios');
 
 
 // function to carryout purchase
@@ -30,7 +31,7 @@ async function deliverData(purchasePayload, bot, senderId) {
         },
         payload: {
             network: Number(purchasePayload.networkID),
-            mobile_number: purchasePayload.number,
+            mobile_number: purchasePayload.phoneNumber,
             plan: Number(purchasePayload.planID),
             Ported_number: true,
         }
@@ -55,8 +56,8 @@ function deliverAirtime(purchasePayload, bot, senderId) {
         },
         payload: {
             network: Number(purchasePayload.networkID),
-            amount: Number(purchasePayload.amount),
-            mobile_number: purchasePayload.number,
+            amount: Number(purchasePayload.price),
+            mobile_number: purchasePayload.phoneNumber,
             Ported_number: true,
             airtime_type: 'VTU',
         }
@@ -86,7 +87,19 @@ async function makePurchaseRequest(purchasePayload, options, bot, transactionTyp
             throw 'could not deliver data'
         };
     } catch (error) {
-        console.log('in make purchase request failed in cacth error block: ', error);
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log('errror while makig purchase request in v-acounnt::: Server responded with status:', error.response.status);
+            console.log('Response data:', error.response.data);
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.log('No response received. Request:', error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.error('Error:', error.message);
+        };
+
         if (bot === 'facebook') {
             await sendMessage(senderId, { text: 'Transaction failed please try again.' });
             return confirmDataPurchaseResponse(senderId);
@@ -151,11 +164,11 @@ async function helpSuccesfulDelivery(purchasePayload, balance, senderId, bot) {
             text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
         
         });
-          await sendMessage(senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n-BotSub'})
+          await sendMessage(senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub'})
          
     };
 
-    if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
+    //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
 }; // end of helpSuccesfulDelivery
 
 

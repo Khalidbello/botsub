@@ -89,7 +89,7 @@ const checkRequirementMet = async function (response, req) {
 
     console.log('passed all remaining last in data');
     if (
-      response.data.status === 'successful' &&
+      response.data.status.toLowerCase() === 'successful' &&
       pricePaid >= price &&
       response.data.currency === 'NGN' &&
       response.data.tx_ref === req.query.tx_ref

@@ -76,8 +76,8 @@ async function createVAccount(email, reference, bvn, botType, currentCount = 0) 
 async function respondToWebhook(webhookPayload, res, host) {
     const data = webhookPayload.data || webhookPayload;
     if (data.status.toLowerCase() !== "successful") {
-      console.log('transaction not succesful::::::::::::: account funding not sucesfully carried out'); // check if transaction was succesful 
-      return;
+        console.log('transaction not succesful::::::::::::: account funding not sucesfully carried out'); // check if transaction was succesful 
+        return;
     };
 
     const id = data.id;
@@ -92,22 +92,21 @@ async function respondToWebhook(webhookPayload, res, host) {
         console.log('transaction details', response);
 
         if (response.status === 'error') {
-            console.log('error occured while cnfirming tansacion');
+            console.log('error occured while confirming tansacion');
             return;
         };
 
-        if ( response.data.status.toLowerCase() !== "successful") {
+        if (response.data.status.toLowerCase() !== "successful") {
             console.log("transaction not successfully carried out: in wallet top up");
             return;
-        }
+        };
 
         console.log('reference in wallet topup: ', reference, data);
 
         // check if transaction was made by user with no virtual account
         if (response.data.meta && response.data.meta.type) {
-            return await axios.get(
-                `https://${host}/gateway/confirm?transaction_id=${data.id}&tx_ref=${data.txRef}&webhook=webhooyouu`
-            );
+            await carryOutNonVAccount(data, host);
+            return;
         };
 
 
@@ -135,6 +134,28 @@ async function respondToWebhook(webhookPayload, res, host) {
     };
 }; // end of respondToWebhook
 
+
+
+// helper function to carry out non-v-account purchase request
+async function carryOutNonVAccount(data, host) {
+    console.log('carrying out no v account purchase request:::::::::::      ::::::::::');
+    try {
+        await axios.get(
+            `https://${host}/gateway/confirm?transaction_id=${data.id}&tx_ref=${data.tx_ref || data.txRef}&webhook=webhooyouu`
+        );
+    } catch (error) {
+        // Handle errors
+        if (error.response) {
+            console.error('Server responded with an error status:', error.response.status);
+            console.error('Response data:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received from the server:', error.request);
+        } else {
+            console.error('Error occurred while setting up the request:', error.message);
+        };
+        console.error('Error config:', error.config);
+    };
+}; // end of carryOutVAccount
 
 module.exports = {
     respondToWebhook,

@@ -8,6 +8,7 @@ const {
   validateNumber,
   validateAmount,
   confirmDataPurchaseResponse,
+  helperConfirmPurchase,
 } = require('./helper_functions.js');
 const getUserName = require('./get_user_info.js');
 const BotUsers = require('../models/fb_bot_users.js');
