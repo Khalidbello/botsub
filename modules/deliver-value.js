@@ -146,7 +146,7 @@ async function helpFailedDelivery(req, res, response) {
 
     console.log('bot feed back');
     await sendMessage(response.data.meta.senderId, {
-      text: `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${purchasePayload.phoneNumber} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+      text: `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${response.data.meta.number} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
     });
     await sendTemplate(
       response.data.meta.senderId,
