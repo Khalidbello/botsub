@@ -35,6 +35,7 @@
     "mongodb": "^5.7.0",
     "mongoose": "^8.0.2",
     "nodemailer": "^6.9.1",
+    "randomstring": "^1.3.0",
     "request": "^2.88.2",
     "validator": "^13.11.0"
   },
