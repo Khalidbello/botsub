@@ -140,7 +140,7 @@ router.post('/webhook', async (req, res) => {
     };
 
     console.log('btw hook body', payload);
-    
+
     respondToWebhook(payload, res, req.hostname);
   } catch (err) {
     res.status(300).send('an error occured');
