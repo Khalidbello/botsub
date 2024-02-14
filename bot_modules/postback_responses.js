@@ -1,7 +1,7 @@
 const sendMessage = require('./send_message.js');
 const sendTemplate = require('./send_templates.js');
 const axios = require('axios');
-const { confirmDataPurchaseResponse } = require('./helper_functions.js')
+const { confirmDataPurchaseResponse, saveErrorToJson } = require('./helper_functions.js')
 const getUserName = require('./get_user_info.js');
 const { dateFormatter, noTransactFound, remindToFundWallet } = require('./helper_functions.js');
 const {
@@ -223,11 +223,12 @@ async function generateAccountNumber(event) {
       cancelTransaction(senderId, true);
       return;
     };
-    throw 'error occured while trying to transfer account'
+    throw response;
   } catch (err) {
     await sendMessage(senderId, { text: 'An error occured \nPlease reclick make purchase button' });
     await confirmDataPurchaseResponse(senderId);
     console.log('Error getting transfer account:', err);
+    saveErrorToJson(err);
   };
 }; // end of generateAccountNumber
 

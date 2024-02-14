@@ -5,6 +5,7 @@ const flutterwave = require('flutterwave-node-v3');
 const axios = require('axios');
 const { ObjectId } = require('mongodb');
 const Transactions = require('./../models/transactions.js');
+const fs = require('fs');
 
 //const uri = `mongodb+srv://bellokhalid74:${process.env.MONGO_PASS1}@botsubcluster.orij2vq.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -41,11 +42,11 @@ function returnPreviouslyDelivered(response) {
     dateStyle: 'long',
     timeStyle: 'medium',
   });
- 
+
   // Format the Nigeria time using the formatter
   const nigeriaTimeString = nigeriaFormatter.format(date);
 
-   const details = {
+  const details = {
     network: meta.network,
     number: meta.number,
     email: response.data.customer.email,
@@ -291,11 +292,6 @@ async function fundWallet(bankCode, accNum, amount) {
 } // end of fund wallet
 
 
-// helpr function to imitate sleep
-async function sleep(delay) {
-  return new Promise(resolve => setTimeout(resolve, delay));
-}; // end of sleep
-
 
 module.exports = {
   checkIfPreviouslyDelivered,
@@ -307,5 +303,4 @@ module.exports = {
   retryFailedHelper,
   dateFormatter,
   fundWallet,
-  sleep,
 };

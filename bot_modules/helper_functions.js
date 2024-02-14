@@ -219,6 +219,35 @@ async function remindToFundWallet(senderId, amount, balance, accountDetails) {
 
 
 
+// function to save error in error.json file
+function saveErrorToJson(error) {
+  const fs = require('fs');
+  const errorData = {
+      timestamp: new Date().toISOString(),
+      error: error.message,
+      stackTrace: error.stack
+  };
+
+  fs.appendFile('error.json', JSON.stringify(errorData, null, 2) + '\n', (err) => {
+      if (err) {
+          console.error('Error appending error to file:', err);
+      } else {
+          console.log('Error appended to error.json');
+      }
+  });
+}; // end of saveErrorToJSON
+
+
+// Example usage:
+try {
+  // Some code that might throw an error
+  throw new Error('Example error');
+} catch (error) {
+  //saveErrorToJson(error);
+}; // end of 
+
+
+
 module.exports = {
   noTransactFound,
   validateNumber,
@@ -230,4 +259,5 @@ module.exports = {
   txCode,
   helperConfirmPurchase,
   remindToFundWallet,
+  saveErrorToJson,
 };
