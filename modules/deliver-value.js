@@ -134,7 +134,7 @@ async function helpSuccesfulDelivery(req, res, response, balance, type) {
     if (type === 'data') await handleFirstMonthBonus(response.data.customer.email, response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
 
     await sendMessage(response.data.meta.senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub' });
-    await sendMessage(response.data.meta.senderId, { text: '\nElevate your top-ups with a dedicated virtual account! Fund once, enjoy infinite purchases. \n\nGet your permanent account number now!' });
+    await sendMessage(response.data.meta.senderId, { text: '\nEnhance your recharges by utilizing a dedicated virtual account! Obtain a permanent account number for all transactions. Secure your permanent account number today!' });
     await sendTemplate(response.data.meta.senderId, getVirtualAccountTemp);
   };
   //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
