@@ -49,9 +49,9 @@ async function deliverData(response, req, res) {
   };
 
   if (process.env.NODE_ENV === 'production') {
-    makePurchaseRequest(response, res, req, options, type='data');
+    makePurchaseRequest(response, res, req, options, type = 'data');
   } else {
-    simulateMakePurchaseRequest(response, res, req, true, type='data');
+    simulateMakePurchaseRequest(response, res, req, true, type = 'data');
   };
 }; // end of deliver value function
 
@@ -74,9 +74,9 @@ function deliverAirtime(response, req, res) {
   };
 
   if (process.env.NODE_ENV === 'production') {
-    makePurchaseRequest(response, res, req, options, type='airtime');
+    makePurchaseRequest(response, res, req, options, type = 'airtime');
   } else {
-    simulateMakePurchaseRequest(response, res, req, true, type='airtime');
+    simulateMakePurchaseRequest(response, res, req, true, type = 'airtime');
   };
 }; // end of deliverAirtime
 
@@ -85,7 +85,7 @@ function deliverAirtime(response, req, res) {
 async function makePurchaseRequest(response, res, req, options, type) {
   console.log('in make purchase request')
   try {
-    const resp = await  axios.post(options.url, options.payload, { headers: options.headers});
+    const resp = await axios.post(options.url, options.payload, { headers: options.headers });
     console.log('response: ', resp.data);
 
     if (resp.data.Status === 'successful') {
@@ -116,7 +116,8 @@ async function simulateMakePurchaseRequest(response, res, req, condition = false
 
 // helper function for succesfull response
 async function helpSuccesfulDelivery(req, res, response, balance, type) {
-  addToDelivered(req, response, type);
+  await addToDelivered(req, response, type);
+
   // calling function to send mail and json response object
   sendSuccessfulResponse(response, res);
 
@@ -127,8 +128,13 @@ async function helpSuccesfulDelivery(req, res, response, balance, type) {
     await sendMessage(response.data.meta.senderId, {
       text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${response.data.meta.number} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
     });
-    await sendMessage(response.data.meta.senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub'});
-    await sendMessage(response.data.meta.senderId, { text: '\nElevate your top-ups with a dedicated virtual account! Fund once, enjoy infinite purchases. \n\nGet your permanent account number now!'});
+
+    // check for bonus delivery
+    if (Number(response.data.meta.firstPurchase) === 1 && type === 'data') await creditReferrer(response.data.meta.senderId);
+    if (type === 'data') await handleFirstMonthBonus(response.data.customer.email, response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
+
+    await sendMessage(response.data.meta.senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub' });
+    await sendMessage(response.data.meta.senderId, { text: '\nElevate your top-ups with a dedicated virtual account! Fund once, enjoy infinite purchases. \n\nGet your permanent account number now!' });
     await sendTemplate(response.data.meta.senderId, getVirtualAccountTemp);
   };
   //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
@@ -174,12 +180,10 @@ async function addToDelivered(req, response, type) {
     status: true,
     date: Date(),
     product: prod,
-    beneficiary: parseInt(response.data.meta.number, )
+    beneficiary: parseInt(response.data.meta.number,)
   });
   const response2 = await newTransaction.save();
   console.log('add to delivered response', response2);
-  if (Number(response.data.meta.firstPurchase)===1 && type==='data') await creditReferrer(response.data.meta.senderId);
-  if (type === 'data') await handleFirstMonthBonus(response.data.customer.email,  response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
   return;
 }; // end of addToDelivered
 

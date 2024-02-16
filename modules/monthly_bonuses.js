@@ -50,9 +50,13 @@ function validateDate(lastDate) {
     const date = new Date();
     const prevDate = new Date(lastDate);
 
-    if ((date.getFullYear() - prevDate.getFullYear() > 0) && (date.getMonth() - prevDate.getMonth() > 0)) return true;
+    if ((date.getFullYear() > prevDate.getFullYear()) || (date.getFullYear() === prevDate.getFullYear() && date.getMonth() > prevDate.getMonth())) {
+        return true;
+    };
+    console.log(date.getFullYear(), prevDate.getFullYear());
+    console.log(date.getMonth(), prevDate.getMonth());
     return false;
-}; // end of validateDates
+} // end of validateDate
 
 
 // function to set laastPurchase date
