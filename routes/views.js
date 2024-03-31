@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/env-test', (req, res)=> {
-  res.send("change::::::::::::::: moved virtual account prompt to last:::: " + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
+  res.send("change::::::::::::::: updated airtel data pricing..................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
 });
 
 router.get('/test-1', async (req, res) => {
