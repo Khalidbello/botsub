@@ -18,6 +18,7 @@ const PaymentAccounts = require('./../models/payment-accounts.js');
 const BotUsers = require('../models/fb_bot_users.js');
 const handleFirstMonthBonus = require('../modules/monthly_bonuses.js');
 const makePurchase = require('./../modules/v-account-make-purcchase.js');
+const { checkDataStatus, handleDataNetworkNotAvailable } = require('./data-network-checker.js');
 
 
 
@@ -58,6 +59,10 @@ async function sendMtnOffers(event) {
   const message = {
     text: 'Select MTN data offer',
   };
+  // check if data network is active before proceeding
+  const check = await checkDataStatus('MTN');
+
+  if (!check) return handleDataNetworkNotAvailable(senderId);
 
   await sendMessage(senderId, message);
   const offers = await generateFacebookPosts('1', 'MTN');
@@ -77,6 +82,10 @@ async function sendAirtelOffers(event) {
   const message = {
     text: 'Select Airtel data offer',
   };
+  // check if data network is active before proceeding
+  const check = checkDataStatus('Airtel');
+
+  if (!check) return handleDataNetworkNotAvailable(senderId);
 
   await sendMessage(senderId, message);
   const offers = await generateFacebookPosts('4', 'Airtel');
@@ -95,6 +104,10 @@ async function sendGloOffers(event) {
   const message = {
     text: 'Select Glo data offer',
   };
+  // check if data network is active before proceeding
+  const check = checkDataStatus('Glo');
+
+  if (!check) return handleDataNetworkNotAvailable(senderId);
 
   await sendMessage(senderId, message);
   const offers = await generateFacebookPosts('2', 'Glo');
@@ -113,6 +126,10 @@ async function sendNineMobileOffers(event) {
   const message = {
     text: 'Select 9mobile data offer',
   };
+  // check if data network is active before proceeding
+  const check = checkDataStatus('9mobile');
+
+  if (!check) return handleDataNetworkNotAvailable(senderId);
 
   await sendMessage(senderId, message);
   const offers = await generateFacebookPosts('3', '9mobile');
@@ -130,7 +147,11 @@ async function sendNineMobileOffers(event) {
 async function offerSelected(event, payload) {
   const senderId = event.sender.id;
   const message = { text: 'Enter phone number to deliver value to' };
-  console.log('in offerselected', payload);
+  // check if data network is active before proceeding
+  const check = await checkDataStatus('MTN');
+
+  if (!check) return handleDataNetworkNotAvailable(senderId);
+
   await sendMessage(senderId, message);
   await BotUsers.updateOne({ id: senderId }, {
     $set: {
@@ -189,9 +210,9 @@ async function issueReport(event) {
 
 // function to generate account number
 async function generateAccountNumber(event) {
-  let payload;
-  let response;
+  let payload, response;
   const senderId = event.sender.id;
+
   try {
     const botUser = await BotUsers.findOne({ id: senderId }).select('email purchasePayload referrer firstPurchase');
     console.log('generateAccountNumber', botUser);
@@ -204,6 +225,12 @@ async function generateAccountNumber(event) {
     payload.firstPurchase = botUser.firstPurchase;
     payload['senderId'] = senderId;
     let test = payload;
+
+    // check if data network is active bbefore proceeding
+    let check = await checkDataStatus(payload.network);
+
+    if (!check) return handleDataNetworkNotAvailable(senderId);
+
     console.log('in generate account number: ', payload, test);
     await sendMessage(senderId, { text: 'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.' });
     await sendMessage(senderId, { text: 'Value would automatically delivered by our system once payment is made' });
@@ -265,7 +292,7 @@ async function initMakePurchase(senderId) {
   };
 
   if (purchasePayload.price > data[1].balance) return remindToFundWallet(senderId, data[1].balance - purchasePayload.price, data[1].balance, data[1]); // returning function to remind user to fund wallet
-  
+
   makePurchase(purchasePayload, 'facebook', senderId);   // calling function to make function
 }; // end of function to initialise function
 
