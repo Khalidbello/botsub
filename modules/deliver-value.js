@@ -107,16 +107,17 @@ function deliverAirtime(response, req, res) {
 
 // function to make product purchase request
 async function makePurchaseRequest(response, res, req, options, type) {
-  console.log('in make purchase request')
+  const { updateNetworkStatus } = require('./../bot_modules/data-network-checker.js');
+
   try {
     const resp = await axios.post(options.url, options.payload, { headers: options.headers });
     console.log('response: ', resp.data);
 
     if (resp.data.Status === 'successful') {
-      console.log('in succesfull make purchase request');
+      updateNetworkStatus(response.data.meta.network, true); // updating network status to true
       helpSuccesfulDelivery(req, res, response, resp.data.balance_after, type);
     } else {
-      console.log('response value::::::::::::::: ', resp.data.Status);
+      updateNetworkStatus(response.data.meta.network, false); // updating network status to false
       throw 'could not deliver data'
     };
   } catch (error) {
