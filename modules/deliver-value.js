@@ -20,15 +20,39 @@ const transporter = nodemailer.createTransport({
     pass: process.env.ADMIN_MAIL_P,
   },
 }); // end of transporter
+const { Mutex } = require('async-mutex'); // module to prevent multiple settlements
 
+
+const transactionMutex = new Mutex();  // mutex for delivering transactions
 
 // function to initiate delvering of values 
-function deliverValue(response, req, res, requirementMet) {
-  if (requirementMet.type === 'data') {
-    return deliverData(response, req, res);
-  } else if (requirementMet.type === 'airtime') {
-    return deliverAirtime(response, req, res);
-  };
+async function deliverValue(response, req, res, requirementMet) {
+  // Attempt to acquire the lock for the transaction
+  const release = await transactionMutex.acquire();
+  try {
+    const transaction = await Transactions.findOne({ id: req.query.transaction_id })
+    if (transaction) {
+      if (transaction.status === true) {
+        res.json({ status: 'error', message: 'Transaction has already been settled' });
+        if (response.data.meta.bot) {
+          await sendMessage(response.data.meta.senderId, {
+            text: `Sorry this transaction has already been delivered \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
+          });
+        };
+        return;
+      };
+    };
+
+    // Proceed with delivery process...
+    if (requirementMet.type === 'data') {
+      return deliverData(response, req, res);
+    } else if (requirementMet.type === 'airtime') {
+      return deliverAirtime(response, req, res);
+    };
+  } finally {
+    // Release the lock after processing is done
+    release();
+  }
 };
 
 

@@ -36,12 +36,12 @@ router.get('/confirm', async (req, res) => {
 
   // calling function to check if transaction has ever beign made before
   const previouslyDelivered = await checkIfPreviouslyDelivered(req.query.transaction_id);
+
   if (previouslyDelivered) {
     let details = returnPreviouslyDelivered(response);
     res.json({ status: 'settled', data: details });
 
     if (response.data.meta.bot) {
-      console.log('bot feedback for already delivered transaction');
       await sendMessage(response.data.meta.senderId, {
         text: `Sorry this transaction has already been deliverd \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
       });
