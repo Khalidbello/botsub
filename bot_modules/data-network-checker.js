@@ -35,8 +35,8 @@ async function updateNetworkStatus(network, status) {
 };
 
 // function to  handle network not available requests
-async function handleDataNetworkNotAvailable(senderId) {
-    await sendMessage(senderId, { text: 'Sorry network is not available.' });
+async function handleDataNetworkNotAvailable(senderId, network) {
+    await sendMessage(senderId, { text: `Sorry ${network} network is not available at the moment. \nPlease try again later.` });
 };
 
 

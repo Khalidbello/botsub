@@ -62,7 +62,7 @@ async function sendMtnOffers(event) {
   // check if data network is active before proceeding
   const check = await checkDataStatus('MTN');
 
-  if (!check) return handleDataNetworkNotAvailable(senderId);
+  if (!check) return handleDataNetworkNotAvailable(senderId, 'MTN');
 
   await sendMessage(senderId, message);
   const offers = await generateFacebookPosts('1', 'MTN');
@@ -85,7 +85,7 @@ async function sendAirtelOffers(event) {
   // check if data network is active before proceeding
   const check = checkDataStatus('Airtel');
 
-  if (!check) return handleDataNetworkNotAvailable(senderId);
+  if (!check) return handleDataNetworkNotAvailable(senderId, 'Airtel');
 
   await sendMessage(senderId, message);
   const offers = await generateFacebookPosts('4', 'Airtel');
@@ -107,7 +107,7 @@ async function sendGloOffers(event) {
   // check if data network is active before proceeding
   const check = checkDataStatus('Glo');
 
-  if (!check) return handleDataNetworkNotAvailable(senderId);
+  if (!check) return handleDataNetworkNotAvailable(senderId, 'Glo');
 
   await sendMessage(senderId, message);
   const offers = await generateFacebookPosts('2', 'Glo');
@@ -129,7 +129,7 @@ async function sendNineMobileOffers(event) {
   // check if data network is active before proceeding
   const check = checkDataStatus('9mobile');
 
-  if (!check) return handleDataNetworkNotAvailable(senderId);
+  if (!check) return handleDataNetworkNotAvailable(senderId, '9mobile');
 
   await sendMessage(senderId, message);
   const offers = await generateFacebookPosts('3', '9mobile');
@@ -148,9 +148,9 @@ async function offerSelected(event, payload) {
   const senderId = event.sender.id;
   const message = { text: 'Enter phone number to deliver value to' };
   // check if data network is active before proceeding
-  const check = await checkDataStatus('MTN');
+  //const check = await checkDataStatus('MTN');
 
-  if (!check) return handleDataNetworkNotAvailable(senderId);
+  //if (!check) return handleDataNetworkNotAvailable(senderId);
 
   await sendMessage(senderId, message);
   await BotUsers.updateOne({ id: senderId }, {
@@ -229,7 +229,7 @@ async function generateAccountNumber(event) {
     // check if data network is active bbefore proceeding
     let check = await checkDataStatus(payload.network);
 
-    if (!check) return handleDataNetworkNotAvailable(senderId);
+    if (!check) return handleDataNetworkNotAvailable(senderId, payload.network);
 
     console.log('in generate account number: ', payload, test);
     await sendMessage(senderId, { text: 'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.' });
