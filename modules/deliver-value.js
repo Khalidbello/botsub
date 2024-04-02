@@ -20,6 +20,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.ADMIN_MAIL_P,
   },
 }); // end of transporter
+const { updateNetworkStatus } = require('./../bot_modules/data-network-checker.js');
 const { Mutex } = require('async-mutex'); // module to prevent multiple settlements
 
 
@@ -45,9 +46,9 @@ async function deliverValue(response, req, res, requirementMet) {
 
     // Proceed with delivery process...
     if (requirementMet.type === 'data') {
-      return deliverData(response, req, res);
+      await deliverData(response, req, res);
     } else if (requirementMet.type === 'airtime') {
-      return deliverAirtime(response, req, res);
+      await deliverAirtime(response, req, res);
     };
   } finally {
     // Release the lock after processing is done
@@ -73,15 +74,15 @@ async function deliverData(response, req, res) {
   };
 
   if (process.env.NODE_ENV === 'production') {
-    makePurchaseRequest(response, res, req, options, type = 'data');
+    await makePurchaseRequest(response, res, req, options, type = 'data');
   } else {
-    simulateMakePurchaseRequest(response, res, req, true, type = 'data');
+    await simulateMakePurchaseRequest(response, res, req, true, type = 'data');
   };
 }; // end of deliver value function
 
 
 // function to make airtime purchase request
-function deliverAirtime(response, req, res) {
+async function deliverAirtime(response, req, res) {
   let options = {
     url: 'https://opendatasub.com/api/topup/',
     headers: {
@@ -98,31 +99,29 @@ function deliverAirtime(response, req, res) {
   };
 
   if (process.env.NODE_ENV === 'production') {
-    makePurchaseRequest(response, res, req, options, type = 'airtime');
+    await makePurchaseRequest(response, res, req, options, type = 'airtime');
   } else {
-    simulateMakePurchaseRequest(response, res, req, true, type = 'airtime');
+    await simulateMakePurchaseRequest(response, res, req, true, type = 'airtime');
   };
 }; // end of deliverAirtime
 
 
 // function to make product purchase request
 async function makePurchaseRequest(response, res, req, options, type) {
-  const { updateNetworkStatus } = require('./../bot_modules/data-network-checker.js');
-
   try {
     const resp = await axios.post(options.url, options.payload, { headers: options.headers });
     console.log('response: ', resp.data);
 
     if (resp.data.Status === 'successful') {
       updateNetworkStatus(response.data.meta.network, true); // updating network status to true
-      helpSuccesfulDelivery(req, res, response, resp.data.balance_after, type);
+      await helpSuccesfulDelivery(req, res, response, resp.data.balance_after, type);
     } else {
       updateNetworkStatus(response.data.meta.network, false); // updating network status to false
       throw 'could not deliver data'
     };
   } catch (error) {
     console.log('in make purchase request failed in cacth error block:', error);
-    helpFailedDelivery(req, res, response);
+    await helpFailedDelivery(req, res, response);
   };
 }; // end of actualBuyData
 
@@ -130,7 +129,11 @@ async function makePurchaseRequest(response, res, req, options, type) {
 // function to make product purchase request simulation
 async function simulateMakePurchaseRequest(response, res, req, condition = false, type) {
   try {
-    if (condition) return helpSuccesfulDelivery(req, res, response, 6000, type);
+    if (true) {
+      await updateNetworkStatus(response.data.meta.network, true);
+      return await helpSuccesfulDelivery(req, res, response, 6000, type);
+    }
+    updateNetworkStatus(response.data.meta.network, false);
     throw 'product purchas request not successful';
   } catch (error) {
     console.log('make purchase request simulation failed in cacth error block:', error);
@@ -144,7 +147,7 @@ async function helpSuccesfulDelivery(req, res, response, balance, type) {
   await addToDelivered(req, response, type);
 
   // calling function to send mail and json response object
-  sendSuccessfulResponse(response, res);
+  await sendSuccessfulResponse(response, res);
 
   if (response.data.meta.bot) {
     const date = new Date() //new Date(response.data.customer.created_at);
@@ -218,7 +221,7 @@ async function addToDelivered(req, response, type) {
 async function addToFailedToDeliver(req, response) {
   try {
     let transaction = await Transactions.findOne({ id: req.query.transaction_id })
-    if (transaction) return console.log('failed transaction already exists', transaction);
+    if (transaction) return console.log('failed transaction already exists, addToFailedToDelver function', transaction);
 
     let prod = product(response);
     const newTransaction = new Transactions({

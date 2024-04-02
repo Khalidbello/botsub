@@ -1,6 +1,6 @@
 {
-    "MTN": true,
-    "Glo": true,
-    "9mobile": true,
-    "Airtel": true
+  "MTN": true,
+  "Glo": true,
+  "9mobile": true,
+  "Airtel": false
 }

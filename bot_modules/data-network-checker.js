@@ -13,7 +13,7 @@ async function checkDataStatus(network) {
 async function updateNetworkStatus(network, status) {
     try {
         // Read the file content
-        const fileContent = await fs.readFile('files/data-network-status.json', 'utf-8');
+        const fileContent = await fsP.readFile('files/data-network-status.json', 'utf-8');
 
         // Parse the JSON content into a JavaScript object
         let data = JSON.parse(fileContent);
@@ -25,7 +25,7 @@ async function updateNetworkStatus(network, status) {
         const updatedContent = JSON.stringify(data, null, 2);
 
         // Write the JSON content back to the file
-        await fs.writeFile('files/data-network-status.json', updatedContent);
+        await fsP.writeFile('files/data-network-status.json', updatedContent);
 
         console.log('File updated successfully.');
     } catch (error) {
