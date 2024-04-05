@@ -22,6 +22,8 @@ const transporter = nodemailer.createTransport({
 }); // end of transporter
 const { updateNetworkStatus } = require('./../bot_modules/data-network-checker.js');
 const { Mutex } = require('async-mutex'); // module to prevent multiple settlements
+const { addDataProfit } = require('./save-profit.js');
+
 
 
 const transactionMutex = new Mutex();  // mutex for delivering transactions
@@ -76,7 +78,7 @@ async function deliverData(response, req, res) {
   if (process.env.NODE_ENV === 'production') {
     await makePurchaseRequest(response, res, req, options, type = 'data');
   } else {
-    await simulateMakePurchaseRequest(response, res, req, true, type = 'data');
+    await simulateMakePurchaseRequest(response, res, req, false, type = 'data');
   };
 }; // end of deliver value function
 
@@ -123,13 +125,13 @@ async function makePurchaseRequest(response, res, req, options, type) {
     console.log('in make purchase request failed in cacth error block:', error);
     await helpFailedDelivery(req, res, response);
   };
-}; // end of actualBuyData
+}; // end of makePurchaseRequest
 
 
 // function to make product purchase request simulation
 async function simulateMakePurchaseRequest(response, res, req, condition = false, type) {
   try {
-    if (true) {
+    if (condition) {
       await updateNetworkStatus(response.data.meta.network, true);
       return await helpSuccesfulDelivery(req, res, response, 6000, type);
     }
@@ -145,6 +147,8 @@ async function simulateMakePurchaseRequest(response, res, req, condition = false
 // helper function for succesfull response
 async function helpSuccesfulDelivery(req, res, response, balance, type) {
   await addToDelivered(req, response, type);
+
+  if (type === 'data') addDataProfit(response);
 
   // calling function to send mail and json response object
   await sendSuccessfulResponse(response, res);
