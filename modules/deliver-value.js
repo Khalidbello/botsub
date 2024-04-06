@@ -131,7 +131,7 @@ async function makePurchaseRequest(response, res, req, options, type) {
 // function to make product purchase request simulation
 async function simulateMakePurchaseRequest(response, res, req, condition = false, type) {
   try {
-    if (condition) {
+    if (true) {
       await updateNetworkStatus(response.data.meta.network, true);
       return await helpSuccesfulDelivery(req, res, response, 6000, type);
     }

@@ -83,7 +83,7 @@ async function sendAirtelOffers(event) {
     text: 'Select Airtel data offer',
   };
   // check if data network is active before proceeding
-  const check = checkDataStatus('Airtel');
+  const check = await checkDataStatus('Airtel');
 
   if (!check) return handleDataNetworkNotAvailable(senderId, 'Airtel');
 
@@ -105,7 +105,7 @@ async function sendGloOffers(event) {
     text: 'Select Glo data offer',
   };
   // check if data network is active before proceeding
-  const check = checkDataStatus('Glo');
+  const check = await checkDataStatus('Glo');
 
   if (!check) return handleDataNetworkNotAvailable(senderId, 'Glo');
 
@@ -127,7 +127,7 @@ async function sendNineMobileOffers(event) {
     text: 'Select 9mobile data offer',
   };
   // check if data network is active before proceeding
-  const check = checkDataStatus('9mobile');
+  const check = await checkDataStatus('9mobile');
 
   if (!check) return handleDataNetworkNotAvailable(senderId, '9mobile');
 
