@@ -4,7 +4,9 @@
 
 require('dotenv').config();
 const express = require('express');
+const session = require('express-session');
 const handlebars = require('express-handlebars');
+const cors = require('cors');
 
 // importing modules to handle different routes
 // just to commit
@@ -12,6 +14,7 @@ const viewsRouter = require('./routes/views.js');
 const frontEndApiRouter = require('./routes/frontend-api.js');
 const paymentGateWayRouter = require('./routes/payment-gateway.js');
 const fbBotRouter = require('./routes/fb-bot-webhook.js');
+const adminRouter = require('./routes/admin.js');
 const connectDB = require('./models/connectdb.js');
 
 // setting  configurations for different environment
@@ -73,21 +76,48 @@ const noCacheMiddleware = (req, res, next) => {
   next();
 };
 
+// Set up session middleware
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: true } // Set secure to true if using HTTPS
+}));
+
 // static middleware
 app.use(express.static('public'));
+
+
+
 // Use the middleware for all routes
 app.use(noCacheMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 // connecting db
 connectDB();
 
 //locking in middlewares for route handling
-app.use('/gateway', paymentGateWayRouter);
-app.use('/front-api', frontEndApiRouter);
 app.use('/', viewsRouter);
 app.use('/', fbBotRouter);
+app.use('/gateway', paymentGateWayRouter);
+app.use('/front-api', frontEndApiRouter);
+app.use('/admin', adminRouter);
+
+
+// some important routes
+app.post('/admin-login', (req, res) => {
+  const { name, password } = req.body;
+
+  if ((name === process.env.ADMIN_NAME) && (password === process.env.ADMIN_PASSWORD)) {
+    req.session.user = { user: name, admin: true };
+    res.status(200).send('loged in succesfully');
+  } else {
+    res.status(401).send('Unauthorized: Wrong password');
+  };
+});
+
 
 // handling 404
 app.use(function (req, res, next) {

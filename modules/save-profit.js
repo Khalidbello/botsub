@@ -6,16 +6,16 @@ const fsP = require('fs').promises;
 async function addDataProfit(response) {
     const dataDetails = JSON.parse(await fsP.readFile('files/data-details.json', 'utf-8'));
     const plan = dataDetails[response.data.meta.networkID][response.data.meta.index];
-    console.log('flutter response.......', response.data.meta);
-    console.log('plan..........', plan);
     const profit = (plan.price - plan.price * 0.014) - plan.aPrice;
-
+    const dat = new Date(response.data.created_at);
+    
     const newProfit = new Profits({
         amount: profit,
         transactionId: response.data.id,
         transactionType: 'data',
-        date: response.data.created_at
+        date: dat
     });
+    
 
     await newProfit.save();
 };

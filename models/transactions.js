@@ -12,7 +12,7 @@ const schema = new mongoose.Schema({
     status: Boolean,
     product: String,
     beneficiary: String,
-    date: Date
+    date: Date,
 });
 
 module.exports = mongoose.model('Transactions', schema);
