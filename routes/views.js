@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/env-test', (req, res)=> {
-  res.send("change::::::::::::::: added network chcker.................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
+  res.send("chaaduhf rjn,vf sdioiadcn k chcker.................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
 });
 
 router.get('/test-1', async (req, res) => {
