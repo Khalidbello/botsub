@@ -11,18 +11,20 @@ const {
   helperConfirmPurchase,
 } = require('./helper_functions.js');
 const getUserName = require('./get_user_info.js');
-const BotUsers = require('../models/fb_bot_users.js');
+const BotUsers = require('./../models/fb_bot_users.js');
+const ReportedIssues = require('./../models/reported-issues.js');
 const { cancelTransaction } = require('./postback_responses.js');
 const { createVAccount } = require('./../modules/gateway.js');
+const { generateRandomString } = require('./../modules/helper_functions.js');
 
 
 // function to respond to unexpected message
-async function defaultMessageHandler(event, message=false) {
+async function defaultMessageHandler(event, message = false) {
   const senderId = event.sender.id;
   let text;
   const userName = await getUserName(senderId);
 
-  if (message)  {
+  if (message) {
     text = event.message.text.trim();
     if (text.toLowerCase() === 'q') {
       await cancelTransaction(senderId);
@@ -282,15 +284,42 @@ async function newPhoneNumberBeforeTransactResponse(event, transactionType) {
 // function to handle issue reporting
 async function reportIssue(event) {
   const senderId = event.sender.id;
+  const message = event.message.text.trim();
+  const date = new Date();
+  const id = generateRandomString(10);
 
-  await sendMessage(senderId, {
-    text: 'Your issue have beign directed to BotSub support team. \nSorry for any inconveniences caused.',
+  if (!message) {
+    await sendMessage(senderId, {
+      text: 'Sorry issue report can not be empty.'
+    });
+    return;
+  };
+
+  const issue = new ReportedIssues({
+    id,
+    issue: message,
+    date,
+    reporterId: senderId,
+    platformType: 'facebook',
   });
-  await BotUsers.updateOne({ id: senderId }, {
-    $set: {
-      nextAction: null,
-    }
-  });
+
+  await issue.save()
+    .then(async (data) => {
+      sendMessage(senderId, {
+        text: 'Your issue have beign directed to BotSub support team. \nSorry for any inconveniences caused.',
+      });
+
+      await BotUsers.updateOne({ id: senderId }, {
+        $set: {
+          nextAction: null,
+        }
+      });
+    })
+    .catch((err) => {
+      sendMessage(senderId, {
+        text: 'Sorry somrthing went wrong. \nPlease enter issue again',
+      });
+    });
 };  // end of report issue function
 
 

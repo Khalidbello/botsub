@@ -1,9 +1,17 @@
 // route to handle admin related functionalities
 
 const { Router } = require('express');
-const Transactions = require('./../models/transactions.js');
-const Profits = require('./../models/profits.js');
-const PaymentAccounts = require('./../models/payment-accounts.js');
+const {
+    todaysStatistic,
+    statistics,
+    trendData,
+    balances,
+} = require('./../modules/admin/statistics.js');
+const {
+    getNetworkStatus,
+    setNetworkStatus,
+} = require('./../modules/admin/controls.js');
+
 
 const router = Router();
 
@@ -20,91 +28,59 @@ function authChecker(req, res, next) {
 //router.use(authChecker);
 
 router.get('/todays-statisitics', async (req, res) => {
-    const day = new Date('2024-04-07');
-    const startOfDay = new Date(day);
-    const endOfDay = new Date(day);
-
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    endOfDay.setUTCHours(23, 59, 59, 999);
-
-    const transactionCount = Transactions.aggregate([
-        { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },
-        {
-            $count: 'totalCount'
-        }
-    ]);
-
-    const pendingTransactionCount = Transactions.aggregate([
-        {
-            $match: {
-                date: { $gte: startOfDay, $lte: endOfDay },
-                status: false,
-            }
-        },
-        { $count: 'pendingTransCount' }
-    ]);
-
-    const succesfullTransactionCount = Transactions.aggregate([
-        {
-            $match: {
-                date: { $gte: startOfDay, $lte: endOfDay },
-                status: true,
-            }
-        },
-        { $count: 'succesfulTrans' }
-    ]);
-
-    const todaysProfit = Profits.aggregate([
-        { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },
-        {
-            $group: {
-                _id: day,
-                totalProfitToday: { $sum: '$amount' }
-            }
-        }
-    ]);
-
-    const [count, pending, sucessful, profit] = await Promise.all([transactionCount, pendingTransactionCount, succesfullTransactionCount, todaysProfit])
-
-    console.log(count, pending, sucessful, profit);
-    res.status(200).json({
-        total: count[0]?.totalCount || 0,
-        succcessful: sucessful[0]?.succesfulTrans || 0,
-        pending: pending[0]?.pendingTransCount || 0,
-        profit: profit[0]?.totalProfitToday || 0,
-    });
+    try {
+        await todaysStatistic(req, res);
+    } catch (err) {
+        console.log('error in todays statistics.......', err);
+        res.send('something went wrong...............');
+    };
 });
 
+
+router.get('/statistics/:startDate/:endDate', async (req, res) => {
+    try {
+        await statistics(req, res);
+    } catch (err) {
+        console.log('error in full statistics', err);
+    };
+});
 
 router.get('/balances', async (req, res) => {
-    const virtualAccountBalance = PaymentAccounts.aggregate([
-        { $match: {} },
-        {
-            $group: {
-                _id: 'virtual account',
-                totalBalance: { $sum: '$balance' }
-            }
-        }
-    ]);
-
-    const [vBalance] = await Promise.all([virtualAccountBalance]);
-    const platformBalance = 5000;
-
-    res.json({
-        virtualAccountBalance: vBalance[0]?.totalBalance || 0,
-        platformBalance
-    });
+    try {
+        await balances(req, res);
+    } catch (err) {
+        console.log('error in balances.............', err);
+        res.send('an error occured');
+    };
 });
 
 
-router.get('/profits/:days', (req, res) => {
-    const days = Number(req.params);
-    const today = new Date();
-
-    const profits = Profit.find({}, {});
-    res.json(profits);
+router.get('/trends/:range', (req, res) => {
+    try {
+        return trendData(req, res);
+    } catch (err) {
+        console.log('error occured in profits...........', err);
+    };
 });
 
+
+// routes for controls
+router.get('/network-status', async (req, res) => {
+    try {
+        return getNetworkStatus(req, res);
+    } catch (err) {
+        console.log('error occured in profits...........', err);
+    };
+});
+
+
+router.post('/network-status', async (req, res) => {
+    try {
+        return setNetworkStatus(req, res);
+    } catch (err) {
+        console.log('error occured in profits...........', err);
+    };
+})
 
 router.post('/logout', (req, res) => {
     // Destroy the session upon logout
@@ -116,5 +92,6 @@ router.post('/logout', (req, res) => {
         }
     });
 })
+
 
 module.exports = router;

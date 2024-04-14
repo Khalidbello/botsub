@@ -15,8 +15,9 @@ const {
   airtimeNetworks2,
 } = require('./templates.js');
 const PaymentAccounts = require('./../models/payment-accounts.js');
-const BotUsers = require('../models/fb_bot_users.js');
-const handleFirstMonthBonus = require('../modules/monthly_bonuses.js');
+const BotUsers = require('./../models/fb_bot_users.js');
+const ReportedIssues = require('./../models/reported-issues.js');
+const handleFirstMonthBonus = require('./../modules/monthly_bonuses.js');
 const makePurchase = require('./../modules/v-account-make-purcchase.js');
 const { checkDataStatus, handleDataNetworkNotAvailable } = require('./data-network-checker.js');
 
@@ -273,7 +274,7 @@ async function selectPurchaseMethod(event) {
 
 
 
-// functin to initiate tranacion for users with viertul account
+// functin to initiate tranacion for users with virtual account
 async function initMakePurchase(senderId) {
   const userDet = BotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
   const userAcount = PaymentAccounts.findOne({ refrence: senderId });
