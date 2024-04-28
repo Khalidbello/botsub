@@ -48,6 +48,18 @@ router.post('/login', (req, res) => {
     };
 });
 
+router.post('/logout', (req, res) => {
+    // Destroy the session upon logout
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            res.status(500).json({ message: `somthing went wrong ${err}` });
+        } else {
+            res.json({ message: 'logged out successfully' });
+        }
+    });
+});
+
 // router.get('/login', (req, res) => {
 //     if (req.session.user) {
 //         console.log('redirected to home');
@@ -205,16 +217,8 @@ router.get('/settle-transaction/:transactionId/:senderId', async (req, res) => {
     }
 });
 
-router.post('/logout', (req, res) => {
-    // Destroy the session upon logout
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Error destroying session:', err);
-        } else {
-            res.send('Logged out successfully');
-        }
-    });
-})
+
+
 
 
 module.exports = router;

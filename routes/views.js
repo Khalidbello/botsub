@@ -11,21 +11,21 @@ router.get('/', (req, res) => {
   res.render('home', { TEST: TEST });
 });
 
-router.get('/env-test', (req, res)=> {
-  res.send("chaaduhf rjn,vf sdioiadcn k chcker.................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
+router.get('/env-test', (req, res) => {
+  res.send("added admin functionalities and added log out also................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
 });
 
 router.get('/test-1', async (req, res) => {
   try {
-    res.json({ 'test-1': 'in testing of views js test-1'});
+    res.json({ 'test-1': 'in testing of views js test-1' });
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'An error occurred while fetching data' });
   };
 });
-  
-router.get('/users', async (req, res)=> {
-  const user = await Users.findOne({ 'email': 'bellokhali74@gmail.com'});
+
+router.get('/users', async (req, res) => {
+  const user = await Users.findOne({ 'email': 'bellokhali74@gmail.com' });
   console.log(user);
   res.json(user);
 });
