@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const dbName = process.env.NODE_ENV === 'production' ? 'botsub' : 'development';
+const dbName =  process.env.NODE_ENV === 'production' || 'stage' ? 'botsub' : 'development';
 
 const connectDB = async () => {
   console.log('dbName: ', dbName);

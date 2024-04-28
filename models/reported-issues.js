@@ -6,9 +6,10 @@ const schema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    issue: String,
+    description: String,
     date: Date,
     reporterId: String,
-    platformType: String
+    platformType: String,
+    status: Boolean
 })
 module.exports = mongoose.model('ReportedIssues', schema);

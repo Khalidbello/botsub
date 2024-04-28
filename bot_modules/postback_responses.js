@@ -148,10 +148,6 @@ async function sendNineMobileOffers(event) {
 async function offerSelected(event, payload) {
   const senderId = event.sender.id;
   const message = { text: 'Enter phone number to deliver value to' };
-  // check if data network is active before proceeding
-  //const check = await checkDataStatus('MTN');
-
-  //if (!check) return handleDataNetworkNotAvailable(senderId);
 
   await sendMessage(senderId, message);
   await BotUsers.updateOne({ id: senderId }, {

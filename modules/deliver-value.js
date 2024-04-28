@@ -28,6 +28,9 @@ const { addDataProfit } = require('./save-profit.js');
 
 const transactionMutex = new Mutex();  // mutex for delivering transactions
 
+
+
+
 // function to initiate delvering of values 
 async function deliverValue(response, req, res, requirementMet) {
   // Attempt to acquire the lock for the transaction
@@ -38,9 +41,13 @@ async function deliverValue(response, req, res, requirementMet) {
       if (transaction.status === true) {
         res.json({ status: 'error', message: 'Transaction has already been settled' });
         if (response.data.meta.bot) {
-          await sendMessage(response.data.meta.senderId, {
-            text: `Sorry this transaction has already been delivered \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
-          });
+          try {
+            await sendMessage(response.data.meta.senderId, {
+              text: `Sorry this transaction has already been delivered \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
+            });
+          } catch (err) {
+            console.log('an error occurd trying to send bot response for alredy deliered value in deliverValue', err);
+          }
         };
         return;
       };
@@ -57,6 +64,9 @@ async function deliverValue(response, req, res, requirementMet) {
     release();
   }
 };
+
+
+
 
 
 // function to make data purchase request
@@ -83,6 +93,9 @@ async function deliverData(response, req, res) {
 }; // end of deliver value function
 
 
+
+
+
 // function to make airtime purchase request
 async function deliverAirtime(response, req, res) {
   let options = {
@@ -103,9 +116,11 @@ async function deliverAirtime(response, req, res) {
   if (process.env.NODE_ENV === 'production') {
     await makePurchaseRequest(response, res, req, options, type = 'airtime');
   } else {
-    await simulateMakePurchaseRequest(response, res, req, true, type = 'airtime');
+    await simulateMakePurchaseRequest(response, res, req, false, type = 'airtime');
   };
 }; // end of deliverAirtime
+
+
 
 
 // function to make product purchase request
@@ -128,10 +143,12 @@ async function makePurchaseRequest(response, res, req, options, type) {
 }; // end of makePurchaseRequest
 
 
+
+
 // function to make product purchase request simulation
 async function simulateMakePurchaseRequest(response, res, req, condition = false, type) {
   try {
-    if (true) {
+    if (condition) {
       await updateNetworkStatus(response.data.meta.network, true);
       return await helpSuccesfulDelivery(req, res, response, 6000, type);
     }
@@ -144,11 +161,14 @@ async function simulateMakePurchaseRequest(response, res, req, condition = false
 }; // end of makePurchaserequest simulain
 
 
+
+
 // helper function for succesfull response
 async function helpSuccesfulDelivery(req, res, response, balance, type) {
   await addToDelivered(req, response, type);
 
-  if (type === 'data') addDataProfit(response);
+  // record profit made
+  if (type === 'data') addDataProfit(response.data.meta.networkID, response.data.meta.index, response.data.created_at, response.data.id);
 
   // calling function to send mail and json response object
   await sendSuccessfulResponse(response, res);
@@ -157,20 +177,26 @@ async function helpSuccesfulDelivery(req, res, response, balance, type) {
     const date = new Date() //new Date(response.data.customer.created_at);
     const nigeriaTimeString = dateFormatter(date);
 
-    await sendMessage(response.data.meta.senderId, {
-      text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${response.data.meta.number} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-    });
+    try {
+      await sendMessage(response.data.meta.senderId, {
+        text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${response.data.meta.number} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+      });
+    } catch (err) {
+      console.log('a error ocured trying to send uccesfll transaction response in helpSuccesfulDelivery', err);
+    };
 
     // check for bonus delivery
     if (Number(response.data.meta.firstPurchase) === 1 && type === 'data') await creditReferrer(response.data.meta.senderId);
     if (type === 'data') await handleFirstMonthBonus(response.data.customer.email, response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
 
     await sendMessage(response.data.meta.senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub' });
-    await sendMessage(response.data.meta.senderId, { text: '\nEnhance your recharges by utilizing a dedicated virtual account! Obtain a permanent account number for all transactions. Secure your permanent account number today!' });
+    await sendMessage(response.data.meta.senderId, { text: '\nTired of making tranfers to different account for every transaction...? \nGet a permanet account number and experience faster and safer transactions.' });
     await sendTemplate(response.data.meta.senderId, getVirtualAccountTemp);
   };
   //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
 }; // end of helpSuccesfulDelivery
+
+
 
 
 // helper function  for failed delivery
@@ -194,6 +220,7 @@ async function helpFailedDelivery(req, res, response) {
 }; // end of failed delivery helper
 
 
+
 // function to add transaction to delivered transaction
 async function addToDelivered(req, response, type) {
   const transaction = await Transactions.findOne({ id: req.query.transaction_id })
@@ -212,12 +239,14 @@ async function addToDelivered(req, response, type) {
     status: true,
     date: Date(),
     product: prod,
-    beneficiary: parseInt(response.data.meta.number,)
+    senderId: response.data.meta.senderId,
+    beneficiary: parseInt(response.data.meta.number)
   });
   const response2 = await newTransaction.save();
   console.log('add to delivered response', response2);
   return;
 }; // end of addToDelivered
+
 
 
 
@@ -235,6 +264,7 @@ async function addToFailedToDeliver(req, response) {
       status: false,
       date: Date(),
       product: prod + ' ' + response.data.meta.network,
+      senderId: response.data.meta.senderId,
       beneficiary: parseInt(response.data.meta.number)
     });
     const response2 = await newTransaction.save();
@@ -242,6 +272,8 @@ async function addToFailedToDeliver(req, response) {
     return;
   } catch (err) { console.log('error occured while adding new trnasaction to databasae', err) };
 }; // end if add to failed to deliver
+
+
 
 
 // helper function to form product
@@ -253,6 +285,8 @@ function product(response) {
   };
   return product
 }; // end of procuct
+
+
 
 
 // function to send data purchase mail and response
@@ -295,6 +329,8 @@ async function sendSuccessfulResponse(response, res) {
     return res.json({ status: 'error', message: 'error sending succesfull response', data: err });
   };
 }; // end of sendAirtimeResponse function
+
+
 
 
 // function to form response on failed to deliver
@@ -343,6 +379,8 @@ async function sendFailedToDeliverResponse(response, res) {
 }; // end of sendFailedToDeliverResponse
 
 
+
+
 //function to form response for request
 function formResponse(response) {
   const meta = response.data.meta;
@@ -358,5 +396,7 @@ function formResponse(response) {
   };
   return details;
 }; // end of formResponse
+
+
 
 module.exports = deliverValue;

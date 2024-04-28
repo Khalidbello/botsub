@@ -8,6 +8,7 @@ const Transactions = require('./../models/transactions.js');
 const PaymentAccounts = require('./../models/payment-accounts.js');
 const { creditReferrer } = require('./credit_referrer.js');
 const handleFirstMonthBonus = require('./monthly_bonuses.js');
+const { addDataProfit } = require('./save-profit.js');
 const axios = require('axios');
 
 
@@ -80,10 +81,8 @@ async function makePurchaseRequest(purchasePayload, options, bot, transactionTyp
         console.log('response: ', resp.data);
 
         if (resp.data.Status === 'successful') {
-            console.log('in succesfull make purchase request');
             helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
         } else {
-            console.log('response value::::::::::::::: ', resp.data.Status);
             throw 'could not deliver data'
         };
     } catch (error) {
@@ -133,7 +132,7 @@ async function helpSuccesfulDelivery(purchasePayload, balance, senderId, bot) {
     // first run while loop to generate a random id
     while (true) {
         id = randomstring.generate({
-            length: 8,
+            length: 10,
             charset: 'alphanumeric'
         });
         let existing = await transactions.findOne({ id: id });
@@ -143,6 +142,9 @@ async function helpSuccesfulDelivery(purchasePayload, balance, senderId, bot) {
             break;
         };
     };
+
+    // add profit 
+    if (purchasePayload.transactionType === 'data') await addDataProfit(purchasePayload.networkID, purchasePayload.index, date, id);
 
     // updating user deducting user balance
     const accBalance = await PaymentAccounts.findOneAndUpdate(
@@ -157,15 +159,15 @@ async function helpSuccesfulDelivery(purchasePayload, balance, senderId, bot) {
 
     if (bot === 'facebook') {
         //await sendMessage(senderId, { text: `Transaction Succesful \nProduct: ${product}\nTransaction ID: ${id} \nDate: ${nigeriaTimeString}` });
-        await sendMessage(senderId, { 
-            text: `Your current account balance is:   ₦${accBalance.balance}` 
+        await sendMessage(senderId, {
+            text: `Your current account balance is:   ₦${accBalance.balance}`
         });
         await sendMessage(senderId, {
             text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
-        
+
         });
-          await sendMessage(senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub'})
-         
+        await sendMessage(senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub' })
+
     };
 
     //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));

@@ -297,10 +297,11 @@ async function reportIssue(event) {
 
   const issue = new ReportedIssues({
     id,
-    issue: message,
+    description: message,
     date,
     reporterId: senderId,
     platformType: 'facebook',
+    status: true,
   });
 
   await issue.save()

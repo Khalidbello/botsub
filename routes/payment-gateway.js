@@ -34,7 +34,7 @@ router.get('/confirm', async (req, res) => {
 
   if (response.status === 'error') return res.json({ status: 'error', message: 'error fetching transaction' });
 
-  // calling function to check if transaction has ever beign made before
+  /* calling function to check if transaction has ever beign made before
   const previouslyDelivered = await checkIfPreviouslyDelivered(req.query.transaction_id);
 
   if (previouslyDelivered) {
@@ -47,13 +47,12 @@ router.get('/confirm', async (req, res) => {
       });
     };
     return
-  };
+  };*/
 
-  // calling function to ccheck if all transaction requirement were met
+  // calling function to check if all transaction requirement were met
   let requirementMet = await checkRequirementMet(response, req);
   if (requirementMet.status) return deliverValue(response, req, res, requirementMet);
 
-  console.log('requirement status', requirementMet);
   //calling refund payment if proper conditions were not met
   const finalResp = await refundPayment(response, requirementMet.price);
   console.log('refunding payment', finalResp);
@@ -63,6 +62,7 @@ router.get('/confirm', async (req, res) => {
       text: `Sorry your Transaction failed, Payment will be refunded. \nTransaction ID: ${response.data.id}`,
     });
   };
+
   return res.json(finalResp);
 }); //end of confirm payment routes
 

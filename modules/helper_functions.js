@@ -246,8 +246,10 @@ async function retryAllFailedDelivery(req) {
     failed: 0,
   };
   let loop = true;
+
   while (loop) {
     const transactions = await Transactions.find({ status: false }).limit(20)
+
     if (transactions.length < 20) loop = false;
     console.log('transacts', transactions);
 
@@ -255,7 +257,7 @@ async function retryAllFailedDelivery(req) {
     const transactionPromises = transactions.map(async (transaction) => {
       const { id, txRef } = transaction;
       const response = await axios.get(
-        `https://${req.hostname}/gateway/confirm?transaction_id=${_id}&tx_ref=${txRef}&retry=true`
+        `https://${req.hostname}/gateway/confirm?transaction_id=${id}&tx_ref=${txRef}&retry=true`
       );
       const data = response.data;
       console.log(data);
