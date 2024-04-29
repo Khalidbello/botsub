@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/env-test', (req, res) => {
-  res.send("added admin functionalities and added log out also................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
+  res.send("rectified cors origin ................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
 });
 
 router.get('/test-1', async (req, res) => {

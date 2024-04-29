@@ -30,7 +30,7 @@ function authChecker(req, res, next) {
         }
     } else {
         console.log('user not loggd in');
-        res.status(401).send('acces denied: You do not have permission to access this resource');
+        res.status(401).send('Unauthorized access: you do not have permission to request this resources........');
     }
 };
 
@@ -42,9 +42,9 @@ router.post('/login', (req, res) => {
     if ((userName === process.env.ADMIN_NAME) && (password === process.env.ADMIN_PASSWORD)) {
         req.session.user = { authenticated: true, admin: true }; //{ user: userName, admin: true };
         res.status(200).json(req.session);
-        consol.log(req.session);
+        console.log(req.session);
     } else {
-        res.status(401).send('Unauthorized: Wrong password');
+        res.status(404).send('no user with detailsfound');
     };
 });
 
