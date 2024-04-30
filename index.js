@@ -66,7 +66,7 @@ if (process.env.NODE_ENV === 'development') {
   env.TOREFUND_COLLECTION = env.R_C_P;
   env.USERS_COLLECTION = env.U_C_P;
   env.FB_BOT_COLLECTION = env.FB_BOT_C;
-  origin = 'https://admin.botsub.com.ng, http://admin.botsub.com.ng';
+  origin = ['https://admin.botsub.com.ng, http://admin.botsub.com.ng'];
 };
 
 // setting __filename since its not supported in type: module
