@@ -9,6 +9,7 @@ const {
   validateAmount,
   confirmDataPurchaseResponse,
   helperConfirmPurchase,
+  saveErrorToJson,
 } = require('./helper_functions.js');
 const getUserName = require('./get_user_info.js');
 const BotUsers = require('./../models/fb_bot_users.js');
@@ -16,26 +17,33 @@ const ReportedIssues = require('./../models/reported-issues.js');
 const { cancelTransaction } = require('./postback_responses.js');
 const { createVAccount } = require('./../modules/gateway.js');
 const { generateRandomString } = require('./../modules/helper_functions.js');
-
+const { writeMessageToJson } = require('./helper_functions.js')
 
 // function to respond to unexpected message
 async function defaultMessageHandler(event, message = false) {
-  const senderId = event.sender.id;
-  let text;
-  const userName = await getUserName(senderId);
+  try {
+    writeMessageToJson('in default message handler')
+    const senderId = event.sender.id;
+    let text;
+    const userName = await getUserName(senderId);
 
-  if (message) {
-    text = event.message.text.trim();
-    if (text.toLowerCase() === 'q') {
-      await cancelTransaction(senderId);
-      return;
+    if (message) {
+      text = event.message.text.trim();
+      if (text.toLowerCase() === 'q') {
+        await cancelTransaction(senderId);
+        return;
+      };
     };
-  };
 
-  await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
-  await sendTemplate(senderId, responseServices);
-  await sendTemplate(senderId, responseServices2);
-  sendTemplate(senderId, responseServices3);
+    await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
+    await sendTemplate(senderId, responseServices);
+    await sendTemplate(senderId, responseServices2);
+    sendTemplate(senderId, responseServices3);
+    writeMessageToJson('end of default message handler');
+  } catch (err) {
+    writeMessageToJson(`error occured in default message handler: ${err}`)
+    saveErrorToJson(err)
+  }
 }; // end of defaultMessenger
 
 

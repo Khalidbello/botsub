@@ -22,7 +22,7 @@ router.get('/fb-hook', function (req, res) {
 
 
 router.post('/fb-hook', async function (req, res) {
-
+  const { writeMessageToJson } = require('./../bot_modules/helper_functions.js')
   //checking for page subscription.
   if (req.body.object === 'page') {
     /* Iterate over each entry, there can be multiple entries allbacks are batched. */
@@ -36,11 +36,13 @@ router.post('/fb-hook', async function (req, res) {
         if (event.postback) {
           processPostback(event, res);
         } else if (event.message) {
+          writeMessageToJson(`passed to process message`);
           processMessage(event, res);
         }
       });
     });
-  }
+  };
+
   res.sendStatus(200);
 }); // end of webhook post req
 

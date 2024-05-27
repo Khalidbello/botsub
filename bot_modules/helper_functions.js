@@ -136,8 +136,8 @@ function txCode() {
 // function to form active referral templates
 function formActiveReferralTemp(datas) {
   let num = 0;
-  const tempList = datas.map((data)=> {
-    num ++;
+  const tempList = datas.map((data) => {
+    num++;
     return {
       type: 'template',
       payload: {
@@ -161,8 +161,8 @@ function formActiveReferralTemp(datas) {
 // function to form active referral templates
 function formUnactiveReferralTemp(datas) {
   let num = 0;
-  const tempList = datas.map((data)=> {
-    num ++;
+  const tempList = datas.map((data) => {
+    num++;
     return {
       type: 'template',
       payload: {
@@ -191,8 +191,8 @@ async function confirmClaimReferralBonus(event) {
 }; // end of confirmClaimReferralBonus
 
 
- // helper function to return confirm purchase
- async function helperConfirmPurchase(transactionType, senderId) {
+// helper function to return confirm purchase
+async function helperConfirmPurchase(transactionType, senderId) {
   // peform next action dependent on trasactionType
   if (transactionType === 'data') {
     await confirmDataPurchaseResponse(senderId);
@@ -205,16 +205,16 @@ async function confirmClaimReferralBonus(event) {
 
 // function to remind user to fund wallet
 async function remindToFundWallet(senderId, amount, balance, accountDetails) {
-  await sendMessage(senderId, { text: 'Sorry your account balance is currently low.'});
-  await sendMessage(senderId, { text: `Your current account balance is: ₦${balance}`});
-  await sendMessage(senderId, { text: `Kindly fund your account with a minimum amount of ₦${Math.abs(amount)}`});
-  await sendMessage(senderId, { text: `Bank Name: ${accountDetails.bankName}`});
-  await sendMessage(senderId, { text: `Account Name: ${accountDetails.accountName}`});
-  await sendMessage(senderId, { text: 'Account Number:'})
-  await sendMessage(senderId, { text: `${accountDetails.accountNumber}`});
-  await sendMessage(senderId, { text: 'purchase would be automatically made once account is funded.'});
-  await sendMessage(senderId, { text: 'Enter Q to cancle auto delivering on wallet funding.'})
-  await FBBotUsers.updateOne({ id: senderId }, { $set: { 'purchasePayload.outStanding': true }});
+  await sendMessage(senderId, { text: 'Sorry your account balance is currently low.' });
+  await sendMessage(senderId, { text: `Your current account balance is: ₦${balance}` });
+  await sendMessage(senderId, { text: `Kindly fund your account with a minimum amount of ₦${Math.abs(amount)}` });
+  await sendMessage(senderId, { text: `Bank Name: ${accountDetails.bankName}` });
+  await sendMessage(senderId, { text: `Account Name: ${accountDetails.accountName}` });
+  await sendMessage(senderId, { text: 'Account Number:' })
+  await sendMessage(senderId, { text: `${accountDetails.accountNumber}` });
+  await sendMessage(senderId, { text: 'purchase would be automatically made once account is funded.' });
+  await sendMessage(senderId, { text: 'Enter Q to cancle auto delivering on wallet funding.' })
+  await FBBotUsers.updateOne({ id: senderId }, { $set: { 'purchasePayload.outStanding': true } });
 }; // end of remind to fund wallet
 
 
@@ -223,17 +223,17 @@ async function remindToFundWallet(senderId, amount, balance, accountDetails) {
 function saveErrorToJson(error) {
   const fs = require('fs');
   const errorData = {
-      timestamp: new Date().toISOString(),
-      error: error.message,
-      stackTrace: error.stack
+    timestamp: new Date().toISOString(),
+    error: error.message,
+    stackTrace: error.stack
   };
 
   fs.appendFile('error.json', JSON.stringify(errorData, null, 2) + '\n', (err) => {
-      if (err) {
-          console.error('Error appending error to file:', err);
-      } else {
-          console.log('Error appended to error.json');
-      }
+    if (err) {
+      console.error('Error appending error to file:', err);
+    } else {
+      console.log('Error appended to error.json');
+    }
   });
 }; // end of saveErrorToJSON
 
@@ -246,6 +246,24 @@ try {
   //saveErrorToJson(error);
 }; // end of 
 
+
+const fs = require('fs');
+
+function writeMessageToJson(message, filename = 'message.json') {
+  const timestamp = new Date().toISOString();
+  const data = { timestamp, message };
+
+  try {
+    const existingData = fs.existsSync(filename)
+      ? JSON.parse(fs.readFileSync(filename, 'utf8'))
+      : [];
+    existingData.push(data);
+    fs.writeFileSync(filename, JSON.stringify(existingData, null, 2));
+  } catch (error) {
+    saveErrorToJson(error);
+    console.error('Error writing message to JSON file:', error);
+  }
+}
 
 
 module.exports = {
@@ -260,4 +278,5 @@ module.exports = {
   helperConfirmPurchase,
   remindToFundWallet,
   saveErrorToJson,
+  writeMessageToJson,
 };

@@ -20,12 +20,14 @@ const {
   changeReferralBonusPhoneNumber,
 } = require('./referral_message_responses.js');
 const BotUsers = require('../models/fb_bot_users.js');
-const { trusted } = require('mongoose');
+const { writeMessageToJson } = require('./helper_functions');
 
 
 async function processMessage(event, res) {
   // check user previousky stored action to determine
   // how to respond to user messages
+  writeMessageToJson('in top of process message...');
+
   if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry network services are currenly down and would be restored by 10:30 PM' }); // emergency response incase of bug fixes
 
   const senderId = event.sender.id;
@@ -44,6 +46,7 @@ async function processMessage(event, res) {
     console.log('no transactionType');
   };
 
+  writeMessageToJson('start of switch in process message');
   switch (user.nextAction) {
     case 'enterEmailFirst':
       sendEmailEnteredResponse(event);
@@ -69,7 +72,7 @@ async function processMessage(event, res) {
     case 'enterIssue':
       reportIssue(event);
       break;
-    
+
 
     // rferral related switch
     case 'referralCode':
@@ -82,6 +85,7 @@ async function processMessage(event, res) {
       changeReferralBonusPhoneNumber(event);
       break;
     default:
+      writeMessageToJson('passed to default message handler')
       defaultMessageHandler(event, true);
   };
 }; // end of process message switch
