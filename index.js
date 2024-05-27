@@ -8,6 +8,7 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const handlebars = require('express-handlebars');
+const fs = require('fs'); // File system module for writing to JSON
 const cors = require('cors');
 
 // importing modules to handle different routes
@@ -126,6 +127,41 @@ app.use(express.static('public'));
 // connecting db
 connectDB();
 
+
+// middle ware to store requests
+const storeRequest = (req, res, next) => {
+  const timestamp = new Date().toISOString();
+  const headers = { ...req.headers }; // Clone to avoid modifying original object
+  delete headers.host; // Remove host header for security
+
+  let body;
+  if (!req.is('application/json') && !req.is('text/*')) {
+    body = 'Non-JSON/text request';
+  } else {
+    try {
+      body = req.body || ''; // Use existing parsed body or empty string
+    } catch (error) {
+      console.error('Error parsing request body:', error);
+      body = 'Error parsing body';
+    }
+  }
+
+  const data = { timestamp, headers, body };
+
+  try {
+    const existingData = fs.existsSync('requests.json')
+      ? JSON.parse(fs.readFileSync('requests.json', 'utf8'))
+      : [];
+    existingData.push(data);
+    fs.writeFileSync('requests.json', JSON.stringify(existingData, null, 2));
+  } catch (error) {
+    console.error('Error writing request to JSON file:', error);
+  }
+  console.error('in save requesrt.........');
+  next();
+};
+
+app.use('/', storeRequest)
 //locking in middlewares for route handling
 app.use('/', viewsRouter);
 app.use('/', fbBotRouter);
