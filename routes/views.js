@@ -1,10 +1,11 @@
 // module to serve views
-const axios = require('axios');
+
 const { Router } = require('express');
 const path = require('path');
 const router = Router();
 const TEST = process.env.NODE_ENV === 'development';
 const Users = require('./../models/users.js');
+
 
 router.get('/', (req, res) => {
   console.log('am serving home');
@@ -12,7 +13,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/env-test', (req, res) => {
-  res.send("modified againnnnnnnnnnn cors url................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
+  res.send("trouble shooting bot................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
 });
 
 router.get('/test-1', async (req, res) => {
@@ -58,6 +59,7 @@ router.get('/privacy-policy', (req, res) => {
   const file = path.join(__dirname, '../views/privacy_policy.html');
   res.sendFile(file);
 });
+
 router.get('/test', (req, res) => {
   res.render('test', { TEST });
 });
