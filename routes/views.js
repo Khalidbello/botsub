@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/env-test', (req, res) => {
-  res.send("trouble shooting bot added message tracking json file logging................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
+  res.send("added consle.error................." + process.env.HOST + '  ||||  ' + process.env.NODE_ENV);
 });
 
 router.get('/test-1', async (req, res) => {
