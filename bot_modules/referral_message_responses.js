@@ -44,7 +44,7 @@ async function sendReferralCodeRecieved(event) {
             });
         };
     } catch (error) {
-        console.log(error);
+        console.error('error in referall code recieved responsedr', error);
         await sendMessage(senderId, { text: 'The provided referral code is invalid' });
         return sendMessage(senderId, { text: 'Enter a valid referral code. \nIf no referrer enter 0' });
     };

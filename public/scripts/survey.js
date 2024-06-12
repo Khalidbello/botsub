@@ -188,7 +188,7 @@ async function submitData() {
       showErroneousSurvey();
     }
   } catch (err) {
-    console.log('an error occurred', err);
+    console.error('an error occurred', err);
     showErroneousSurvey();
   }
 };

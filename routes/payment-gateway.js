@@ -146,11 +146,11 @@ router.post('/webhook', async (req, res) => {
     res.status(300).send('an error occured');
     consle.log('error in webhook::::::::::::::::::::::::::    value of flag:::::::::   ', flag);
     if (err.response) {
-      console.log('Error response:', err.response.data);
+      console.error('Error response:', err.response.data);
     } else if (err.request) {
-      console.log('No response received:', err.request);
+      console.error('No response received:', err.request);
     } else {
-      console.log('Error:', err.message);
+      console.error('Error:', err.message);
     };
   };
 }); // end of flw webhook 

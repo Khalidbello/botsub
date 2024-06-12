@@ -29,7 +29,7 @@ async function updateNetworkStatus(network, status) {
 
         console.log('File updated successfully.');
     } catch (error) {
-        console.error('Error updating file:', error);
+        console.error('Error updating file for network status:', error);
         throw error;
     }
 };

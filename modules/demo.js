@@ -34,7 +34,7 @@ async function simulateBuyData(response, res, req, condition) {
 async function actualBuyAirtime(response, res, req, options) {
   request(options, async (error, _, body) => {
     if (error) {
-      console.log(error);
+      console.error(error);
       return res.send(error);
     };
     console.log('bodyof request ', body);

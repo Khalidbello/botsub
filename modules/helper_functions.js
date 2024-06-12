@@ -86,6 +86,7 @@ const checkRequirementMet = async function (response, req) {
       console.log('data plan with id not found');
       return { status: false, message: 'data plan with id not found' };
     };
+    
     let pricePaid = Number(response.data.amount);
 
     console.log('passed all remaining last in data');

@@ -43,7 +43,7 @@ async function processMessage(event, res) {
   try {
     transactionType = user.purchasePayload.transactionType;
   } catch (err) {
-    console.log('no transactionType');
+    console.error('no transactionType in process message');
   };
 
   writeMessageToJson('start of switch in process message');

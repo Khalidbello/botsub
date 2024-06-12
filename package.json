@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
-    "test": "cross-env NODE_ENV=development nodemon index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
     "stage": "cross-env NODE_ENV=stage node index.js"
   },
   "repository": {

@@ -40,7 +40,9 @@ async function processPostback(event, res) {
   try {
     payload = JSON.parse(payload);
     console.log('postback payload', payload);
-  } catch (err) { console.log(err, 'no payload') };
+  } catch (err) {
+    console.error(err, 'no payload');
+  };
 
   const payloadTitle = payload.title;
   console.log('postback payload title', payloadTitle);
@@ -95,15 +97,15 @@ async function processPostback(event, res) {
     case 'failedMonthlyBonusRetry':
       handleRetryFailedMonthlyDelivery(event, payload);
       break;
-      case 'myAccount':
-        showAccountDetails(event);
-        break;
+    case 'myAccount':
+      showAccountDetails(event);
+      break;
 
 
     // referral related
     case 'referAFriend':
       showReferralCode(event);
-      break;s
+      break; s
     case 'myReferrals':
       showMyReferrals(event, payload);
       break;

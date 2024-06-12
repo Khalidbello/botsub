@@ -76,7 +76,7 @@ async function createVAccount(email, reference, bvn, botType, currentCount = 0) 
 async function respondToWebhook(webhookPayload, res, host) {
     const data = webhookPayload.data || webhookPayload;
     if (data.status.toLowerCase() !== "successful") {
-        console.log('transaction not succesful::::::::::::: account funding not sucesfully carried out'); // check if transaction was succesful 
+        console.error('transaction not succesful::::::::::::: account funding not sucesfully carried out'); // check if transaction was succesful 
         return;
     };
 
@@ -130,7 +130,7 @@ async function respondToWebhook(webhookPayload, res, host) {
             if (purchasePayload.outStanding) initMakePurchase(reference);
         };
     } catch (error) {
-        console.log('an error ocured wallet topping up:::::::::::::::::         ', error);
+        console.error('an error ocured wallet topping up:::::::::::::::::         ', error);
     };
 }; // end of respondToWebhook
 

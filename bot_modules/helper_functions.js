@@ -232,7 +232,7 @@ function saveErrorToJson(error) {
     if (err) {
       console.error('Error appending error to file:', err);
     } else {
-      console.log('Error appended to error.json');
+      console.error('Error appended to error.json');
     }
   });
 }; // end of saveErrorToJSON

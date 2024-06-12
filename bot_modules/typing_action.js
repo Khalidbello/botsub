@@ -14,7 +14,7 @@ async function typingAction(sender_psid) {
       headers: { 'Content-Type': 'application/json' },
     })
     .catch((error) => {
-      console.log('Error sending message:', error.response.data.error.message);
+      console.error('Error sending message:', error.response.data.error.message);
     });
 
   resp = await resp.data;

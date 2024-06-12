@@ -251,7 +251,7 @@ async function generateAccountNumber(event) {
   } catch (err) {
     await sendMessage(senderId, { text: 'An error occured \nPlease reclick make purchase button' });
     await confirmDataPurchaseResponse(senderId);
-    console.log('Error getting transfer account:', err);
+    console.error('Error getting transfer account:', err);
     saveErrorToJson(err);
   };
 }; // end of generateAccountNumber

@@ -85,7 +85,7 @@ router.get('/todays-statisitics', async (req, res) => {
     try {
         await todaysStatistic(req, res);
     } catch (err) {
-        console.log('error in todays statistics.......', err);
+        console.error('error in todays statistics.......', err);
         res.status(500).json({ data: 'an error occured' });
     };
 });
@@ -95,7 +95,7 @@ router.get('/statistics/:startDate/:endDate', async (req, res) => {
     try {
         await statistics(req, res);
     } catch (err) {
-        console.log('error in full statistics', err);
+        console.error('error in full statistics', err);
         res.status(500).json({ data: 'an error occured' });
     };
 });
@@ -104,7 +104,7 @@ router.get('/balances', async (req, res) => {
     try {
         await balances(req, res);
     } catch (err) {
-        console.log('error in balances.............', err);
+        console.error('error in balances.............', err);
         res.status(500).json({ data: 'an error occured' });
     };
 });
@@ -115,7 +115,7 @@ router.get('/trends/:range', (req, res) => {
         return trendData(req, res);
     } catch (err) {
         res.status(500).json({ data: 'an error occured' });
-        console.log('error occured in profits...........', err);
+        console.error('error occured in profits...........', err);
     };
 });
 
@@ -130,7 +130,7 @@ router.get('/network-status', async (req, res) => {
     try {
         return getNetworkStatus(req, res);
     } catch (err) {
-        console.log('error occured in profits...........', err);
+        console.error('error occured in profits...........', err);
         res.status(500).json({ data: 'an error occured' });
     };
 });
@@ -141,7 +141,7 @@ router.post('/network-status', async (req, res) => {
     try {
         return setNetworkStatus(req, res);
     } catch (err) {
-        console.log('error occured in profits...........', err);
+        console.error('error occured in profits...........', err);
         res.status(500).json({ data: 'an error occured' });
     };
 });
@@ -152,7 +152,7 @@ router.post('/send-issue-response', async (req, res) => {
     try {
         return sendIssueResponse(req, res);
     } catch (err) {
-        console.log('An error occured in admin send issue response', err);
+        console.error('An error occured in admin send issue response', err);
         res.status(500).json({ data: 'an error occured' });
     }
 })
@@ -163,7 +163,7 @@ router.get('/reported-issues/:pagging/:size', (req, res) => {
     try {
         return fetchIssues(req, res);
     } catch (err) {
-        console.log('An error occured in reported issues admin', err);
+        console.error('An error occured in reported issues admin', err);
         res.status(500).json({ data: 'an error occured' });
     }
 });
@@ -176,7 +176,7 @@ router.get('/retry-transaction/:transactionId/:txRef', async (req, res) => {
         const { transactionId, txRef } = req.params;
         return retryTransaction(transactionId, txRef, res);
     } catch (err) {
-        console.log('error in rerty transacton route', err);
+        console.error('error in rerty transacton route', err);
         res.status(500).json({ data: 'an error occured' });
     }
 })
@@ -187,7 +187,7 @@ router.get('/close-issue/:issueId', async (req, res) => {
     try {
         return closeIssue(req, res);
     } catch (err) {
-        console.log('An error occured in admin send issue response', err);
+        console.error('An error occured in admin send issue response', err);
         res.status(500).json({ data: 'an error occured' });
     }
 })
@@ -201,7 +201,7 @@ router.get('/pending-transaction/:pagging/:size', async (req, res) => {
 
         return fetchPedndingTransactions(pagging, size, res);
     } catch (err) {
-        console.log('an error occured while trying to fetch pending transction.......', err)
+        console.error('an error occured while trying to fetch pending transction.......', err)
         res.status(500).json({ data: 'an error occured' });
     }
 })
@@ -212,7 +212,7 @@ router.get('/settle-transaction/:transactionId/:senderId', async (req, res) => {
     try {
         settleTransaction(req.params.transactionId, req.params.senderId, res);
     } catch (err) {
-        console.log('an error occured in settle transaction', err);
+        console.error('an error occured in settle transaction', err);
         res.status(500).json({ data: 'an error occured' });
     }
 });

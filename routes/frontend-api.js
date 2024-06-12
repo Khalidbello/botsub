@@ -62,7 +62,7 @@ router.post('/survey', async (req, res) => {
 
     const user = await Users.updateOne(
       { email: data.email },
-      { $set: {survey: toSave} },
+      { $set: { survey: toSave } },
       { upsert: true }
     );
     console.log('updated: ', user)
@@ -99,7 +99,7 @@ router.post('/change-to-setlled', async (req, res) => {
   try {
     await Transactions.updateOne(
       { id: req.query.transaction_id },
-      { $set: { status: true }}
+      { $set: { status: true } }
     );
     res.json({ status: 'successful' });
   } catch (err) {
@@ -115,7 +115,7 @@ router.get('/fetch-failed-transactions', async (req, res) => {
     console.log('failed transact', data);
     res.json(data);
   } catch (err) {
-    console.log('error fetching pemding transaction', err);
+    console.error('error fetching pemding transaction', err);
     res.json({ error: err });
   };
 });

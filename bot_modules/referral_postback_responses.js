@@ -33,7 +33,7 @@ async function showMyReferrals(event) {
     const response = await BotUsers.findOne({ id: senderId }).select('referrals');
     console.log('esponse my referrals: ', response);
 
-    if (!response || response.referrals.length===0) {
+    if (!response || response.referrals.length === 0) {
         await sendMessage(senderId, { text: 'You do not have any active referrals..' });
         return showReferralCode(event);
     };
@@ -102,17 +102,17 @@ async function deliverReferralBonus(event) {
     const resp = await BotUsers.findOne({ id: senderId }).select('referrals purchasePayload');
     let filtredArray;
     // check if there exist any referral with specific id
-    if (!resp || !resp.referrals || resp.referrals.length===0) return sendMessage(senderId, { text: 'Invalid referral please try again.'});
+    if (!resp || !resp.referrals || resp.referrals.length === 0) return sendMessage(senderId, { text: 'Invalid referral please try again.' });
     // filtering array
     filtredArray = resp.referrals.filter(referral => {
         return referral.id === resp.purchasePayload.refereeId;
     });
-    if (!filtredArray) return sendMessage(senderId, { text: 'Invalid referral please try again.'});
+    if (!filtredArray) return sendMessage(senderId, { text: 'Invalid referral please try again.' });
 
     const response = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
     console.log('purchasePayload for dliver referraal bonuses: ', response);
-    const { refereeId, phoneNumber, networkID} = response.purchasePayload;
-    
+    const { refereeId, phoneNumber, networkID } = response.purchasePayload;
+
     sendMessage(senderId, { text: 'referral bonus succesfully delivered' });
     try {
         let response;
@@ -138,11 +138,11 @@ async function deliverReferralBonus(event) {
         throw 'delivering not succesful';
     } catch (err) {
         if (err.response) {
-            console.log('Error response: ', err.response.data);
+            console.error('Error response: ', err.response.data);
         } else if (err.request) {
-            console.log('No response received: ', err.request);
+            console.error('No response received: ', err.request);
         } else {
-            console.log('Error: ', err.message);
+            console.error('Error: ', err.message);
         };
         await sendMessage(senderId, { text: "Sorry an error occurd while trying to deliver referral bonus" });
     };
@@ -154,13 +154,13 @@ async function removeDeliverdReferralBonus(senderId, refereeId) {
     try {
         const deletedDocs = await BotUsers.updateOne(
             { id: senderId },
-            { $pull: { referrals: { id: refereeId } }}
+            { $pull: { referrals: { id: refereeId } } }
         );
         console.log('deleted docs', deletedDocs);
         // adding document to claimed
         const response = await BotUsers.updateOne(
             { id: senderId },
-            { $push: { claimedReferrals: { id: refereeId} } }
+            { $push: { claimedReferrals: { id: refereeId } } }
         );
         console.log('claimed referral bonus: ', response);
     } catch (error) {

@@ -88,7 +88,7 @@ async function settleTransaction(transactionId, senderId, res) {
 
     try {
         sendMessage(senderId, { text: `Transaction with transactionId ${transactionId} successfully settled.` })
-    } catch (err) { console.log('error trying to send transaction setled message..', err) }
+    } catch (err) { console.error('error trying to send transaction setled message..', err) }
 
     res.json({ status: true });
 }

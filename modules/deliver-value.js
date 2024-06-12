@@ -46,7 +46,7 @@ async function deliverValue(response, req, res, requirementMet) {
               text: `Sorry this transaction has already been delivered \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
             });
           } catch (err) {
-            console.log('an error occurd trying to send bot response for alredy deliered value in deliverValue', err);
+            console.error('an error occurd trying to send bot response for alredy deliered value in deliverValue', err);
           }
         };
         return;
@@ -182,7 +182,7 @@ async function helpSuccesfulDelivery(req, res, response, balance, type) {
         text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${response.data.meta.number} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
       });
     } catch (err) {
-      console.log('a error ocured trying to send uccesfll transaction response in helpSuccesfulDelivery', err);
+      console.error('a error ocured trying to send uccesfll transaction response in helpSuccesfulDelivery', err);
     };
 
     // check for bonus delivery
@@ -270,7 +270,7 @@ async function addToFailedToDeliver(req, response) {
     const response2 = await newTransaction.save();
     console.log('add to failed delivery response', response2);
     return;
-  } catch (err) { console.log('error occured while adding new trnasaction to databasae', err) };
+  } catch (err) { console.error('error occured while adding new trnasaction to databasae', err) };
 }; // end if add to failed to deliver
 
 
@@ -372,7 +372,7 @@ async function sendFailedToDeliverResponse(response, res) {
     //sconsole.log('in failed to deliver function', resp);
     return res.json({ status: 'pending', data: details });
   } catch (err) {
-    console.log('send successful vtu response error', err);
+    console.error('send successful vtu response error', err);
     return res.json({ status: 'error', message: 'send failed response error air', data: err });
     //return res.json({ status: 'failedDelivery', message: 'failed to deliver purchased product' });
   };

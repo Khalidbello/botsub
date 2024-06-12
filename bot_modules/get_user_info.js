@@ -13,17 +13,4 @@ async function getUserName(userId) {
     return null;
   }
 }
-
-/*/ Usage example
-const userId = 'USER_ID_RECEIVED_FROM_MESSENGER_API';
-getUserName(userId)
-  .then(name => {
-    if (name) {
-      console.log('User name:', name);
-      // You can use the name for further interactions with the user
-    } else {
-      console.log('Unable to fetch user name.');
-    }
-  });*/
-
 module.exports = getUserName;
