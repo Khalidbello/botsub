@@ -26,7 +26,6 @@ const { writeMessageToJson } = require('./helper_functions');
 async function processMessage(event, res) {
   // check user previousky stored action to determine
   // how to respond to user messages
-  writeMessageToJson('in top of process message...');
 
   if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry network services are currenly down and would be restored by 10:30 PM' }); // emergency response incase of bug fixes
 
@@ -46,7 +45,7 @@ async function processMessage(event, res) {
     console.error('no transactionType in process message');
   };
 
-  writeMessageToJson('start of switch in process message');
+  //writeMessageToJson('start of switch in process message');
   switch (user.nextAction) {
     case 'enterEmailFirst':
       sendEmailEnteredResponse(event);
@@ -85,7 +84,7 @@ async function processMessage(event, res) {
       changeReferralBonusPhoneNumber(event);
       break;
     default:
-      writeMessageToJson('passed to default message handler')
+      //writeMessageToJson('passed to default message handler')
       defaultMessageHandler(event, true);
   };
 }; // end of process message switch

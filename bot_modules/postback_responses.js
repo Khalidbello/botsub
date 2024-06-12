@@ -16,7 +16,6 @@ const {
 } = require('./templates.js');
 const PaymentAccounts = require('./../models/payment-accounts.js');
 const BotUsers = require('./../models/fb_bot_users.js');
-const ReportedIssues = require('./../models/reported-issues.js');
 const handleFirstMonthBonus = require('./../modules/monthly_bonuses.js');
 const makePurchase = require('./../modules/v-account-make-purcchase.js');
 const { checkDataStatus, handleDataNetworkNotAvailable } = require('./data-network-checker.js');
@@ -252,7 +251,7 @@ async function generateAccountNumber(event) {
     await sendMessage(senderId, { text: 'An error occured \nPlease reclick make purchase button' });
     await confirmDataPurchaseResponse(senderId);
     console.error('Error getting transfer account:', err);
-    saveErrorToJson(err);
+    console.error('error in genrate accon number', err);
   };
 }; // end of generateAccountNumber
 

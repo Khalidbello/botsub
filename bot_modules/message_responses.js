@@ -22,7 +22,7 @@ const { writeMessageToJson } = require('./helper_functions.js')
 // function to respond to unexpected message
 async function defaultMessageHandler(event, message = false) {
   try {
-    writeMessageToJson('in default message handler')
+    //writeMessageToJson('in default message handler')
     const senderId = event.sender.id;
     let text;
     const userName = await getUserName(senderId);
@@ -39,11 +39,10 @@ async function defaultMessageHandler(event, message = false) {
     await sendTemplate(senderId, responseServices);
     await sendTemplate(senderId, responseServices2);
     sendTemplate(senderId, responseServices3);
-    writeMessageToJson('end of default message handler');
+    //writeMessageToJson('end of default message handler');
   } catch (err) {
-    writeMessageToJson(`error occured in default message handler: ${err}`)
-    saveErrorToJson(err)
-  }
+    console.error('error in default error ', err);
+  };
 }; // end of defaultMessenger
 
 

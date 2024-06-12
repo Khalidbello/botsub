@@ -36,7 +36,7 @@ router.post('/fb-hook', async function (req, res) {
         if (event.postback) {
           processPostback(event, res);
         } else if (event.message) {
-          writeMessageToJson(`passed to process message`);
+          //writeMessageToJson(`passed to process message`);
           processMessage(event, res);
         }
       });

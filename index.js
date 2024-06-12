@@ -161,7 +161,7 @@ const storeRequest = (req, res, next) => {
   next();
 };
 
-app.use('/', storeRequest)
+//app.use('/', storeRequest)
 //locking in middlewares for route handling
 app.use('/', viewsRouter);
 app.use('/', fbBotRouter);
