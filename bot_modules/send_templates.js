@@ -11,7 +11,7 @@ async function sendTemplates(senderId, template) {
   };
 
   let resp = await axios
-    .post('https://graph.facebook.com/v17.0/me/messages', request_body, {
+    .post('https://graph.facebook.com/v20.0/me/messages', request_body, {
       params: { access_token: process.env.FBM_TOKEN },
       headers: { 'Content-Type': 'application/json' },
     })
