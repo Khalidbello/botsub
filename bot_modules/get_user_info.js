@@ -10,6 +10,7 @@ async function getUserName(userId) {
     return response.data.first_name;
   } catch (error) {
     console.error('Error while fetching user information:', error);
+    console.log('fbm token', process.env.FBM_TOKEN);
     return null;
   }
 }

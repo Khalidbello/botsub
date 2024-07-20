@@ -10,7 +10,7 @@ async function sendTemplates(senderId, template) {
     },
   };
 
-  let resp = await axios
+   let resp = await axios
     .post('https://graph.facebook.com/v20.0/me/messages', request_body, {
       params: { access_token: process.env.FBM_TOKEN },
       headers: { 'Content-Type': 'application/json' },
@@ -25,7 +25,9 @@ async function sendTemplates(senderId, template) {
       } else {
         console.error('Error:', error.message);
       }
-      console.error('error sending template ,,,,,,,,, Config:', error.config);
+      //console.error('error sending template ,,,,,,,,, Config:', error.config);
+      console.log('acess tokennnnnnnnnnnnnn',  process.env.FBM_TOKEN);
+
     });
 }; // end of sendTemplates
 

@@ -7,8 +7,8 @@ const router = Router();
 
 
 router.get('/fb-hook', function (req, res) {
-  const token = process.env.FB_VERIFY;
-  console.log(token);
+  const token = process.env.FB_VERIFICATION_KEY;
+  console.log('in facebook webhook verification', token);
   console.log(req.query['hub.verify_token']);
   if (req.query['hub.verify_token'] === token) {
     console.log('webhook verified');
