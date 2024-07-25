@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-async function sendMessage(sender_psid, response, cb = false, rep) {
+async function sendMessage(sender_psid: string, response: { text: string }) {
   try {
     // Construct the message body
     let request_body = {
@@ -19,7 +19,7 @@ async function sendMessage(sender_psid, response, cb = false, rep) {
 
     resp = await resp.data;
     console.log(resp);
-  } catch (error) {
+  } catch (error: any) {
     if (error.response) {
       console.error('Response Error:', error.response.data);
       console.error('Status Code:', error.response.status);

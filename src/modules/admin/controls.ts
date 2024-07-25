@@ -1,19 +1,20 @@
 // modules to hold control ralated request handler
+import { Request, Response } from "express";
 const fsP = require('fs').promises;
-const ReportedIssues = require('./../../models/reported-issues.js');
-const Transactons = require('./../../models/transactions.js');
-const sendMessage = require('./../../bot_modules/send_message.js');
-const axios = require('axios');
+import ReportedIssues from "../../models/reported-issues";
+import Transactions from "../../models/transactions";
+import { sendMessage } from "../../bot/send_message";
+import axios from "axios";
 
 
-async function getNetworkStatus(req, res) {
+async function getNetworkStatus(req: Request, res: Response) {
     // Read the file content
     const fileContent = await fsP.readFile('files/data-network-status.json', 'utf-8');
     let data = JSON.parse(fileContent);
     res.json(data);
 };
 
-async function setNetworkStatus(req, res) {
+async function setNetworkStatus(req: Request, res: Response) {
     const { updateNetworkStatus } = require('./../../bot_modules/data-network-checker.js');
 
     const { network, status } = req.body;
@@ -22,7 +23,7 @@ async function setNetworkStatus(req, res) {
 };
 
 
-async function sendIssueResponse(req, res) {
+async function sendIssueResponse(req: Request, res: Response) {
     const { id, platformType, response, reporterId } = req.body;
     console.log(reporterId, 'in send issue response..............');
     if (platformType === 'facebook') {
@@ -33,7 +34,7 @@ async function sendIssueResponse(req, res) {
 }
 
 
-async function fetchIssues(req, res) {
+async function fetchIssues(req: Request, res: Response) {
     const pagging = parseInt(req.params.pagging);
     const size = parseInt(req.params.size);
 
@@ -46,7 +47,7 @@ async function fetchIssues(req, res) {
 
 
 // function to close issue
-async function closeIssue(req, res) {
+async function closeIssue(req: Request, res: Response) {
     const issueId = req.params.issueId;
     await ReportedIssues.findOneAndUpdate(
         { id: issueId },
@@ -57,8 +58,8 @@ async function closeIssue(req, res) {
 
 
 // functio to fetch pending transactions
-async function fetchPedndingTransactions(pagging, size, res) {
-    const pendingTransations = await Transactons.find({ status: false }).skip(pagging * size).limit(size);
+async function fetchPedndingTransactions(pagging: number, size: number, res: Response) {
+    const pendingTransations = await Transactions.find({ status: false }).skip(pagging * size).limit(size);
 
     console.log('in fetch pending transCTIONSSS...........', pendingTransations);
     res.json(pendingTransations)
@@ -66,7 +67,7 @@ async function fetchPedndingTransactions(pagging, size, res) {
 
 
 // function to carry out transaction retry
-async function retryTransaction(transactionId, txRef, res) {
+async function retryTransaction(transactionId: string, txRef: string, res: Response) {
     const response = await axios.get(
         `https://${process.env.HOST}/gateway/confirm?retry=Retry&transaction_id=${transactionId}&tx_ref=${txRef}&retry=true`
     );
@@ -80,8 +81,8 @@ async function retryTransaction(transactionId, txRef, res) {
 
 
 // function to ssettle transaction
-async function settleTransaction(transactionId, senderId, res) {
-    await Transactons.updateOne(
+async function settleTransaction(transactionId: string, senderId: string, res: Response) {
+    await Transactions.updateOne(
         { id: transactionId },
         { $set: { status: true } }
     );

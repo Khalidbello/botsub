@@ -1,3 +1,5 @@
+import { Request, Response } from "express";
+
 const PaymentAccounts = require('./../../models/payment-accounts.js');
 const {
     transactionCount,
@@ -9,7 +11,7 @@ const {
 
 
 
-async function todaysStatistic(req, res) {
+async function todaysStatistic(req: Request, res: Response) {
     const day = new Date();
     const startDate = new Date(day);
     const endDate = new Date(day);
@@ -34,7 +36,7 @@ async function todaysStatistic(req, res) {
 
 
 // function to search for all statistics total, succesfull, pending, average transaction perday, profit
-async function statistics(req, res) {
+async function statistics(req: Request, res: Response) {
     const start = req.params.startDate;
     const end = req.params.endDate;
     const startDate = new Date(start);
@@ -63,7 +65,7 @@ async function statistics(req, res) {
 
 
 // function to handle data for trend plotting 
-async function trendData(req, res) {
+async function trendData(req: Request, res: Response) {
     const range = parseInt(req.params.range);
     const todaysDate = new Date();
     const dates = [];
@@ -99,7 +101,7 @@ async function trendData(req, res) {
 
 
 // function to handle balances
-async function balances(req, res) {
+async function balances(req: Request, res: Response) {
     const virtualAccountBalance = PaymentAccounts.aggregate([
         { $match: {} },
         {

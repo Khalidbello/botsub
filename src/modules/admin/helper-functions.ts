@@ -4,7 +4,7 @@ const PaymentAccounts = require('./../../models/payment-accounts.js');
 
 
 // function to count all transactions
-async function transactionCount(startDate, endDate) {
+async function transactionCount(startDate: Date, endDate: Date) {
     const count = await Transactions.aggregate([
         { $match: { date: { $gte: startDate, $lte: endDate } } },
         {
@@ -17,7 +17,7 @@ async function transactionCount(startDate, endDate) {
 
 
 // function to count pending transactions
-async function pendingCount(startDate, endDate) {
+async function pendingCount(startDate: Date, endDate: Date) {
     const count = await Transactions.aggregate([
         {
             $match: {
@@ -33,7 +33,7 @@ async function pendingCount(startDate, endDate) {
 
 
 // function to count successful transactions
-async function successfulCount(startDate, endDate) {
+async function successfulCount(startDate: Date, endDate: Date) {
     const count = await Transactions.aggregate([
         {
             $match: {
@@ -49,7 +49,7 @@ async function successfulCount(startDate, endDate) {
 
 
 //  function to count profits
-async function profitCount(startDate, endDate) {
+async function profitCount(startDate: Date, endDate: Date) {
     const profit = await Profits.aggregate([
         { $match: { date: { $gte: startDate, $lte: endDate } } },
         {
@@ -61,13 +61,13 @@ async function profitCount(startDate, endDate) {
     ]);
 
     let value = profit[0]?.totalProfit || 0;
-    value = parseFloat(value.toFixed(2))
+    value = parseFloat(value.toFixed(2));
     return value;
 }; // end of profit count
 
 
 // function to calculate average transactions per day
-async function average(startDate, endDate) {
+async function average(startDate: Date, endDate: Date) {
     const timeDifference = endDate.getTime() - startDate.getTime(); // Corrected calculation
     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
     const transactions = await transactionCount(startDate, endDate);
