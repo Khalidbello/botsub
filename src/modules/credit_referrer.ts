@@ -1,7 +1,7 @@
 // module to hold crediting of referrals for all bot types
 const BotUsers = require('./../models/fb_bot_users.js');
 
-async function creditReferrer(senderId) {
+async function creditReferrer(senderId: string) {
     const response = await BotUsers.findOneAndUpdate(
         { id: Number(senderId) },
         { $set: { firstPurchase: false } }
@@ -20,6 +20,4 @@ async function creditReferrer(senderId) {
 }; // end of credit fb
 
 
-export {
-    creditReferrer
-};
+export default creditReferrer;

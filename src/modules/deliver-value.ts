@@ -1,3 +1,5 @@
+import { Request, Response } from "express";
+
 // module to deliver value
 const handlebars = require('handlebars');
 const nodemailer = require('nodemailer');
@@ -24,15 +26,11 @@ const { updateNetworkStatus } = require('./../bot_modules/data-network-checker.j
 const { Mutex } = require('async-mutex'); // module to prevent multiple settlements
 const { addDataProfit } = require('./save-profit.js');
 
-
-
 const transactionMutex = new Mutex();  // mutex for delivering transactions
 
 
-
-
 // function to initiate delvering of values 
-async function deliverValue(response, req, res, requirementMet) {
+async function deliverValue(response: any, req: Request, res: Response, requirementMet: any) {
   // Attempt to acquire the lock for the transaction
   const release = await transactionMutex.acquire();
   try {
@@ -70,7 +68,7 @@ async function deliverValue(response, req, res, requirementMet) {
 
 
 // function to make data purchase request
-async function deliverData(response, req, res) {
+async function deliverData(response: any, req: Request, res: Response) {
   let options = {
     url: 'https://opendatasub.com/api/data/',
     headers: {
@@ -86,9 +84,9 @@ async function deliverData(response, req, res) {
   };
 
   if (process.env.NODE_ENV === 'production') {
-    await makePurchaseRequest(response, res, req, options, type = 'data');
+    await makePurchaseRequest(response, res, req, options, 'data');
   } else {
-    await simulateMakePurchaseRequest(response, res, req, false, type = 'data');
+    await simulateMakePurchaseRequest(response, res, req, false, 'data');
   };
 }; // end of deliver value function
 
@@ -97,7 +95,7 @@ async function deliverData(response, req, res) {
 
 
 // function to make airtime purchase request
-async function deliverAirtime(response, req, res) {
+async function deliverAirtime(response: any, req: Request, res: Response) {
   let options = {
     url: 'https://opendatasub.com/api/topup/',
     headers: {
@@ -114,9 +112,9 @@ async function deliverAirtime(response, req, res) {
   };
 
   if (process.env.NODE_ENV === 'production') {
-    await makePurchaseRequest(response, res, req, options, type = 'airtime');
+    await makePurchaseRequest(response, res, req, options, 'airtime');
   } else {
-    await simulateMakePurchaseRequest(response, res, req, false, type = 'airtime');
+    await simulateMakePurchaseRequest(response, res, req, false, 'airtime');
   };
 }; // end of deliverAirtime
 
@@ -124,7 +122,7 @@ async function deliverAirtime(response, req, res) {
 
 
 // function to make product purchase request
-async function makePurchaseRequest(response, res, req, options, type) {
+async function makePurchaseRequest(response: any, res: Response, req: Request, options: any, type: 'data' | 'airtime') {
   try {
     const resp = await axios.post(options.url, options.payload, { headers: options.headers });
     console.log('response: ', resp.data);
@@ -146,7 +144,7 @@ async function makePurchaseRequest(response, res, req, options, type) {
 
 
 // function to make product purchase request simulation
-async function simulateMakePurchaseRequest(response, res, req, condition = false, type) {
+async function simulateMakePurchaseRequest(response: any, res: Response, req: Request, condition: boolean, type: 'data' | 'airtime') {
   try {
     if (condition) {
       await updateNetworkStatus(response.data.meta.network, true);
@@ -164,7 +162,7 @@ async function simulateMakePurchaseRequest(response, res, req, condition = false
 
 
 // helper function for succesfull response
-async function helpSuccesfulDelivery(req, res, response, balance, type) {
+async function helpSuccesfulDelivery(req: Request, res: Response, response: any, balance: number, type: 'data' | 'airtime') {
   await addToDelivered(req, response, type);
 
   // record profit made
@@ -200,7 +198,7 @@ async function helpSuccesfulDelivery(req, res, response, balance, type) {
 
 
 // helper function  for failed delivery
-async function helpFailedDelivery(req, res, response) {
+async function helpFailedDelivery(req: Request, res: Response, response: any) {
   addToFailedToDeliver(req, response);
   sendFailedToDeliverResponse(response, res);
 
@@ -222,7 +220,7 @@ async function helpFailedDelivery(req, res, response) {
 
 
 // function to add transaction to delivered transaction
-async function addToDelivered(req, response, type) {
+async function addToDelivered(req: Request, response: any, type: 'data' | 'airtime') {
   const transaction = await Transactions.findOne({ id: req.query.transaction_id })
   if (transaction) {
     if (transaction.status === true) return;
@@ -251,7 +249,7 @@ async function addToDelivered(req, response, type) {
 
 
 // function to add transaction to failed to deliver
-async function addToFailedToDeliver(req, response) {
+async function addToFailedToDeliver(req: Request, response: any) {
   try {
     let transaction = await Transactions.findOne({ id: req.query.transaction_id })
     if (transaction) return console.log('failed transaction already exists, addToFailedToDelver function', transaction);
@@ -277,7 +275,7 @@ async function addToFailedToDeliver(req, response) {
 
 
 // helper function to form product
-function product(response) {
+function product(response: any) {
   let product = `${response.data.meta.size}  ${response.data.meta.network} data`;
 
   if (response.data.meta.type === 'airtime') {
@@ -290,7 +288,7 @@ function product(response) {
 
 
 // function to send data purchase mail and response
-async function sendSuccessfulResponse(response, res) {
+async function sendSuccessfulResponse(response: any, res: Response) {
   try {
     const successfulMailTemplate = await fsP.readFile(
       'modules/email-templates/successful-delivery.html',
@@ -298,8 +296,10 @@ async function sendSuccessfulResponse(response, res) {
     );
     const compiledSuccessfulMailTemplate = handlebars.compile(successfulMailTemplate);
     let details = formResponse(response);
+    // @ts-ignore
     details.product = product(response);
     const mailParams = {
+      // @ts-ignores
       product: details.product,
       network: details.network,
       date: details.date,
@@ -334,7 +334,7 @@ async function sendSuccessfulResponse(response, res) {
 
 
 // function to form response on failed to deliver
-async function sendFailedToDeliverResponse(response, res) {
+async function sendFailedToDeliverResponse(response: any, res: Response) {
   try {
     const pendingMailTemplate = await fsP.readFile(
       'modules/email-templates/failed-delivery.html',
@@ -342,13 +342,16 @@ async function sendFailedToDeliverResponse(response, res) {
     );
     const compiledPendingMailTemplate = handlebars.compile(pendingMailTemplate);
     let details = formResponse(response);
+    // @ts-ignore
     details.product = `${response.data.meta.size} data`;
 
     if (response.data.meta.type === 'airtime') {
+      // @ts-ignore
       details.product = `₦${response.data.meta.amount} airtime`;
     };
 
     const mailParams = {
+      // @ts-ignore
       product: details.product,
       network: details.network,
       date: details.date,
@@ -382,7 +385,7 @@ async function sendFailedToDeliverResponse(response, res) {
 
 
 //function to form response for request
-function formResponse(response) {
+function formResponse(response: any) {
   const meta = response.data.meta;
   // create a Date object with the UTC time
   const date = new Date(response.data.customer.created_at);
