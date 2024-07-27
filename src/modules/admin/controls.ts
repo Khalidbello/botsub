@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 const fsP = require('fs').promises;
 import ReportedIssues from "../../models/reported-issues";
 import Transactions from "../../models/transactions";
-import { sendMessage } from "../../bot/send_message";
+import { sendMessage } from "../../bot/modules/send_message";
 import axios from "axios";
 
 

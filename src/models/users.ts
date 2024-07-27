@@ -7,7 +7,7 @@ const schema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        validate: (value) => {
+        validate: (value: string) => {
             return validator.isEmail(value);
         }
     },
@@ -24,6 +24,6 @@ const schema = new mongoose.Schema({
     }
 });
 
-const users = mongoose.model('users', schema);
+const Users = mongoose.model('users', schema);
 
-export default users;
+export default Users;

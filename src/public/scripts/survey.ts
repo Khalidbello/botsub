@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const menuIcon = document.getElementById('menu-icon');
 const navMenu = document.getElementById('nav-menu');
 const hideIcon = document.getElementById('cancel-icon');
@@ -181,7 +183,7 @@ async function submitData() {
 
     const resp = await response.json();
     console.log(resp);
-    
+
     if (resp.status === 'successful') {
       showSuccessfulSurvey();
     } else {
@@ -209,10 +211,10 @@ function showErroneousSurvey() {
 function resetSurvey(event) {
   const target = event.target;
   console.log("reset target", target);
-  setTimeout(()=> {
+  setTimeout(() => {
     target.style.backgroundColor = "darkorange";
   }, 2000);
-  
+
   // resetting email field
   emailInput.value = '';
   emailInput.style.borderColor = "#ccc";

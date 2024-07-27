@@ -1,19 +1,22 @@
+import { Response } from "express";
+
 // file to initiate make purhase
-const transactions = require('../models/transactions');
-const { confirmDataPurchaseResponse } = require('./../bot_modules/helper_functions.js');
-const sendMessage = require('./../bot_modules/send_message.js');
-const randomstring = require('randomstring');
-const { dateFormatter } = require('./helper_functions.js');
-const Transactions = require('./../models/transactions.js');
-const PaymentAccounts = require('./../models/payment-accounts.js');
-const { creditReferrer } = require('./credit_referrer.js');
-const handleFirstMonthBonus = require('./monthly_bonuses.js');
-const { addDataProfit } = require('./save-profit.js');
+const handlebars = require('handlebars');
+
+import Transactions from "../models/transactions";
+import PaymentAccounts from "../models/payment-accounts";
+import creditReferrer from "./credit_referrer";
+import handleFirstMonthBonus from "./monthly_bonuses";
+import { addDataProfit } from "./save-profit";
+import { sendMessage } from "../bot/modules/send_message";
+import { confirmDataPurchaseResponse, dateFormatter } from "../bot/modules/helper_functions";
+import { generateRandomString } from "./helper_functions";
+import * as fs from 'fs';
 const axios = require('axios');
 
 
 // function to carryout purchase
-async function makePurchase(purchasePayload, bot, senderId) {
+async function makePurchase(purchasePayload: any, bot: string, senderId: string) {
     console.log('in make purchase')
     if (purchasePayload.transactionType === 'data') return deliverData(purchasePayload, bot, senderId);
     if (purchasePayload.transactionType === 'airtime') return deliverAirtime(purchasePayload, bot, senderId);
@@ -23,7 +26,7 @@ async function makePurchase(purchasePayload, bot, senderId) {
 
 
 // function to make data purchase request
-async function deliverData(purchasePayload, bot, senderId) {
+async function deliverData(purchasePayload: any, bot: string, senderId: string) {
     let options = {
         url: 'https://opendatasub.com/api/data/',
         headers: {
@@ -48,7 +51,7 @@ async function deliverData(purchasePayload, bot, senderId) {
 
 
 // function to make airtime purchase request
-function deliverAirtime(purchasePayload, bot, senderId) {
+function deliverAirtime(purchasePayload: any, bot: string, senderId: string) {
     let options = {
         url: 'https://opendatasub.com/api/topup/',
         headers: {
@@ -74,7 +77,7 @@ function deliverAirtime(purchasePayload, bot, senderId) {
 
 
 // function to make product purchase request
-async function makePurchaseRequest(purchasePayload, options, bot, transactionType, senderId) {
+async function makePurchaseRequest(purchasePayload: any, options: any, bot: string, transactionType: 'airtime' | 'data', senderId: string) {
     console.log('in make purchase request');
     try {
         const resp = await axios.post(options.url, options.payload, { headers: options.headers });
@@ -85,7 +88,7 @@ async function makePurchaseRequest(purchasePayload, options, bot, transactionTyp
         } else {
             throw 'could not deliver data'
         };
-    } catch (error) {
+    } catch (error: any) {
         if (error.response) {
             // The request was made and the server responded with a status code
             // that falls out of the range of 2xx
@@ -108,7 +111,7 @@ async function makePurchaseRequest(purchasePayload, options, bot, transactionTyp
 
 
 // function to make product purchase request simulation
-async function simulateMakePurchaseRequest(purchasePayload, options, bot, data, senderId) {
+async function simulateMakePurchaseRequest(purchasePayload: any, options: any, bot: string, data: any, senderId: string) {
     try {
         if (options) return helpSuccesfulDelivery(purchasePayload, 6000, senderId, bot);
         throw 'product purchas request not successful';
@@ -123,7 +126,7 @@ async function simulateMakePurchaseRequest(purchasePayload, options, bot, data, 
 
 
 // helper function for succesfull response
-async function helpSuccesfulDelivery(purchasePayload, balance, senderId, bot) {
+async function helpSuccesfulDelivery(purchasePayload: any, balance: number, senderId: string, bot: string) {
     let id;
     const date = new Date() //new Date(response.data.customer.created_at);
     const nigeriaTimeString = dateFormatter(date);
@@ -131,13 +134,10 @@ async function helpSuccesfulDelivery(purchasePayload, balance, senderId, bot) {
 
     // first run while loop to generate a random id
     while (true) {
-        id = randomstring.generate({
-            length: 10,
-            charset: 'alphanumeric'
-        });
-        let existing = await transactions.findOne({ id: id });
+        id = generateRandomString(15);
+        let existing = await Transactions.findOne({ id: id });
         if (existing) {
-            console.log('id existing')
+            console.log('id exists')
         } else {
             break;
         };
@@ -175,7 +175,7 @@ async function helpSuccesfulDelivery(purchasePayload, balance, senderId, bot) {
 
 
 // function to add transaction to delivered transaction
-async function addToDelivered(id, purchasePayload, senderId) {
+async function addToDelivered(id: string, purchasePayload: any, senderId: string) {
     const cancelTransaction = require('./../bot_modules/postback_responses.js').cancelTransaction;
     let product, newTransaction, response2;
 
@@ -193,14 +193,14 @@ async function addToDelivered(id, purchasePayload, senderId) {
     console.log('add to delivered response', response2);
     cancelTransaction(senderId, true);
     if (Number(purchasePayload.firstPurchase) === 1 && purchasePayload.transactionType === 'data') await creditReferrer(senderId);
-    if (purchasePayload.transactionType === 'data') await handleFirstMonthBonus(purchasePayload.email, purchasePayload.phoneNumber, purchasePayload.networkID, senderId);
+    if (purchasePayload.transactionType === 'data') await handleFirstMonthBonus(purchasePayload.email, purchasePayload.phoneNumber, purchasePayload.networkID, senderId, false);
     return;
 }; // end of addToDelivered
 
 
 
 // helper function to form product
-function formProduct(payload) {
+function formProduct(payload: any) {
     let product = `${payload.size}  ${payload.network} data`;
 
     if (payload.transactionType === 'airtime') {
@@ -211,16 +211,18 @@ function formProduct(payload) {
 
 
 // function to send data purchase mail and response
-async function sendSuccessfulResponse(response, res) {
+async function sendSuccessfulResponse(response: any, res: Response) {
     try {
-        const successfulMailTemplate = await fsP.readFile(
+        const successfulMailTemplate = await fs.promises.readFile(
             'modules/email-templates/successful-delivery.html',
             'utf8'
         );
         const compiledSuccessfulMailTemplate = handlebars.compile(successfulMailTemplate);
         let details = formResponse(response);
+        // @ts-ignore
         details.product = product(response);
         const mailParams = {
+            // @ts-ignore
             product: details.product,
             network: details.network,
             date: details.date,
@@ -254,7 +256,7 @@ async function sendSuccessfulResponse(response, res) {
 
 
 //function to form response for request
-function formResponse(response) {
+function formResponse(response: any) {
     const meta = response.data.meta;
     // create a Date object with the UTC time
     const date = new Date(response.data.customer.created_at);

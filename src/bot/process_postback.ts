@@ -1,34 +1,29 @@
-const {
-  sendNewConversationResponse,
-  sendPurchaseDataReponse,
-  sendMtnOffers,
-  sendAirtelOffers,
-  sendNineMobileOffers,
-  sendGloOffers,
-  offerSelected,
-  sendPurchaseAirtimeResponse,
+import { defaultMessageHandler } from "./message-responses/message_responses";
+import {
   airtimePurchase,
+  cancelTransaction,
   changeMailBeforeTransact,
   changePhoneNumber,
-  cancelTransaction,
-  issueReport,
-  showDataPrices,
-  retryFailed,
   handleRetryFailedMonthlyDelivery,
+  issueReport,
+  retryFailed,
   selectPurchaseMethod,
+  sendAirtelOffers,
+  sendGloOffers,
+  sendMtnOffers,
+  sendNewConversationResponse,
+  sendNineMobileOffers,
+  sendPurchaseAirtimeResponse,
+  sendPurchaseDataReponse,
   showAccountDetails,
-} = require('./postback_responses.js');
-const {
-  selectReferralOffers,
-  showReferralCode,
-  showMyReferrals,
-  referralBonusOfferSelected,
-  changeReferralBonusPhoneNumber,
-  deliverReferralBonus,
-} = require('./referral_postback_responses.js');
-const { defaultMessageHandler } = require('./message_responses.js');
+  showDataPrices
+} from "./post-back-responses/postback_responses";
+import { changeReferralBonusPhoneNumber, deliverReferralBonus, referralBonusOfferSelected, selectReferralOffers, showMyReferrals, showReferralCode } from "./post-back-responses/referral_postback_responses";
+import { sendMessage } from "./modules/send_message";
+import { Response } from "express";
 
-const processPostback = async (event, res): void => {
+
+const processPostback = async (event: any, res: Response): Promise<void> => {
   // first set nextAction to null
   if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry network services are currenly down and would be restored by 10:30 PM' });
 
@@ -63,14 +58,10 @@ const processPostback = async (event, res): void => {
     case '9mobileOffers':
       sendNineMobileOffers(event);
       break;
-    case 'offerSelected1':
-      offerSelected(event, payload);
-      break;
     case 'airtimePurchase':
       sendPurchaseAirtimeResponse(event);
       break;
     case 'enterAirtimeAmount':
-      console.log('airtume amount');
       airtimePurchase(event, payload);
       break;
     case 'makePurchase':
@@ -83,7 +74,7 @@ const processPostback = async (event, res): void => {
       changePhoneNumber(event);
       break;
     case 'cancel':
-      cancelTransaction(event.sender.id);
+      cancelTransaction(event.sender.id, true);
       break;
     case 'issueReport':
       issueReport(event);
@@ -105,7 +96,7 @@ const processPostback = async (event, res): void => {
     // referral related
     case 'referAFriend':
       showReferralCode(event);
-      break; s
+      break;
     case 'myReferrals':
       showMyReferrals(event, payload);
       break;
@@ -122,7 +113,7 @@ const processPostback = async (event, res): void => {
       changeReferralBonusPhoneNumber(event);
       break;
     default:
-      defaultMessageHandler(event);
+      defaultMessageHandler(event, false);
       break;
   }
 } // end of processPostback

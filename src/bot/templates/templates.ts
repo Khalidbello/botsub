@@ -1,4 +1,4 @@
-const fsP = require('fs').promises;
+import * as fs from 'fs';
 
 const responseServices = {
   type: 'template',
@@ -217,7 +217,7 @@ const airtimeNetworks2 = {
 
 
 // function to generate offers
-function generatePostbackButton(title, payload) {
+function generatePostbackButton(title: string, payload: any) {
   const json = JSON.stringify(payload);
   console.log('json payload', json);
 
@@ -230,7 +230,7 @@ function generatePostbackButton(title, payload) {
 };
 
 
-function generatePostbackTemplate(buttons, network, i) {
+function generatePostbackTemplate(buttons: any, network: string, i: number) {
   const title = i === 3 ? `Select ${network} offer` : '...';
   const template = {
     type: 'template',
@@ -244,12 +244,12 @@ function generatePostbackTemplate(buttons, network, i) {
 };
 
 
-async function generateFacebookPosts(id, network) {
-  const file = JSON.parse(await fsP.readFile('files/data-details.json', 'utf-8'));
+async function generateFacebookPosts(id: string, network: string) {
+  const file = JSON.parse(await fs.promises.readFile('files/data-details.json', 'utf-8'));
   const data = file[id];
   const length = Object.keys(data).length;
-  const templates = [];
-  let buttons = [];
+  const templates: any = [];
+  let buttons: any = [];
   let i = 1; // variable use to limit number of buttons in each template
 
   Object.keys(data).forEach((key) => {
@@ -283,7 +283,7 @@ async function generateFacebookPosts(id, network) {
 
 
 
-function retryFailedTemplate(transaction_id, tx_ref) {
+function retryFailedTemplate(transaction_id: string, tx_ref: string) {
   return {
     type: 'template',
     payload: {
@@ -299,7 +299,7 @@ function retryFailedTemplate(transaction_id, tx_ref) {
 }; // end of failedDeliveryTemplate
 
 
-function failedMonthlyBonusTemplate(email, number, networkID) {
+function failedMonthlyBonusTemplate(email: string, number: string, networkID: number) {
   return {
     type: 'template',
     payload: {

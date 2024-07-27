@@ -7,7 +7,7 @@ const { responseServices, responseServices2, responseServices3 } = require('./te
 
 
 // function to handle recieval of referral code\
-async function sendReferralCodeRecieved(event) {
+async function sendReferralCodeRecieved(event: any) {
     console.log('in referral code::::::')
     const senderId = event.sender.id
     const message = event.message.text.trim();
@@ -52,7 +52,7 @@ async function sendReferralCodeRecieved(event) {
 
 
 // function to handle recieve referralBonus phone number
-async function referralBonusPhoneNumberRecieved(event) {
+async function referralBonusPhoneNumberRecieved(event: any) {
     const senderId = event.sender.id;
     const referralBonusPhoneNumber = event.message.text.trim();
     const validateNum = validateNumber(referralBonusPhoneNumber);
@@ -73,7 +73,7 @@ async function referralBonusPhoneNumberRecieved(event) {
 
 
 // function to confirm claim referral
-async function confirmClaimReferralBonus(event) {
+async function confirmClaimReferralBonus(event: any) {
     const senderId = event.sender.id;
     const response = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
     const { network, size, phoneNumber } = response.purchasePayload;
@@ -84,7 +84,7 @@ async function confirmClaimReferralBonus(event) {
 
 
 // function to handle chnage referral bonus phone number
-async function changeReferralBonusPhoneNumber(event) {
+async function changeReferralBonusPhoneNumber(event: any) {
     const senderId = event.sender.id;
     const message = event.message.text.trim();
     const validatedNum = validateNumber(message);

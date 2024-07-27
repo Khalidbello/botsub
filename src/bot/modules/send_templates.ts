@@ -2,7 +2,7 @@
 
 const axios = require('axios');
 
-async function sendTemplates(senderId, template) {
+async function sendTemplates(senderId: string, template: any) {
   const request_body = {
     recipient: { id: senderId },
     message: {
@@ -15,7 +15,7 @@ async function sendTemplates(senderId, template) {
       params: { access_token: process.env.FBM_TOKEN },
       headers: { 'Content-Type': 'application/json' },
     })
-    .catch((error) => {
+    .catch((error: any) => {
       if (error.response) {
         console.error('Response Error:', error.response.data);
         console.error('Status Code:', error.response.status);
@@ -32,4 +32,4 @@ async function sendTemplates(senderId, template) {
 }; // end of sendTemplates
 
 
-export = { sendTemplates };
+export default sendTemplates;

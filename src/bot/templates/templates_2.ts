@@ -1,7 +1,7 @@
 // second templates file as first template file got too long
 
 // referral bonus network template
-function referralOffers1(refereeId) {
+function referralOffers1(refereeId: string) {
     const temp = {
         type: 'template',
         payload: {
@@ -25,7 +25,7 @@ function referralOffers1(refereeId) {
 }; // end of referralOffers1
 
 
-function referralOffers2(refereeId) {
+function referralOffers2(refereeId: string) {
     const temp = {
         type: 'template',
         payload: {

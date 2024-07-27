@@ -1,5 +1,7 @@
 // module to  hold all payment related functions relating to users with virtual account
 
+import { Response } from "express";
+
 const axios = require('axios');
 const Flutterwave = require('flutterwave-node-v3');
 const sendMessage = require('./../bot_modules/send_message.js');
@@ -12,18 +14,18 @@ const { initMakePurchase } = require('./../bot_modules/postback_responses.js');
 
 
 // function to create a virtual account
-async function createVAccount(email, reference, bvn, botType, currentCount = 0) {
+async function createVAccount(email: string, senderId: string, bvn: string, botType: string, currentCount: number) {
     console.log('viertual account current count is: ', currentCount);
 
     if (currentCount > 5) {
-        await sendMessage(reference, { text: 'Creation of dedicated virtual account failed.' });
+        await sendMessage(senderId, { text: 'Creation of dedicated virtual account failed.' });
         await sendMessage(senderId, { text: 'Please kindly click my account to restart process and ensure all provided infrmations are accurate ' });
-        sendTemplate(reference, responseServices3);
+        sendTemplate(senderId, responseServices3);
         return;
     };
 
     // first check to confirm no account with specific referance occurs
-    const existing = await PaymentAccounts.findOne({ refrence: reference });
+    const existing = await PaymentAccounts.findOne({ refrence: senderId });
 
     if (existing) return console.log('virtual account already exist for user');
 
@@ -31,7 +33,7 @@ async function createVAccount(email, reference, bvn, botType, currentCount = 0) 
     const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
     const details = {
         email: email,
-        tx_ref: reference,
+        tx_ref: senderId,
         is_permanent: true,
         bvn: bvn,
         firstname: "Botsub",
@@ -41,11 +43,11 @@ async function createVAccount(email, reference, bvn, botType, currentCount = 0) 
     try {
         const accountDetails = await flw.VirtualAcct.create(details);
         console.log("create virtual account deatails::::::::: ", accountDetails);
-        if (accountDetails.status !== "success") return createVAccount(email, reference, bvn, botType, currentCount + 1);
+        if (accountDetails.status !== "success") return createVAccount(email, senderId, bvn, botType, currentCount + 1);
 
         // save user account in vrtual accounts db
         let account = {
-            refrence: reference,
+            refrence: senderId,
             balance: 0,
             accountName: "Botsub " + 'FLW00' + `${num + 1}`,
             accountNumber: accountDetails.data.account_number,
@@ -56,24 +58,24 @@ async function createVAccount(email, reference, bvn, botType, currentCount = 0) 
         const vAccount = new PaymentAccounts(account);
 
         await vAccount.save();
-        await sendMessage(reference, { text: 'Creation of dedicated virtual account succesful.' });
-        await sendMessage(reference, { text: 'Your dedicated virtual account details: ' });
-        await sendMessage(reference, { text: `Bank Name: ${account.bankName}` });
-        await sendMessage(reference, { text: `Account Name: ${account.accountName}` });
-        await sendMessage(reference, { text: 'Acccount Number: ' });
-        await sendMessage(reference, { text: account.accountNumber });
-        await sendMessage(reference, { text: `Account Balance: ₦${account.balance}` });
-        sendMessage(reference, { text: 'Fund your dedicated virtual account once andd make mutltiple purchases seamlessly' });
+        await sendMessage(senderId, { text: 'Creation of dedicated virtual account succesful.' });
+        await sendMessage(senderId, { text: 'Your dedicated virtual account details: ' });
+        await sendMessage(senderId, { text: `Bank Name: ${account.bankName}` });
+        await sendMessage(senderId, { text: `Account Name: ${account.accountName}` });
+        await sendMessage(senderId, { text: 'Acccount Number: ' });
+        await sendMessage(senderId, { text: account.accountNumber });
+        await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
+        sendMessage(senderId, { text: 'Fund your dedicated virtual account once andd make mutltiple purchases seamlessly' });
     } catch (error) {
         console.log('in virtual account catch error:::', currentCount, error);
-        return createVAccount(email, reference, bvn, botType, currentCount + 1);
+        return createVAccount(email, senderId, bvn, botType, currentCount + 1);
     };
 }; // end of create virtual account
 
 
 
 // webhook handler function to handle updating user balance
-async function respondToWebhook(webhookPayload, res, host) {
+async function respondToWebhook(webhookPayload: any, res: Response, host: string) {
     const data = webhookPayload.data || webhookPayload;
     if (data.status.toLowerCase() !== "successful") {
         console.error('transaction not succesful::::::::::::: account funding not sucesfully carried out'); // check if transaction was succesful 
@@ -137,13 +139,13 @@ async function respondToWebhook(webhookPayload, res, host) {
 
 
 // helper function to carry out non-v-account purchase request
-async function carryOutNonVAccount(data, host) {
+async function carryOutNonVAccount(data: any, host: string) {
     console.log('carrying out no v account purchase request:::::::::::      ::::::::::');
     try {
         await axios.get(
             `https://${host}/gateway/confirm?transaction_id=${data.id}&tx_ref=${data.tx_ref || data.txRef}&webhook=webhooyouu`
         );
-    } catch (error) {
+    } catch (error: any) {
         // Handle errors
         if (error.response) {
             console.error('Server responded with an error status:', error.response.status);

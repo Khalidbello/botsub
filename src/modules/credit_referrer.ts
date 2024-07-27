@@ -1,5 +1,6 @@
 // module to hold crediting of referrals for all bot types
-const BotUsers = require('./../models/fb_bot_users.js');
+
+import BotUsers from "../models/fb_bot_users";
 
 async function creditReferrer(senderId: string) {
     const response = await BotUsers.findOneAndUpdate(

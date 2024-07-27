@@ -1,3 +1,5 @@
+import axios from "axios";
+
 // second file for postback responses as the first file is getting too long
 const sendTemplates = require('./send_templates.js');
 const sendMessage = require('./send_message.js');
@@ -5,7 +7,7 @@ const { referralOffers1, referralOffers2 } = require('./templates_2.js');
 const BotUsers = require('../models/fb_bot_users.js');
 const { formUnactiveReferralTemp, formActiveReferralTemp } = require('./helper_functions.js');
 const { seedFbBotUsers } = require('./seed_database.js');
-const bonuses = {
+const bonuses: { [key: string]: any } = {
     '1': { planID: 253, size: '150MB', network: 'MTN' },
     '2': { planID: 266, size: '200MB', network: 'GLO' },
     '3': { planID: 268, size: '500MB', network: '9mobile' },
@@ -16,7 +18,7 @@ const bonuses = {
 // funnctions to handle referal related stufss =================================================================================================
 
 // function to guide and show users their referral code
-async function showReferralCode(event) {
+async function showReferralCode(event: any) {
     const senderId = event.sender.id;
 
     await sendMessage(senderId, { text: 'Invite a friend and earn free data!!!' });
@@ -27,7 +29,7 @@ async function showReferralCode(event) {
 
 
 // function to show users referrals and claim button
-async function showMyReferrals(event) {
+async function showMyReferrals(event: any, payload: any) {
     //return seedFbBotUsers();
     const senderId = event.sender.id;
     const response = await BotUsers.findOne({ id: senderId }).select('referrals');
@@ -44,7 +46,7 @@ async function showMyReferrals(event) {
     if (referrals.length > 0) {
         await sendMessage(senderId, { text: 'Activated referrals:::: ' });
         const activeReferralsTemp = formActiveReferralTemp(referrals);
-        let tempPromises = activeReferralsTemp.map(async (temp) => await sendTemplates(senderId, temp));
+        let tempPromises = activeReferralsTemp.map(async (temp: any) => await sendTemplates(senderId, temp));
         await Promise.all(tempPromises);
         return;
     };
@@ -52,7 +54,7 @@ async function showMyReferrals(event) {
 
 
 // function to respond to select referral bonus network
-async function selectReferralOffers(event, payload) {
+async function selectReferralOffers(event: any, payload: any) {
     console.log('in referrals offer')
     const senderId = event.sender.id;
 
@@ -62,7 +64,7 @@ async function selectReferralOffers(event, payload) {
 
 
 // function to process claim referral bonus offer
-async function referralBonusOfferSelected(event, payload) {
+async function referralBonusOfferSelected(event: any, payload: any) {
     const senderId = event.sender.id;
     console.log('payload of offer selected::::: ', payload);
 
@@ -86,7 +88,7 @@ async function referralBonusOfferSelected(event, payload) {
 
 
 // function to initiate change rferral bonus phone Number
-async function changeReferralBonusPhoneNumber(event) {
+async function changeReferralBonusPhoneNumber(event: any) {
     const senderId = event.sender.id;
     sendMessage(senderId, { text: 'Enter new phone number: \Enter Q to cancel' });
     await BotUsers.updateOne(
@@ -97,14 +99,14 @@ async function changeReferralBonusPhoneNumber(event) {
 
 
 // function to deliver referral bonuses
-async function deliverReferralBonus(event) {
+async function deliverReferralBonus(event: any) {
     const senderId = event.sender.id;
     const resp = await BotUsers.findOne({ id: senderId }).select('referrals purchasePayload');
     let filtredArray;
     // check if there exist any referral with specific id
     if (!resp || !resp.referrals || resp.referrals.length === 0) return sendMessage(senderId, { text: 'Invalid referral please try again.' });
     // filtering array
-    filtredArray = resp.referrals.filter(referral => {
+    filtredArray = resp.referrals.filter((referral: any) => {
         return referral.id === resp.purchasePayload.refereeId;
     });
     if (!filtredArray) return sendMessage(senderId, { text: 'Invalid referral please try again.' });
@@ -130,13 +132,13 @@ async function deliverReferralBonus(event) {
                 }
             });
         };
-        if (process.env.TEST === 'pass' || response.data.Status === 'successful') {
+        if (process.env.TEST === 'pass' || (response && response.data.Status === 'successful')) {
             // remove referral from unclaimed referre and add to claimed
             await removeDeliverdReferralBonus(senderId, refereeId);
             return;
         };
         throw 'delivering not succesful';
-    } catch (err) {
+    } catch (err: any) {
         if (err.response) {
             console.error('Error response: ', err.response.data);
         } else if (err.request) {
@@ -150,7 +152,7 @@ async function deliverReferralBonus(event) {
 
 
 // helper function to remove delvered referral bonus and add it to claimed
-async function removeDeliverdReferralBonus(senderId, refereeId) {
+async function removeDeliverdReferralBonus(senderId: string, refereeId: string) {
     try {
         const deletedDocs = await BotUsers.updateOne(
             { id: senderId },

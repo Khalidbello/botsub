@@ -1,11 +1,11 @@
-const fsP = require('fs').promises;
+const Flutterwave = require('flutterwave-node-v3');
 const nodemailer = require('nodemailer');
-const handlebars = require('handlebars');
-const flutterwave = require('flutterwave-node-v3');
-const axios = require('axios');
-const { ObjectId } = require('mongodb');
-const Transactions = require('./../models/transactions.js');
-const fs = require('fs');
+const handlebars = require('express-handlebars');
+
+import * as fs from 'fs';
+import Transactions from '../models/transactions';
+import { Request, Response } from 'express';
+import axios from 'axios';
 
 //const uri = `mongodb+srv://bellokhalid74:${process.env.MONGO_PASS1}@botsubcluster.orij2vq.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
 
 
 // function to check if transaction has ever beign made
-async function checkIfPreviouslyDelivered(transactionId) {
+async function checkIfPreviouslyDelivered(transactionId: string) {
   const transaction = await Transactions.findOne({ id: transactionId });
   if (transaction) {
     return transaction.status === true;
@@ -32,7 +32,7 @@ async function checkIfPreviouslyDelivered(transactionId) {
 
 
 
-function returnPreviouslyDelivered(response) {
+function returnPreviouslyDelivered(response: any) {
   const meta = response.data.meta;
   // Create a Date object with the UTC time
   const date = new Date(response.data.customer.created_at);
@@ -54,9 +54,11 @@ function returnPreviouslyDelivered(response) {
   };
 
   if (meta.type == 'airtime') {
+    // @ts-expect-error
     details.product = `&#8358;${meta.amount} airtime`;
   };
   if (meta.type == 'data') {
+    // @ts-expect-error
     details.product = `${meta.size} data`;
   };
   return details;
@@ -65,33 +67,36 @@ function returnPreviouslyDelivered(response) {
 
 
 // function to check if all requirements are met
-const checkRequirementMet = async function (response, req) {
+const checkcheckRequirement = async function (response: any, req: Request) {
   let returnFalse = false;
   let price;
   if (response.data.meta.type === 'data') {
-    let dataDetails = await fsP
+    // @ts-expect-error
+    let dataDetails: string = await fs.promises
       .readFile('files/data-details.json')
       .catch((err) => (returnFalse = true));
 
-    if (returnFalse) return { status: false, messsage: 'error reading data-details.json' };
+    if (returnFalse) return { status: false, messsage: 'error reading data-details.json in checkcheckRequirement' };
 
     dataDetails = JSON.parse(dataDetails);
     try {
+      // @ts-expect-error
       price = Number(dataDetails[response.data.meta.networkID][response.data.meta.index]['price']);
     } catch (err) {
       returnFalse = true;
     };
 
     if (returnFalse) {
-      console.log('data plan with id not found');
+      console.log('error getting price for data plan, in checkcheckRequirement,  data plan with id not found');
       return { status: false, message: 'data plan with id not found' };
     };
 
     let pricePaid = Number(response.data.amount);
 
-    console.log('passed all remaining last in data');
+    console.log('passed all remaining last in data in checkcheckRequirement');
     if (
       response.data.status.toLowerCase() === 'successful' &&
+      price &&
       pricePaid >= price &&
       response.data.currency === 'NGN' &&
       response.data.tx_ref === req.query.tx_ref
@@ -122,25 +127,13 @@ const checkRequirementMet = async function (response, req) {
 
 
 // helper function to refund payment
-async function refundPayment(response, price) {
+async function refundPayment(response: any, price: number) {
   try {
-    const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-    // commented out refund transacttion
-    /*const resp = await flw.Transaction.refund({
-      id: response.data.id,
-      amount: null,
-      comments: 'transaction requirement not met',
-    });*/
-
-    //console.log('payment refund response in refundPayment function', resp);
+    // impiment fluuter wave transaction refund
     const date = new Date();
-
-    // Format the Nigeria time using the formatter
     const nigeriaTimeString = dateFormatter(date);
-
-    const emailTemplate = await fsP.readFile('modules/email-templates/refund-mail.html', 'utf8');
+    const emailTemplate = await fs.promises.readFile('modules/email-templates/refund-mail.html', 'utf8');
     const mail = handlebars.compile(emailTemplate);
-
     const refundData = {
       date: nigeriaTimeString,
       network: response.data.meta.network,
@@ -152,52 +145,25 @@ async function refundPayment(response, price) {
       supportEmail: process.env.SUPPORT_MAIL,
       chatBotUrl: process.env.CHATBOT_URL,
     };
+    // @ts-expect-error
+    if (response.data.meta.type === 'data') refundData.product = `${response.data.meta.size} data`;
+    // @ts-expect-error
+    if (response.data.meta.type === 'airtime') refundData.product = `₦${response.data.meta.amount} airtime`;
 
-    // setting product name
-    refundData.product = `${response.data.meta.size} data`;
-
-    if (response.data.meta.type === 'airtime') {
-      refundData.product = `₦${response.data.meta.amount} airtime`;
-    }
-
-    const mailOptions = {
-      from: process.env.ADMIN_MAIL,
-      to: response.data.customer.email,
-      subject: 'BotSub Payment Refund',
-      html: mail(refundData),
-    };
-
-    const resp1 = await transporter.sendMail(mailOptions);
-
-    console.log('refund mail response', resp1);
-
-    // adding transaction to toRefundDb
-    const client = lient();
-
-    await client.connect();
-    const collection = client.db(process.env.BOTSUB_DB).collection(process.env.TOREFUND_COLLECTION);
-
-    const resp2 = await collection.insertOne({
-      txRef: response.data.tx_ref,
-      transactionId: response.data.id,
-      status: 'pending',
-    });
-
-    client.close();
-    console.log('add to toRefund response', resp2);
-
+    // send user a notification that their transaction will be refunded
+    // redo adding transaction to refund
     return {
       status: 'requirementNotMet',
     };
   } catch (err) {
-    console.log('regund error', err);
+    console.log('an error occured in ', err);
   }
 }; // end of refundPayment
 
 
 
 // function to format dates
-function dateFormatter(date) {
+function dateFormatter(date: Date) {
   const nigeriaFormatter = new Intl.DateTimeFormat('en-NG', {
     timeZone: 'Africa/Lagos',
     year: 'numeric',
@@ -216,7 +182,7 @@ function dateFormatter(date) {
 
 
 // function to generate random Strings
-function generateRandomString(length = 15) {
+function generateRandomString(length: number) {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let randomString = '';
   for (let i = 0; i < length; i++) {
@@ -229,7 +195,7 @@ function generateRandomString(length = 15) {
 
 
 // function to retry failed delivery
-async function retryFailedHelper(transaction_id, tx_ref, res) {
+async function retryFailedHelper(transaction_id: string, tx_ref: string, res: Response) {
   const response = await axios.get(
     `https://${process.env.HOST}/gateway/confirm?retry=Retry&transaction_id=${transaction_id}&tx_ref=${tx_ref}&retry=true`
   );
@@ -240,9 +206,9 @@ async function retryFailedHelper(transaction_id, tx_ref, res) {
 
 
 // function to retry all failed  transactions
-async function retryAllFailedDelivery(req) {
+async function retryAllFailedDelivery(req: Request) {
   const statistic = {
-    total: null,
+    total: 0,
     successful: 0,
     failed: 0,
   };
@@ -252,10 +218,9 @@ async function retryAllFailedDelivery(req) {
     const transactions = await Transactions.find({ status: false }).limit(20)
 
     if (transactions.length < 20) loop = false;
-    console.log('transacts', transactions);
 
     // Create an array to store the promises for each transaction
-    const transactionPromises = transactions.map(async (transaction) => {
+    const transactionPromises = transactions.map(async (transaction: any) => {
       const { id, txRef } = transaction;
       const response = await axios.get(
         `https://${req.hostname}/gateway/confirm?transaction_id=${id}&tx_ref=${txRef}&retry=true`
@@ -280,8 +245,8 @@ async function retryAllFailedDelivery(req) {
 
 
 // function to fundvtu wallet
-async function fundWallet(bankCode, accNum, amount) {
-  const flw = new flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
+async function fundWallet(bankCode: number, accNum: string, amount: number) {
+  const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const details = {
     account_bank: bankCode,
     account_number: accNum,
@@ -299,7 +264,7 @@ async function fundWallet(bankCode, accNum, amount) {
 export {
   checkIfPreviouslyDelivered,
   returnPreviouslyDelivered,
-  checkRequirementMet,
+  checkcheckRequirement,
   refundPayment,
   generateRandomString,
   retryAllFailedDelivery,

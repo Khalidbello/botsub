@@ -1,11 +1,12 @@
+import axios from "axios";
+import { sendMessage } from "../bot/modules/send_message";
+import BotUsers from "../models/fb_bot_users";
+import Users from "../models/users";
+import { failedMonthlyBonusTemplate } from "../bot/templates/templates";
+
 require('dotenv').config();
-const Users = require('./../models/users.js');
-const BotUsers = require('../models/fb_bot_users.js')
-const axios = require('axios');
-const sendMessage = require('./../bot_modules/send_message.js');
-const sendTemplate = require('./../bot_modules/send_templates.js');
-const { failedMonthlyBonusTemplate } = require('./../bot_modules/templates.js');
-const bonuses = {
+
+const bonuses: { [key: string]: any } = {
     '1': { planID: 253, size: '150MB', network: 'MTN' },
     '2': { planID: 266, size: '200MB', network: 'GLO' },
     '3': { planID: 268, size: '500MB', network: '9mobile' },
@@ -14,7 +15,7 @@ const bonuses = {
 
 
 // function to handle giving users free hundred mb for every new month first purchase
-async function handleFirstMonthBonus(email, number, networkID, senderId = false, retry = false) {
+async function handleFirstMonthBonus(email: string, number: string, networkID: number, senderId: string, retry: boolean) {
     console.log('in monthly bonuses retry: ', retry);
     let flagUser;
     let flagBotUser = true;
@@ -34,7 +35,7 @@ async function handleFirstMonthBonus(email, number, networkID, senderId = false,
 
 
 // function to check if user is valid for new month data prchase bonus
-async function checkUserValidity(user, email) {
+async function checkUserValidity(user: any, email: string) {
     if (!user) {
         await Users.create({ email: email });
         return true;
@@ -46,7 +47,7 @@ async function checkUserValidity(user, email) {
 
 
 // function to validate date
-function validateDate(lastDate) {
+function validateDate(lastDate: string) {
     const date = new Date();
     const prevDate = new Date(lastDate);
 
@@ -60,7 +61,7 @@ function validateDate(lastDate) {
 
 
 // function to set laastPurchase date
-async function firstTransactOfMonth(toUse, type) {
+async function firstTransactOfMonth(toUse: string, type: string) {
     if (type === 'user') {
         await Users.updateOne({ email: toUse }, {
             $set: {
@@ -78,7 +79,7 @@ async function firstTransactOfMonth(toUse, type) {
 
 
 // function to deliver bonus
-async function deliverBonus(email, number, networkID, senderId) {
+async function deliverBonus(email: string, number: string, networkID: number, senderId: string) {
     console.log('datas', email, number, networkID, senderId);
     const bonus = bonuses[networkID];
     try {
@@ -97,15 +98,17 @@ async function deliverBonus(email, number, networkID, senderId) {
                 }
             });
         };
-        if (process.env.TEST === 'pass' || response.data.Status === 'successful') {
-            await firstTransactOfMonth(email, type = 'user'); // function to update user info to prevent double delivery
+
+        if (process.env.TEST === 'pass' || (response && response.data.Status === 'successful')) {
+            await firstTransactOfMonth(email, 'user'); // function to update user info to prevent double delivery
             if (senderId) {
-                await firstTransactOfMonth(senderId, type = 'botUser');
+                await firstTransactOfMonth(senderId, 'botUser');
                 return await sendMessage(senderId, { text: `you've recieved ${bonus.size} on your ${number} ${bonus.network} line for your first transaction of the month...` });
             };
         };
+
         throw 'bonus delivery failed';
-    } catch (err) {
+    } catch (err: any) {
         if (err.response) {
             console.log('Error response: ', err.response.data);
         } else if (err.request) {
@@ -114,9 +117,9 @@ async function deliverBonus(email, number, networkID, senderId) {
             console.log('Error: ', err.message);
         };
         await sendMessage(senderId, { text: "Sorry an error ocured while processing monthly" });
-        sendTemplate(senderId, failedMonthlyBonusTemplate(email, number, networkID));
+        // sendTemplate(senderId, failedMonthlyBonusTemplate(email, number, networkID));
     };
 }; // end deliver bonus
 
 
-export  {handleFirstMonthBonus};
+export default handleFirstMonthBonus;

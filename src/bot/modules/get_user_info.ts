@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // Function to get the user's name
-async function getUserName(userId) {
+async function getUserName(userId: string) {
   try {
     const response = await axios.get(
       `https://graph.facebook.com/${userId}?fields=first_name&access_token=${process.env.FBM_TOKEN}`

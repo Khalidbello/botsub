@@ -1,18 +1,29 @@
 import { Request, Response } from "express";
 
-// module to deliver value
-const handlebars = require('handlebars');
-const nodemailer = require('nodemailer');
-const axios = require('axios');
-const { dateFormatter, fundWallet } = require('./helper_functions.js');
-const sendMessage = require('./../bot_modules/send_message.js');
-const sendTemplate = require('./../bot_modules/send_templates.js');
-const { getVirtualAccountTemp } = require('./../bot_modules/templates.js');
-const { retryFailedTemplate, responseServices2 } = require('./../bot_modules/templates.js');
-const fsP = require('fs').promises;
-const Transactions = require('./../models/transactions.js');
-const { creditReferrer } = require('./credit_referrer.js');
-const handleFirstMonthBonus = require('./monthly_bonuses.js');
+// // module to deliver value
+// const handlebars = require('handlebars');
+// const nodemailer = require('nodemailer');
+// const axios = require('axios');
+// const { dateFormatter, fundWallet } = require('./helper_functions.js');
+// const sendMessage = require('./../bot_modules/send_message.js');
+// const sendTemplate = require('./../bot_modules/send_templates.js');
+// const { getVirtualAccountTemp } = require('./../bot_modules/templates.js');
+// const { retryFailedTemplate, responseServices2 } = require('./../bot_modules/templates.js');
+// const fsP = require('fs').promises;
+// const Transactions = require('./../models/transactions.js');
+// const { creditReferrer } = require('./credit_referrer.js');
+// const handleFirstMonthBonus = require('./monthly_bonuses.js');
+import fs from 'fs';
+import nodemailer from 'nodemailer';
+import handlebars from 'express-handlebars';
+import Transactions from "../models/transactions";
+import { sendMessage } from "../bot/modules/send_message";
+import axios from "axios";
+import { dateFormatter } from "./helper_functions";
+import handleFirstMonthBonus from "./monthly_bonuses";
+import creditReferrer from "./credit_referrer";
+import sendTemplates from "../bot/modules/send_templates";
+import { getVirtualAccountTemp, retryFailedTemplate } from "../bot/templates/templates";
 const transporter = nodemailer.createTransport({
   host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
   port: 465, // Port number for SMTP (e.g., 587 for TLS)
@@ -185,11 +196,11 @@ async function helpSuccesfulDelivery(req: Request, res: Response, response: any,
 
     // check for bonus delivery
     if (Number(response.data.meta.firstPurchase) === 1 && type === 'data') await creditReferrer(response.data.meta.senderId);
-    if (type === 'data') await handleFirstMonthBonus(response.data.customer.email, response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId);
+    if (type === 'data') await handleFirstMonthBonus(response.data.customer.email, response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId, false);
 
     await sendMessage(response.data.meta.senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub' });
     await sendMessage(response.data.meta.senderId, { text: '\nTired of making tranfers to different account for every transaction...? \nGet a permanet account number and experience faster and safer transactions.' });
-    await sendTemplate(response.data.meta.senderId, getVirtualAccountTemp);
+    await sendTemplates(response.data.meta.senderId, getVirtualAccountTemp);
   };
   //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
 }; // end of helpSuccesfulDelivery
@@ -210,8 +221,9 @@ async function helpFailedDelivery(req: Request, res: Response, response: any) {
     await sendMessage(response.data.meta.senderId, {
       text: `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${response.data.meta.number} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
     });
-    await sendTemplate(
+    await sendTemplates(
       response.data.meta.senderId,
+      // @ts-expect-error
       retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
     );
   };
@@ -290,11 +302,11 @@ function product(response: any) {
 // function to send data purchase mail and response
 async function sendSuccessfulResponse(response: any, res: Response) {
   try {
-    const successfulMailTemplate = await fsP.readFile(
+    const successfulMailTemplate = await fs.promises.readFile(
       'modules/email-templates/successful-delivery.html',
       'utf8'
     );
-    const compiledSuccessfulMailTemplate = handlebars.compile(successfulMailTemplate);
+    const compiledSuccessfulMailTemplate = Handlebars.compile(successfulMailTemplate);
     let details = formResponse(response);
     // @ts-ignore
     details.product = product(response);
@@ -336,11 +348,11 @@ async function sendSuccessfulResponse(response: any, res: Response) {
 // function to form response on failed to deliver
 async function sendFailedToDeliverResponse(response: any, res: Response) {
   try {
-    const pendingMailTemplate = await fsP.readFile(
+    const pendingMailTemplate = await fs.promises.readFile(
       'modules/email-templates/failed-delivery.html',
       'utf8'
     );
-    const compiledPendingMailTemplate = handlebars.compile(pendingMailTemplate);
+    const compiledPendingMailTemplate = Handlebars.compile(pendingMailTemplate);
     let details = formResponse(response);
     // @ts-ignore
     details.product = `${response.data.meta.size} data`;

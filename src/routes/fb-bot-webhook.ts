@@ -1,13 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-const processPostback = require('./../bot_modules/process_postback.js');
-const processMessage = require('./../bot_modules/process_message.js');
-const axios = require('axios');
-const { Router } = require('express');
-const router = Router();
+import { Request, Response, NextFunction, Router } from "express";
+import { processPostback } from "../bot/process_postback";
+import processMessage from "../bot/process_message";
+import axios from "axios";
+const fbBotRouter = Router();
 
 
 
-router.get('/fb-hook', function (req: Request, res: Response) {
+fbBotRouter.get('/fb-hook', function (req: Request, res: Response) {
   const token = process.env.FB_VERIFICATION_KEY;
   console.log('in facebook webhook verification', token);
   console.log(req.query['hub.verify_token']);
@@ -22,7 +21,7 @@ router.get('/fb-hook', function (req: Request, res: Response) {
 
 
 
-router.post('/fb-hook', async function (req: Request, res: Response) {
+fbBotRouter.post('/fb-hook', async function (req: Request, res: Response) {
   //checking for page subscription.
   if (req.body.object === 'page') {
     /* Iterate over each entry, there can be multiple entries allbacks are batched. */
@@ -46,7 +45,7 @@ router.post('/fb-hook', async function (req: Request, res: Response) {
   res.sendStatus(200);
 }); // end of webhook post req
 
-router.get('/set-persist', async (req: Request, res: Response) => {
+fbBotRouter.get('/set-persist', async (req: Request, res: Response) => {
   const PAGE_ACCESS_TOKEN = process.env.FBM_TOKEN;
   const PAGE_ID = process.env.PAGE_ID;
 
@@ -96,7 +95,7 @@ router.get('/set-persist', async (req: Request, res: Response) => {
   await setPersistentMenu();
 }); // end of persistent menu
 
-router.get('/set-get-started', (req: Request, res: Response) => {
+fbBotRouter.get('/set-get-started', (req: Request, res: Response) => {
   const accessToken = process.env.FBM_TOKEN;
   const pageId = process.env.PAGE_ID;
 
@@ -123,4 +122,4 @@ router.get('/set-get-started', (req: Request, res: Response) => {
 });
 
 
-export default router;
+export default fbBotRouter;

@@ -3,7 +3,7 @@ const Profits = require('./../models/profits.js');
 const fsP = require('fs').promises;
 
 
-async function addDataProfit(networkID, index, date, id) {
+async function addDataProfit(networkID: number, index: number, date: Date, id: string) {
     const dataDetails = JSON.parse(await fsP.readFile('files/data-details.json', 'utf-8'));
     const plan = dataDetails[networkID][index];
     const profit = (plan.price - plan.price * 0.014) - plan.aPrice;

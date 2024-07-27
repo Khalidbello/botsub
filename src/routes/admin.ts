@@ -19,7 +19,7 @@ const {
 } = require('./../modules/admin/controls.js');
 
 
-const router = Router();
+const adminRouter = Router();
 
 // middle ware to check if user is authenticated
 function authChecker(req: any, res: Response, next: NextFunction) {
@@ -35,7 +35,7 @@ function authChecker(req: any, res: Response, next: NextFunction) {
 };
 
 
-router.post('/login', (req: any, res: Response) => {
+adminRouter.post('/login', (req: any, res: Response) => {
     const { userName, password } = req.body; console.log(req.body, 'body');
 
     //console.log(userName, password, 'credentials.......', req.sessionID);
@@ -48,7 +48,7 @@ router.post('/login', (req: any, res: Response) => {
     };
 });
 
-router.post('/logout', (req: any, res: Response) => {
+adminRouter.post('/logout', (req: any, res: Response) => {
     // Destroy the session upon logout
     req.session.destroy((err: any) => {
         if (err) {
@@ -60,7 +60,7 @@ router.post('/logout', (req: any, res: Response) => {
     });
 });
 
-// router.get('/login', (req, res) => {
+// adminRouter.get('/login', (req, res) => {
 //     if (req.session.user) {
 //         console.log('redirected to home');
 //         return res.redirect('/');
@@ -79,9 +79,9 @@ router.post('/logout', (req: any, res: Response) => {
 
 
 // check if requester has admin permission
-router.use(authChecker);
+adminRouter.use(authChecker);
 
-router.get('/todays-statisitics', async (req: Request, res: Response) => {
+adminRouter.get('/todays-statisitics', async (req: Request, res: Response) => {
     try {
         await todaysStatistic(req, res);
     } catch (err) {
@@ -91,7 +91,7 @@ router.get('/todays-statisitics', async (req: Request, res: Response) => {
 });
 
 
-router.get('/statistics/:startDate/:endDate', async (req: Request, res: Response) => {
+adminRouter.get('/statistics/:startDate/:endDate', async (req: Request, res: Response) => {
     try {
         await statistics(req, res);
     } catch (err) {
@@ -100,7 +100,7 @@ router.get('/statistics/:startDate/:endDate', async (req: Request, res: Response
     };
 });
 
-router.get('/balances', async (req: Request, res: Response) => {
+adminRouter.get('/balances', async (req: Request, res: Response) => {
     try {
         await balances(req, res);
     } catch (err) {
@@ -110,7 +110,7 @@ router.get('/balances', async (req: Request, res: Response) => {
 });
 
 
-router.get('/trends/:range', (req: Request, res: Response) => {
+adminRouter.get('/trends/:range', (req: Request, res: Response) => {
     try {
         return trendData(req, res);
     } catch (err) {
@@ -126,7 +126,7 @@ router.get('/trends/:range', (req: Request, res: Response) => {
 
 
 // route to handle fetching network status
-router.get('/network-status', async (req: Request, res: Response) => {
+adminRouter.get('/network-status', async (req: Request, res: Response) => {
     try {
         return getNetworkStatus(req, res);
     } catch (err) {
@@ -137,7 +137,7 @@ router.get('/network-status', async (req: Request, res: Response) => {
 
 
 // route to to set network status
-router.post('/network-status', async (req: Request, res: Response) => {
+adminRouter.post('/network-status', async (req: Request, res: Response) => {
     try {
         return setNetworkStatus(req, res);
     } catch (err) {
@@ -148,7 +148,7 @@ router.post('/network-status', async (req: Request, res: Response) => {
 
 
 // route to send issue response from admin to user/reporter
-router.post('/send-issue-response', async (req: Request, res: Response) => {
+adminRouter.post('/send-issue-response', async (req: Request, res: Response) => {
     try {
         return sendIssueResponse(req, res);
     } catch (err) {
@@ -159,7 +159,7 @@ router.post('/send-issue-response', async (req: Request, res: Response) => {
 
 
 // route to handle fetching reported issues
-router.get('/reported-issues/:pagging/:size', (req: Request, res: Response) => {
+adminRouter.get('/reported-issues/:pagging/:size', (req: Request, res: Response) => {
     try {
         return fetchIssues(req, res);
     } catch (err) {
@@ -171,7 +171,7 @@ router.get('/reported-issues/:pagging/:size', (req: Request, res: Response) => {
 
 
 // route to handle retry transcion
-router.get('/retry-transaction/:transactionId/:txRef', async (req: Request, res: Response) => {
+adminRouter.get('/retry-transaction/:transactionId/:txRef', async (req: Request, res: Response) => {
     try {
         const { transactionId, txRef } = req.params;
         return retryTransaction(transactionId, txRef, res);
@@ -183,7 +183,7 @@ router.get('/retry-transaction/:transactionId/:txRef', async (req: Request, res:
 
 
 // route handle transaction close request
-router.get('/close-issue/:issueId', async (req: Request, res: Response) => {
+adminRouter.get('/close-issue/:issueId', async (req: Request, res: Response) => {
     try {
         return closeIssue(req, res);
     } catch (err) {
@@ -194,7 +194,7 @@ router.get('/close-issue/:issueId', async (req: Request, res: Response) => {
 
 
 // route to fetch pending transactions
-router.get('/pending-transaction/:pagging/:size', async (req: Request, res: Response) => {
+adminRouter.get('/pending-transaction/:pagging/:size', async (req: Request, res: Response) => {
     try {
         const pagging = parseInt(req.params.pagging);
         const size = parseInt(req.params.size);
@@ -208,7 +208,7 @@ router.get('/pending-transaction/:pagging/:size', async (req: Request, res: Resp
 
 
 // route to handle transaction retry
-router.get('/settle-transaction/:transactionId/:senderId', async (req: Request, res: Response) => {
+adminRouter.get('/settle-transaction/:transactionId/:senderId', async (req: Request, res: Response) => {
     try {
         settleTransaction(req.params.transactionId, req.params.senderId, res);
     } catch (err) {
@@ -221,4 +221,4 @@ router.get('/settle-transaction/:transactionId/:senderId', async (req: Request, 
 
 
 
-export default router;
+export default adminRouter;

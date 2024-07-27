@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 let drkb = '#112';
 let orange = 'darkorange';
 let queryBox = document.querySelector('#query-box');
@@ -315,7 +317,6 @@ function showOffers(ele) {
 } // end of showOffers
 
 //function to be called when an offer is selected
-
 function offerSelected() {
   let ele = event.currentTarget;
 
@@ -336,8 +337,8 @@ function offerSelected() {
   hideBox();
 } // end of offerSelected
 
-//function to be called by email info show important of email
 
+//function to be called by email info show important of email
 function showEmailInfo() {
   let ele = event.currentTarget;
   let info = ele.children[0];

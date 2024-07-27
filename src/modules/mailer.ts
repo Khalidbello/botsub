@@ -9,8 +9,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendMail(mailOptions) {
-  transporter.sendMail(mailOptions, (err, data) => {
+async function sendMail(mailOptions: any) {
+  transporter.sendMail(mailOptions, (err: Error, data: any) => {
     if (err) {
       console.error('failed mailer');
     } else {

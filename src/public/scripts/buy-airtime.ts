@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 let drkb = '#112';
 let orange = 'darkorange';
 let queryBox = document.querySelector('#query-box');
@@ -32,7 +34,7 @@ async function getKey() {
   const response = await fetch('front-api/get-key');
   const datas = await response.json();
   key = datas.key
-}; 
+};
 getKey();
 
 //adding event listener for animation to networks

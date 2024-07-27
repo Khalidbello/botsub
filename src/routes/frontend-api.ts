@@ -1,20 +1,25 @@
-// @ts-nocheck
 
-// module for frontend api
-const { Router } = require('express');
-const nodemailer = require('nodemailer');
-const handlebars = require('handlebars');
-const axios = require('axios')
-const Transactions = require('./../models/transactions.js');
-const Survey = require('./../models/survey.js');
-const Users = require('./../models/users.js');
-const { ObjectId } = require('mongodb');
-const {
-  retryFailedHelper,
-  retryAllFailedDelivery,
-} = require('./../modules/helper_functions.js');
-const fsP = require('fs').promises;
-const router = Router();
+// // module for frontend api
+// const { Router } = require('express');
+// const nodemailer = require('nodemailer');
+// const handlebars = require('handlebars');
+// const axios = require('axios');
+// const Transactions = require('./../models/transactions.js');
+// const Survey = require('./../models/survey.js');
+// const Users = require('./../models/users.js');
+// const { ObjectId } = require('mongodb');
+// const {
+//   retryFailedHelper,
+//   retryAllFailedDelivery,
+// } = require('./../modules/helper_functions.js');
+// const fsP = require('fs').promises;
+import { Router } from 'express';
+import nodemailer from 'nodemailer';
+import fs from 'fs';
+import Users from '../models/users';
+import { retryAllFailedDelivery, retryFailedHelper } from '../modules/helper_functions';
+import Transactions from '../models/transactions';
+const frontEndApiRouter = Router();
 
 
 const transporter = nodemailer.createTransport({
@@ -29,8 +34,8 @@ const transporter = nodemailer.createTransport({
 
 
 
-router.get('/data-offers', async (req, res) => {
-  let dataOffers = await fsP.readFile('files/data-details.json');
+frontEndApiRouter.get('/data-offers', async (req, res) => {
+  let dataOffers: any = await fs.promises.readFile('files/data-details.json');
   dataOffers = JSON.parse(dataOffers);
   dataOffers.FLW_PB_KEY = process.env.FLW_PB_KEY;
   res.json(dataOffers);
@@ -39,14 +44,14 @@ router.get('/data-offers', async (req, res) => {
 
 
 // to get key
-router.get('/get-key', (req, res) => {
+frontEndApiRouter.get('/get-key', (req, res) => {
   res.json({ key: process.env.FLW_PB_KEY });
 });
 
 
 
 // route to recieve and  save survey datas
-router.post('/survey', async (req, res) => {
+frontEndApiRouter.post('/survey', async (req, res) => {
   try {
     console.log('survey payload', req.body);
     const data = req.body;
@@ -57,7 +62,7 @@ router.post('/survey', async (req, res) => {
       gender: data.gender
     };
 
-    const mailTemplate = await fsP.readFile(
+    const mailTemplate = await fs.promises.readFile(
       'modules/email-templates/survey-recieved-mail.html',
       'utf8'
     );
@@ -79,16 +84,16 @@ router.post('/survey', async (req, res) => {
 
 
 // routes for admin
-router.post('/retry', async (req, res) => {
+frontEndApiRouter.post('/retry', async (req, res) => {
   const { transaction_id, tx_ref } = req.query;
   console.log('req.query', req.query);
-
+  // @ts-expect-error
   return retryFailedHelper(transaction_id, tx_ref, res);
 });
 
 
 
-router.post('/retry-all', async (req, res) => {
+frontEndApiRouter.post('/retry-all', async (req, res) => {
   const statistic = await retryAllFailedDelivery(req);
   console.log('statistic', statistic);
   res.json(statistic);
@@ -96,7 +101,7 @@ router.post('/retry-all', async (req, res) => {
 
 
 // route to changed transaction status to settled
-router.post('/change-to-setlled', async (req, res) => {
+frontEndApiRouter.post('/change-to-setlled', async (req, res) => {
   console.log('got in changed to settled')
   try {
     await Transactions.updateOne(
@@ -109,7 +114,7 @@ router.post('/change-to-setlled', async (req, res) => {
   }
 });
 
-router.get('/fetch-failed-transactions', async (req, res) => {
+frontEndApiRouter.get('/fetch-failed-transactions', async (req, res) => {
   try {
     const { toSkip, limit } = req.query;
     const data = await Transactions.find({ status: false });
@@ -123,4 +128,4 @@ router.get('/fetch-failed-transactions', async (req, res) => {
 });
 
 
-export default router;
+export default frontEndApiRouter;

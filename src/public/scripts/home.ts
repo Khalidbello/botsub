@@ -1,3 +1,4 @@
+// @ts-nocheck
 // home.js filegg
 
 // function to change window location
