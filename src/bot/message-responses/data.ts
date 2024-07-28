@@ -10,7 +10,7 @@ import fs from 'fs';
 // function to handle buy data selected
 async function handleBuyData(event: any) {
     const senderId = event.sender.id;
-    const text = `Select network for data Purchase \n 1. MTN \n 2. GLO \n 3. Airtel \n 4. 9Mobile \n 0. cancel`;
+    const text = `Select network for data Purchase \n 1. MTN \n 2. GLO \n 3. Airtel \n 4. 9Mobile \n\n 0. cancel`;
 
     sendMessage(senderId, { text: text });
     await BotUsers.updateOne({ id: senderId }, {
@@ -27,23 +27,26 @@ const handleDataNetWorkSelected = async (event: any) => {
     try {
         if (message === '0') return cancelTransaction(senderId, true);
 
-        // @ts-expect-error check if entred response is with in expected
-        if (message !== '1' || message !== '2' || message !== '3' || message !== '4') {
-            await sendMessage(senderId, { text: 'Invalid response recieved.' });
-            return handleBuyData(event);
+        // Read data-details.json file
+        let dataDetails: any = await fs.promises.readFile('files/data-details.json', 'utf-8');
+        dataDetails = JSON.parse(dataDetails);
+        console.log('data details', dataDetails);
+
+        // Get details of user selected network
+        const networkDetails: networkDetailsType = dataDetails[message];
+
+        if (!networkDetails) {
+            await sendMessage(senderId, { text: 'Invalid response received.' });
+            return handleBuyData(event); // Ensure handleBuyData is an asynchronous function if needed
         };
 
-        let dataDetails: any = await fs.promises.readFile('files/data-details.json');
-        dataDetails = JSON.parse(dataDetails);
-        // details of user selected network
-        const networkDetails: any = dataDetails[message];
-        const network = networkDetails[0].network;
-        const networkID = networkDetails[0].networkID;
+        console.log('network details', networkDetails, networkDetails['1']);
+        const { network, networkID } = networkDetails['1'];
         const response = await formDataOffers(networkDetails);
-        //const nextAction = `selectDataOffer`
 
-        sendMessage(senderId, { text: response });
-        // update bot user inof
+        await sendMessage(senderId, { text: response });
+
+        // Update bot user info
         await BotUsers.updateOne(
             { id: senderId },
             {
@@ -56,12 +59,10 @@ const handleDataNetWorkSelected = async (event: any) => {
             }
         );
     } catch (err) {
-        console.error('An error occured in handleDataNetWorkSelected', err);
-        sendMessage(senderId, { text: 'An error occcured please enter again.  \n Or enter Q to cancel' });
-    };
+        console.error('An error occurred in handleDataNetWorkSelected', err);
+        await sendMessage(senderId, { text: 'An error occurred, please try again. \n Or enter Q to cancel' });
+    }
 };
-
-
 
 
 // funciton to handle network data offer selected

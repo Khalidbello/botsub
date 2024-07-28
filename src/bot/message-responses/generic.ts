@@ -26,6 +26,7 @@ async function defaultMessageHandler(event: any, isMessage: any) {
 
         if (text.toLowerCase() === '2') return handleBuyAirtime(event);
 
+        sendMessage(senderId, {text: 'Hy what can i do for you today. \n 1. Buy data \n 2. Buy Airtime'});
         // await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
         // await sendTemplate(senderId, responseServices);
         // await sendTemplate(senderId, responseServices2);
