@@ -1,7 +1,7 @@
 import BotUsers from "../../models/fb_bot_users";
 import { networkDetailsType } from "../../types/bot/module-buy-data-types";
 import { formDataOffers } from "../modules/buy-data";
-import { validateNumber } from "../modules/helper_functions";
+import { confirmDataPurchaseResponse, validateNumber } from "../modules/helper_functions";
 import { sendMessage } from "../modules/send_message";
 import { cancelTransaction } from "../post-back-responses/postback_responses";
 import fs from 'fs';
@@ -160,7 +160,7 @@ const handlePhoneNumberEntred = async (event: any) => {
 
 
 // function to handle selected order preview
-const handleSelectedOrderPreviewAction = async  (event: any) => {
+const handleSelectedOrderPreviewAction = async (event: any) => {
     const senderId = event.sender.id;
     const message: string = event.message.text.trim();
 
