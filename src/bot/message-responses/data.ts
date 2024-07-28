@@ -175,4 +175,7 @@ const handleSelectedOrderPreviewAction = async (event: any) => {
 export {
     handleBuyData,
     handleDataNetWorkSelected,
+    handleOfferSelected,
+    handlePhoneNumberEntred,
+    handleSelectedOrderPreviewAction,
 }

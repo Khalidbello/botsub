@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { sendMessage } from './modules/send_message';
 import BotUsers from '../models/fb_bot_users';
 import { sendNewConversationResponse } from './post-back-responses/postback_responses';
-import { handleBuyData, handleDataNetWorkSelected } from './message-responses/data';
+import { handleBuyData, handleDataNetWorkSelected, handleOfferSelected, handlePhoneNumberEntred } from './message-responses/data';
 import {
     bvnEntred,
     enteredEmailForAccount,
@@ -40,8 +40,10 @@ async function processMessage(event: any, res: Response) {
     const nextAction = user.nextAction;
 
     // cases for data purchase;
-    if (nextAction === 'buyData') return handleBuyData(event);
-    if (nextAction === 'selectDataNetwork') return handleDataNetWorkSelected(event)
+    if (nextAction === 'selectDataNetwork') return handleDataNetWorkSelected(event);
+    if (nextAction === 'selectDataOffer') return handleOfferSelected(event);
+    if (nextAction === 'enterPhoneNumber') return handlePhoneNumberEntred(event);
+    if (nextAction === 'selectOrderPreviewAction') return selectOrderPreviewAction(event);
 
     if (nextAction === 'enterEmailFirst') return sendEmailEnteredResponse(event);
     if (nextAction === 'phoneNumber') return sendPhoneNumberEnteredResponses(event);
@@ -65,3 +67,7 @@ async function processMessage(event: any, res: Response) {
 }; // end of process message switch
 
 export default processMessage;
+
+function selectOrderPreviewAction(event: any) {
+    throw new Error('Function not implemented.');
+}
