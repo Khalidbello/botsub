@@ -57,16 +57,16 @@ async function confirmDataPurchaseResponse(senderId: string) {
     const message1 = {
         text:
             'Product: ' +
-            user.purchasePayload.product +
+            user?.purchasePayload?.product +
             '\nNetwork: ' +
-            user.purchasePayload.network +
+            user?.purchasePayload?.network +
             '\nPrice: ' +
             '₦' +
-            user.purchasePayload.price +
+            user?.purchasePayload?.price +
             '\nPhone Number: ' +
-            user.purchasePayload.phoneNumber +
+            user?.purchasePayload?.phoneNumber +
             '\nEmail: ' +
-            user.email,
+            user?.email,
     };
     await sendMessage(senderId, message1);
     // await sendTemplate(senderId, confrimDataPurchaseButton1);
@@ -209,7 +209,6 @@ async function remindToFundWallet(senderId: string, amount: number, balance: num
 
 // function to save error in error.json file
 function saveErrorToJson(error: any) {
-    const fs = require('fs');
     const errorData = {
         timestamp: new Date().toISOString(),
         error: error.message,

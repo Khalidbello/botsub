@@ -1,10 +1,9 @@
 // module that hoouses the functionality of adding up profit
-const Profits = require('./../models/profits.js');
-const fsP = require('fs').promises;
-
+import fs from 'fs';
+import Profits from '../models/profits';
 
 async function addDataProfit(networkID: number, index: number, date: Date, id: string) {
-    const dataDetails = JSON.parse(await fsP.readFile('files/data-details.json', 'utf-8'));
+    const dataDetails = JSON.parse(await fs.promises.readFile('files/data-details.json', 'utf-8'));
     const plan = dataDetails[networkID][index];
     const profit = (plan.price - plan.price * 0.014) - plan.aPrice;
     const dat = new Date(date);

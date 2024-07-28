@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-
+import mongoose from "mongoose";
 const purchasePayload = new mongoose.Schema({
     product: String,
     network: String,

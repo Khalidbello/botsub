@@ -1,5 +1,5 @@
-// module to setup email sending
-const nodemailer = require('nodemailer');
+// module to setup email sendingr
+import nodemailer, { SentMessageInfo } from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendMail(mailOptions: any) {
-  transporter.sendMail(mailOptions, (err: Error, data: any) => {
+  transporter.sendMail(mailOptions, (err: Error | null, data: SentMessageInfo) => {
     if (err) {
       console.error('failed mailer');
     } else {

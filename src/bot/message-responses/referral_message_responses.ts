@@ -1,10 +1,9 @@
-const { validateNumber } = require('./helper_functions');
-const sendMessage = require('./send_message');
-const sendTemplate = require('./send_templates.js');
-const BotUsers = require('../models/fb_bot_users.js');
-const { referralTemp } = require('./templates_2.js'); const { text } = require('express');
-const { responseServices, responseServices2, responseServices3 } = require('./templates.js')
-
+import BotUsers from "../../models/fb_bot_users";
+import { validateNumber } from "../modules/helper_functions";
+import { sendMessage } from "../modules/send_message";
+import sendTemplates from "../modules/send_templates";
+import { responseServices, responseServices2, responseServices3 } from "../templates/templates";
+import { referralTemp } from "../templates/templates_2";
 
 // function to handle recieval of referral code\
 async function sendReferralCodeRecieved(event: any) {
@@ -17,9 +16,9 @@ async function sendReferralCodeRecieved(event: any) {
         if (referralCode === 0) {
             await sendMessage(senderId, { text: 'Welcome to BotSub, you will be credited with free data bonuses once you make your first data purchase. \nHurry while it last!' });
             await sendMessage(senderId, { text: 'You will also be credited with free data bonuses for your all your first purchase of the month' });
-            await sendTemplate(senderId, responseServices);
-            await sendTemplate(senderId, responseServices2);
-            await sendTemplate(senderId, responseServices3);
+            await sendTemplates(senderId, responseServices);
+            await sendTemplates(senderId, responseServices2);
+            await sendTemplates(senderId, responseServices3);
             await BotUsers.updateOne(
                 { id: senderId },
                 { $set: { nextAction: null, referrer: 0, firstPurchase: true } }
@@ -36,9 +35,9 @@ async function sendReferralCodeRecieved(event: any) {
         } else {
             await sendMessage(senderId, { text: 'Welcome to BotSub, you and your referrer will be credited with free data bonuses once you make your first data purchase. \nHurry while it last!' });
             await sendMessage(senderId, { text: 'You will also be credited with free data bonuses for your all your first purchase of the month' });
-            await sendTemplate(senderId, responseServices);
-            await sendTemplate(senderId, responseServices2);
-            await sendTemplate(senderId, responseServices3);
+            await sendTemplates(senderId, responseServices);
+            await sendTemplates(senderId, responseServices2);
+            await sendTemplates(senderId, responseServices3);
             await BotUsers.updateOne({ id: senderId }, {
                 $set: { nextAction: null, referrer: Number(referralCode), firstPurchase: true }
             });
@@ -76,10 +75,11 @@ async function referralBonusPhoneNumberRecieved(event: any) {
 async function confirmClaimReferralBonus(event: any) {
     const senderId = event.sender.id;
     const response = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
+    // @ts-expect-error
     const { network, size, phoneNumber } = response.purchasePayload;
 
     await sendMessage(senderId, { text: `Product: ${network} ${size} referral bonus \nNumber: ${phoneNumber}` })
-    await sendTemplate(senderId, referralTemp);
+    await sendTemplates(senderId, referralTemp);
 }; // end of claim referral bonus
 
 

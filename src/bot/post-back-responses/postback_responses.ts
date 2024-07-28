@@ -212,12 +212,14 @@ async function generateAccountNumber(event: any) {
         const botUser = await BotUsers.findOne({ id: senderId }).select('email purchasePayload referrer firstPurchase');
         console.log('generateAccountNumber', botUser);
 
+        // @ts-expect-error
         if (!botUser.purchasePayload.transactionType) return noTransactFound(senderId);
 
+        // @ts-expect-error
         payload = botUser.purchasePayload.toObject();
-        payload.email = botUser.email;
+        payload.email = botUser?.email;
         payload.bot = true;
-        payload.firstPurchase = botUser.firstPurchase;
+        payload.firstPurchase = botUser?.firstPurchase;
         payload['senderId'] = senderId;
         let test = payload;
 
@@ -274,6 +276,7 @@ async function initMakePurchase(senderId: any) {
     const userAcount = PaymentAccounts.findOne({ refrence: senderId });
     const promises = [userDet, userAcount];
     const data = await Promise.all(promises);
+    // @ts-expect-error
     const purchasePayload = data[0].purchasePayload; console.log('purchase ayload in initmakePurchase', purchasePayload);
 
     console.log('prchase payload: ', purchasePayload);
@@ -286,6 +289,7 @@ async function initMakePurchase(senderId: any) {
         return;
     };
 
+    // @ts-expect-error
     if (purchasePayload.price > data[1].balance) return remindToFundWallet(senderId, data[1].balance - purchasePayload.price, data[1].balance, data[1]); // returning function to remind user to fund wallet
 
     makePurchase(purchasePayload, 'facebook', senderId);   // calling function to make function
@@ -297,8 +301,8 @@ async function initMakePurchase(senderId: any) {
 async function changeMailBeforeTransact(event: any) {
     const senderId = event.sender.id;
     const user = await BotUsers.findOne({ id: senderId });
-    console.log('changeEmailBeforeTransact', !user.purchasePayload);
-
+    console.log('changeEmailBeforeTransact', !user?.purchasePayload);
+    // @ts-expect-error
     if (user.purchasePayload.$isEmpty()) {
         noTransactFound(senderId);
         // updating database
@@ -321,6 +325,7 @@ async function changePhoneNumber(event: any) {
     const senderId = event.sender.id;
     const user = await BotUsers.findOne({ id: senderId });
 
+    // @ts-expect-error
     if (user.purchasePayload.$isEmpty()) {
         noTransactFound(senderId);
         // updating database
@@ -429,7 +434,7 @@ async function showAccountDetails(event: any) {
 
     if (!account) {
         const user = await BotUsers.findOne({ id: senderId }).select('email');
-        if (!user.email) {
+        if (!user?.email) {
             await sendMessage(senderId, { text: 'You do not have a dedicated virtual account yet.' });
             await sendMessage(senderId, { text: 'Kindly enter your email to create your virtual accont. \nEnter Q to quit' });
             await BotUsers.updateOne(
@@ -453,6 +458,7 @@ async function showAccountDetails(event: any) {
     await sendMessage(senderId, { text: `Bank Name: ${account.bankName}` });
     await sendMessage(senderId, { text: `Account Name: ${account.accountName}` });
     await sendMessage(senderId, { text: 'Acccount Number: ' });
+    // @ts-expect-error
     await sendMessage(senderId, { text: account.accountNumber });
     await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
     sendMessage(senderId, { text: 'Fund your dedicated virtual account once and make mutltiple purchases seamlessly' });

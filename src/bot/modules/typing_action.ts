@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from "axios";
 
 async function typingAction(sender_psid: string) {
   // Construct the message body
@@ -8,7 +8,7 @@ async function typingAction(sender_psid: string) {
     },
     sender_action: 'typing_on',
   };
-  let resp = await axios
+  let resp: any = await axios
     .post('https://graph.facebook.com/v2.6/me/messages', request_body, {
       params: { access_token: process.env.FBM_TOKEN },
       headers: { 'Content-Type': 'application/json' },

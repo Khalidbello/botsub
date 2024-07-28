@@ -1,13 +1,7 @@
 import { Request, Response } from "express";
+import { average, pendingCount, profitCount, successfulCount, transactionCount } from "./helper-functions";
+import PaymentAccounts from "../../models/payment-accounts";
 
-const PaymentAccounts = require('./../../models/payment-accounts.js');
-const {
-    transactionCount,
-    pendingCount,
-    successfulCount,
-    profitCount,
-    average,
-} = require('./helper-functions.js');
 
 
 

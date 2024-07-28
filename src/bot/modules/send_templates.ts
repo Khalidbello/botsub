@@ -1,6 +1,6 @@
 // module to send templates
 
-const axios = require('axios');
+import axios from "axios";
 
 async function sendTemplates(senderId: string, template: any) {
   const request_body = {

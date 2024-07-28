@@ -32,7 +32,7 @@ async function processMessage(event: any, res: Response) {
 
     let transactionType;
     try {
-        transactionType = user.purchasePayload.transactionType;
+        transactionType = user?.purchasePayload?.transactionType;
     } catch (err) {
         console.error('no transactionType in process message');
     };
@@ -46,7 +46,9 @@ async function processMessage(event: any, res: Response) {
     if (nextAction === 'enterEmailFirst') return sendEmailEnteredResponse(event);
     if (nextAction === 'phoneNumber') return sendPhoneNumberEnteredResponses(event);
     if (nextAction === 'enterAirtimeAmount') return sendAirtimeAmountReceived(event);
+    // @ts-expect-error
     if (nextAction === 'changeEmailBeforeTransact') return newEmailBeforeTransactResponse(event, transactionType);
+    // @ts-expect-error
     if (nextAction === 'changePhoneNumberBeforeTransact') return newPhoneNumberBeforeTransactResponse(event, transactionType);
     if (nextAction === 'enterMailForAccount') return enteredEmailForAccount(event);
     if (nextAction === 'enterBvn') return bvnEntred(event);

@@ -24,7 +24,8 @@ async function handleFirstMonthBonus(email: string, number: string, networkID: n
 
     if (senderId) {
         const botUser = await BotUsers.findOne({ id: senderId });
-        if (botUser.firstTransactOfMonth) flagBotUser = validateDate(botUser.firstTransactOfMonth);
+        // @ts-expect-error
+        if (botUser?.firstTransactOfMonth) flagBotUser = validateDate(botUser?.firstTransactOfMonth);
     };
 
     console.log('user collection flag=========== ', flagUser, flagBotUser);

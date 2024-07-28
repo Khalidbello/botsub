@@ -24,18 +24,9 @@ import handleFirstMonthBonus from "./monthly_bonuses";
 import creditReferrer from "./credit_referrer";
 import sendTemplates from "../bot/modules/send_templates";
 import { getVirtualAccountTemp, retryFailedTemplate } from "../bot/templates/templates";
-const transporter = nodemailer.createTransport({
-  host: 'mail.botsub.com.ng', // Replace with your SMTP server hostname
-  port: 465, // Port number for SMTP (e.g., 587 for TLS)
-  secure: true, // Set to true if using SSL
-  auth: {
-    user: process.env.ADMIN_MAIL,
-    pass: process.env.ADMIN_MAIL_P,
-  },
-}); // end of transporter
-const { updateNetworkStatus } = require('./../bot_modules/data-network-checker.js');
-const { Mutex } = require('async-mutex'); // module to prevent multiple settlements
-const { addDataProfit } = require('./save-profit.js');
+import { updateNetworkStatus } from "../bot/modules/data-network-checker";
+import { Mutex } from "async-mutex";
+import { addDataProfit } from "./save-profit";
 
 const transactionMutex = new Mutex();  // mutex for delivering transactions
 

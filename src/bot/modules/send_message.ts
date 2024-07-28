@@ -1,6 +1,6 @@
-const axios = require('axios');
+import axios from "axios";
 
-async function sendMessage(sender_psid: string, response: { text: string }) {
+async function sendMessage(sender_psid: any, response: { text: string }) {
   try {
     // Construct the message body
     let request_body = {

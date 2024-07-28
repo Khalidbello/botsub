@@ -142,7 +142,8 @@ async function bvnEntred(event: any) {
     // Check if the parsed number is an integer and has exactly 11 digits
     if (!isNaN(parsedBvn) && Number.isInteger(parsedBvn) && bvn.length === 11) {
         const user = await BotUsers.findOne({ id: senderId }).select('email');
-        createVAccount(user.email, senderId, bvn, 'facebook', 0);
+        // @ts-expect-error
+        createVAccount(user?.email, senderId, bvn, 'facebook', 0);
 
         // upate user database
         await BotUsers.updateOne(
@@ -169,7 +170,8 @@ async function sendAirtimeAmountReceived(event: any) {
     if (await validateAmount(amount)) {
         await sendMessage(senderId, { text: 'Amount recieved' });
         await sendMessage(senderId, {
-            text: ` Enter ${userData.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancel`,
+            // @ts-expect-error
+            text: ` Enter ${userData?.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancel`,
         });
 
         await BotUsers.updateOne({ id: senderId }, {
@@ -199,7 +201,7 @@ async function sendPhoneNumberEnteredResponses(event: any) {
     if (validatedNum) {
         await sendMessage(senderId, { text: 'phone  number recieved' });
         user = await BotUsers.findOne({ id: senderId });
-        if (user.email) {
+        if (user?.email) {
             await BotUsers.updateOne({ id: senderId }, {
                 $set: {
                     nextAction: null,

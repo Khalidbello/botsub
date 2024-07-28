@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from "axios";
 
 // Function to get the user's name
 async function getUserName(userId: string) {

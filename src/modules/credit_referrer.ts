@@ -9,10 +9,10 @@ async function creditReferrer(senderId: string) {
     ).select('referrer firstPurchase');
     // first check if ts really users first purchase
     console.log(response);
-    if (!response.firstPurchase || !response.referrer) return console.log('user had no referrer, here is check on user first purchase:::::: ', response.firstPurchase);
+    if (!response?.firstPurchase || !response?.referrer) return console.log('user had no referrer, here is check on user first purchase:::::: ', response?.firstPurchase);
 
     const update = await BotUsers.updateOne(
-        { id: response.referrer },
+        { id: response?.referrer },
         {
             $push: { referrals: { id: Number(senderId) } }
         }

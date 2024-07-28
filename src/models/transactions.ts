@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const { ObjectId } = require('mongodb');
+import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
     id: {

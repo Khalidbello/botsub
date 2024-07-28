@@ -1,6 +1,5 @@
-const Transactions = require('./../../models/transactions.js');
-const Profits = require('./../../models/profits.js');
-const PaymentAccounts = require('./../../models/payment-accounts.js');
+import Profits from "../../models/profits";
+import Transactions from "../../models/transactions";
 
 
 // function to count all transactions

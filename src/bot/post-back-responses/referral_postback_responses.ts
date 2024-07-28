@@ -1,12 +1,11 @@
 import axios from "axios";
+import { sendMessage } from "../modules/send_message";
+import BotUsers from "../../models/fb_bot_users";
+import { formActiveReferralTemp } from "../modules/helper_functions";
+import sendTemplates from "../modules/send_templates";
+import { referralOffers1, referralOffers2 } from "../templates/templates_2";
 
 // second file for postback responses as the first file is getting too long
-const sendTemplates = require('./send_templates.js');
-const sendMessage = require('./send_message.js');
-const { referralOffers1, referralOffers2 } = require('./templates_2.js');
-const BotUsers = require('../models/fb_bot_users.js');
-const { formUnactiveReferralTemp, formActiveReferralTemp } = require('./helper_functions.js');
-const { seedFbBotUsers } = require('./seed_database.js');
 const bonuses: { [key: string]: any } = {
     '1': { planID: 253, size: '150MB', network: 'MTN' },
     '2': { planID: 266, size: '200MB', network: 'GLO' },
@@ -106,13 +105,15 @@ async function deliverReferralBonus(event: any) {
     // check if there exist any referral with specific id
     if (!resp || !resp.referrals || resp.referrals.length === 0) return sendMessage(senderId, { text: 'Invalid referral please try again.' });
     // filtering array
-    filtredArray = resp.referrals.filter((referral: any) => {
-        return referral.id === resp.purchasePayload.refereeId;
+    filtredArray = resp.referrals.filter((referral) => {
+        return referral.id === resp?.purchasePayload?.refereeId;
     });
+
     if (!filtredArray) return sendMessage(senderId, { text: 'Invalid referral please try again.' });
 
     const response = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
     console.log('purchasePayload for dliver referraal bonuses: ', response);
+    // @ts-expect-error
     const { refereeId, phoneNumber, networkID } = response.purchasePayload;
 
     sendMessage(senderId, { text: 'referral bonus succesfully delivered' });

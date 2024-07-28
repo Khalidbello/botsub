@@ -1,22 +1,21 @@
 // modules to hold control ralated request handler
 import { Request, Response } from "express";
-const fsP = require('fs').promises;
+import fs from 'fs';
 import ReportedIssues from "../../models/reported-issues";
 import Transactions from "../../models/transactions";
 import { sendMessage } from "../../bot/modules/send_message";
 import axios from "axios";
+import { updateNetworkStatus } from "../../bot/modules/data-network-checker";
 
 
 async function getNetworkStatus(req: Request, res: Response) {
     // Read the file content
-    const fileContent = await fsP.readFile('files/data-network-status.json', 'utf-8');
+    const fileContent = await fs.promises.readFile('files/data-network-status.json', 'utf-8');
     let data = JSON.parse(fileContent);
     res.json(data);
 };
 
 async function setNetworkStatus(req: Request, res: Response) {
-    const { updateNetworkStatus } = require('./../../bot_modules/data-network-checker.js');
-
     const { network, status } = req.body;
     await updateNetworkStatus(network, status);
     res.json({ message: `${network} update to ${status}` });

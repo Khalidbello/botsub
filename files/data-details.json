@@ -7,7 +7,8 @@
       "price": 170,
       "aPrice": 128,
       "validity": "one month",
-      "index": "1"
+      "index": "1",
+      "network": "MTN"
     },
     "2": {
       "networkID": 1,
@@ -16,7 +17,8 @@
       "price": 300,
       "aPrice": 255,
       "validity": "one month",
-      "index": "2"
+      "index": "2",
+      "network": "MTN"
     },
     "3": {
       "networkID": 1,
@@ -25,7 +27,8 @@
       "price": 590,
       "aPrice": 510,
       "validity": "one month",
-      "index": "3"
+      "index": "3",
+      "network": "MTN"
     },
     "4": {
       "networkID": 1,
@@ -34,7 +37,8 @@
       "price": 850,
       "aPrice": 765,
       "validity": "one month",
-      "index": "4"
+      "index": "4",
+      "network": "MTN"
     },
     "5": {
       "networkID": 1,
@@ -43,7 +47,8 @@
       "price": 1400,
       "aPrice": 1275,
       "validity": "one month",
-      "index": "5"
+      "index": "5",
+      "network": "MTN"
     },
     "6": {
       "networkID": 1,
@@ -63,7 +68,8 @@
       "price": 150,
       "aPrice": 112,
       "validity": "one month",
-      "index": "1"
+      "index": "1",
+      "network": "Airtel"
     },
     "2": {
       "networkID": 2,
@@ -72,7 +78,8 @@
       "price": 280,
       "aPrice": 223,
       "validity": "one month",
-      "index": "2"
+      "index": "2",
+      "network": "Airtel"
     },
     "3": {
       "networkID": 2,
@@ -81,7 +88,8 @@
       "price": 550,
       "aPrice": 446,
       "validity": "one month",
-      "index": "3"
+      "index": "3",
+      "network": "Airtel"
     },
     "4": {
       "networkID": 2,
@@ -90,7 +98,8 @@
       "price": 750,
       "aPrice": 669,
       "validity": "one month",
-      "index": "4"
+      "index": "4",
+      "network": "Airtel"
     },
     "5": {
       "networkID": 2,
@@ -99,7 +108,8 @@
       "price": 1250,
       "aPrice": 1160,
       "validity": "one month",
-      "index": "5"
+      "index": "5",
+      "network": "Airtel"
     },
     "6": {
       "networkID": 2,
@@ -108,7 +118,8 @@
       "price": 2400,
       "aPrice": 2320,
       "validity": "one month",
-      "index": "6"
+      "index": "6",
+      "network": "Airtel"
     }
   },
   "3": {
@@ -119,7 +130,8 @@
       "price": 200,
       "aPrice": 135,
       "validity": "one month",
-      "index": "1"
+      "index": "1",
+       "network": "9mobile"
     },
     "2": {
       "networkID": 3,
@@ -128,7 +140,8 @@
       "price": 300,
       "aPrice": 203,
       "validity": "one month",
-      "index": "2"
+      "index": "2",
+       "network": "9mobile"
     },
     "3": {
       "networkID": 3,
@@ -137,7 +150,8 @@
       "price": 400,
       "aPrice": 270,
       "validity": "one month",
-      "index": "3"
+      "index": "3",
+       "network": "9mobile"
     },
     "4": {
       "networkID": 3,
@@ -146,7 +160,8 @@
       "price": 600,
       "aPrice": 405,
       "validity": "one month",
-      "index": "4"
+      "index": "4",
+       "network": "9mobile"
     },
     "5": {
       "networkID": 3,
@@ -155,7 +170,8 @@
       "price": 1700,
       "aPrice": 1350,
       "validity": "one month",
-      "index": "5"
+      "index": "5",
+       "network": "9mobile"
     }
   },
   "4": {
@@ -166,7 +182,8 @@
       "price": 200,
       "aPrice": 140,
       "validity": "one month",
-      "index": "1"
+      "index": "1",
+       "network": "Glo"
     },
     "2": {
       "networkID": 4,
@@ -175,7 +192,8 @@
       "price": 350,
       "aPrice": 280,
       "validity": "one month",
-      "index": "2"
+      "index": "2",
+       "network": "Glo"
     },
     "3": {
       "networkID": 4,
@@ -184,7 +202,8 @@
       "price": 650,
       "aPrice": 560,
       "validity": "one month",
-      "index": "3"
+      "index": "3",
+       "network": "Glo"
     },
     "4": {
       "networkID": 4,
@@ -193,7 +212,8 @@
       "price": 1600,
       "aPrice": 1400,
       "validity": "one month",
-      "index": "4"
+      "index": "4",
+       "network": "Glo"
     },
     "5": {
       "networkID": 4,
@@ -202,7 +222,8 @@
       "price": 3200,
       "aPrice": 2800,
       "validity": "one month",
-      "index": "5"
+      "index": "5",
+       "network": "Glo"
     },
     "6": {
       "networkID": 4,
@@ -211,7 +232,8 @@
       "price": 5800,
       "aPrice": 5600,
       "validity": "one month",
-      "index": "6"
+      "index": "6",
+       "network": "Glo"
     }
   }
 }

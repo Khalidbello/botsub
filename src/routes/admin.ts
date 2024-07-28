@@ -1,22 +1,7 @@
 // route to handle admin related functionalities
-import { NextFunction, Request, Response } from "express";
-const { Router } = require('express');
-const {
-    todaysStatistic,
-    statistics,
-    trendData,
-    balances,
-} = require('./../modules/admin/statistics.js');
-const {
-    getNetworkStatus,
-    setNetworkStatus,
-    sendIssueResponse,
-    fetchIssues,
-    closeIssue,
-    fetchPedndingTransactions,
-    retryTransaction,
-    settleTransaction
-} = require('./../modules/admin/controls.js');
+import { NextFunction, Request, Response, Router } from "express";
+import { balances, statistics, todaysStatistic, trendData } from "../modules/admin/statistics";
+import { closeIssue, fetchIssues, fetchPedndingTransactions, getNetworkStatus, retryTransaction, sendIssueResponse, setNetworkStatus, settleTransaction } from "../modules/admin/controls";
 
 
 const adminRouter = Router();

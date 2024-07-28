@@ -1,16 +1,15 @@
 // module to  hold all payment related functions relating to users with virtual account
 
 import { Response } from "express";
+import { sendMessage } from "../bot/modules/send_message";
+import { responseServices3 } from "../bot/templates/templates";
+import sendTemplates from "../bot/modules/send_templates";
+import PaymentAccounts from "../models/payment-accounts";
+import BotUsers from "../models/fb_bot_users";
+import { initMakePurchase } from "../bot/post-back-responses/postback_responses";
+import axios from "axios";
 
-const axios = require('axios');
 const Flutterwave = require('flutterwave-node-v3');
-const sendMessage = require('./../bot_modules/send_message.js');
-const PaymentAccounts = require("./../models/payment-accounts.js");
-const FBotUsers = require("./../models/fb_bot_users.js");
-const sendTemplate = require('../bot_modules/send_templates.js');
-const { responseServices3 } = require('../bot_modules/templates.js');
-const { initMakePurchase } = require('./../bot_modules/postback_responses.js');
-
 
 
 // function to create a virtual account
@@ -20,7 +19,7 @@ async function createVAccount(email: string, senderId: string, bvn: string, botT
     if (currentCount > 5) {
         await sendMessage(senderId, { text: 'Creation of dedicated virtual account failed.' });
         await sendMessage(senderId, { text: 'Please kindly click my account to restart process and ensure all provided infrmations are accurate ' });
-        sendTemplate(senderId, responseServices3);
+        sendTemplates(senderId, responseServices3);
         return;
     };
 
@@ -120,16 +119,16 @@ async function respondToWebhook(webhookPayload: any, res: Response, host: string
         );
 
         console.log('account in wallet topup', account);
-        if (account.botType === "facebook") {
+        if (account?.botType === "facebook") {
             // send botuser a notification to
             await sendMessage(reference, { text: 'Your account account topup was successful.' });
             await sendMessage(reference, { text: `Your new account balance is: ${account.balance}` });
 
             // check if user has an outsanding transaction and automatic initiate if any
-            const response = await FBotUsers.findOne({ id: reference }).select("purchasePayload");
-            const purchasePayload = response.purchasePayload;
+            const response = await BotUsers.findOne({ id: reference }).select("purchasePayload");
+            const purchasePayload = response?.purchasePayload;
 
-            if (purchasePayload.outStanding) initMakePurchase(reference);
+            if (purchasePayload?.outStanding) initMakePurchase(reference);
         };
     } catch (error) {
         console.error('an error ocured wallet topping up:::::::::::::::::         ', error);

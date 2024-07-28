@@ -12,7 +12,7 @@ import { sendMessage } from "../bot/modules/send_message";
 import { confirmDataPurchaseResponse, dateFormatter } from "../bot/modules/helper_functions";
 import { generateRandomString } from "./helper_functions";
 import * as fs from 'fs';
-const axios = require('axios');
+import axios from "axios";
 
 
 // function to carryout purchase
@@ -160,7 +160,7 @@ async function helpSuccesfulDelivery(purchasePayload: any, balance: number, send
     if (bot === 'facebook') {
         //await sendMessage(senderId, { text: `Transaction Succesful \nProduct: ${product}\nTransaction ID: ${id} \nDate: ${nigeriaTimeString}` });
         await sendMessage(senderId, {
-            text: `Your current account balance is:   ₦${accBalance.balance}`
+            text: `Your current account balance is:   ₦${accBalance?.balance}`
         });
         await sendMessage(senderId, {
             text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,

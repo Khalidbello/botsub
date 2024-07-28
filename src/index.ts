@@ -4,8 +4,10 @@
 
 
 require('dotenv').config();
+const handlebars = require('express-handlebars');
+
 import session from 'express-session';
-import handlebars from 'express-handlebars';
+//import ExpressHandlebars from 'express-handlebars';
 import fs from 'fs';
 import cors from 'cors';
 import express from 'express';
