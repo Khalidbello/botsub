@@ -28,6 +28,7 @@ if (process.env.NODE_ENV === 'development') {
     const env = process.env;
 
     env.DB_NAME = 'development';
+    env.HOST = env.HOST_TEST;
     env.DB_CONNECTION_STR = env.DB_CONNECTION_STR_TEST
     env.FLW_PB_KEY = env.FLW_PB_KEY_TEST;
     env.FLW_SCRT_KEY = env.FLW_SCRT_KEY_TEST;
@@ -41,6 +42,7 @@ if (process.env.NODE_ENV === 'development') {
     const env = process.env;
 
     env.DB_NAME = 'staging';
+    env.HOST = env.HOST_TEST;
     env.DB_CONNECTION_STR = env.DB_CONNECTION_STR_STAGING
     env.FLW_PB_KEY = env.FLW_PB_KEY_STAGING;
     env.FLW_SCRT_KEY = env.FLW_SCRT_KEY_STAGING;
@@ -55,6 +57,7 @@ if (process.env.NODE_ENV === 'development') {
     const env = process.env;
 
     env.DB_NAME = 'production';
+    env.HOST = env.HOST_TEST;
     env.DB_CONNECTION_STR = env.DB_CONNECTION_STR_PRODUCTION;
     env.FLW_PB_KEY = env.FLW_PB_KEY_PRODUCTION;
     env.FLW_SCRT_KEY = env.FLW_SCRT_KEY_PRODUCTION;

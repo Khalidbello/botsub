@@ -235,25 +235,28 @@ async function newEmailBeforeTransactResponse(event: any, transactionType: 'data
     const senderId = event.sender.id;
     const email = event.message.text.trim();
 
-    if (email.toLowerCase() === 'q') {
-        await sendMessage(senderId, { text: 'Change email cancled' });
-        return await helperConfirmPurchase(transactionType, senderId);
-    };
-
-    if (emailValidator.validate(email)) {
-        await BotUsers.updateOne({ id: senderId }, {
-            $set: {
-                nextAction: null,
-                email: email,
-            }
-        });
-        await sendMessage(senderId, { text: 'Email changed successfully.' });
-        return helperConfirmPurchase(transactionType, senderId);
-    } else {
-        const response = {
-            text: 'the email format you entered is invalid. \nPlease enter a valid email. \nEnter Q to cancel.',
+    try {
+        if (email.toLowerCase() === '0') {
+            await sendMessage(senderId, { text: 'Change email cancled' });
+            return await helperConfirmPurchase(transactionType, senderId);
         };
-        await sendMessage(senderId, response);
+
+        if (emailValidator.validate(email)) {
+            await BotUsers.updateOne({ id: senderId }, {
+                $set: {
+                    nextAction: 'confirmProductPurchase',
+                    email: email,
+                }
+            });
+            await sendMessage(senderId, { text: 'Email changed successfully.' });
+            return helperConfirmPurchase(transactionType, senderId);
+        } else {
+            const response = { text: 'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancel.' };
+            await sendMessage(senderId, response);
+        };
+    } catch (err) {
+        console.error('Error occured in newEmailBeforeTransactResponse', err);
+        sendMessage(senderId, { text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancel' });
     };
 }; // end of newEmailBeforeTransactResponse
 

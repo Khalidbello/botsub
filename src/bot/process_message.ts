@@ -15,7 +15,8 @@ import {
     sendPhoneNumberEnteredResponses
 } from './message-responses/message_responses';
 import { changeReferralBonusPhoneNumber, referralBonusPhoneNumberRecieved, sendReferralCodeRecieved } from './message-responses/referral_message_responses';
-import { defaultMessageHandler } from './message-responses/generic';
+import { defaultMessageHandler, handleChangeNumberBeforeTransaction, handleNewEmailBeforeTransasctionEntred } from './message-responses/generic';
+import { confirmProductPurchase } from './message-responses/data-2';
 
 
 async function processMessage(event: any, res: Response) {
@@ -39,11 +40,16 @@ async function processMessage(event: any, res: Response) {
 
     const nextAction = user.nextAction;
 
-    // cases for data purchase;
+    // fuctionalities for data purchase
     if (nextAction === 'selectDataNetwork') return handleDataNetWorkSelected(event);
     if (nextAction === 'selectDataOffer') return handleOfferSelected(event);
     if (nextAction === 'enterPhoneNumber') return handlePhoneNumberEntred(event);
-    if (nextAction === 'selectOrderPreviewAction') return selectOrderPreviewAction(event);
+    if (nextAction === 'confirmProductPurchase') return confirmProductPurchase(event);
+
+    // generic fuctionalites
+    if (nextAction === 'changePhoneNumberBeforeTransact') return handleChangeNumberBeforeTransaction(event);
+    if (nextAction === 'changeEmailBeforeTransact') return handleNewEmailBeforeTransasctionEntred(event);
+
 
     if (nextAction === 'enterEmailFirst') return sendEmailEnteredResponse(event);
     if (nextAction === 'phoneNumber') return sendPhoneNumberEnteredResponses(event);
@@ -67,7 +73,3 @@ async function processMessage(event: any, res: Response) {
 }; // end of process message switch
 
 export default processMessage;
-
-function selectOrderPreviewAction(event: any) {
-    throw new Error('Function not implemented.');
-}

@@ -27,11 +27,11 @@ fbBotRouter.post('/fb-hook', async function (req: Request, res: Response) {
     /* Iterate over each entry, there can be multiple entries allbacks are batched. */
     req.body.entry.forEach(function (entry: any) {
       // Iterate over each messaging event
-      console.log('entry,0', entry);
+      //console.log('entry,0', entry);
       entry.messaging.forEach(function (event: any) {
-        console.log(event);
-        let sender_psid = event.sender.id;
-        console.log('Sender PSID: ' + sender_psid);
+        //console.log(event);
+        // let sender_psid = event.sender.id;
+        // console.log('Sender PSID: ' + sender_psid);
         if (event.postback) {
           processPostback(event, res);
         } else if (event.message) {

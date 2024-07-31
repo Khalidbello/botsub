@@ -1,16 +1,17 @@
 import BotUsers from "../../models/fb_bot_users";
 import { networkDetailsType } from "../../types/bot/module-buy-data-types";
-import { formDataOffers } from "../modules/buy-data";
-import { confirmDataPurchaseResponse, validateNumber } from "../modules/helper_functions";
+import { confirmDataPurchaseResponse, formDataOffers } from "../modules/buy-data";
+import { validateNumber } from "../modules/helper_functions";
 import { sendMessage } from "../modules/send_message";
-import { cancelTransaction } from "../post-back-responses/postback_responses";
+import { cancelTransaction } from "./generic";
 import fs from 'fs';
 
+const text = `Select network for data Purchase \n 1. MTN \n 2. GLO \n 3. Airtel \n 4. 9Mobile \n\n 0. cancel`;
+const confirmPurchaseText = ``;
 
 // function to handle buy data selected
 async function handleBuyData(event: any) {
     const senderId = event.sender.id;
-    const text = `Select network for data Purchase \n 1. MTN \n 2. GLO \n 3. Airtel \n 4. 9Mobile \n\n 0. cancel`;
 
     sendMessage(senderId, { text: text });
     await BotUsers.updateOne({ id: senderId }, {
@@ -30,7 +31,6 @@ const handleDataNetWorkSelected = async (event: any) => {
         // Read data-details.json file
         let dataDetails: any = await fs.promises.readFile('files/data-details.json', 'utf-8');
         dataDetails = JSON.parse(dataDetails);
-        console.log('data details', dataDetails);
 
         // Get details of user selected network
         const networkDetails: networkDetailsType = dataDetails[message];
@@ -40,7 +40,7 @@ const handleDataNetWorkSelected = async (event: any) => {
             return handleBuyData(event); // Ensure handleBuyData is an asynchronous function if needed
         };
 
-        console.log('network details', networkDetails, networkDetails['1']);
+        //console.log('network details', networkDetails, networkDetails['1']);
         const { network, networkID } = networkDetails['1'];
         const response = await formDataOffers(networkDetails);
 
@@ -60,7 +60,7 @@ const handleDataNetWorkSelected = async (event: any) => {
         );
     } catch (err) {
         console.error('An error occurred in handleDataNetWorkSelected', err);
-        await sendMessage(senderId, { text: 'An error occurred, please try again. \n Or enter Q to cancel' });
+        await sendMessage(senderId, { text: 'An error occurred, please try again. \n\nOr enter 0 to cancel' });
     }
 };
 
@@ -84,14 +84,14 @@ const handleOfferSelected = async (event: any) => {
         const dataOffer = networkDetails[message];                  // the offer user selected
 
         if (!dataOffer) {
-            await sendMessage(senderId, { text: 'Invalid response entred' });
+            await sendMessage(senderId, { text: 'Invalid response entred.' });
             return handleDataNetWorkSelected(event);
         };
 
         sendMessage(senderId, { text: `Enter phone number for ${network} data purchase` });
 
         // update user document
-        BotUsers.updateOne(
+        await BotUsers.updateOne(
             { id: senderId },
             {
                 $set: {
@@ -106,7 +106,7 @@ const handleOfferSelected = async (event: any) => {
         );
     } catch (err) {
         console.error('An error occured in handleOfferSelected', err);
-        sendMessage(senderId, { text: 'An error occured plase enter resposne again.  \n Or enter Q to cancel' })
+        sendMessage(senderId, { text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancel' });
     };
 };
 
@@ -119,22 +119,21 @@ const handlePhoneNumberEntred = async (event: any) => {
     const message: string = event.message.text.trim();
 
     try {
-        if (message.toLowerCase() === 'q') return cancelTransaction(senderId, true);
+        if (message.toLowerCase() === '0') return cancelTransaction(senderId, true);
 
         const validatedNum = validateNumber(message);
         const user = await BotUsers.findOne({ id: senderId });
 
         // to run if number valid and user has provided email
         if (validatedNum && user?.email) {
-            await sendMessage(senderId, { text: 'phone  number recieved' });
-            await BotUsers.updateOne({ id: senderId }, {
+            await sendMessage(senderId, { text: 'phone  number recieved.' });
+            confirmDataPurchaseResponse(senderId, user);
+            return BotUsers.updateOne({ id: senderId }, {
                 $set: {
-                    nextAction: 'selectOrderPreviewAction',
+                    nextAction: 'confirmProductPurchase',
                     'purchasePayload.phoneNumber': validatedNum,
                 }
             });
-
-            return confirmDataPurchaseResponse(senderId);
         };
 
         // to run if number is valid but user has never provided email
@@ -150,33 +149,20 @@ const handlePhoneNumberEntred = async (event: any) => {
             return;
         };
 
-
         sendMessage(senderId, { text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.' });
     } catch (err) {
         console.error('An error occured in phoneNumberEntred', err);
-        sendMessage(senderId, { text: 'An error occured plase enter resposne again.  \n Or enter Q to cancel' })
+        sendMessage(senderId, { text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancel' })
     };
 };
 
 
-
-// function to handle selected order preview
-const handleSelectedOrderPreviewAction = async (event: any) => {
-    const senderId = event.sender.id;
-    const message: string = event.message.text.trim();
-
-    try {
-
-    } catch (err) {
-        console.error('An error occured in phoneNumberEntred', err);
-        sendMessage(senderId, { text: 'An error occured plase enter resposne again.  \n Or enter Q to cancel' })
-    };
-};
 
 export {
+    text,
+    confirmPurchaseText,
     handleBuyData,
     handleDataNetWorkSelected,
     handleOfferSelected,
     handlePhoneNumberEntred,
-    handleSelectedOrderPreviewAction,
-}
+};

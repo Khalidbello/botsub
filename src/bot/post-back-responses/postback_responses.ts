@@ -345,14 +345,16 @@ async function changePhoneNumber(event: any) {
 // function to reset user payload
 async function cancelTransaction(senderId: string, end: boolean) {
     await reset(senderId);
-
     console.log('condition in cancelTraanscation::::::  ', end);
+
     if (end) return;
-    await sendMessage(senderId, { text: 'Transaction Cancled' });
-    await sendMessage(senderId, { text: 'What do you want to do next' });
-    await sendTemplates(senderId, responseServices);
-    await sendTemplates(senderId, responseServices2);
-    await sendTemplates(senderId, responseServices3);
+    await sendMessage(senderId, { text: 'Transaction successfully canceled.' });
+    sendMessage(senderId, { text: 'What do you want to do next. \n 1. Buy data \n 2. Buy Airtime' });
+    // await sendMessage(senderId, { text: 'Transaction Cancled' });
+    // await sendMessage(senderId, { text: 'What do you want to do next' });
+    // await sendTemplates(senderId, responseServices);
+    // await sendTemplates(senderId, responseServices2);
+    // await sendTemplates(senderId, responseServices3);
 }; // end of cancelTransaction
 
 
