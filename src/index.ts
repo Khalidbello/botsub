@@ -58,7 +58,7 @@ if (process.env.NODE_ENV === 'development') {
     console.log('in production mode');
     const env = process.env;
 
-    env.DB_NAME = 'production';
+    env.DB_NAME = 'botsub';
     env.HOST = env.HOST_TEST;
     env.DB_CONNECTION_STR = env.DB_CONNECTION_STR_PRODUCTION;
     env.FLW_PB_KEY = env.FLW_PB_KEY_PRODUCTION;

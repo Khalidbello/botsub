@@ -2,11 +2,12 @@ import mongoose from 'mongoose';
 const dbName = 'development'; //process.env.DB_NAME; //process.env.NODE_ENV === 'production' || 'stage' ? 'botsub' : 'development';
 
 const connectDB = async () => {
-  console.log('dbName: ', dbName);
   try {
+    console.log('dbName: ', process.env.DB_NAME);
+
     // @ts-expect-error
     const conn = await mongoose.connect(process.env.DB_CONNECTION_STR, {
-      dbName: dbName,
+      dbName: process.env.DB_NAME,
       autoIndex: true
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
