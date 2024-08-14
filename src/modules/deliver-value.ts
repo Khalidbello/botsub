@@ -1,21 +1,5 @@
 import { Request, Response } from "express";
-
-// // module to deliver value
-// const handlebars = require('handlebars');
-// const nodemailer = require('nodemailer');
-// const axios = require('axios');
-// const { dateFormatter, fundWallet } = require('./helper_functions.js');
-// const sendMessage = require('./../bot_modules/send_message.js');
-// const sendTemplate = require('./../bot_modules/send_templates.js');
-// const { getVirtualAccountTemp } = require('./../bot_modules/templates.js');
-// const { retryFailedTemplate, responseServices2 } = require('./../bot_modules/templates.js');
-// const fsP = require('fs').promises;
-// const Transactions = require('./../models/transactions.js');
-// const { creditReferrer } = require('./credit_referrer.js');
-// const handleFirstMonthBonus = require('./monthly_bonuses.js');
 import fs from 'fs';
-import nodemailer from 'nodemailer';
-import handlebars from 'express-handlebars';
 import Transactions from "../models/transactions";
 import { sendMessage } from "../bot/modules/send_message";
 import axios from "axios";
@@ -27,6 +11,7 @@ import { getVirtualAccountTemp, retryFailedTemplate } from "../bot/templates/tem
 import { updateNetworkStatus } from "../bot/modules/data-network-checker";
 import { Mutex } from "async-mutex";
 import { addDataProfit } from "./save-profit";
+import Handlebars from "handlebars";
 
 const transactionMutex = new Mutex();  // mutex for delivering transactions
 
@@ -85,11 +70,9 @@ async function deliverData(response: any, req: Request, res: Response) {
     }
   };
 
-  if (process.env.NODE_ENV === 'production') {
-    await makePurchaseRequest(response, res, req, options, 'data');
-  } else {
-    await simulateMakePurchaseRequest(response, res, req, false, 'data');
-  };
+  if (true || process.env.NODE_ENV === 'production') return await makePurchaseRequest(response, res, req, options, 'data');
+  if (process.env.NODE_ENV === 'development') return await simulateMakePurchaseRequest(response, res, req, true, 'data');
+  if (process.env.NODE_ENV === 'staging') return await makePurchaseRequest(response, res, req, options, 'data');
 }; // end of deliver value function
 
 
@@ -113,11 +96,9 @@ async function deliverAirtime(response: any, req: Request, res: Response) {
     }
   };
 
-  if (process.env.NODE_ENV === 'production') {
-    await makePurchaseRequest(response, res, req, options, 'airtime');
-  } else {
-    await simulateMakePurchaseRequest(response, res, req, false, 'airtime');
-  };
+  if (process.env.NODE_ENV === 'production') return await makePurchaseRequest(response, res, req, options, 'airtime');
+  if (process.env.NODE_ENV === 'development') return await simulateMakePurchaseRequest(response, res, req, true, 'airtime');
+  if (process.env.NODE_ENV === 'staging') return await makePurchaseRequest(response, res, req, options, 'airtime');
 }; // end of deliverAirtime
 
 
@@ -167,9 +148,6 @@ async function simulateMakePurchaseRequest(response: any, res: Response, req: Re
 async function helpSuccesfulDelivery(req: Request, res: Response, response: any, balance: number, type: 'data' | 'airtime') {
   await addToDelivered(req, response, type);
 
-  // record profit made
-  if (type === 'data') addDataProfit(response.data.meta.networkID, response.data.meta.index, response.data.created_at, response.data.id);
-
   // calling function to send mail and json response object
   await sendSuccessfulResponse(response, res);
 
@@ -182,16 +160,20 @@ async function helpSuccesfulDelivery(req: Request, res: Response, response: any,
         text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${response.data.meta.number} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
       });
     } catch (err) {
-      console.error('a error ocured trying to send uccesfll transaction response in helpSuccesfulDelivery', err);
+      console.error('a error ocured trying to sending succesfll transaction response in helpSuccesfulDelivery', err);
     };
 
     // check for bonus delivery
     if (Number(response.data.meta.firstPurchase) === 1 && type === 'data') await creditReferrer(response.data.meta.senderId);
-    if (type === 'data') await handleFirstMonthBonus(response.data.customer.email, response.data.meta.number, response.data.meta.networkID, response.data.meta.senderId, false);
+    // @ts-expect-error
+    if (type === 'data') await handleFirstMonthBonus(req.query.transaction_id, response.data.meta, response.data.meta.senderId, false);
 
     await sendMessage(response.data.meta.senderId, { text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub' });
-    await sendMessage(response.data.meta.senderId, { text: '\nTired of making tranfers to different account for every transaction...? \nGet a permanet account number and experience faster and safer transactions.' });
-    await sendTemplates(response.data.meta.senderId, getVirtualAccountTemp);
+    await sendMessage(response.data.meta.senderId, {
+      text: '\nTired of making tranfers to different account for every transaction...?'
+        + '\nGet a permanet account number and experience faster and safer transactions. \n\nEnter 3 to create a virtual account'
+    });
+    //await sendTemplates(response.data.meta.senderId, getVirtualAccountTemp);
   };
   //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
 }; // end of helpSuccesfulDelivery
@@ -202,7 +184,7 @@ async function helpSuccesfulDelivery(req: Request, res: Response, response: any,
 // helper function  for failed delivery
 async function helpFailedDelivery(req: Request, res: Response, response: any) {
   addToFailedToDeliver(req, response);
-  sendFailedToDeliverResponse(response, res);
+  //sendFailedToDeliverResponse(response, res);
 
   if (response.data.meta.bot) {
     const date = new Date() //new Date(response.data.customer.created_at);
@@ -212,11 +194,14 @@ async function helpFailedDelivery(req: Request, res: Response, response: any) {
     await sendMessage(response.data.meta.senderId, {
       text: `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${response.data.meta.number} \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
     });
-    await sendTemplates(
-      response.data.meta.senderId,
-      // @ts-expect-error
-      retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
-    );
+    await sendMessage(response.data.meta.senderId, {
+      text: `If delivery not made after 3 minutes kindl report an issue`,
+    });
+    // await sendTemplates(
+    //   response.data.meta.senderId,
+    //   // @ts-expect-error
+    //   retryFailedTemplate(req.query.transaction_id, req.query.tx_ref)
+    // );
   };
 }; // end of failed delivery helper
 

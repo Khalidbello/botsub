@@ -16,6 +16,9 @@ import { responseServices, responseServices2, responseServices3 } from '../templ
 import { createVAccount } from '../../modules/gateway';
 import { generateRandomString } from '../../modules/helper_functions';
 import ReportedIssues from '../../models/reported-issues';
+import { handleBuyAirtime } from './airtime';
+
+const defaaultMessage = 'Hy what can i do for you today. \n\n 1. Buy data. \n 2. Buy Airtime. \n 3. My amount. \n 4. Refer a friend. \n 5. Report an issue.';
 
 // function to respond to unexpected message
 async function defaultMessageHandler(event: any, message: any) {
@@ -23,7 +26,7 @@ async function defaultMessageHandler(event: any, message: any) {
         //writeMessageToJson('in default message handler')
         const senderId = event.sender.id;
         let text;
-        const userName = await getUserName(senderId);
+        //const userName = await getUserName(senderId);
 
         if (message) {
             text = event.message.text.trim();
@@ -33,8 +36,13 @@ async function defaultMessageHandler(event: any, message: any) {
             };
 
             if (text.toLowerCase() === '1') return handleBuyData(event);
+            if (text.toLowerCase() === '2') return handleBuyAirtime(event);
+            if (text.toLowerCase() === '3') return;
+            if (text.toLowerCase() === '4') return;
+            if (text.toLowerCase() === '5') return;
         };
 
+        await sendMessage(senderId, { text: defaaultMessage });
         // await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
         // await sendTemplate(senderId, responseServices);
         // await sendTemplate(senderId, responseServices2);
@@ -46,12 +54,12 @@ async function defaultMessageHandler(event: any, message: any) {
 }; // end of defaultMessenger
 
 
-// function to handle first email
+// function to handle first email for users  that havent provided their emails
 async function sendEmailEnteredResponse(event: any) {
     const senderId = event.sender.id;
     const email = event.message.text.trim();
 
-    if (email.toLowerCase() === 'q') return (event);
+    if (email.toLowerCase() === '0') return cancelTransaction(senderId, true);
     if (emailValidator.validate(email)) {
         await sendMessage(senderId, { text: 'email saved \nYou can change email when ever you want' });
         const saveEmail = await BotUsers.updateOne({ id: senderId },
@@ -74,84 +82,50 @@ async function sendEmailEnteredResponse(event: any) {
 }; // end of sendEmailEnteredResponse
 
 
-// function to respod to emal entred, this function also calls create virtual acount function
-async function enteredEmailForAccount(event: any) {
-    const senderId = event.sender.id;
-    const email = event.message.text.trim();
-
-    if (email.toLowerCase() === 'q') {
-        await sendMessage(senderId, { text: 'Creatioin of dedicatd virtiual account cancled.' });
-        await sendMessage(senderId, { text: 'what do you want to do next.' });
-        await sendTemplates(senderId, responseServices);
-        await sendTemplates(senderId, responseServices2);
-        await sendTemplates(senderId, responseServices3);
-
-        // updaet user colletion
-        await BotUsers.updateOne(
-            { id: senderId },
-            { $set: { nextAction: null } }
-        );
-
-        return;
-    };
-
-    if (emailValidator.validate(email.toLowerCase())) {
-        const saveEmail = await BotUsers.updateOne({ id: senderId },
-            {
-                $set: {
-                    email: email,
-                    nextAction: 'enterBvn'
-                }
-            },
-            { upsert: true }
-        );
-
-        await sendMessage(senderId, { text: 'please enter your BVN.' });
-        return sendMessage(senderId, { text: 'In accordeance with CBN regulations, your BVN is required to create a virtual account. \nEnter Q to  cancel' });
-    } else {
-        sendMessage(senderId, { text: "The email you entred is invalid. \nPlease enter a valid email for the creation of dedicated virtual account. \n\nEner Q to cancel" });
-    };
-}; // end of sendEmailEntere
-
-
 
 // funtion to handle bvn entred
 async function bvnEntred(event: any) {
     const senderId = event.sender.id;
-    let bvn = event.message.text.trim();
-    let parsedBvn;
 
-    if (bvn.toLowerCase() === 'q') {
-        await sendMessage(senderId, { text: 'Creatioin of dedicated virtiual account cancled.' });
-        await sendMessage(senderId, { text: 'what do you want to do next.' });
-        // await sendTemplate(senderId, responseServices);
-        // await sendTemplate(senderId, responseServices2);
-        // await sendTemplate(senderId, responseServices3);
+    try {
+        let bvn = event.message.text.trim();
+        let parsedBvn;
 
-        // updaet user colletion
-        await BotUsers.updateOne(
-            { id: senderId },
-            { $set: { nextAction: null } }
-        );
-        return;
-    };
+        if (bvn.toLowerCase() === '0') {
+            await sendMessage(senderId, { text: 'Creation of dedicated virtiual account cancled.' });
+            await sendMessage(senderId, { text: defaaultMessage });
+            // await sendTemplate(senderId, responseServices);
+            // await sendTemplate(senderId, responseServices2);
+            // await sendTemplate(senderId, responseServices3);
 
-    parsedBvn = parseInt(bvn);
-    bvn = parsedBvn.toString();
+            // updaet user colletion
+            await BotUsers.updateOne(
+                { id: senderId },
+                { $set: { nextAction: null } }
+            );
+            return;
+        };
 
-    // Check if the parsed number is an integer and has exactly 11 digits
-    if (!isNaN(parsedBvn) && Number.isInteger(parsedBvn) && bvn.length === 11) {
-        const user = await BotUsers.findOne({ id: senderId }).select('email');
-        // @ts-expect-error
-        createVAccount(user?.email, senderId, bvn, 'facebook', 0);
+        parsedBvn = parseInt(bvn);
+        bvn = parsedBvn.toString();
 
-        // upate user database
-        await BotUsers.updateOne(
-            { id: senderId },
-            { $set: { nextAction: null } }
-        );
-    } else {
-        await sendMessage(senderId, { text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter Q to cancle.' })
+        // Check if the parsed number is an integer and has exactly 11 digits
+        if (!isNaN(parsedBvn) && Number.isInteger(parsedBvn) && bvn.length === 11) {
+            const user = await BotUsers.findOne({ id: senderId }).select('email');
+
+            // upate user database
+            BotUsers.updateOne(
+                { id: senderId },
+                { $set: { nextAction: null } }
+            );
+
+            await createVAccount(user?.email, senderId, bvn, 'facebook', 0);
+        } else {
+            await sendMessage(senderId, { text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter Q to cancle.' })
+        };
+    } catch (err) {
+        console.error('An error occured in bvnEntred', err);
+        await sendMessage(senderId, { text: 'An error ocured please. \nplease enter resposne again' });
     };
 }; // end of bvnEntred
 
@@ -338,13 +312,13 @@ async function reportIssue(event: any) {
 
 
 export {
+    defaaultMessage,
     defaultMessageHandler,
     sendEmailEnteredResponse,
     sendAirtimeAmountReceived,
     sendPhoneNumberEnteredResponses,
     newEmailBeforeTransactResponse,
     newPhoneNumberBeforeTransactResponse,
-    enteredEmailForAccount,
     bvnEntred,
     reportIssue,
 };

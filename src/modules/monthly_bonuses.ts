@@ -3,6 +3,7 @@ import { sendMessage } from "../bot/modules/send_message";
 import BotUsers from "../models/fb_bot_users";
 import Users from "../models/users";
 import { failedMonthlyBonusTemplate } from "../bot/templates/templates";
+import { addDataProfit } from "./save-profit";
 
 require('dotenv').config();
 
@@ -15,7 +16,7 @@ const bonuses: { [key: string]: any } = {
 
 
 // function to handle giving users free hundred mb for every new month first purchase
-async function handleFirstMonthBonus(email: string, number: string, networkID: number, senderId: string, retry: boolean) {
+async function handleFirstMonthBonus(id: string, purchasePayload: any, senderId: string, retry: boolean) {
     console.log('in monthly bonuses retry: ', retry);
     let flagUser;
     let flagBotUser = true;
@@ -28,10 +29,15 @@ async function handleFirstMonthBonus(email: string, number: string, networkID: n
         if (botUser?.firstTransactOfMonth) flagBotUser = validateDate(botUser?.firstTransactOfMonth);
     };
 
-    console.log('user collection flag=========== ', flagUser, flagBotUser);
-    if (flagBotUser) return deliverBonus(email, number, networkID, senderId);
-    if (retry) sendMessage(senderId, { text: "Sorry you have already recieved for first month purchase bonus for this month" });
-    return;
+    console.log('first month delivery user flag=========== ', flagUser, flagBotUser);
+    if (flagBotUser) {
+        return deliverBonus(purchasePayload.email, purchasePayload.phoneNumber, purchasePayload.networkID, senderId);
+    } else {
+        const date = new Date();
+        return await addDataProfit(purchasePayload.networkID, purchasePayload.index, date, id);
+    };
+    // if (retry) sendMessage(senderId, { text: "Sorry you have already recieved for first month purchase bonus for this month" });
+    // return;
 }; // end of first month purchase
 
 
@@ -83,24 +89,24 @@ async function firstTransactOfMonth(toUse: string, type: string) {
 async function deliverBonus(email: string, number: string, networkID: number, senderId: string) {
     console.log('datas', email, number, networkID, senderId);
     const bonus = bonuses[networkID];
-    try {
-        let response;
-        if (process.env.NODE_ENV === 'production') {
-            response = await axios.post('https://opendatasub.com/api/data/',
-                {
-                    network: Number(networkID),
-                    mobile_number: number,
-                    plan: bonus.planID,
-                    Ported_number: true,
-                }, {
-                headers: {
-                    Authorization: 'Token ' + process.env.OPENSUB_KEY,
-                    'Content-Type': 'application/json',
-                }
-            });
-        };
 
-        if (process.env.TEST === 'pass' || (response && response.data.Status === 'successful')) {
+    try {
+        if (process.env.NODE_ENV !== 'development') return sendMessage(senderId, { text: 'Evironment does not support monthly bonus delivery.' });
+
+        const response = await axios.post('https://opendatasub.com/api/data/',
+            {
+                network: Number(networkID),
+                mobile_number: number,
+                plan: bonus.planID,
+                Ported_number: true,
+            }, {
+            headers: {
+                Authorization: 'Token ' + process.env.OPENSUB_KEY,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (response && response.data.Status === 'successful') {
             await firstTransactOfMonth(email, 'user'); // function to update user info to prevent double delivery
             if (senderId) {
                 await firstTransactOfMonth(senderId, 'botUser');
@@ -111,13 +117,13 @@ async function deliverBonus(email: string, number: string, networkID: number, se
         throw 'bonus delivery failed';
     } catch (err: any) {
         if (err.response) {
-            console.log('Error response: ', err.response.data);
+            console.log('Error response: in monthly bonuss', err.response.data);
         } else if (err.request) {
-            console.log('No response received: ', err.request);
+            console.log('No response received: in monthly bonus', err.request);
         } else {
-            console.log('Error: ', err.message);
+            console.log('Error: in monthly bonuss', err);
         };
-        await sendMessage(senderId, { text: "Sorry an error ocured while processing monthly" });
+        await sendMessage(senderId, { text: "Sorry an error ocured while processing monthly bonus" });
         // sendTemplate(senderId, failedMonthlyBonusTemplate(email, number, networkID));
     };
 }; // end deliver bonus

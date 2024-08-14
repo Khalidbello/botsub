@@ -2,31 +2,30 @@
 
 import { Response } from "express";
 import { sendMessage } from "../bot/modules/send_message";
-import { responseServices3 } from "../bot/templates/templates";
-import sendTemplates from "../bot/modules/send_templates";
 import PaymentAccounts from "../models/payment-accounts";
 import BotUsers from "../models/fb_bot_users";
 import { initMakePurchase } from "../bot/post-back-responses/postback_responses";
 import axios from "axios";
+import { defaultText } from "../bot/message-responses/generic";
 
 const Flutterwave = require('flutterwave-node-v3');
 
 
 // function to create a virtual account
-async function createVAccount(email: string, senderId: string, bvn: string, botType: string, currentCount: number) {
+async function createVAccount(email: string | null | undefined, senderId: string, bvn: string, botType: string, currentCount: number) {
     console.log('viertual account current count is: ', currentCount);
 
     if (currentCount > 5) {
         await sendMessage(senderId, { text: 'Creation of dedicated virtual account failed.' });
-        await sendMessage(senderId, { text: 'Please kindly click my account to restart process and ensure all provided infrmations are accurate ' });
-        sendTemplates(senderId, responseServices3);
+        await sendMessage(senderId, { text: 'Please kindly select my account to restart process and ensure all provided infrmations are accurate ' });
+        sendMessage(senderId, { text: defaultText });
         return;
     };
 
     // first check to confirm no account with specific referance occurs
     const existing = await PaymentAccounts.findOne({ refrence: senderId });
 
-    if (existing) return console.log('virtual account already exist for user');
+    if (existing) return sendMessage(senderId, { text: 'You already have a virtual account.' });
 
     const num = await PaymentAccounts.countDocuments({});
     const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
@@ -64,7 +63,7 @@ async function createVAccount(email: string, senderId: string, bvn: string, botT
         await sendMessage(senderId, { text: 'Acccount Number: ' });
         await sendMessage(senderId, { text: account.accountNumber });
         await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
-        sendMessage(senderId, { text: 'Fund your dedicated virtual account once andd make mutltiple purchases seamlessly' });
+        await sendMessage(senderId, { text: 'Fund your dedicated virtual account once and make mutltiple purchases seamlessly' });
     } catch (error) {
         console.log('in virtual account catch error:::', currentCount, error);
         return createVAccount(email, senderId, bvn, botType, currentCount + 1);

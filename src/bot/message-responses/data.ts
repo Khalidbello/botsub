@@ -6,7 +6,7 @@ import { sendMessage } from "../modules/send_message";
 import { cancelTransaction } from "./generic";
 import fs from 'fs';
 
-const text = `Select network for data Purchase \n 1. MTN \n 2. GLO \n 3. Airtel \n 4. 9Mobile \n\n 0. cancel`;
+const text = `Select network for data Purchase \n\n 1. MTN \n 2. Airtel \n 3. 9mobile \n 4. Glo \n\n 0. cancel`;
 const confirmPurchaseText = ``;
 
 // function to handle buy data selected
@@ -100,7 +100,8 @@ const handleOfferSelected = async (event: any) => {
                     'purchasePayload.size': dataOffer.size,
                     'purchasePayload.index': dataOffer.index,
                     'purchasePayload.planID': dataOffer.planID,
-                    'purchasePayload.product': `${dataOffer.size} ${dataOffer.network} data`
+                    'purchasePayload.product': `${dataOffer.size} ${dataOffer.network} data`,
+                    'purchasePayload.transactionType': 'data',
                 }
             }
         );
@@ -127,13 +128,13 @@ const handlePhoneNumberEntred = async (event: any) => {
         // to run if number valid and user has provided email
         if (validatedNum && user?.email) {
             await sendMessage(senderId, { text: 'phone  number recieved.' });
-            confirmDataPurchaseResponse(senderId, user);
-            return BotUsers.updateOne({ id: senderId }, {
+            await BotUsers.updateOne({ id: senderId }, {
                 $set: {
                     nextAction: 'confirmProductPurchase',
                     'purchasePayload.phoneNumber': validatedNum,
                 }
             });
+            return confirmDataPurchaseResponse(senderId, user);
         };
 
         // to run if number is valid but user has never provided email
@@ -142,14 +143,14 @@ const handlePhoneNumberEntred = async (event: any) => {
 
             await BotUsers.updateOne({ id: senderId }, {
                 $set: {
-                    nextAction: 'enterEmailToProceed',
+                    nextAction: 'enterEmailToProceedWithPurchase',
                     'purchasePayload.phoneNumber': validatedNum
                 }
             });
             return;
         };
 
-        sendMessage(senderId, { text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.' });
+        sendMessage(senderId, { text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter 0 to cancel.' });
     } catch (err) {
         console.error('An error occured in phoneNumberEntred', err);
         sendMessage(senderId, { text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancel' })

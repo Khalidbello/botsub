@@ -10,17 +10,21 @@ import { handleBuyAirtime } from "./airtime";
 import { handleBuyData, text } from "./data";
 import { confirmDataPurchaseResponse } from "../modules/buy-data";
 import { makePurchase } from "../../modules/v-account-make-purcchase";
-import { confirmProductPurchase } from "./data-2";
-import { validateNumber } from '../modules/helper_functions';
+import { remindToFundWallet, validateNumber } from '../modules/helper_functions';
+import { showAccountDetails } from './virtual-account';
+import { showDataPrices } from './data-prices';
+import { showActiveReferalls, showReferralCode } from './referral_message_responses';
+import { handleReportIssue } from './report-issue';
 
 // text to contain bot functionalities 
-const defaultText = 'Hy what can i do for you today.  \n 1. Buy data \n 2. Buy airtime';
+const defaultText = 'Hy what can i do for you today.  \n\n 1. Buy data \n 2. Buy airtime. \n 3. My account. \n 4. Show data prices' +
+    '\n 5. Refer a friend \n 6. Active referals \n 7. Report issue';
 
 // function to respond to messages with out next action
 async function defaultMessageHandler(event: any, isMessage: any) {
+    const senderId = event.sender.id;
+
     try {
-        //writeMessageToJson('in default message handler')
-        const senderId = event.sender.id;
         let text;
         //const userName = await getUserName(senderId);
 
@@ -28,20 +32,19 @@ async function defaultMessageHandler(event: any, isMessage: any) {
 
         text = event.message.text.trim();
 
-        if (text.toLowerCase() === 'q') return cancelTransaction(senderId, true);
-
         if (text.toLowerCase() === '1') return handleBuyData(event);
-
         if (text.toLowerCase() === '2') return handleBuyAirtime(event);
+        if (text.toLowerCase() === '3') return showAccountDetails(event);
+        if (text.toLowerCase() === '4') return showDataPrices(event);
+        if (text.toLowerCase() === '5') return showReferralCode(event);
+        if (text.toLowerCase() === '6') return showActiveReferalls(event);
+        if (text.toLowerCase() === '7') return handleReportIssue(event);
 
-        sendMessage(senderId, { text: 'Hy what can i do for you today. \n 1. Buy data \n 2. Buy Airtime' });
-        // await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
-        // await sendTemplate(senderId, responseServices);
-        // await sendTemplate(senderId, responseServices2);
-        // sendTemplate(senderId, responseServices3);
-        //writeMessageToJson('end of default message handler');
+        sendMessage(senderId, { text: defaultText });
     } catch (err) {
-        console.error('error in default error ', err);
+        console.error('error in default text ', err);
+        await sendMessage(senderId, { text: 'Something went wrong' });
+        await sendMessage(senderId, { text: defaultText });
     };
 }; // end of defaultMessenger
 
@@ -51,8 +54,8 @@ async function cancelTransaction(senderId: string, end: boolean) {
     await reset(senderId);
 
     if (!end) return;
-    await sendMessage(senderId, { text: 'Transaction successfully canceled.' });
-    sendMessage(senderId, { text: 'What do you want to do next. \n 1. Buy data \n 2. Buy Airtime' });
+    await sendMessage(senderId, { text: 'Transaction  canceled.' });
+    sendMessage(senderId, { text: defaultText });
 }; // end of cancelTransaction
 
 // helper to help in resetting
@@ -84,7 +87,7 @@ async function generateAccountNumber(event: any) {
     const senderId = event.sender.id;
     let botUser;
 
-    let us
+    //let us
 
     try {
         botUser = await BotUsers.findOne({ id: senderId }).select('email purchasePayload referrer firstPurchase');
@@ -98,7 +101,7 @@ async function generateAccountNumber(event: any) {
         payload.email = botUser?.email;
         payload.bot = true;
         payload.firstPurchase = botUser?.firstPurchase;
-        payload['senderId'] = senderId;
+        payload.senderId = senderId;
         let test = payload;
 
         // check if data network is active bbefore proceeding
@@ -122,7 +125,7 @@ async function generateAccountNumber(event: any) {
             await sendMessage(senderId, { text: data.transfer_account });
             await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
             // removing purchasePayload
-            cancelTransaction(senderId, true);
+            cancelTransaction(senderId, false);
             return;
         };
         throw response;
@@ -144,16 +147,18 @@ async function initMakePurchase(senderId: any) {
         const data = await Promise.all(promises);
         // @ts-expect-error
         const purchasePayload = data[0].purchasePayload; //console.log('purchase ayload in initmakePurchase', purchasePayload);
+        // @ts-expect-error
+        if (purchasePayload) purchasePayload.email = data[0].email;
 
         console.log('prchase payload: ', purchasePayload);
         if (!purchasePayload.transactionType) {
             await sendMessage(senderId, { text: 'No transaction found' });
-            await sendMessage(senderId, { text: 'Hy what can i do for you today.\n 1. Buy data \n 2. Buy Airtime' });
-            return
+            await sendMessage(senderId, { text: defaultText });
+            return;
         };
 
         // @ts-expect-error
-        if (purchasePayload.price > data[1].balance) return remindToFundWallet(senderId, data[1].balance - purchasePayload.price, data[1].balance, data[1]); // returning function to remind user to fund wallet
+        if (parseInt(purchasePayload.price) > parseInt(data[1].balance)) return remindToFundWallet(senderId, data[1].balance - purchasePayload.price, data[1].balance, data[1]); // returning function to remind user to fund wallet
 
         makePurchase(purchasePayload, 'facebook', senderId);   // calling function to make function
     } catch (err) {
@@ -189,7 +194,7 @@ async function handleChangeNumberBeforeTransaction(event: any) {
                         'purchasePayload.phoneNumber': validatedNum,
                     }
                 });
-                await confirmProductPurchase(event);
+                await confirmDataPurchaseResponse(event, user);
                 return;
             };
 
@@ -234,13 +239,11 @@ async function handleNewEmailBeforeTransasctionEntred(event: any) {
 
         if (emailValidator.validate(email)) {
             await sendMessage(senderId, { text: 'Email changed successfully.' });
-            await confirmDataPurchaseResponse(senderId, user);
-            await BotUsers.updateOne({ id: senderId }, {
-                $set: {
-                    nextAction: 'confirmProductPurchase',
-                    email: email,
-                }
+            await BotUsers.updateOne(
+                { id: senderId }, {
+                $set: { email: email }
             });
+            await confirmDataPurchaseResponse(senderId, user);
         } else {
             const response = { text: 'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancel.' };
             await sendMessage(senderId, response);
@@ -256,6 +259,7 @@ async function handleNewEmailBeforeTransasctionEntred(event: any) {
 
 
 export {
+    defaultText,
     defaultMessageHandler,
     cancelTransaction,
     initMakePurchase,

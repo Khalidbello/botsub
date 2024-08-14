@@ -37,6 +37,7 @@ if (process.env.NODE_ENV === 'development') {
     env.WALLET_ACC_NAME = env.WALLET_ACC_NAME_TEST;
     env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_TEST;
     env.FBM_TOKEN = env.FBM_TOKEN_TEST;
+    env.OPENSUB_KEY = env.OPENSUB_KEY_TEST;
 } else if (process.env.NODE_ENV === 'staging') {
     console.log('in staging mode');
     const env = process.env;
@@ -51,6 +52,7 @@ if (process.env.NODE_ENV === 'development') {
     env.WALLET_ACC_NAME = env.WALLET_ACC_NAME_STAGING;
     env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_STAGING;
     env.FBM_TOKEN = env.FBM_TOKEN_STAGING;
+    env.OPENSUB_KEY = env.OPENSUB_KEY_STAGING;
     //origin = 'https:admin.botsub.com.ng';
 } else if (process.env.NODE_ENV === 'production') {
     console.log('in production mode');
@@ -66,6 +68,7 @@ if (process.env.NODE_ENV === 'development') {
     env.WALLET_ACC_NAME = env.WALLET_ACC_NAME_PRODUCTION;
     env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_PRODUCTION;
     env.FBM_TOKEN = env.FBM_TOKEN_PRODUCTION;
+    env.OPENSUB_KEY = env.OPENSUB_KEY_PRODUCTION;
     origin = ['https://admin.botsub.com.ng', 'http://admin.botsub.com.ng'];
 };
 
@@ -139,8 +142,8 @@ const storeRequest = (req: Request, res: Response, next: NextFunction) => {
         } catch (error) {
             console.error('Error parsing request body:', error);
             body = 'Error parsing body';
-        }
-    }
+        };
+    };
 
     const data = { timestamp, headers, body };
 

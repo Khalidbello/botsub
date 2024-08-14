@@ -4,7 +4,7 @@ import {
   cancelTransaction,
   changeMailBeforeTransact,
   changePhoneNumber,
-  handleRetryFailedMonthlyDelivery,
+  //handleRetryFailedMonthlyDelivery,
   issueReport,
   retryFailed,
   selectPurchaseMethod,
@@ -86,7 +86,7 @@ const processPostback = async (event: any, res: Response): Promise<void> => {
       retryFailed(event, payload);
       break;
     case 'failedMonthlyBonusRetry':
-      handleRetryFailedMonthlyDelivery(event, payload);
+      //handleRetryFailedMonthlyDelivery(event, payload);
       break;
     case 'myAccount':
       showAccountDetails(event);

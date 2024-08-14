@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const dbName = 'botsub'; //process.env.NODE_ENV === 'production' || 'stage' ? 'botsub' : 'development';
+const dbName = 'development'; //process.env.DB_NAME; //process.env.NODE_ENV === 'production' || 'stage' ? 'botsub' : 'development';
 
 const connectDB = async () => {
   console.log('dbName: ', dbName);

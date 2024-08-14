@@ -4,6 +4,33 @@ import { sendMessage } from "../modules/send_message";
 import sendTemplates from "../modules/send_templates";
 import { responseServices, responseServices2, responseServices3 } from "../templates/templates";
 import { referralTemp } from "../templates/templates_2";
+import { defaultText } from "./generic";
+
+
+
+// function to guide and show users their referral code
+async function showReferralCode(event: any) {
+    const senderId = event.sender.id;
+
+    await sendMessage(senderId, { text: 'Invite a friend and earn free data!!!' });
+    await sendMessage(senderId, { text: `Your referral code is:` });
+    await sendMessage(senderId, { text: `${senderId}` });
+    await sendMessage(senderId, { text: 'For each referral you earn: \n100MB for Airtel. \n150MB for MTN. \n200MB for Glo. \n500MB for 9mobile' });
+}; // end of showReferralCode
+
+// function to show user active referalls
+const showActiveReferalls = async (event: any) => {
+    const senderId = event.sender.id;
+
+    try {
+        await sendMessage(senderId, { text: 'Service currently not available' });
+        await sendMessage(senderId, { text: defaultText });
+    } catch (err) {
+        console.error('An error occured in showActiveReferalls', err);
+        await sendMessage(senderId, { text: 'An erro occured' });
+        await sendMessage(senderId, { text: defaultText });
+    };
+};
 
 // function to handle recieval of referral code\
 async function sendReferralCodeRecieved(event: any) {
@@ -16,9 +43,8 @@ async function sendReferralCodeRecieved(event: any) {
         if (referralCode === 0) {
             await sendMessage(senderId, { text: 'Welcome to BotSub, you will be credited with free data bonuses once you make your first data purchase. \nHurry while it last!' });
             await sendMessage(senderId, { text: 'You will also be credited with free data bonuses for your all your first purchase of the month' });
-            await sendTemplates(senderId, responseServices);
-            await sendTemplates(senderId, responseServices2);
-            await sendTemplates(senderId, responseServices3);
+            await sendMessage(senderId, { text: defaultText });
+
             await BotUsers.updateOne(
                 { id: senderId },
                 { $set: { nextAction: null, referrer: 0, firstPurchase: true } }
@@ -113,6 +139,8 @@ async function changeReferralBonusPhoneNumber(event: any) {
 
 
 export {
+    showReferralCode,
+    showActiveReferalls,
     sendReferralCodeRecieved,
     referralBonusPhoneNumberRecieved,
     confirmClaimReferralBonus,

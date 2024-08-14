@@ -1,13 +1,15 @@
 import BotUsers from "../../models/fb_bot_users";
 import { changeMailBeforeTransact, changePhoneBeforeTransaction, confirmDataPurchaseResponse } from "../modules/buy-data";
 import { sendMessage } from "../modules/send_message";
-import { selectPurchaseMethod } from "./generic";
+import { cancelTransaction, selectPurchaseMethod } from "./generic";
 
-const confirmProductPurchase = async (event: any) => {
+const handleConfirmProductPurchase = async (event: any) => {
     const senderId = event.sender.id;
     const message: string = event.message.text.trim();
 
     try {
+        if (message === '0') return cancelTransaction(senderId, true);
+
         const user = await BotUsers.findOne({ id: senderId });
 
         if (message === '1') return selectPurchaseMethod(event);
@@ -24,5 +26,5 @@ const confirmProductPurchase = async (event: any) => {
 
 
 export {
-    confirmProductPurchase
+    handleConfirmProductPurchase
 }

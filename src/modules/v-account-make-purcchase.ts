@@ -9,10 +9,13 @@ import creditReferrer from "./credit_referrer";
 import handleFirstMonthBonus from "./monthly_bonuses";
 import { addDataProfit } from "./save-profit";
 import { sendMessage } from "../bot/modules/send_message";
-import { confirmDataPurchaseResponse, dateFormatter } from "../bot/modules/helper_functions";
+import { dateFormatter } from "../bot/modules/helper_functions";
 import { generateRandomString } from "./helper_functions";
 import * as fs from 'fs';
 import axios from "axios";
+import { cancelTransaction } from "../bot/post-back-responses/postback_responses";
+import BotUsers from "../models/fb_bot_users";
+import { confirmDataPurchaseResponse } from "../bot/modules/buy-data";
 
 
 // function to carryout purchase
@@ -27,6 +30,8 @@ async function makePurchase(purchasePayload: any, bot: string, senderId: string)
 
 // function to make data purchase request
 async function deliverData(purchasePayload: any, bot: string, senderId: string) {
+    console.log('in v account deliver dassssssssssssssssssssssssssssssssssssss');
+
     let options = {
         url: 'https://opendatasub.com/api/data/',
         headers: {
@@ -41,11 +46,9 @@ async function deliverData(purchasePayload: any, bot: string, senderId: string) 
         }
     };
 
-    if (process.env.NODE_ENV === 'production') {
-        makePurchaseRequest(purchasePayload, options, bot, 'data', senderId);
-    } else {
-        simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
-    };
+    if (true || process.env.NODE_ENV === 'production') return makePurchaseRequest(purchasePayload, options, bot, 'data', senderId);
+    if (process.env.NODE_ENV === 'staging') return simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
+    if (process.env.NODE_ENV === 'development') return simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
 }; // end of deliver value function
 
 
@@ -67,27 +70,22 @@ function deliverAirtime(purchasePayload: any, bot: string, senderId: string) {
         }
     };
 
-    if (process.env.NODE_ENV === 'production') {
-        makePurchaseRequest(purchasePayload, options, bot, 'data', senderId);
-    } else {
-        simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
-    };
+    if (process.env.NODE_ENV === 'production') makePurchaseRequest(purchasePayload, options, bot, 'data', senderId);
+    if (process.env.NODE_ENV === 'staging') simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
+    if (process.env.NODE_ENV === 'development') simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
 }; // end of deliverAirtime
 
 
 
 // function to make product purchase request
 async function makePurchaseRequest(purchasePayload: any, options: any, bot: string, transactionType: 'airtime' | 'data', senderId: string) {
-    console.log('in make purchase request');
     try {
-        const resp = await axios.post(options.url, options.payload, { headers: options.headers });
-        console.log('response: ', resp.data);
+        // const resp = await axios.post(options.url, options.payload, { headers: options.headers });
+        // console.log('response for virtual acount make purchase: ', resp);
 
-        if (resp.data.Status === 'successful') {
-            helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
-        } else {
-            throw 'could not deliver data'
-        };
+        // if (resp.data.Status === 'successful') return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
+        return helpSuccesfulDelivery(purchasePayload, 50000, senderId, bot);
+        throw { message: 'An error occured delivering data' };
     } catch (error: any) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -104,7 +102,8 @@ async function makePurchaseRequest(purchasePayload: any, options: any, bot: stri
 
         if (bot === 'facebook') {
             await sendMessage(senderId, { text: 'Transaction failed please try again.' });
-            return confirmDataPurchaseResponse(senderId);
+            const user = await BotUsers.findOne({ id: senderId });
+            return confirmDataPurchaseResponse(senderId, user);
         };
     };
 }; // end of actualBuyData
@@ -119,7 +118,8 @@ async function simulateMakePurchaseRequest(purchasePayload: any, options: any, b
         console.log('make purchase request simulation failed in cacth error block:', error);
         if (bot === 'facebook') {
             await sendMessage(senderId, { text: 'Transaction failed please try again' });
-            return confirmDataPurchaseResponse(senderId);
+            const user = await BotUsers.findOne({ id: senderId });
+            return confirmDataPurchaseResponse(senderId, user);
         };
     };
 }; // end of makePurchaserequest simulaing
@@ -142,9 +142,6 @@ async function helpSuccesfulDelivery(purchasePayload: any, balance: number, send
             break;
         };
     };
-
-    // add profit 
-    if (purchasePayload.transactionType === 'data') await addDataProfit(purchasePayload.networkID, purchasePayload.index, date, id);
 
     // updating user deducting user balance
     const accBalance = await PaymentAccounts.findOneAndUpdate(
@@ -176,7 +173,6 @@ async function helpSuccesfulDelivery(purchasePayload: any, balance: number, send
 
 // function to add transaction to delivered transaction
 async function addToDelivered(id: string, purchasePayload: any, senderId: string) {
-    const cancelTransaction = require('./../bot_modules/postback_responses.js').cancelTransaction;
     let product, newTransaction, response2;
 
     product = formProduct(purchasePayload);
@@ -190,10 +186,11 @@ async function addToDelivered(id: string, purchasePayload: any, senderId: string
         beneficiary: parseInt(purchasePayload.phoneNumber)
     });
     response2 = await newTransaction.save();
-    console.log('add to delivered response', response2);
+
     cancelTransaction(senderId, true);
+
     if (Number(purchasePayload.firstPurchase) === 1 && purchasePayload.transactionType === 'data') await creditReferrer(senderId);
-    if (purchasePayload.transactionType === 'data') await handleFirstMonthBonus(purchasePayload.email, purchasePayload.phoneNumber, purchasePayload.networkID, senderId, false);
+    if (purchasePayload.transactionType === 'data') await handleFirstMonthBonus(id, purchasePayload, senderId, false);
     return;
 }; // end of addToDelivered
 

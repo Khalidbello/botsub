@@ -80,7 +80,7 @@ async function validateAmount(amount: string) {
     amount = amount.trim();
     const parsedAmount = parseFloat(amount);
 
-    if (parsedAmount <= 0) return false;
+    if (parsedAmount < 100) return false;
 
     // Check if the amount has more than 2 decimal places
     const decimalCount = (parsedAmount.toString().split('.')[1] || '').length;

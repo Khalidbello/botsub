@@ -421,12 +421,12 @@ async function retryFailed(event: any, payload: any) {
 
 
 
-// functon to handle failedMonthlyDeliveryBonus
-async function handleRetryFailedMonthlyDelivery(event: any, payload: any) {
-    const senderId = event.sender.id;
-    console.log('in handle monthlty failed');
-    return handleFirstMonthBonus(payload.email, payload.number, payload.networkID, senderId, payload.retry);
-};  // end of handleRetryFailedMonthlyDelivery
+// // functon to handle failedMonthlyDeliveryBonus
+// async function handleRetryFailedMonthlyDelivery(event: any, payload: any) {
+//     const senderId = event.sender.id;
+//     console.log('in handle monthlty failed'); id: string, purchasePayload: any, senderId: string, retry: boolean
+//     return handleFirstMonthBonus(payload.email, payload.number, payload.networkID, senderId, payload.retry);
+// };  // end of handleRetryFailedMonthlyDelivery
 
 
 // function to show user account details
@@ -485,7 +485,7 @@ export {
     cancelTransaction,
     showDataPrices,
     retryFailed,
-    handleRetryFailedMonthlyDelivery,
+   // handleRetryFailedMonthlyDelivery,
     showAccountDetails,
     initMakePurchase
 };

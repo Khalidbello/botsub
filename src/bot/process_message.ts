@@ -3,20 +3,18 @@ import * as fs from 'fs';
 import { sendMessage } from './modules/send_message';
 import BotUsers from '../models/fb_bot_users';
 import { sendNewConversationResponse } from './post-back-responses/postback_responses';
-import { handleBuyData, handleDataNetWorkSelected, handleOfferSelected, handlePhoneNumberEntred } from './message-responses/data';
+import { handleDataNetWorkSelected, handleOfferSelected, handlePhoneNumberEntred } from './message-responses/data';
 import {
     bvnEntred,
-    enteredEmailForAccount,
-    newEmailBeforeTransactResponse,
-    newPhoneNumberBeforeTransactResponse,
-    reportIssue,
-    sendAirtimeAmountReceived,
-    sendEmailEnteredResponse,
-    sendPhoneNumberEnteredResponses
+
 } from './message-responses/message_responses';
 import { changeReferralBonusPhoneNumber, referralBonusPhoneNumberRecieved, sendReferralCodeRecieved } from './message-responses/referral_message_responses';
 import { defaultMessageHandler, handleChangeNumberBeforeTransaction, handleNewEmailBeforeTransasctionEntred } from './message-responses/generic';
-import { confirmProductPurchase } from './message-responses/data-2';
+import { handleConfirmProductPurchase } from './message-responses/data-2';
+import { handleAirtimeNetworkSelected, handleEnterAirtimeAmount } from './message-responses/airtime';
+import { handleEnterEmailToProcedWithPurchase } from './message-responses/generic-2';
+import { enteredEmailForAccount, handleBvnEntred } from './message-responses/virtual-account';
+import { handleReportIssueResponse } from './message-responses/report-issue';
 
 
 async function processMessage(event: any, res: Response) {
@@ -43,25 +41,32 @@ async function processMessage(event: any, res: Response) {
     // fuctionalities for data purchase
     if (nextAction === 'selectDataNetwork') return handleDataNetWorkSelected(event);
     if (nextAction === 'selectDataOffer') return handleOfferSelected(event);
-    if (nextAction === 'enterPhoneNumber') return handlePhoneNumberEntred(event);
-    if (nextAction === 'confirmProductPurchase') return confirmProductPurchase(event);
+
+
+    // controls for buy airtime
+    if (nextAction === 'selectAritimeNetwork') return handleAirtimeNetworkSelected(event);
+    if (nextAction === 'enterAirtimeAmount') return handleEnterAirtimeAmount(event);
+
 
     // generic fuctionalites
+    if (nextAction === 'enterPhoneNumber') return handlePhoneNumberEntred(event);
+    if (nextAction === 'confirmProductPurchase') return handleConfirmProductPurchase(event);
     if (nextAction === 'changePhoneNumberBeforeTransact') return handleChangeNumberBeforeTransaction(event);
     if (nextAction === 'changeEmailBeforeTransact') return handleNewEmailBeforeTransasctionEntred(event);
 
+    if (nextAction === 'enterEmailToProceedWithPurchase') return handleEnterEmailToProcedWithPurchase(event);
 
-    if (nextAction === 'enterEmailFirst') return sendEmailEnteredResponse(event);
-    if (nextAction === 'phoneNumber') return sendPhoneNumberEnteredResponses(event);
-    if (nextAction === 'enterAirtimeAmount') return sendAirtimeAmountReceived(event);
-    // @ts-expect-error
-    if (nextAction === 'changeEmailBeforeTransact') return newEmailBeforeTransactResponse(event, transactionType);
-    // @ts-expect-error
-    if (nextAction === 'changePhoneNumberBeforeTransact') return newPhoneNumberBeforeTransactResponse(event, transactionType);
+    // handlers related to virtual account
     if (nextAction === 'enterMailForAccount') return enteredEmailForAccount(event);
-    if (nextAction === 'enterBvn') return bvnEntred(event);
-    if (nextAction === 'enterIssue') return reportIssue(event);
+    if (nextAction === 'enterBvn') return handleBvnEntred(event);
 
+    // controls related to issue report
+    if (nextAction === 'enterIssue') return handleReportIssueResponse(event);
+
+    // if (nextAction === 'phoneNumber') return sendPhoneNumberEnteredResponses(event);
+    // if (nextAction === 'enterAirtimeAmount') return sendAirtimeAmountReceived(event);
+    // if (nextAction === 'changeEmailBeforeTransact') return newEmailBeforeTransactResponse(event, transactionType);
+    // if (nextAction === 'changePhoneNumberBeforeTransact') return newPhoneNumberBeforeTransactResponse(event, transactionType);
 
     // rferral related switch
     if (nextAction === 'referralCode') return sendReferralCodeRecieved(event);

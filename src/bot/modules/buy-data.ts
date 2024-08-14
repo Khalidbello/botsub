@@ -10,7 +10,7 @@ const formDataOffers = async (networkInfo: networkDetailsType) => {
     let text = `Select ${networkInfo['1'].network} data offer`;
 
     for (let i = 1; i < lenght + 1; i++) {
-        text += `\n ${i}. ${networkInfo[i].size} ${networkInfo[i].validity}`;
+        text += `\n ${i}. ${networkInfo[i].size} ${networkInfo[i].price} ${networkInfo[i].validity}`;
     };
 
     return text;
@@ -33,7 +33,7 @@ async function confirmDataPurchaseResponse(senderId: string, user: any) {
             user?.purchasePayload?.phoneNumber +
             '\nEmail: ' +
             user?.email +
-            '\n 1. Make purchase. \n 2. Change number. \n 3. Change Email \n 0. Cancel transaction'
+            '\n\n 1. Make purchase. \n 2. Change number. \n 3. Change Email \n\n 0. Cancel transaction'
     };
     await sendMessage(senderId, message1);
 
