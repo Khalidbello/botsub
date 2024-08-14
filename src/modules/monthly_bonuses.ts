@@ -17,7 +17,7 @@ const bonuses: { [key: string]: any } = {
 
 // function to handle giving users free hundred mb for every new month first purchase
 async function handleFirstMonthBonus(id: string, purchasePayload: any, senderId: string, retry: boolean) {
-    console.log('in monthly bonuses retry: ', retry);
+    console.log('in monthly bonuses retry: ', retry, purchasePayload);
     let flagUser;
     let flagBotUser = true;
     //const user = await Users.findOne({ email: email });

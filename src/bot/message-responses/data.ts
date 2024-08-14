@@ -127,14 +127,15 @@ const handlePhoneNumberEntred = async (event: any) => {
 
         // to run if number valid and user has provided email
         if (validatedNum && user?.email) {
-            await sendMessage(senderId, { text: 'phone  number recieved.' });
             await BotUsers.updateOne({ id: senderId }, {
                 $set: {
                     nextAction: 'confirmProductPurchase',
                     'purchasePayload.phoneNumber': validatedNum,
                 }
             });
-            return confirmDataPurchaseResponse(senderId, user);
+            await sendMessage(senderId, { text: 'phone  number recieved.' });
+            await confirmDataPurchaseResponse(senderId, user, validatedNum)
+            return;
         };
 
         // to run if number is valid but user has never provided email

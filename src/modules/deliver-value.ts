@@ -2,16 +2,13 @@ import { Request, Response } from "express";
 import fs from 'fs';
 import Transactions from "../models/transactions";
 import { sendMessage } from "../bot/modules/send_message";
-import axios from "axios";
 import { dateFormatter } from "./helper_functions";
 import handleFirstMonthBonus from "./monthly_bonuses";
 import creditReferrer from "./credit_referrer";
-import sendTemplates from "../bot/modules/send_templates";
-import { getVirtualAccountTemp, retryFailedTemplate } from "../bot/templates/templates";
 import { updateNetworkStatus } from "../bot/modules/data-network-checker";
 import { Mutex } from "async-mutex";
-import { addDataProfit } from "./save-profit";
 import Handlebars from "handlebars";
+import axios from "axios";
 
 const transactionMutex = new Mutex();  // mutex for delivering transactions
 
@@ -64,13 +61,13 @@ async function deliverData(response: any, req: Request, res: Response) {
     },
     payload: {
       network: Number(response.data.meta.networkID),
-      mobile_number: response.data.meta.number,
+      mobile_number: response.data.meta.phoneNumber,
       plan: Number(response.data.meta.planID),
       Ported_number: true,
     }
   };
 
-  if (true || process.env.NODE_ENV === 'production') return await makePurchaseRequest(response, res, req, options, 'data');
+  if (process.env.NODE_ENV === 'production') return await makePurchaseRequest(response, res, req, options, 'data');
   if (process.env.NODE_ENV === 'development') return await simulateMakePurchaseRequest(response, res, req, true, 'data');
   if (process.env.NODE_ENV === 'staging') return await makePurchaseRequest(response, res, req, options, 'data');
 }; // end of deliver value function
@@ -90,7 +87,7 @@ async function deliverAirtime(response: any, req: Request, res: Response) {
     payload: {
       network: Number(response.data.meta.networkID),
       amount: Number(response.data.meta.amount),
-      mobile_number: response.data.meta.number,
+      mobile_number: response.data.meta.phoneNumber,
       Ported_number: true,
       airtime_type: 'VTU',
     }
@@ -108,7 +105,7 @@ async function deliverAirtime(response: any, req: Request, res: Response) {
 async function makePurchaseRequest(response: any, res: Response, req: Request, options: any, type: 'data' | 'airtime') {
   try {
     const resp = await axios.post(options.url, options.payload, { headers: options.headers });
-    console.log('response: ', resp.data);
+    // console.log('response: ', resp.data);
 
     if (resp.data.Status === 'successful') {
       updateNetworkStatus(response.data.meta.network, true); // updating network status to true
@@ -146,6 +143,7 @@ async function simulateMakePurchaseRequest(response: any, res: Response, req: Re
 
 // helper function for succesfull response
 async function helpSuccesfulDelivery(req: Request, res: Response, response: any, balance: number, type: 'data' | 'airtime') {
+  console.log('response in helpSuccesfulDekvery', response);
   await addToDelivered(req, response, type);
 
   // calling function to send mail and json response object
@@ -165,6 +163,8 @@ async function helpSuccesfulDelivery(req: Request, res: Response, response: any,
 
     // check for bonus delivery
     if (Number(response.data.meta.firstPurchase) === 1 && type === 'data') await creditReferrer(response.data.meta.senderId);
+    // add email to meta
+    response.data.meta.email = response.data.customer.email;
     // @ts-expect-error
     if (type === 'data') await handleFirstMonthBonus(req.query.transaction_id, response.data.meta, response.data.meta.senderId, false);
 

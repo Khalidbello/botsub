@@ -7,8 +7,6 @@ import Transactions from "../models/transactions";
 import PaymentAccounts from "../models/payment-accounts";
 import creditReferrer from "./credit_referrer";
 import handleFirstMonthBonus from "./monthly_bonuses";
-import { addDataProfit } from "./save-profit";
-import { sendMessage } from "../bot/modules/send_message";
 import { dateFormatter } from "../bot/modules/helper_functions";
 import { generateRandomString } from "./helper_functions";
 import * as fs from 'fs';
@@ -16,6 +14,7 @@ import axios from "axios";
 import { cancelTransaction } from "../bot/post-back-responses/postback_responses";
 import BotUsers from "../models/fb_bot_users";
 import { confirmDataPurchaseResponse } from "../bot/modules/buy-data";
+import { sendMessage } from "../bot/modules/send_message";
 
 
 // function to carryout purchase
@@ -46,7 +45,7 @@ async function deliverData(purchasePayload: any, bot: string, senderId: string) 
         }
     };
 
-    if (true || process.env.NODE_ENV === 'production') return makePurchaseRequest(purchasePayload, options, bot, 'data', senderId);
+    if (process.env.NODE_ENV === 'production') return makePurchaseRequest(purchasePayload, options, bot, 'data', senderId);
     if (process.env.NODE_ENV === 'staging') return simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
     if (process.env.NODE_ENV === 'development') return simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
 }; // end of deliver value function
@@ -80,11 +79,11 @@ function deliverAirtime(purchasePayload: any, bot: string, senderId: string) {
 // function to make product purchase request
 async function makePurchaseRequest(purchasePayload: any, options: any, bot: string, transactionType: 'airtime' | 'data', senderId: string) {
     try {
-        // const resp = await axios.post(options.url, options.payload, { headers: options.headers });
+        const resp = await axios.post(options.url, options.payload, { headers: options.headers });
         // console.log('response for virtual acount make purchase: ', resp);
 
-        // if (resp.data.Status === 'successful') return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
-        return helpSuccesfulDelivery(purchasePayload, 50000, senderId, bot);
+        if (resp.data.Status === 'successful') return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
+
         throw { message: 'An error occured delivering data' };
     } catch (error: any) {
         if (error.response) {
@@ -103,7 +102,7 @@ async function makePurchaseRequest(purchasePayload: any, options: any, bot: stri
         if (bot === 'facebook') {
             await sendMessage(senderId, { text: 'Transaction failed please try again.' });
             const user = await BotUsers.findOne({ id: senderId });
-            return confirmDataPurchaseResponse(senderId, user);
+            return confirmDataPurchaseResponse(senderId, user, null);
         };
     };
 }; // end of actualBuyData
@@ -119,7 +118,7 @@ async function simulateMakePurchaseRequest(purchasePayload: any, options: any, b
         if (bot === 'facebook') {
             await sendMessage(senderId, { text: 'Transaction failed please try again' });
             const user = await BotUsers.findOne({ id: senderId });
-            return confirmDataPurchaseResponse(senderId, user);
+            return confirmDataPurchaseResponse(senderId, user, null);
         };
     };
 }; // end of makePurchaserequest simulaing

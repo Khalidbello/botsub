@@ -7,19 +7,20 @@ import { sendMessage } from "./send_message";
 
 const formDataOffers = async (networkInfo: networkDetailsType) => {
     const lenght = Object.keys(networkInfo).length;
-    let text = `Select ${networkInfo['1'].network} data offer`;
+    let text = `Select ${networkInfo['1'].network} data offer \n`;
 
     for (let i = 1; i < lenght + 1; i++) {
         text += `\n ${i}. ${networkInfo[i].size} ${networkInfo[i].price} ${networkInfo[i].validity}`;
     };
 
+    text += '\n\n 0. Cancel';
     return text;
 };
 
 
 
 // function to form product response
-async function confirmDataPurchaseResponse(senderId: string, user: any) {
+async function confirmDataPurchaseResponse(senderId: string, user: any, phoneNumber: any) {
     const message1 = {
         text:
             'Product: ' +
@@ -27,10 +28,9 @@ async function confirmDataPurchaseResponse(senderId: string, user: any) {
             '\nNetwork: ' +
             user?.purchasePayload?.network +
             '\nPrice: ' +
-            '₦' +
-            user?.purchasePayload?.price +
+            '₦' + user?.purchasePayload?.price +
             '\nPhone Number: ' +
-            user?.purchasePayload?.phoneNumber +
+            (phoneNumber ? phoneNumber : user?.purchasePayload?.phoneNumber) +
             '\nEmail: ' +
             user?.email +
             '\n\n 1. Make purchase. \n 2. Change number. \n 3. Change Email \n\n 0. Cancel transaction'

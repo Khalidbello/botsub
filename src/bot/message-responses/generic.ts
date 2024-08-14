@@ -131,7 +131,7 @@ async function generateAccountNumber(event: any) {
         throw response;
     } catch (err) {
         await sendMessage(senderId, { text: 'An error occured \Please try again.' });
-        await confirmDataPurchaseResponse(senderId, botUser);
+        await confirmDataPurchaseResponse(senderId, botUser, null);
         console.error('Error getting transfer account:', err);
     };
 }; // end of generateAccountNumber
@@ -179,7 +179,7 @@ async function handleChangeNumberBeforeTransaction(event: any) {
 
         if (phoneNumber.toLowerCase() === '0') {
             await sendMessage(senderId, { text: 'Change email canceled' });
-            await confirmDataPurchaseResponse(senderId, user);
+            await confirmDataPurchaseResponse(senderId, user, null);
             return BotUsers.updateOne({ id: senderId }, {
                 $set: { nextAction: 'confirmProductPurchase' }
             });
@@ -194,7 +194,7 @@ async function handleChangeNumberBeforeTransaction(event: any) {
                         'purchasePayload.phoneNumber': validatedNum,
                     }
                 });
-                await confirmDataPurchaseResponse(event, user);
+                await confirmDataPurchaseResponse(event, user, validatedNum);
                 return;
             };
 
@@ -231,7 +231,7 @@ async function handleNewEmailBeforeTransasctionEntred(event: any) {
 
         if (email.toLowerCase() === '0') {
             await sendMessage(senderId, { text: 'Change email canceled' });
-            await confirmDataPurchaseResponse(senderId, user);
+            await confirmDataPurchaseResponse(senderId, user, null);
             await BotUsers.updateOne({ id: senderId }, {
                 $set: { nextAction: 'confirmProductPurchase' }
             });
@@ -243,7 +243,7 @@ async function handleNewEmailBeforeTransasctionEntred(event: any) {
                 { id: senderId }, {
                 $set: { email: email }
             });
-            await confirmDataPurchaseResponse(senderId, user);
+            await confirmDataPurchaseResponse(senderId, user, null);
         } else {
             const response = { text: 'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancel.' };
             await sendMessage(senderId, response);

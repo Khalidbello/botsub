@@ -17,7 +17,7 @@ const handleConfirmProductPurchase = async (event: any) => {
         if (message === '3') return changeMailBeforeTransact(event);
 
         await sendMessage(senderId, { text: 'Invalid response recieved.' });
-        confirmDataPurchaseResponse(senderId, user)
+        confirmDataPurchaseResponse(senderId, user, null);
     } catch (err) {
         console.error('An error occured in phoneNumberEntred', err);
         sendMessage(senderId, { text: 'An error occured plase enter resposne again.  \n Or enter Q to cancel' })

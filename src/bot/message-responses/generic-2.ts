@@ -26,7 +26,7 @@ async function handleEnterEmailToProcedWithPurchase(event: any) {
                 },
                 { upsert: true }
             );
-            await confirmDataPurchaseResponse(senderId, user);
+            await confirmDataPurchaseResponse(senderId, user, null);
             return;
         } else {
             const response = { text: 'the email format you entered is invalid \nPlease enter a valid email. \n\nnter 0 to cancel.' };
