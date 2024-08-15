@@ -16,7 +16,7 @@ const showDataPrices = async (event: any) => {
             let text = `${dataDetails[i]['1'].network} data offers \n`;
 
             for (let j = 1; j < lenght + 1; j++) {
-                text += `\n ${j}. ${dataDetails[i][j].size} ${dataDetails[i][j].price} ${dataDetails[i][j].validity}`;
+                text += `\n ${j}. ${dataDetails[i][j].size} ₦${dataDetails[i][j].price} ${dataDetails[i][j].validity}`;
             };
 
             await sendMessage(senderId, { text: text });

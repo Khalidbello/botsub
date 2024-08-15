@@ -10,7 +10,7 @@ const formDataOffers = async (networkInfo: networkDetailsType) => {
     let text = `Select ${networkInfo['1'].network} data offer \n`;
 
     for (let i = 1; i < lenght + 1; i++) {
-        text += `\n ${i}. ${networkInfo[i].size} ${networkInfo[i].price} ${networkInfo[i].validity}`;
+        text += `\n ${i}. ${networkInfo[i].size} ₦${networkInfo[i].price} ${networkInfo[i].validity}`;
     };
 
     text += '\n\n 0. Cancel';
