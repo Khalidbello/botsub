@@ -6,7 +6,7 @@ import { sendMessage } from "../modules/send_message";
 import { cancelTransaction } from "./generic";
 import fs from 'fs';
 
-const text = `Select network for data Purchase \n\n 1. MTN \n 2. Airtel \n 3. 9mobile \n 4. Glo \n\n 0. cancel`;
+const text = `Select network for data Purchase \n\n 1. MTN \n 2. Glo \n 3. 9mobile \n 4. Airtel \n\n 0. cancel`;
 const confirmPurchaseText = ``;
 
 // function to handle buy data selected
