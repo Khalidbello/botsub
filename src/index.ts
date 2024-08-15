@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
     const env = process.env;
 
     env.DB_NAME = 'development';
-    env.HOST = env.HOST_TEST;
+    env.HOST = env.HOST_STAGING;
     env.DB_CONNECTION_STR = env.DB_CONNECTION_STR_TEST
     env.FLW_PB_KEY = env.FLW_PB_KEY_TEST;
     env.FLW_SCRT_KEY = env.FLW_SCRT_KEY_TEST;
@@ -59,7 +59,7 @@ if (process.env.NODE_ENV === 'development') {
     const env = process.env;
 
     env.DB_NAME = 'botsub';
-    env.HOST = env.HOST_TEST;
+    env.HOST = env.HOST_PRODUCTION;
     env.DB_CONNECTION_STR = env.DB_CONNECTION_STR_PRODUCTION;
     env.FLW_PB_KEY = env.FLW_PB_KEY_PRODUCTION;
     env.FLW_SCRT_KEY = env.FLW_SCRT_KEY_PRODUCTION;
