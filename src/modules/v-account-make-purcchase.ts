@@ -83,7 +83,7 @@ async function makePurchaseRequest(purchasePayload: any, options: any, bot: stri
         // console.log('response for virtual acount make purchase: ', resp);
 
         if (resp.data.Status === 'successful') return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
-
+        console.log('env keyyyyyyyyyyyyyyyyyyyyyyyy', process.env.OPENSUB_KEY);
         throw { message: 'An error occured delivering data' };
     } catch (error: any) {
         if (error.response) {
