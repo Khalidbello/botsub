@@ -19,7 +19,6 @@ import paymentGateWayRouter from './routes/payment-gateway';
 import frontEndApiRouter from './routes/frontend-api';
 import adminRouter from './routes/admin';
 
-
 let origin: any = 'http://127.0.0.1:3000';
 
 // setting  configurations for different environment
