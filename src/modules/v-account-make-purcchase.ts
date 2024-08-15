@@ -85,12 +85,11 @@ async function makePurchaseRequest(purchasePayload: any, options: any, bot: stri
         if (resp.data.Status === 'successful') return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
         throw { message: 'An error occured delivering data' };
     } catch (error: any) {
-        console.log('env keyyyyyyyyyyyyyyyyyyyyyyyy', process.env.OPENSUB_KEY);
         if (error.response) {
             // The request was made and the server responded with a status code
             // that falls out of the range of 2xx
             console.log('errror while makig purchase request in v-acounnt::: Server responded with status:', error.response.status);
-            console.log('Response data:', error.response.data);
+            console.log('Response data: env keyyyyyyyyyyyyyyyyyyyyyyyy', error.response.data, process.env.OPENSUB_KEY);
         } else if (error.request) {
             // The request was made but no response was received
             console.log('No response received. Request:', error.request);
