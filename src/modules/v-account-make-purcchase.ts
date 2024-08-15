@@ -80,7 +80,7 @@ function deliverAirtime(purchasePayload: any, bot: string, senderId: string) {
 async function makePurchaseRequest(purchasePayload: any, options: any, bot: string, transactionType: 'airtime' | 'data', senderId: string) {
     try {
         const resp = await axios.post(options.url, options.payload, { headers: options.headers });
-        // console.log('response for virtual acount make purchase: ', resp);
+        console.log('response for virtual acount make purchase: ', resp);
 
         if (resp.data.Status === 'successful') return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
         console.log('Response data: env keyyyyyyyyyyyyyyyyyyyyyyyy', process.env.OPENSUB_KEY);
