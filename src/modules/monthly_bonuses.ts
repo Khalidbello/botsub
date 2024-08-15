@@ -91,7 +91,7 @@ async function deliverBonus(email: string, number: string, networkID: number, se
     const bonus = bonuses[networkID];
 
     try {
-        if (process.env.NODE_ENV !== 'development') return sendMessage(senderId, { text: 'Evironment does not support monthly bonus delivery.' });
+        if (process.env.NODE_ENV !== 'production') return sendMessage(senderId, { text: 'Evironment does not support monthly bonus delivery.' });
 
         const response = await axios.post('https://opendatasub.com/api/data/',
             {

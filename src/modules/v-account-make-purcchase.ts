@@ -19,7 +19,7 @@ import { sendMessage } from "../bot/modules/send_message";
 
 // function to carryout purchase
 async function makePurchase(purchasePayload: any, bot: string, senderId: string) {
-    console.log('in make purchase')
+    console.log('in make purchase');
     if (purchasePayload.transactionType === 'data') return deliverData(purchasePayload, bot, senderId);
     if (purchasePayload.transactionType === 'airtime') return deliverAirtime(purchasePayload, bot, senderId);
     console.log('no matched transaction type::::::::::::::::::::::::   ');
