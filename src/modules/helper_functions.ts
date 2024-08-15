@@ -93,7 +93,7 @@ const checkcheckRequirement = async function (response: any, req: Request) {
 
     let pricePaid = Number(response.data.amount);
 
-    console.log('passed all remaining last in data in checkcheckRequirement');
+    console.log('passed all remaining last in data in checkcheckRequirement', response.data.status.toLowerCase(), price, pricePaid, response.data.currency, response.data.tx_ref);
     if (
       response.data.status.toLowerCase() === 'successful' &&
       price &&
@@ -120,7 +120,8 @@ const checkcheckRequirement = async function (response: any, req: Request) {
       let toRefund = pricePaid - price;
       return { status: true, refund: toRefund, type: 'airtime', price };
     };
-  }
+  };
+  console.log('requirement met retrning false',)
   return { status: false, message: 'payment requirement not met', price };
 }; //end of checkRequiremtMet
 

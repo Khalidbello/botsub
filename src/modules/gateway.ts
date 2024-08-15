@@ -141,8 +141,9 @@ async function carryOutNonVAccount(data: any, host: string) {
     console.log('carrying out no v account purchase request:::::::::::      ::::::::::');
     try {
         await axios.get(
-            `https://${host}/gateway/confirm?transaction_id=${data.id}&tx_ref=${data.tx_ref || data.txRef}&webhook=webhooyouu`
+            `https://${process.env.HOST}/gateway/confirm?transaction_id=${data.id}&tx_ref=${data.tx_ref || data.txRef}&webhook=webhooyouu`
         );
+        return console.log('Successfuly carried out no account payment.');
     } catch (error: any) {
         // Handle errors
         if (error.response) {
@@ -153,7 +154,7 @@ async function carryOutNonVAccount(data: any, host: string) {
         } else {
             console.error('Error occurred while setting up the request:', error.message);
         };
-        console.error('Error config:', error.config);
+        console.error('Error config:', error);
     };
 }; // end of carryOutVAccount
 
