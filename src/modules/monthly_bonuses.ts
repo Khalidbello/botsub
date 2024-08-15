@@ -110,8 +110,9 @@ async function deliverBonus(email: string, number: string, networkID: number, se
             await firstTransactOfMonth(email, 'user'); // function to update user info to prevent double delivery
             if (senderId) {
                 await firstTransactOfMonth(senderId, 'botUser');
-                return await sendMessage(senderId, { text: `you've recieved ${bonus.size} on your ${number} ${bonus.network} line for your first transaction of the month...` });
+                await sendMessage(senderId, { text: `you've recieved ${bonus.size} on your ${number} ${bonus.network} line for your first transaction of the month...` });
             };
+            return;
         };
 
         throw 'bonus delivery failed';
