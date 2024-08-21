@@ -1,4 +1,3 @@
-import { defaultMessageHandler } from "./message-responses/message_responses";
 import {
   airtimePurchase,
   cancelTransaction,
@@ -18,7 +17,7 @@ import {
   showAccountDetails,
   showDataPrices
 } from "./post-back-responses/postback_responses";
-import { changeReferralBonusPhoneNumber, deliverReferralBonus, referralBonusOfferSelected, selectReferralOffers, showMyReferrals, showReferralCode } from "./post-back-responses/referral_postback_responses";
+import { defaultMessageHandler } from "./message-responses/generic";
 import { sendMessage } from "./modules/send_message";
 import { Response } from "express";
 
@@ -41,81 +40,7 @@ const processPostback = async (event: any, res: Response): Promise<void> => {
 
   const payloadTitle = payload.title;
   console.log('postback payload title', payloadTitle);
-
-  switch (payloadTitle) {
-    // case 'dataPurchase':
-    //   sendPurchaseDataReponse(event);
-    //   break;
-    // case 'mtnOffers':
-    //   sendMtnOffers(event);
-    //   break;
-    // case 'airtelOffers':
-    //   sendAirtelOffers(event);
-    //   break;
-    // case 'gloOffers':
-    //   sendGloOffers(event);
-    //   break;
-    // case '9mobileOffers':
-    //   sendNineMobileOffers(event);
-    //   break;
-    // case 'airtimePurchase':
-    //   sendPurchaseAirtimeResponse(event);
-    //   break;
-    // case 'enterAirtimeAmount':
-    //   airtimePurchase(event, payload);
-    //   break;
-    // case 'makePurchase':
-    //   selectPurchaseMethod(event);
-    //   break;
-    // case 'changeMailBeforeTransact':
-    //   changeMailBeforeTransact(event);
-    //   break;
-    // case 'changePhoneNumber':
-    //   changePhoneNumber(event);
-    //   break;
-    // case 'cancel':
-    //   cancelTransaction(event.sender.id, true);
-    //   break;
-    // case 'issueReport':
-    //   issueReport(event);
-    //   break;
-    // case 'dataPrices':
-    //   showDataPrices(event);
-    //   break;
-    // case 'retryFailed':
-    //   retryFailed(event, payload);
-    //   break;
-    // case 'failedMonthlyBonusRetry':
-    //   //handleRetryFailedMonthlyDelivery(event, payload);
-    //   break;
-    // case 'myAccount':
-    //   showAccountDetails(event);
-    //   break;
-
-
-    // // referral related
-    // case 'referAFriend':
-    //   showReferralCode(event);
-    //   break;
-    // case 'myReferrals':
-    //   showMyReferrals(event, payload);
-    //   break;
-    // case 'claimReferralBonus':
-    //   selectReferralOffers(event, payload);
-    //   break;
-    // case 'referralBonusOfferSelected':
-    //   referralBonusOfferSelected(event, payload);
-    //   break;
-    // case 'deliverReferralBonus':
-    //   deliverReferralBonus(event);
-    //   break;
-    // case 'changeReferralBonusPhoneNumber':
-    //   changeReferralBonusPhoneNumber(event);
-    //   break;
-    default:
-      defaultMessageHandler(event, false);
-      break;
-  }
+  return defaultMessageHandler(event, true);
 } // end of processPostback
 
 
