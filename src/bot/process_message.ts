@@ -21,7 +21,7 @@ async function processMessage(event: any, res: Response) {
     // check user previousky stored action to determine
     // how to respond to user messages
 
-    if (process.env.botMaintenance === 'true') return sendMessage(event.sender.id, { text: 'Sorry network services are currenly down and would be restored by 10:30 PM' }); // emergency response incase of bug fixes
+    if (process.env.MAINTENANCE === 'true') return sendMessage(event.sender.id, { text: 'BotSub id currently under maintenance. \nCheck back later.' }); // emergency response incase of bug fixes
 
     const senderId = event.sender.id;
     const user = await BotUsers.findOne({ 'id': senderId }).select('_id purchasePayload nextAction');
