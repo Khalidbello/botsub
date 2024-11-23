@@ -7,7 +7,7 @@ const computeDiscount = (transactNum: number): number => {
   if (transactNum === 4) return 40;
   if (transactNum === 3) return 50;
   if (transactNum === 2) return 60;
-  if (transactNum > 1) return 70;
+  if (transactNum < 2) return 70;
   return 0;
 };
 
