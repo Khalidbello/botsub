@@ -1,10 +1,8 @@
-import { Request, Response, NextFunction, Router } from "express";
-import { processPostback } from "../bot/process_postback";
-import processMessage from "../bot/process_message";
-import axios from "axios";
+import { Request, Response, NextFunction, Router } from 'express';
+import { processPostback } from '../bot/process_postback';
+import processMessage from '../bot/process_message';
+import axios from 'axios';
 const fbBotRouter = Router();
-
-
 
 fbBotRouter.get('/fb-hook', function (req: Request, res: Response) {
   const token = process.env.FB_VERIFICATION_KEY;
@@ -15,11 +13,9 @@ fbBotRouter.get('/fb-hook', function (req: Request, res: Response) {
     res.status(200).send(req.query['hub.challenge']);
   } else {
     console.error('verification failed. Token mismatch.');
-    res.sendStatus(403).send("403 does not match");
+    //res.sendStatus(403).send("403 does not match");
   }
 }); // end of webhook get req
-
-
 
 fbBotRouter.post('/fb-hook', async function (req: Request, res: Response) {
   //checking for page subscription.
@@ -40,7 +36,7 @@ fbBotRouter.post('/fb-hook', async function (req: Request, res: Response) {
         }
       });
     });
-  };
+  }
 
   res.sendStatus(200);
 }); // end of webhook post req
@@ -120,6 +116,5 @@ fbBotRouter.get('/set-get-started', (req: Request, res: Response) => {
       console.error('Failed to set the get started payload:', error);
     });
 });
-
 
 export default fbBotRouter;
