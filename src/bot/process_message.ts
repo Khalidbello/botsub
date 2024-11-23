@@ -64,7 +64,8 @@ async function processMessage(event: any, res: Response) {
 
   // generic fuctionalites
   if (nextAction === 'enterPhoneNumber') return handlePhoneNumberEntred(event);
-  if (nextAction === 'confirmProductPurchase') return handleConfirmProductPurchase(event);
+  if (nextAction === 'confirmProductPurchase')
+    return handleConfirmProductPurchase(event, user?.transactNum || 0);
   if (nextAction === 'changePhoneNumberBeforeTransact')
     return handleChangeNumberBeforeTransaction(event);
   if (nextAction === 'changeEmailBeforeTransact')

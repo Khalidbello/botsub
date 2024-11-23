@@ -5,9 +5,10 @@ const schema = new mongoose.Schema({
   account_number: String,
   transactNum: Number,
   ref: Number,
+  amount_to_be_paid: Number,
   date: Date,
 });
 
-const GeneratedAccounts = mongoose.model('GeneratedAccounts', schema);
+const GeneratedOAccounts = mongoose.model('GeneratedOAccounts', schema);
 
-export default GeneratedAccounts;
+export default GeneratedOAccounts;

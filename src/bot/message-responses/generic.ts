@@ -15,6 +15,7 @@ import { showAccountDetails } from './virtual-account';
 import { showDataPrices } from './data-prices';
 import { showActiveReferalls, showReferralCode } from './referral_message_responses';
 import { handleReportIssue } from './report-issue';
+import { saveOneTimeAccount } from '../modules/helper_function_2';
 
 // text to contain bot functionalities
 const defaultText =
@@ -71,17 +72,17 @@ const reset = async (senderId: string) => {
 }; // end of reset helpers
 
 // function to decide hoe the transaction would be carried out depedent wether user has a virtual account or not
-async function selectPurchaseMethod(event: any) {
+async function selectPurchaseMethod(event: any, transactNum: number) {
   const senderId = event.sender.id;
   const userAcount = await PaymentAccounts.findOne({ refrence: senderId });
 
   if (userAcount) return initMakePurchase(senderId);
 
-  await generateAccountNumber(event);
+  await generateAccountNumber(event, transactNum);
 } // end of selectPurchaseMehod
 
 // function to generate account number
-async function generateAccountNumber(event: any) {
+async function generateAccountNumber(event: any, transactNum: number) {
   let payload, response;
   const senderId = event.sender.id;
   let botUser;
@@ -124,6 +125,15 @@ async function generateAccountNumber(event: any) {
 
     if (response.status === 'success') {
       const data = response.meta.authorization;
+
+      const isSaved = await saveOneTimeAccount(
+        senderId,
+        transactNum,
+        data.transfer_account,
+        data.transfer_amount,
+        data.tx_ref
+      );
+      if (!isSaved) throw 'An error occurede saving new transfer account';
       await sendMessage(senderId, { text: 'Bank Name: ' + data.transfer_bank });
       await sendMessage(senderId, { text: 'Account Name: BotSub FLW' });
       await sendMessage(senderId, { text: 'Account Number: 👇' });
