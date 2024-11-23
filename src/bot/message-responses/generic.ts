@@ -15,7 +15,7 @@ import { showAccountDetails } from './virtual-account';
 import { showDataPrices } from './data-prices';
 import { showActiveReferalls, showReferralCode } from './referral_message_responses';
 import { handleReportIssue } from './report-issue';
-import { saveOneTimeAccount } from '../modules/helper_function_2';
+import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../modules/helper_function_2';
 
 // text to contain bot functionalities
 const defaultText =
@@ -104,14 +104,12 @@ async function generateAccountNumber(event: any, transactNum: number) {
     payload.bot = true;
     payload.firstPurchase = botUser?.firstPurchase;
     payload.senderId = senderId;
-    let test = payload;
 
     // check if data network is active bbefore proceeding
     let check = await checkDataStatus(payload.network);
 
     if (!check) return handleDataNetworkNotAvailable(senderId, payload.network);
 
-    console.log('in generate account number: ', payload, test);
     await sendMessage(senderId, {
       text: 'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.',
     });
@@ -119,11 +117,9 @@ async function generateAccountNumber(event: any, transactNum: number) {
       text: 'Value would automatically delivered by our system once payment is made',
     });
 
-    response = await axios.post(`https://${process.env.HOST}/gateway/transfer-account`, payload);
-    response = await response.data;
-    console.log('get payment account respinse::::::::::::::; ', response);
+    const response = await generateOneTimeAccountHelper(payload);
 
-    if (response.status === 'success') {
+    if (response?.status === 'success') {
       const data = response.meta.authorization;
 
       const isSaved = await saveOneTimeAccount(
@@ -133,7 +129,9 @@ async function generateAccountNumber(event: any, transactNum: number) {
         data.transfer_amount,
         data.tx_ref
       );
+
       if (!isSaved) throw 'An error occurede saving new transfer account';
+
       await sendMessage(senderId, { text: 'Bank Name: ' + data.transfer_bank });
       await sendMessage(senderId, { text: 'Account Name: BotSub FLW' });
       await sendMessage(senderId, { text: 'Account Number: 👇' });

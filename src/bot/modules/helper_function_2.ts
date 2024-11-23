@@ -1,5 +1,7 @@
 import BotUsers from '../../models/fb_bot_users';
 import GeneratedOAccounts from '../../models/generated-o-accounts';
+import { generateRandomString } from '../../modules/helper_functions';
+const FlutterWave = require('flutterwave-node-v3');
 
 // fucntion to calculate user current data prices discount
 const computeDiscount = (transactNum: number): number => {
@@ -50,4 +52,54 @@ const saveOneTimeAccount = async (
   }
 };
 
-export { computeDiscount, updateTransactNum, saveOneTimeAccount };
+// helper function to generate one time account number
+const generateOneTimeAccountHelper = async (datas: any): Promise<any> => {
+  console.log('in generateOneTimeAccount', datas);
+  try {
+    let payload;
+    if (datas.transactionType == 'data') {
+      payload = {
+        network: datas.network,
+        planID: datas.planID,
+        networkID: datas.networkID,
+        phoneNumber: datas.phoneNumber,
+        index: datas.index,
+        type: datas.transactionType,
+        size: datas.size,
+        bot: datas.bot,
+        senderId: datas.senderId,
+        firstPurchase: datas.firstPurchase,
+      };
+    } else if (datas.transactionType == 'airtime') {
+      payload = {
+        network: datas.network,
+        networkID: datas.networkID,
+        amount: datas.price,
+        type: datas.transactionType,
+        phoneNumber: datas.phoneNumber,
+        bot: datas.bot,
+        senderId: datas.senderId,
+        firstPurchase: datas.firstPurchase,
+      };
+    }
+    console.log('bot purchase payload', payload);
+
+    const details = {
+      tx_ref: generateRandomString(15),
+      amount: datas.price,
+      email: datas.email,
+      fullname: datas.email,
+      currency: 'NGN',
+      meta: payload,
+    };
+
+    const flw = new FlutterWave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
+    const response = await flw.Charge.bank_transfer(details);
+    return response;
+  } catch (err) {
+    console.error('An error occurd in helper generate one time account', err);
+    return false;
+  }
+};
+
+export { computeDiscount, updateTransactNum, saveOneTimeAccount, generateOneTimeAccountHelper };
