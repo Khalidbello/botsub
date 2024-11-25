@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 async function sendMessage(sender_psid: any, response: { text: string }) {
   try {
@@ -11,27 +11,25 @@ async function sendMessage(sender_psid: any, response: { text: string }) {
       message: response,
     };
 
-    let resp = await axios
-      .post('https://graph.facebook.com/v20.0/me/messages', request_body, {
-        params: { access_token: process.env.FBM_TOKEN },
-        headers: { 'Content-Type': 'application/json' },
-      });
+    let resp = await axios.post('https://graph.facebook.com/v20.0/me/messages', request_body, {
+      params: { access_token: process.env.FBM_TOKEN },
+      headers: { 'Content-Type': 'application/json' },
+    });
 
     resp = await resp.data;
     console.log(resp);
   } catch (error: any) {
     if (error.response) {
-      console.error('Response Error:', error.response.data);
-      console.error('Status Code:', error.response.status);
-      console.error('Headers:', error.response.headers);
+      console.error('Response Error in send message:', error.response.data);
+      console.error('Status Code  in send message:', error.response.status);
+      console.error('Headers  in send message:', error.response.headers);
     } else if (error.request) {
-      console.error('Request Error:', error.request);
+      console.error('Request Error  in send message:', error.request);
     } else {
-      console.error('Error:', error.message);
+      console.error('Error  in send message:', error.message);
     }
-    console.error('error sending message ,,,,,,,,, Config:', error.config);
-  };
-};
-
+    console.error('error sending message ,,,,,,,,, Config  in send message:', error.config);
+  }
+}
 
 export { sendMessage };

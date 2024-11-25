@@ -1,7 +1,6 @@
 // file to contain generic functionality for
 
 import emailValidator from 'email-validator';
-import axios from 'axios';
 import BotUsers from '../../models/fb_bot_users';
 import PaymentAccounts from '../../models/payment-accounts';
 import { checkDataStatus, handleDataNetworkNotAvailable } from '../modules/data-network-checker';
@@ -119,15 +118,15 @@ async function generateAccountNumber(event: any, transactNum: number) {
 
     const response = await generateOneTimeAccountHelper(payload);
 
-    if (response?.status === 'success') {
-      const data = response.meta.authorization;
+    if (response[0].status === 'success') {
+      const data = response[0].meta.authorization;
 
       const isSaved = await saveOneTimeAccount(
         senderId,
         transactNum,
         data.transfer_account,
         data.transfer_amount,
-        data.tx_ref
+        response[1]
       );
 
       if (!isSaved) throw 'An error occurede saving new transfer account';
