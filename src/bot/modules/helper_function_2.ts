@@ -1,5 +1,8 @@
 import BotUsers from '../../models/fb_bot_users';
 import GeneratedOAccounts from '../../models/generated-o-accounts';
+import Transactions from '../../models/transactions';
+import { trendData } from '../../modules/admin/statistics';
+import { carryOutNonVAccount } from '../../modules/gateway';
 import { generateRandomString } from '../../modules/helper_functions';
 const FlutterWave = require('flutterwave-node-v3');
 
@@ -128,10 +131,35 @@ const checkPaymentValidity = async (id: string, price: number, currency: string)
 const makeDelivery = (transactionId: number) => {
   // verify user paid the correct amount
 };
+
+// fucntion to retry all failed delivery
+const retryAllFaledTransactions = async () => {
+  try {
+    const flw = new FlutterWave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
+    let loopCount = 0;
+
+    while (true) {
+      const transactions = await Transactions.find({ status: false }).limit(10);
+
+      const tPromise = transactions.map(async (trnasaction) => {
+        const response = await flw.Transaction.verify({ id: trnasaction.id }); // check again if transaction is succesful
+        carryOutNonVAccount(response);
+      });
+
+      await Promise.all(tPromise);
+      loopCount++;
+      if (loopCount < 11 || transactions.length < 10) break;
+    }
+  } catch (err) {
+    console.error('AN error occured in carrying out retry for all transactions', err);
+  }
+};
+
 export {
   computeDiscount,
   updateTransactNum,
   saveOneTimeAccount,
   generateOneTimeAccountHelper,
   checkPaymentValidity,
+  retryAllFaledTransactions,
 };

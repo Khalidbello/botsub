@@ -171,4 +171,4 @@ const carryOutNonVAccount = async (response: any) => {
   } catch (err) {}
 }; // end of carryOutVAccount
 
-export { respondToWebhook, createVAccount };
+export { respondToWebhook, createVAccount, carryOutNonVAccount };
