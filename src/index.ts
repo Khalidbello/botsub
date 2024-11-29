@@ -18,12 +18,6 @@ import paymentGateWayRouter from './routes/payment-gateway';
 import frontEndApiRouter from './routes/frontend-api';
 import adminRouter from './routes/admin';
 
-let allowedOrigins: any = [
-  'http://127.0.0.1:3000',
-  'http://localhost:3000',
-  'https://botsub.vercel.app',
-];
-
 // setting  configurations for different environment
 if (process.env.NODE_ENV === 'development') {
   console.log('in development mode');
@@ -71,7 +65,7 @@ if (process.env.NODE_ENV === 'development') {
   env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_PRODUCTION;
   env.FBM_TOKEN = env.FBM_TOKEN_PRODUCTION;
   env.OPENSUB_KEY = env.OPENSUB_KEY_PRODUCTION;
-  allowedOrigins = ['https://admin.botsub.com.ng', 'http://admin.botsub.com.ng'];
+  //allowedOrigins = ['https://admin.botsub.com.ng', 'http://admin.botsub.com.ng'];
 }
 
 // setting __filename since its not supported in type: module
@@ -105,16 +99,6 @@ const noCacheMiddleware = (req: Request, res: Response, next: NextFunction) => {
 app.use(noCacheMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// Middleware: Set up CORS
-app.use(
-  cors({
-    origin: 'https://botsub.vercel.app',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Include GET explicitly
-    allowedHeaders: ['Content-Type', 'Authorization'], //
-  })
-);
-
 app.use(
   session({
     secret: 'ewfdwsdnncenuivrgeianviaivnreuveq9anvrv',
@@ -134,39 +118,6 @@ app.use(express.static('public'));
 
 // connecting db
 connectDB();
-
-// middle ware to store requests
-const storeRequest = (req: Request, res: Response, next: NextFunction) => {
-  const timestamp = new Date().toISOString();
-  const headers = { ...req.headers }; // Clone to avoid modifying original object
-  delete headers.host; // Remove host header for security
-
-  let body;
-  if (!req.is('application/json') && !req.is('text/*')) {
-    body = 'Non-JSON/text request';
-  } else {
-    try {
-      body = req.body || ''; // Use existing parsed body or empty string
-    } catch (error) {
-      console.error('Error parsing request body:', error);
-      body = 'Error parsing body';
-    }
-  }
-
-  const data = { timestamp, headers, body };
-
-  try {
-    const existingData = fs.existsSync('requests.json')
-      ? JSON.parse(fs.readFileSync('requests.json', 'utf8'))
-      : [];
-    existingData.push(data);
-    fs.writeFileSync('requests.json', JSON.stringify(existingData, null, 2));
-  } catch (error) {
-    console.error('Error writing request to JSON file:', error);
-  }
-  console.error('in save requesrt.........');
-  next();
-};
 
 //app.use('/', storeRequest)
 //locking in middlewares for route handling
