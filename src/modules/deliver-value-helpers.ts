@@ -57,8 +57,8 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
 }; // end of helpSuccesfulDelivery
 
 // helper function  for failed delivery
-const helpFailedDelivery = async (response: any) => {
-  addToFailedToDeliver(response);
+const helpFailedDelivery = async (response: any, info: string) => {
+  addToFailedToDeliver(response, info);
   //sendFailedToDeliverResponse(response, res);
 
   if (response.data.meta.bot) {
@@ -82,7 +82,7 @@ const addToDelivered = async (response: any, type: 'data' | 'airtime') => {
   const transaction = await Transactions.findOne({ id: response.data.id });
   if (transaction) {
     if (transaction.status === true) return;
-    const response = transaction.updateOne({ status: true });
+    const response = transaction.updateOne({ status: true, info: 'value succesfully delivered' });
     return response;
   }
 
@@ -97,6 +97,7 @@ const addToDelivered = async (response: any, type: 'data' | 'airtime') => {
     product: prod,
     senderId: response.data.meta.senderId,
     beneficiary: parseInt(response.data.meta.number),
+    info: 'Value succesfully delvered',
   });
   const response2 = await newTransaction.save();
   console.log('add to delivered response', response2);
@@ -104,7 +105,7 @@ const addToDelivered = async (response: any, type: 'data' | 'airtime') => {
 }; // end of addToDelivered
 
 // function to add transaction to failed to deliver
-const addToFailedToDeliver = async (response: any) => {
+const addToFailedToDeliver = async (response: any, info: string) => {
   try {
     let transaction = await Transactions.findOne({ id: response.meta.id });
     if (transaction)
@@ -123,12 +124,13 @@ const addToFailedToDeliver = async (response: any) => {
       product: prod + ' ' + response.data.meta.network,
       senderId: response.data.meta.senderId,
       beneficiary: parseInt(response.data.meta.number),
+      info: info,
     });
     const response2 = await newTransaction.save();
     console.log('add to failed delivery response', response2);
     return;
   } catch (err) {
-    console.error('error occured while adding new trnasaction to databasae', err);
+    console.error('error occured while adding failed trnasaction to databasae', err);
   }
 }; // end if add to failed to deliver
 

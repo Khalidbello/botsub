@@ -18,7 +18,11 @@ import paymentGateWayRouter from './routes/payment-gateway';
 import frontEndApiRouter from './routes/frontend-api';
 import adminRouter from './routes/admin';
 
-let origin: any = ['http://127.0.0.1:3000', 'http://localhost:3000'];
+let allowedOrigins: any = [
+  'http://127.0.0.1:3000',
+  'http://localhost:3000',
+  'https://botsub.vercel.app',
+];
 
 // setting  configurations for different environment
 if (process.env.NODE_ENV === 'development') {
@@ -67,7 +71,7 @@ if (process.env.NODE_ENV === 'development') {
   env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_PRODUCTION;
   env.FBM_TOKEN = env.FBM_TOKEN_PRODUCTION;
   env.OPENSUB_KEY = env.OPENSUB_KEY_PRODUCTION;
-  origin = ['https://admin.botsub.com.ng', 'http://admin.botsub.com.ng'];
+  allowedOrigins = ['https://admin.botsub.com.ng', 'http://admin.botsub.com.ng'];
 }
 
 // setting __filename since its not supported in type: module
@@ -101,19 +105,24 @@ const noCacheMiddleware = (req: Request, res: Response, next: NextFunction) => {
 app.use(noCacheMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Middleware: Set up CORS
 app.use(
   cors({
-    origin: origin, // Specify the allowed origin
-    credentials: true, // Allow credentials (cookies) to be sent
+    origin: 'https://botsub.vercel.app',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Include GET explicitly
+    allowedHeaders: ['Content-Type', 'Authorization'], //
   })
 );
 
 app.use(
   session({
-    secret: process.env.SESSION_SECR as string,
+    secret: 'ewfdwsdnncenuivrgeianviaivnreuveq9anvrv',
     cookie: {
-      httpOnly: false,
+      secure: true,
+      httpOnly: true,
       maxAge: 1000000,
+      sameSite: 'none',
     },
     resave: false,
     saveUninitialized: true,

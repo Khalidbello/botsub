@@ -20,7 +20,7 @@ const createFailedAuoRetryInterval = () => {
   const autoRetryIntervalId = setInterval(() => {
     console.log('intervalll auto retry');
     if (autoRetry) retryAllFaledTransactions();
-  }, 5000); // two minutes for the interval
+  }, 1000 * 60 * 2); // two minutes for the interval
 
   console.log(
     'sucesfully created interval for auto retry, interval id is::::  ',

@@ -101,9 +101,10 @@ async function deliverAirtime(response: any) {
 
 // function to make product purchase request
 async function makePurchaseRequest(response: any, options: any, type: 'data' | 'airtime') {
+  let resp;
   try {
-    const resp = await axios.post(options.url, options.payload, { headers: options.headers });
-    // console.log('response: ', resp.data);
+    resp = await axios.post(options.url, options.payload, { headers: options.headers });
+    console.log('response: ', resp.data);
 
     if (resp.data.Status === 'successful') {
       if (response.data.meta.type === 'data') {
@@ -118,7 +119,7 @@ async function makePurchaseRequest(response: any, options: any, type: 'data' | '
     }
   } catch (error) {
     console.log('in make purchase request failed in cacth error block:', error);
-    await helpFailedDelivery(response);
+    await helpFailedDelivery(response, resp?.data.info);
   }
 } // end of makePurchaseRequest
 
@@ -138,7 +139,7 @@ async function simulateMakePurchaseRequest(
     throw 'product purchas request not successful';
   } catch (error) {
     console.log('make purchase request simulation failed in cacth error block:', error);
-    helpFailedDelivery(response);
+    helpFailedDelivery(response, 'failed delivery simulated');
   }
 } // end of makePurchaserequest simulain
 
