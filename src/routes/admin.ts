@@ -12,6 +12,7 @@ import {
   settleTransaction,
 } from '../modules/admin/controls';
 import { retryAllFaledTransactions } from '../bot/modules/helper_function_2';
+import adminRouter2 from './admin-2';
 
 let autoRetry: boolean = true;
 
@@ -28,7 +29,7 @@ const createFailedAuoRetryInterval = () => {
   );
 };
 
-createFailedAuoRetryInterval();
+//createFailedAuoRetryInterval();
 
 const adminRouter = Router();
 
@@ -183,7 +184,7 @@ adminRouter.get('/retry-transaction/:transactionId/:txRef', async (req: Request,
 });
 
 // route handle transaction close request
-adminRouter.get('/close-issue/:issueId', async (req: Request, res: Response) => {
+adminRouter.get('/close-issue/:issueId/:reporterId', async (req: Request, res: Response) => {
   try {
     return closeIssue(req, res);
   } catch (err) {
@@ -240,4 +241,6 @@ adminRouter.post('/set-auto-retry', (req: Request, res: Response) => {
     res.status(500).send('Something went wrong');
   }
 });
+
+adminRouter.use('/', adminRouter2);
 export default adminRouter;

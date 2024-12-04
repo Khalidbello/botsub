@@ -18,6 +18,7 @@ const Schema = new mongoose.Schema({
     type: Number,
     unique: true,
   },
+  botResponse: Boolean,
   transactNum: Number,
   lastTransact: Date,
   firstPurchase: Boolean, // this particular property is use to check if its a user first time purchasing so as to credit the referrer

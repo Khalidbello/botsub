@@ -1,13 +1,13 @@
 import BotUsers from '../../models/fb_bot_users';
 import { networkDetailsType } from '../../types/bot/module-buy-data-types';
 import { confirmDataPurchaseResponse, formDataOffers } from '../modules/buy-data';
-import { computeDiscount } from '../modules/helper_function_2';
+import { computeDiscount, mapAlpaheToNum } from '../modules/helper_function_2';
 import { validateNumber } from '../modules/helper_functions';
 import { sendMessage } from '../modules/send_message';
 import { cancelTransaction } from './generic';
 import fs from 'fs';
 
-const text = `Select network for data Purchase \n\n 1. MTN \n 2. Glo \n 3. 9mobile \n 4. Airtel \n\n 0. cancel`;
+const text = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C. 9mobile \n D. Airtel \n\n X. cancel`;
 const confirmPurchaseText = ``;
 
 // function to handle buy data selected
@@ -26,17 +26,28 @@ async function handleBuyData(event: any) {
 // functiion to data network selected
 const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
   const senderId = event.sender.id;
-  const message: string = event.message.text.trim();
+  const message: string = event.message.text.trim().toLowerCase();
+  let index: number = 0;
 
   try {
-    if (message === '0') return cancelTransaction(senderId, true);
+    if (message === 'X') return cancelTransaction(senderId, true);
 
     // Read data-details.json file
     let dataDetails: any = await fs.promises.readFile('files/data-details.json', 'utf-8');
     dataDetails = JSON.parse(dataDetails);
 
+    // set message to match data details index
+    if (message === 'a') {
+      index = 1;
+    } else if (message === 'b') {
+      index = 2;
+    } else if (message === 'c') {
+      index = 3;
+    } else if (message === 'd') {
+      index = 4;
+    }
     // Get details of user selected network
-    const networkDetails: networkDetailsType = dataDetails[message];
+    const networkDetails: networkDetailsType = dataDetails[index];
 
     if (!networkDetails) {
       await sendMessage(senderId, { text: 'Invalid response received.' });
@@ -72,11 +83,11 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
 // funciton to handle network data offer selected
 const handleOfferSelected = async (event: any, transactNum: number) => {
   const senderId = event.sender.id;
-  const message: string = event.message.text.trim();
+  const message: string = event.message.text.trim().toLowerCase();
   const discount = computeDiscount(transactNum);
 
   try {
-    if (message.toLocaleLowerCase() === '0') return cancelTransaction(senderId, true);
+    if (message.toLocaleLowerCase() === 'x') return cancelTransaction(senderId, true);
     const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
     // @ts-expect-error
     const network: number = user?.purchasePayload?.network;
@@ -86,7 +97,7 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
     let dataDetails: any = await fs.promises.readFile('files/data-details.json'); // get data details
     dataDetails = JSON.parse(dataDetails);
     const networkDetails: networkDetailsType = dataDetails[networkID]; // details of user selected network
-    const dataOffer = networkDetails[message]; // the offer user selected
+    const dataOffer = networkDetails[mapAlpaheToNum(message)]; // the offer user selected
 
     if (!dataOffer) {
       await sendMessage(senderId, { text: 'Invalid response entred.' });
@@ -124,7 +135,7 @@ const handlePhoneNumberEntred = async (event: any) => {
   const message: string = event.message.text.trim();
 
   try {
-    if (message.toLowerCase() === '0') return cancelTransaction(senderId, true);
+    if (message.toLowerCase() === 'x') return cancelTransaction(senderId, true);
 
     const validatedNum = validateNumber(message);
     const user = await BotUsers.findOne({ id: senderId });
@@ -140,7 +151,7 @@ const handlePhoneNumberEntred = async (event: any) => {
           },
         }
       );
-      await sendMessage(senderId, { text: 'phone  number recieved.' });
+      await sendMessage(senderId, { text: 'Phone  number recieved.' });
       await confirmDataPurchaseResponse(senderId, user, validatedNum);
       return;
     }

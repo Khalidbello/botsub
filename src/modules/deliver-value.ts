@@ -1,13 +1,7 @@
-import { Request, Response } from 'express';
-import fs from 'fs';
 import Transactions from '../models/transactions';
 import { sendMessage } from '../bot/modules/send_message';
-import { dateFormatter } from './helper_functions';
-import handleFirstMonthBonus from './monthly_bonuses';
-import creditReferrer from './credit_referrer';
 import { updateNetworkStatus } from '../bot/modules/data-network-checker';
 import { Mutex } from 'async-mutex';
-import Handlebars from 'handlebars';
 import axios from 'axios';
 import { updateTransactNum } from '../bot/modules/helper_function_2';
 import { helpFailedDelivery, helpSuccesfulDelivery } from './deliver-value-helpers';
@@ -20,22 +14,20 @@ async function deliverValue(response: any) {
   const release = await transactionMutex.acquire();
   try {
     const transaction = await Transactions.findOne({ id: response.data.id });
-    if (transaction) {
-      if (transaction.status === true) {
-        if (response.data.meta.bot) {
-          try {
-            await sendMessage(response.data.meta.senderId, {
-              text: `Sorry this transaction has already been delivered \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
-            });
-          } catch (err) {
-            console.error(
-              'an error occurd trying to send bot response for alredy deliered value in deliverValue',
-              err
-            );
-          }
+    if (transaction?.status === 'delivered') {
+      if (response.data.meta.bot) {
+        try {
+          await sendMessage(response.data.meta.senderId, {
+            text: `Sorry this transaction has already been delivered \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
+          });
+        } catch (err) {
+          console.error(
+            'an error occurd trying to send bot response for alredy deliered value in deliverValue',
+            err
+          );
         }
-        return { message: 'Transaction has already been settled' };
       }
+      return { message: 'Transaction has already been settled' };
     }
 
     // Proceed with delivery process...
@@ -66,7 +58,7 @@ async function deliverData(response: any) {
     },
   };
 
-  if (process.env.NODE_ENV === 'production')
+  if (true || process.env.NODE_ENV === 'production')
     return await makePurchaseRequest(response, options, 'data');
   if (process.env.NODE_ENV === 'development')
     return await simulateMakePurchaseRequest(response, true, 'data');
@@ -108,18 +100,20 @@ async function makePurchaseRequest(response: any, options: any, type: 'data' | '
 
     if (resp.data.Status === 'successful') {
       if (response.data.meta.type === 'data') {
-        updateTransactNum(response.data.meta.senderId);
-        updateNetworkStatus(response.data.meta.network, true); // updating network status to true
+        await updateTransactNum(response.data.meta.senderId);
+        await updateNetworkStatus(response.data.meta.network, true); // updating network status to true
       }
+
       await helpSuccesfulDelivery(response, resp.data.balance_after, type);
     } else {
       if (response.data.meta.type === 'data')
         updateNetworkStatus(response.data.meta.network, false); // updating network status to false
-      throw 'could not deliver data';
+      throw 'could not deliver value';
     }
-  } catch (error) {
-    console.log('in make purchase request failed in cacth error block:', error);
-    await helpFailedDelivery(response, resp?.data.info);
+  } catch (error: any) {
+    console.error('in make purchase request failed in cacth error block:', error);
+    console.error('Error specific error', error?.response?.data);
+    await helpFailedDelivery(response, error?.response?.data?.error[0] || resp?.data.info);
   }
 } // end of makePurchaseRequest
 

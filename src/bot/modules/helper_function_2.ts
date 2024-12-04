@@ -139,7 +139,7 @@ const retryAllFaledTransactions = async () => {
     let loopCount = 0;
 
     while (true) {
-      const transactions = await Transactions.find({ status: false }).limit(10);
+      const transactions = await Transactions.find({ status: 'failed' }).limit(10);
 
       const tPromise = transactions.map(async (trnasaction) => {
         const response = await flw.Transaction.verify({ id: trnasaction.id }); // check again if transaction is succesful
@@ -155,6 +155,35 @@ const retryAllFaledTransactions = async () => {
   }
 };
 
+// helper function to map alphabet to number
+const mapAlpaheToNum = (alphabet: string) => {
+  alphabet.toLowerCase();
+  if (alphabet === 'a') {
+    return 1;
+  } else if (alphabet === 'b') {
+    return 2;
+  } else if (alphabet === 'c') {
+    return 3;
+  } else if (alphabet === 'd') {
+    return 4;
+  } else if (alphabet === 'e') {
+    return 5;
+  } else if (alphabet === 'f') {
+    return 6;
+  } else if (alphabet === 'g') {
+    return 7;
+  } else if (alphabet === 'h') {
+    return 8;
+  } else if (alphabet === 'i') {
+    return 9;
+  } else if (alphabet === 'j') {
+    return 10;
+  } else if (alphabet === 'k') {
+    return 11;
+  }
+  return 0;
+};
+
 export {
   computeDiscount,
   updateTransactNum,
@@ -162,4 +191,5 @@ export {
   generateOneTimeAccountHelper,
   checkPaymentValidity,
   retryAllFaledTransactions,
+  mapAlpaheToNum,
 };

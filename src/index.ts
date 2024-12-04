@@ -6,9 +6,6 @@ require('dotenv').config();
 const handlebars = require('express-handlebars');
 
 import session from 'express-session';
-//import ExpressHandlebars from 'express-handlebars';
-import fs from 'fs';
-import cors from 'cors';
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
 import connectDB from './models/connectdb';
@@ -103,10 +100,10 @@ app.use(
   session({
     secret: 'ewfdwsdnncenuivrgeianviaivnreuveq9anvrv',
     cookie: {
-      secure: true,
+      secure: false,
       httpOnly: true,
       maxAge: 1000000,
-      sameSite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     },
     resave: false,
     saveUninitialized: true,

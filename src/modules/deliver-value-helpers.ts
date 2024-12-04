@@ -1,9 +1,11 @@
 const fs = require('fs');
+import Handlebars from 'handlebars';
 import { sendMessage } from '../bot/modules/send_message';
 import Transactions from '../models/transactions';
 import creditReferrer from './credit_referrer';
 import { dateFormatter } from './helper_functions';
 import handleFirstMonthBonus from './monthly_bonuses';
+import refundTransaction from './refund-transaction';
 
 // helper function for succesfull response
 const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data' | 'airtime') => {
@@ -25,7 +27,7 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
       });
     } catch (err) {
       console.error(
-        'a error ocured trying to sending succesfll transaction response in helpSuccesfulDelivery',
+        'An error ocured trying to sending succesfll transaction response in helpSuccesfulDelivery',
         err
       );
     }
@@ -49,7 +51,7 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
     await sendMessage(response.data.meta.senderId, {
       text:
         '\nTired of making tranfers to different account for every transaction...?' +
-        '\nGet a permanet account number and experience faster and safer transactions. \n\nEnter 3 to create a virtual account',
+        '\nGet a permanet account number and experience faster and safer transactions. \n\nC. Create a virtual account',
     });
     //await sendTemplates(response.data.meta.senderId, getVirtualAccountTemp);
   }
@@ -58,8 +60,7 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
 
 // helper function  for failed delivery
 const helpFailedDelivery = async (response: any, info: string) => {
-  addToFailedToDeliver(response, info);
-  //sendFailedToDeliverResponse(response, res);
+  await addFailed(response, info);
 
   if (response.data.meta.bot) {
     const date = new Date(); //new Date(response.data.customer.created_at);
@@ -68,11 +69,11 @@ const helpFailedDelivery = async (response: any, info: string) => {
     console.log('bot feed back');
     await sendMessage(response.data.meta.senderId, {
       text: `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${
-        response.data.meta.number
+        response.data.meta.phoneNumber
       } \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
     });
     await sendMessage(response.data.meta.senderId, {
-      text: `If delivery not made after 3 minutes kindl report an issue`,
+      text: `Auto retry has been initiated for your transaction. If value is not delivered after 2 minutes, please kindly report an issue.`,
     });
   }
 }; // end of failed delivery helper
@@ -81,7 +82,7 @@ const helpFailedDelivery = async (response: any, info: string) => {
 const addToDelivered = async (response: any, type: 'data' | 'airtime') => {
   const transaction = await Transactions.findOne({ id: response.data.id });
   if (transaction) {
-    if (transaction.status === true) return;
+    if (transaction.status === 'delvered') return;
     const response = transaction.updateOne({ status: true, info: 'value succesfully delivered' });
     return response;
   }
@@ -92,45 +93,42 @@ const addToDelivered = async (response: any, type: 'data' | 'airtime') => {
     id: response.data.id,
     email: response.data.customer.email,
     txRef: response.data.tx_ref,
-    status: true,
+    status: 'delivered',
     date: Date(),
     product: prod,
     senderId: response.data.meta.senderId,
-    beneficiary: parseInt(response.data.meta.number),
+    beneficiary: parseInt(response.data.meta.phoneNumber),
     info: 'Value succesfully delvered',
   });
+
   const response2 = await newTransaction.save();
   console.log('add to delivered response', response2);
   return;
 }; // end of addToDelivered
 
 // function to add transaction to failed to deliver
-const addToFailedToDeliver = async (response: any, info: string) => {
+const addFailed = async (response: any, info: string) => {
   try {
-    let transaction = await Transactions.findOne({ id: response.meta.id });
-    if (transaction)
-      return console.log(
-        'failed transaction already exists, addToFailedToDelver function',
-        transaction
-      );
+    let transaction = await Transactions.findOne({ id: response.data.id });
+    if (transaction) return console.log('Refuned transaction already exits', transaction);
 
     let prod = product(response);
     const newTransaction = new Transactions({
       id: response.data.id,
       email: response.data.customer.email,
       txRef: response.data.tx_ref,
-      status: false,
+      status: 'failed',
       date: Date(),
       product: prod + ' ' + response.data.meta.network,
       senderId: response.data.meta.senderId,
-      beneficiary: parseInt(response.data.meta.number),
-      info: info,
+      beneficiary: parseInt(response.data.meta.phoneNumber),
+      info: info || 'Transaction delivery failed.',
     });
     const response2 = await newTransaction.save();
-    console.log('add to failed delivery response', response2);
+    console.log('add to refunded delivery response', response2);
     return;
   } catch (err) {
-    console.error('error occured while adding failed trnasaction to databasae', err);
+    console.error('error occured while adding refunded trnasaction to databasae', err);
   }
 }; // end if add to failed to deliver
 

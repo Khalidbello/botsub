@@ -9,7 +9,7 @@ const schema = new mongoose.Schema({
   email: String,
   senderId: String,
   txRef: String,
-  status: Boolean,
+  status: String, // 'delivered', 'refunded'
   product: String,
   beneficiary: String,
   info: String, // this will hold info as to the error encountered when the transaction failed or succes message

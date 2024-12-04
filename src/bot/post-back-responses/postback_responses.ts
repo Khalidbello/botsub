@@ -38,6 +38,8 @@ async function sendNewConversationResponse(event: any) {
   // adding new botuser
   const newBotUser = new BotUsers({
     id: senderId,
+    transactNum: 0,
+    botResponse: true,
     nextAction: 'referralCode',
   });
   await newBotUser.save();

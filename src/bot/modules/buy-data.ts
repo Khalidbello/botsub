@@ -10,10 +10,11 @@ const formDataOffers = async (networkInfo: networkDetailsType, transactNum: numb
   const lenght = Object.keys(networkInfo).length;
   let text = `Select ${networkInfo['1'].network} data offer \n`;
   const discount = computeDiscount(transactNum);
+  const alphaMap = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
   console.log('inb form data ofer trnsactNum, ', transactNum, discount);
 
   for (let i = 1; i < lenght + 1; i++) {
-    text += `\n ${i}. ${networkInfo[i].size} ₦${networkInfo[i].price - discount} ${
+    text += `\n ${alphaMap[i - 1]}. ${networkInfo[i].size} ₦${networkInfo[i].price - discount} ${
       networkInfo[i].validity
     }`;
   }
@@ -37,7 +38,7 @@ async function confirmDataPurchaseResponse(senderId: string, user: any, phoneNum
       (phoneNumber ? phoneNumber : user?.purchasePayload?.phoneNumber) +
       '\nEmail: ' +
       user?.email +
-      '\n\n 1. Make purchase. \n 2. Change number. \n 3. Change Email \n\n 0. Cancel transaction',
+      '\n\n A. Make purchase. \n B. Change number. \n C. Change Email \n\n X. Cancel transaction',
   };
   await sendMessage(senderId, message1);
 
@@ -66,7 +67,7 @@ async function changePhoneBeforeTransaction(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter 0 to cancel' });
+  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter X to cancel' });
   await BotUsers.updateOne(
     { id: senderId },
     { $set: { nextAction: 'changePhoneNumberBeforeTransact' } }
@@ -90,7 +91,7 @@ async function changeMailBeforeTransact(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new email \n\nEnter 0 to cancel' });
+  await sendMessage(senderId, { text: 'Enter new email \n\nEnter X to cancel' });
   await BotUsers.updateOne(
     { id: senderId },
     {

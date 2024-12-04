@@ -9,23 +9,23 @@ import { cancelTransaction, selectPurchaseMethod } from './generic';
 
 const handleConfirmProductPurchase = async (event: any, transactNum: number) => {
   const senderId = event.sender.id;
-  const message: string = event.message.text.trim();
+  const message: string = event.message.text.trim().toLowerCase();
 
   try {
-    if (message === '0') return cancelTransaction(senderId, true);
+    if (message === 'x') return cancelTransaction(senderId, true);
 
     const user = await BotUsers.findOne({ id: senderId });
 
-    if (message === '1') return selectPurchaseMethod(event, transactNum);
-    if (message === '2') return changePhoneBeforeTransaction(event);
-    if (message === '3') return changeMailBeforeTransact(event);
+    if (message === 'a') return selectPurchaseMethod(event, transactNum);
+    if (message === 'b') return changePhoneBeforeTransaction(event);
+    if (message === 'c') return changeMailBeforeTransact(event);
 
     await sendMessage(senderId, { text: 'Invalid response recieved.' });
     confirmDataPurchaseResponse(senderId, user, null);
   } catch (err) {
     console.error('An error occured in phoneNumberEntred', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter Q to cancel',
+      text: 'An error occured plase enter resposne again.  \n\n Enter X to cancel',
     });
   }
 };

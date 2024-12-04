@@ -19,18 +19,14 @@ const transporter = nodemailer.createTransport({
   },
 }); // end of transporter
 
-
-
 // function to check if transaction has ever beign made
 async function checkIfPreviouslyDelivered(transactionId: string) {
   const transaction = await Transactions.findOne({ id: transactionId });
   if (transaction) {
-    return transaction.status === true;
-  };
+    return transaction.status === 'delivered';
+  }
   return false;
-}; //end of checkIfPreviouslyDelivered
-
-
+} //end of checkIfPreviouslyDelivered
 
 function returnPreviouslyDelivered(response: any) {
   const meta = response.data.meta;
@@ -56,15 +52,13 @@ function returnPreviouslyDelivered(response: any) {
   if (meta.type == 'airtime') {
     // @ts-expect-error
     details.product = `&#8358;${meta.amount} airtime`;
-  };
+  }
   if (meta.type == 'data') {
     // @ts-expect-error
     details.product = `${meta.size} data`;
-  };
+  }
   return details;
-}; // end of returnPreviouslyDelivered
-
-
+} // end of returnPreviouslyDelivered
 
 // function to check if all requirements are met
 const checkcheckRequirement = async function (response: any, req: Request) {
@@ -76,7 +70,11 @@ const checkcheckRequirement = async function (response: any, req: Request) {
       .readFile('files/data-details.json')
       .catch((err) => (returnFalse = true));
 
-    if (returnFalse) return { status: false, messsage: 'error reading data-details.json in checkcheckRequirement' };
+    if (returnFalse)
+      return {
+        status: false,
+        messsage: 'error reading data-details.json in checkcheckRequirement',
+      };
 
     dataDetails = JSON.parse(dataDetails);
     try {
@@ -84,16 +82,25 @@ const checkcheckRequirement = async function (response: any, req: Request) {
       price = Number(dataDetails[response.data.meta.networkID][response.data.meta.index]['price']);
     } catch (err) {
       returnFalse = true;
-    };
+    }
 
     if (returnFalse) {
-      console.log('error getting price for data plan, in checkcheckRequirement,  data plan with id not found');
+      console.log(
+        'error getting price for data plan, in checkcheckRequirement,  data plan with id not found'
+      );
       return { status: false, message: 'data plan with id not found' };
-    };
+    }
 
     let pricePaid = Number(response.data.amount);
 
-    console.log('passed all remaining last in data in checkcheckRequirement', response.data.status.toLowerCase(), price, pricePaid, response.data.currency, response.data.tx_ref);
+    console.log(
+      'passed all remaining last in data in checkcheckRequirement',
+      response.data.status.toLowerCase(),
+      price,
+      pricePaid,
+      response.data.currency,
+      response.data.tx_ref
+    );
     if (
       response.data.status.toLowerCase() === 'successful' &&
       price &&
@@ -103,8 +110,8 @@ const checkcheckRequirement = async function (response: any, req: Request) {
     ) {
       let toRefund = pricePaid - price; //amount to be refunded
       return { status: true, refund: toRefund, type: 'data', price };
-    };
-  };
+    }
+  }
 
   if (response.data.meta.type === 'airtime') {
     price = Number(response.data.meta.amount);
@@ -119,13 +126,11 @@ const checkcheckRequirement = async function (response: any, req: Request) {
     ) {
       let toRefund = pricePaid - price;
       return { status: true, refund: toRefund, type: 'airtime', price };
-    };
-  };
-  console.log('requirement met retrning false',)
+    }
+  }
+  console.log('requirement met retrning false');
   return { status: false, message: 'payment requirement not met', price };
 }; //end of checkRequiremtMet
-
-
 
 // helper function to refund payment
 async function refundPayment(response: any, price: number) {
@@ -133,7 +138,10 @@ async function refundPayment(response: any, price: number) {
     // impiment fluuter wave transaction refund
     const date = new Date();
     const nigeriaTimeString = dateFormatter(date);
-    const emailTemplate = await fs.promises.readFile('modules/email-templates/refund-mail.html', 'utf8');
+    const emailTemplate = await fs.promises.readFile(
+      'modules/email-templates/refund-mail.html',
+      'utf8'
+    );
     const mail = handlebars.compile(emailTemplate);
     const refundData = {
       date: nigeriaTimeString,
@@ -148,8 +156,9 @@ async function refundPayment(response: any, price: number) {
     };
     // @ts-expect-error
     if (response.data.meta.type === 'data') refundData.product = `${response.data.meta.size} data`;
-    // @ts-expect-error
-    if (response.data.meta.type === 'airtime') refundData.product = `₦${response.data.meta.amount} airtime`;
+    if (response.data.meta.type === 'airtime')
+      // @ts-expect-error
+      refundData.product = `₦${response.data.meta.amount} airtime`;
 
     // send user a notification that their transaction will be refunded
     // redo adding transaction to refund
@@ -157,11 +166,9 @@ async function refundPayment(response: any, price: number) {
       status: 'requirementNotMet',
     };
   } catch (err) {
-    console.log('an error occured in ', err);
+    console.log('An error occured in ', err);
   }
-}; // end of refundPayment
-
-
+} // end of refundPayment
 
 // function to format dates
 function dateFormatter(date: Date) {
@@ -178,9 +185,7 @@ function dateFormatter(date: Date) {
 
   // Format the Nigeria time using the formatter
   return nigeriaFormatter.format(date);
-}; // end of date formatter
-
-
+} // end of date formatter
 
 // function to generate random Strings
 function generateRandomString(length: number) {
@@ -191,9 +196,7 @@ function generateRandomString(length: number) {
     randomString += characters.charAt(randomIndex);
   }
   return randomString;
-}; // end of generateRandomString
-
-
+} // end of generateRandomString
 
 // function to retry failed delivery
 async function retryFailedHelper(transaction_id: string, tx_ref: string, res: Response) {
@@ -203,8 +206,7 @@ async function retryFailedHelper(transaction_id: string, tx_ref: string, res: Re
   const data = await response.data;
   console.log('retry data', data);
   res.json(data);
-}; // end of retryFailedHelper
-
+} // end of retryFailedHelper
 
 // function to retry all failed  transactions
 async function retryAllFailedDelivery(req: Request) {
@@ -216,7 +218,7 @@ async function retryAllFailedDelivery(req: Request) {
   let loop = true;
 
   while (loop) {
-    const transactions = await Transactions.find({ status: false }).limit(20)
+    const transactions = await Transactions.find({ status: false }).limit(20);
 
     if (transactions.length < 20) loop = false;
 
@@ -233,17 +235,15 @@ async function retryAllFailedDelivery(req: Request) {
         statistic.successful += 1;
       } else {
         statistic.failed += 1;
-      };
+      }
     });
 
     // Wait for all transaction promises to resolve
     await Promise.all(transactionPromises);
-  }; // end of for loop
+  } // end of for loop
   statistic.total = statistic.failed + statistic.successful;
   return statistic;
-}; // end  of retryAllFailed
-
-
+} // end  of retryAllFailed
 
 // function to fundvtu wallet
 async function fundWallet(bankCode: number, accNum: string, amount: number) {
@@ -259,8 +259,6 @@ async function fundWallet(bankCode: number, accNum: string, amount: number) {
 
   flw.Transfer.initiate(details).then(console.log).catch(console.log);
 } // end of fund wallet
-
-
 
 export {
   checkIfPreviouslyDelivered,

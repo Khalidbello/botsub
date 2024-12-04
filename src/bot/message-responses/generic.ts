@@ -18,8 +18,8 @@ import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../modules/hel
 
 // text to contain bot functionalities
 const defaultText =
-  'Hy what can i do for you today.  \n\n 1. Buy data \n 2. Buy airtime. \n 3. My account. \n 4. Show data prices' +
-  '\n 5. Refer a friend \n 6. Active referals \n 7. Report issue';
+  'Hy what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
+  '\n E. Refer a friend \n F. Active referals \n G. Report issue';
 
 // function to respond to messages with out next action
 async function defaultMessageHandler(event: any, isMessage: any, transactNum: number) {
@@ -33,13 +33,13 @@ async function defaultMessageHandler(event: any, isMessage: any, transactNum: nu
 
     text = event.message.text.trim();
 
-    if (text.toLowerCase() === '1') return handleBuyData(event);
-    if (text.toLowerCase() === '2') return handleBuyAirtime(event);
-    if (text.toLowerCase() === '3') return showAccountDetails(event);
-    if (text.toLowerCase() === '4') return showDataPrices(event, transactNum);
-    if (text.toLowerCase() === '5') return showReferralCode(event);
-    if (text.toLowerCase() === '6') return showActiveReferalls(event);
-    if (text.toLowerCase() === '7') return handleReportIssue(event);
+    if (text.toLowerCase() === 'a') return handleBuyData(event);
+    if (text.toLowerCase() === 'b') return handleBuyAirtime(event);
+    if (text.toLowerCase() === 'c') return showAccountDetails(event);
+    if (text.toLowerCase() === 'd') return showDataPrices(event, transactNum);
+    if (text.toLowerCase() === 'e') return showReferralCode(event);
+    if (text.toLowerCase() === 'f') return showActiveReferalls(event);
+    if (text.toLowerCase() === 'g') return handleReportIssue(event);
 
     sendMessage(senderId, { text: defaultText });
   } catch (err) {
@@ -193,8 +193,8 @@ async function handleChangeNumberBeforeTransaction(event: any) {
     const user = await BotUsers.findOne({ id: senderId });
     const validatedNum = validateNumber(phoneNumber);
 
-    if (phoneNumber.toLowerCase() === '0') {
-      await sendMessage(senderId, { text: 'Change email canceled' });
+    if (phoneNumber.toLowerCase() === 'x') {
+      await sendMessage(senderId, { text: 'Change phone number canceled' });
       await confirmDataPurchaseResponse(senderId, user, null);
       return BotUsers.updateOne(
         { id: senderId },
@@ -236,7 +236,7 @@ async function handleChangeNumberBeforeTransaction(event: any) {
       return;
     }
     await sendMessage(senderId, {
-      text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
+      text: 'Phone number not valid. \nPlease enter a valid phone number. \n\nEnter X to cancel.',
     });
   } catch (err) {}
 } // end of sendPhoneNumberEnteredResponses
@@ -249,7 +249,7 @@ async function handleNewEmailBeforeTransasctionEntred(event: any) {
   try {
     const user = await BotUsers.findOne({ id: senderId });
 
-    if (email.toLowerCase() === '0') {
+    if (email.toLowerCase() === 'x') {
       await sendMessage(senderId, { text: 'Change email canceled' });
       await confirmDataPurchaseResponse(senderId, user, null);
       await BotUsers.updateOne(
@@ -271,14 +271,14 @@ async function handleNewEmailBeforeTransasctionEntred(event: any) {
       await confirmDataPurchaseResponse(senderId, user, null);
     } else {
       const response = {
-        text: 'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancel.',
+        text: 'The email format you entered is invalid. \nPlease enter a valid email. \n\nEnter x to cancel.',
       };
       await sendMessage(senderId, response);
     }
   } catch (err) {
     console.error('Error occured in changeEmailBeforeTransaction', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancel',
+      text: 'An error occured plase enter resposne again.  \n\nEnter X to cancel',
     });
   }
 } // end of changeEmailBeforeTransaction
