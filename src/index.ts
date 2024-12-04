@@ -4,6 +4,7 @@
 
 require('dotenv').config();
 const handlebars = require('express-handlebars');
+const cors = require('cors');
 
 import session from 'express-session';
 import express from 'express';
@@ -93,6 +94,11 @@ const noCacheMiddleware = (req: Request, res: Response, next: NextFunction) => {
 //locking in middlewares
 
 // Use the middleware for all routes
+app.use(
+  cors({
+    origin: 'https://botsub.vercel.app',
+  })
+);
 app.use(noCacheMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
