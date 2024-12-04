@@ -97,6 +97,7 @@ const noCacheMiddleware = (req: Request, res: Response, next: NextFunction) => {
 app.use(
   cors({
     origin: 'https://botsub.vercel.app',
+    credentials: true,
   })
 );
 app.use(noCacheMiddleware);
