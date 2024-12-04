@@ -107,7 +107,7 @@ app.use(
   session({
     secret: 'ewfdwsdnncenuivrgeianviaivnreuveq9anvrv',
     cookie: {
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
       maxAge: 1000000,
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
