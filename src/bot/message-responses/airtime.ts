@@ -82,7 +82,7 @@ const handleEnterAirtimeAmount = async (event: any) => {
   const message: string = event.message.text.trim();
 
   try {
-    if (message === '0') return cancelTransaction(senderId, true);
+    if (message === 'x') return cancelTransaction(senderId, true);
     const amountValid = await validateAmount(message);
     console.log('Amont validdddddddddddddddd', amountValid);
     if (!amountValid)

@@ -7,15 +7,16 @@ const connectDB = async () => {
 
     // @ts-expect-error
     const conn = await mongoose.connect(process.env.DB_CONNECTION_STR, {
-      dbName: process.env.DB_NAME,
-      autoIndex: true
+      // @ts-ignore
+      dbName: 'botsub' || process.env.DB_NAME,
+      autoIndex: true,
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error: any) {
     console.log('db string', process.env.DB_CONNECTION_STR);
     console.error(error.message);
     process.exit(1);
-  };
+  }
 };
 
-export default connectDB; 
+export default connectDB;

@@ -5,6 +5,7 @@ import { trendData } from '../../modules/admin/statistics';
 import { carryOutNonVAccount } from '../../modules/gateway';
 import { generateRandomString } from '../../modules/helper_functions';
 const FlutterWave = require('flutterwave-node-v3');
+import axios from 'axios';
 
 // fucntion to calculate user current data prices discount
 const computeDiscount = (transactNum: number): number => {
@@ -184,6 +185,16 @@ const mapAlpaheToNum = (alphabet: string) => {
   return 0;
 };
 
+// function to check if balance is low and funds it if true
+const checkFundBalance = async () => {
+  try {
+    const response = await axios.get('url', {
+      headers: {},
+    });
+  } catch (err) {
+    console.error('An error occured in checkFundBalance :', err);
+  }
+};
 export {
   computeDiscount,
   updateTransactNum,

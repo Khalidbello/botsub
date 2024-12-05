@@ -19,7 +19,7 @@ const formDataOffers = async (networkInfo: networkDetailsType, transactNum: numb
     }`;
   }
 
-  text += '\n\n 0. Cancel';
+  text += '\n\nEnter X to Cancel';
   return text;
 };
 

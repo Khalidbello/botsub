@@ -5,6 +5,7 @@ import { Mutex } from 'async-mutex';
 import axios from 'axios';
 import { updateTransactNum } from '../bot/modules/helper_function_2';
 import { helpFailedDelivery, helpSuccesfulDelivery } from './deliver-value-helpers';
+import { setAutoRetryTrue } from '../routes/admin';
 
 const transactionMutex = new Mutex(); // mutex for delivering transactions
 
@@ -111,8 +112,11 @@ async function makePurchaseRequest(response: any, options: any, type: 'data' | '
       throw 'could not deliver value';
     }
   } catch (error: any) {
-    console.error('in make purchase request failed in cacth error block:', error);
-    console.error('Error specific error', error?.response?.data);
+    error?.response?.data
+      ? console.error('Error specific error', error?.response?.data)
+      : console.error('in make purchase request failed in cacth error block:', error);
+
+    setAutoRetryTrue(); // set auto retry all transaction to true
     await helpFailedDelivery(response, error?.response?.data?.error[0] || resp?.data.info);
   }
 } // end of makePurchaseRequest

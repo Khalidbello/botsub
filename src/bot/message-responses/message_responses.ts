@@ -90,7 +90,7 @@ async function bvnEntred(event: any) {
     let bvn = event.message.text.trim();
     let parsedBvn;
 
-    if (bvn.toLowerCase() === '0') {
+    if (bvn.toLowerCase() === 'x') {
       await sendMessage(senderId, { text: 'Creation of dedicated virtiual account cancled.' });
       await sendMessage(senderId, { text: defaaultMessage });
       // await sendTemplate(senderId, responseServices);
@@ -210,7 +210,7 @@ async function newEmailBeforeTransactResponse(event: any, transactionType: 'data
   const email = event.message.text.trim();
 
   try {
-    if (email.toLowerCase() === '0') {
+    if (email.toLowerCase() === 'x') {
       await sendMessage(senderId, { text: 'Change email cancled' });
       return await helperConfirmPurchase(transactionType, senderId);
     }

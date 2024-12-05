@@ -30,7 +30,7 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
   let index: number = 0;
 
   try {
-    if (message === 'X') return cancelTransaction(senderId, true);
+    if (message === 'x') return cancelTransaction(senderId, true);
 
     // Read data-details.json file
     let dataDetails: any = await fs.promises.readFile('files/data-details.json', 'utf-8');

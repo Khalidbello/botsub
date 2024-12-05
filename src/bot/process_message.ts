@@ -38,7 +38,7 @@ async function processMessage(event: any, res: Response) {
 
   const senderId = event.sender.id;
   const user = await BotUsers.findOne({ id: senderId }).select(
-    '_id purchasePayload nextAction transactNum'
+    '_id purchasePayload nextAction transactNum botResponse'
   );
   console.log('user mongo db payload process message', user);
 
@@ -49,6 +49,19 @@ async function processMessage(event: any, res: Response) {
     transactionType = user?.purchasePayload?.transactionType;
   } catch (err) {
     console.error('no transactionType in process message');
+  }
+
+  // check if bot auto response is active and activate if command deems
+  if (user.botResponse === false) {
+    const senderId = event.sender.id;
+    const message: string = event.message.text.trim().toLowerCase();
+
+    if (message !== 'activate') {
+      return console.log('Bot Auto response if off for user: ', senderId);
+    } else {
+      await sendMessage(senderId, { text: 'You have activated bot auto respond' });
+      await BotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } });
+    }
   }
 
   const nextAction = user.nextAction;

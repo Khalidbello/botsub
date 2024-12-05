@@ -29,6 +29,10 @@ const createFailedAuoRetryInterval = () => {
   );
 };
 
+// function to automatically set auto rety to true
+const setAutoRetryTrue = () => {
+  autoRetry = true;
+};
 //createFailedAuoRetryInterval();
 
 const adminRouter = Router();
@@ -243,4 +247,7 @@ adminRouter.post('/set-auto-retry', (req: Request, res: Response) => {
 });
 
 adminRouter.use('/', adminRouter2);
+
 export default adminRouter;
+
+export { setAutoRetryTrue };

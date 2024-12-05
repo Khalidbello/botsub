@@ -16,8 +16,8 @@ async function sendMessage(sender_psid: any, response: { text: string }) {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    resp = await resp.data;
-    console.log(resp);
+    //resp = await resp.data;
+    //console.log(resp);
   } catch (error: any) {
     if (error.response) {
       console.error('Response Error in send message:', error.response.data);
