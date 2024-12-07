@@ -10,7 +10,7 @@ import { setAutoRetryTrue } from '../routes/admin';
 const transactionMutex = new Mutex(); // mutex for delivering transactions
 
 // function to initiate delvering of values
-async function deliverValue(response: any) {
+const deliverValue = async (response: any): Promise<{ status: boolean; message: string }> => {
   // Attempt to acquire the lock for the transaction
   const release = await transactionMutex.acquire();
   try {
@@ -28,7 +28,7 @@ async function deliverValue(response: any) {
           );
         }
       }
-      return { message: 'Transaction has already been settled' };
+      return { status: true, message: 'Transaction has already been settled' };
     }
 
     // Proceed with delivery process...
@@ -37,14 +37,16 @@ async function deliverValue(response: any) {
     } else if (response.data.meta.type === 'airtime') {
       return deliverAirtime(response);
     }
+
+    return { status: false, message: 'Transaction type not specified.....' };
   } finally {
     // Release the lock after processing is done
     release();
   }
-}
+};
 
 // function to make data purchase request
-async function deliverData(response: any) {
+const deliverData = (response: any): Promise<{ status: boolean; message: string }> => {
   let options = {
     url: 'https://opendatasub.com/api/data/',
     headers: {
@@ -59,16 +61,15 @@ async function deliverData(response: any) {
     },
   };
 
-  if (true || process.env.NODE_ENV === 'production')
-    return await makePurchaseRequest(response, options, 'data');
-  if (process.env.NODE_ENV === 'development')
-    return await simulateMakePurchaseRequest(response, true, 'data');
-  if (process.env.NODE_ENV === 'staging')
-    return await makePurchaseRequest(response, options, 'data');
-} // end of deliver value function
+  if (process.env.NODE_ENV === 'production') return makePurchaseRequest(response, options, 'data');
+  if (process.env.NODE_ENV === 'staging') return makePurchaseRequest(response, options, 'data');
+
+  // if not production or staging then it is testing.........
+  return simulateMakePurchaseRequest(response, true, 'data');
+}; // end of deliver value function
 
 // function to make airtime purchase request
-async function deliverAirtime(response: any) {
+const deliverAirtime = (response: any): Promise<{ status: boolean; message: string }> => {
   let options = {
     url: 'https://opendatasub.com/api/topup/',
     headers: {
@@ -85,15 +86,19 @@ async function deliverAirtime(response: any) {
   };
 
   if (process.env.NODE_ENV === 'production')
-    return await makePurchaseRequest(response, options, 'airtime');
-  if (process.env.NODE_ENV === 'development')
-    return await simulateMakePurchaseRequest(response, true, 'airtime');
-  if (process.env.NODE_ENV === 'staging')
-    return await makePurchaseRequest(response, options, 'airtime');
-} // end of deliverAirtime
+    return makePurchaseRequest(response, options, 'airtime');
+  if (process.env.NODE_ENV === 'staging') return makePurchaseRequest(response, options, 'airtime');
+
+  // if  not staging og production then run as development
+  return simulateMakePurchaseRequest(response, true, 'airtime');
+}; // end of deliverAirtime
 
 // function to make product purchase request
-async function makePurchaseRequest(response: any, options: any, type: 'data' | 'airtime') {
+const makePurchaseRequest = async (
+  response: any,
+  options: any,
+  type: 'data' | 'airtime'
+): Promise<{ status: boolean; message: string }> => {
   let resp;
   try {
     resp = await axios.post(options.url, options.payload, { headers: options.headers });
@@ -106,10 +111,12 @@ async function makePurchaseRequest(response: any, options: any, type: 'data' | '
       }
 
       await helpSuccesfulDelivery(response, resp.data.balance_after, type);
+      return { status: true, message: 'Value succesfully delivered' };
     } else {
       if (response.data.meta.type === 'data')
         updateNetworkStatus(response.data.meta.network, false); // updating network status to false
-      throw 'could not deliver value';
+      console.log('Resp in makePurchaseRequest: ', resp);
+      throw 'Could not deliver value';
     }
   } catch (error: any) {
     error?.response?.data
@@ -118,27 +125,30 @@ async function makePurchaseRequest(response: any, options: any, type: 'data' | '
 
     setAutoRetryTrue(); // set auto retry all transaction to true
     await helpFailedDelivery(response, error?.response?.data?.error[0] || resp?.data.info);
+    return { status: false, message: error?.response?.data || error };
   }
-} // end of makePurchaseRequest
+}; // end of makePurchaseRequest
 
 // function to make product purchase request simulation
-async function simulateMakePurchaseRequest(
+const simulateMakePurchaseRequest = async (
   response: any,
   condition: boolean,
   type: 'data' | 'airtime'
-) {
+): Promise<{ status: boolean; message: string }> => {
   try {
     if (condition) {
       updateTransactNum(response.data.meta.senderId);
       await updateNetworkStatus(response.data.meta.network, true);
-      return await helpSuccesfulDelivery(response, 6000, type);
+      await helpSuccesfulDelivery(response, 6000, type);
+      return { status: true, message: 'value succesfully delivered in simulate deliver value' };
     }
     updateNetworkStatus(response.data.meta.network, false);
     throw 'product purchas request not successful';
   } catch (error) {
     console.log('make purchase request simulation failed in cacth error block:', error);
     helpFailedDelivery(response, 'failed delivery simulated');
+    return { status: false, message: 'error delivering value in simulate deliver value' };
   }
-} // end of makePurchaserequest simulain
+}; // end of makePurchaserequest simulain
 
 export { deliverValue };

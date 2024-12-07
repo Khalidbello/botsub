@@ -31,7 +31,7 @@ async function defaultMessageHandler(event: any, message: any) {
 
     if (message) {
       text = event.message.text.trim();
-      if (text.toLowerCase() === 'q') {
+      if (text.toLowerCase() === 'x') {
         await cancelTransaction(senderId, false);
         return;
       }
@@ -133,7 +133,7 @@ async function sendAirtimeAmountReceived(event: any) {
   const amount = event.message.text.trim();
   const userData = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
 
-  if (amount.toLowerCase() === 'q') return cancelTransaction(senderId, true);
+  if (amount.toLowerCase() === 'x') return cancelTransaction(senderId, true);
   if (await validateAmount(amount)) {
     await sendMessage(senderId, { text: 'Amount recieved' });
     await sendMessage(senderId, {
@@ -166,7 +166,7 @@ async function sendPhoneNumberEnteredResponses(event: any) {
   const validatedNum = validateNumber(phoneNumber);
   let user;
 
-  if (phoneNumber.toLowerCase() === 'q') return cancelTransaction(senderId, true);
+  if (phoneNumber.toLowerCase() === 'x') return cancelTransaction(senderId, true);
   if (validatedNum) {
     await sendMessage(senderId, { text: 'phone  number recieved' });
     user = await BotUsers.findOne({ id: senderId });
@@ -250,7 +250,7 @@ async function newPhoneNumberBeforeTransactResponse(
   const phoneNumber = event.message.text.trim();
   const validatedNum = validateNumber(phoneNumber);
 
-  if (phoneNumber.toLowerCase() === 'q') {
+  if (phoneNumber.toLowerCase() === 'x') {
     await sendMessage(senderId, { text: 'Change phone number cancled' });
     return await helperConfirmPurchase(transactionType, senderId);
   }

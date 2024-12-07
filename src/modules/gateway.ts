@@ -152,7 +152,9 @@ async function respondToWebhook(webhookPayload: any, res: Response, host: string
 } // end of respondToWebhook
 
 // helper function to carry out non-v-account purchase request
-const carryOutNonVAccount = async (response: any) => {
+const carryOutNonVAccount = async (
+  response: any
+): Promise<{ status: boolean; message: string } | undefined> => {
   try {
     // check is payment is as expected
     const valid = await checkPaymentValidity(
@@ -161,13 +163,15 @@ const carryOutNonVAccount = async (response: any) => {
       response.data.currency
     );
 
-    if (valid) {
-      // deliver value
-      await deliverValue(response);
-    } else {
-      // proceed with refund
-      console.log('valditiy check for one time account failed');
-    }
+    if (!valid.status)
+      return {
+        status: false,
+        message: 'Transaction validation of transaction failed in check payment validity',
+      };
+
+    // deliver value
+    const result = await deliverValue(response);
+    return result;
   } catch (err) {}
 }; // end of carryOutVAccount
 

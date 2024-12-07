@@ -8,6 +8,8 @@ import axios from 'axios';
 import { updateNetworkStatus } from '../../bot/modules/data-network-checker';
 import BotUsers from '../../models/fb_bot_users';
 import { dateFormatter } from '../helper_functions';
+import { carryOutNonVAccount } from '../gateway';
+const Flutterwave = require('flutterwave-node-v3');
 
 async function getNetworkStatus(req: Request, res: Response) {
   // Read the file content
@@ -51,25 +53,28 @@ async function closeIssue(req: Request, res: Response) {
   const issue = req.body.issue;
   const date = new Date();
 
-  await ReportedIssues.updateOne({ id: issueId }, { status: false });
-  await BotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } });
-
-  res.json({ ok: 'isseu successfully closed' });
-
   try {
+    await ReportedIssues.updateOne({ id: issueId }, { status: false }); // set issue to false
+    await BotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } }); // activate bot auto response
+
+    res.json({ ok: 'isseu successfully closed' });
+
     sendMessage(senderId, {
-      text: `Your issue with with ID: ${issueId} \n\nIssue: ${issue}.... \n\n has been closed. \n ${dateFormatter(
+      text: `Your issue with with ID: ${issueId} \n\nIssue: ${issue.substring(
+        0,
+        15
+      )}.... \n\n has been closed.  \nFor any complains please kindly report a new issue thank you. \nBotSub Cares. \n\n ${dateFormatter(
         date
       )}`,
     });
   } catch (err) {
-    console.log('An error occured sending issue closed response to user...');
+    console.log('An error occured in closeIssue: ', err);
   }
 }
 
 // functio to fetch pending transactions
 async function fetchPedndingTransactions(pagging: number, size: number, res: Response) {
-  const pendingTransations = await Transactions.find({ status: false })
+  const pendingTransations = await Transactions.find({ status: 'failed' })
     .skip(pagging * size)
     .limit(size);
 
@@ -79,14 +84,24 @@ async function fetchPedndingTransactions(pagging: number, size: number, res: Res
 
 // function to carry out transaction retry
 async function retryTransaction(transactionId: string, txRef: string, res: Response) {
-  const response = await axios.get(
-    `https://${process.env.HOST}/gateway/confirm?retry=Retry&transaction_id=${transactionId}&tx_ref=${txRef}&retry=true`
-  );
-  const data = await response.data;
+  const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
 
-  if (data.status === 'successful') return res.json({ status: true });
+  try {
+    const response = await flw.Transaction.verify({ id: transactionId }); // check again if transaction is succesful
 
-  res.status(403).json({ error: 'something went wrong' });
+    if (response.data.status.toLowerCase() !== 'successful') {
+      console.log('transaction not successfully carried out: in wallet top up');
+      return res.json({
+        status: 'failed',
+        message: 'Payment for transaction not successfully recieved',
+      });
+    }
+
+    const result = await carryOutNonVAccount(response);
+    res.json(result);
+  } catch (err) {
+    console.error('An error occured in retry retryTransaction: ');
+  }
 } // end of retryFailedHelper
 
 // function to ssettle transaction

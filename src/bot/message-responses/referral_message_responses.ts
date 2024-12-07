@@ -130,7 +130,7 @@ async function changeReferralBonusPhoneNumber(event: any) {
   const message = event.message.text.trim();
   const validatedNum = validateNumber(message);
   console.log('in change phone number');
-  if (message.toLowerCase() === 'q') {
+  if (message.toLowerCase() === 'x') {
     console.log('in q cancel');
     sendMessage(senderId, { text: 'Change of Phone number cancled' });
     confirmClaimReferralBonus(event);
