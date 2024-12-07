@@ -4,7 +4,7 @@ import processMessage from '../bot/process_message';
 import axios from 'axios';
 const fbBotRouter = Router();
 
-fbBotRouter.get('/fb-hook', function (req: Request, res: Response) {
+fbBotRouter.get('/fb-hookk', function (req: Request, res: Response) {
   const token = process.env.FB_VERIFICATION_KEY;
   console.log('in facebook webhook verification', token);
   console.log(req.query['hub.verify_token']);
@@ -17,7 +17,7 @@ fbBotRouter.get('/fb-hook', function (req: Request, res: Response) {
   }
 }); // end of webhook get req
 
-fbBotRouter.post('/fb-hook', async function (req: Request, res: Response) {
+fbBotRouter.post('/fb-hookk', async function (req: Request, res: Response) {
   //checking for page subscription.
   if (req.body.object === 'page') {
     /* Iterate over each entry, there can be multiple entries allbacks are batched. */
