@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 import { Router } from 'express';
 import BotUsers from '../models/fb_bot_users';
+import { sendMessage } from '../bot/modules/send_message';
 
 const adminRouter2 = Router();
 
@@ -22,8 +23,15 @@ adminRouter2.post('/set-bot-response/:senderId', async (req: Request, res: Respo
     const setTo = req.body.setTo;
 
     await BotUsers.updateOne({ id: req.params.senderId }, { $set: { botResponse: setTo } });
-
     res.json({ setTo: setTo });
+
+    if (!setTo) {
+      sendMessage(req.params.senderId, {
+        text:
+          `Automatic bot responses are currently disabled by the administrator.\nThis is likely due to a recent support ticket you submitted that is being actively addressed.` +
+          `To re-enable automatic bot responses, please simply reply with the word "activate".`,
+      });
+    }
   } catch (err) {
     res.status(500).json({ error: 'An error occured getting setign bot response' });
     console.error('An error occured in setting user bot response in /set-bot-response', err);

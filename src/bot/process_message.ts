@@ -59,7 +59,9 @@ async function processMessage(event: any, res: Response) {
     if (message !== 'activate') {
       return console.log('Bot Auto response if off for user: ', senderId);
     } else {
-      await sendMessage(senderId, { text: 'You have activated bot auto respond' });
+      await sendMessage(senderId, {
+        text: 'Bot auto-response has been reactivated. You will now receive automatic replies.',
+      });
       await BotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } });
     }
   }

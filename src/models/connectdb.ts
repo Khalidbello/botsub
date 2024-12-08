@@ -8,7 +8,7 @@ const connectDB = async () => {
     // @ts-expect-error
     const conn = await mongoose.connect(process.env.DB_CONNECTION_STR, {
       // @ts-ignore
-      dbName: 'botsub' || process.env.DB_NAME,
+      dbName: process.env.DB_NAME,
       autoIndex: true,
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);

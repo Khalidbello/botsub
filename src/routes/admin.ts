@@ -188,7 +188,7 @@ adminRouter.get('/retry-transaction/:transactionId/:txRef', async (req: Request,
 });
 
 // route handle transaction close request
-adminRouter.get('/close-issue/:issueId/:reporterId', async (req: Request, res: Response) => {
+adminRouter.post('/close-issue/:issueId/:reporterId', async (req: Request, res: Response) => {
   try {
     return closeIssue(req, res);
   } catch (err) {
