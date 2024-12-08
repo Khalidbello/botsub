@@ -56,7 +56,7 @@ async function processMessage(event: any, res: Response) {
   }
 
   // check if bot auto response is active and activate if command deems
-  if (user.botResponse === false) {
+  if (user?.botResponse === false) {
     const senderId = event.sender.id;
     const message: string = event.message.text.trim().toLowerCase();
 
@@ -70,7 +70,7 @@ async function processMessage(event: any, res: Response) {
     }
   }
 
-  const nextAction = user.nextAction;
+  const nextAction = user?.nextAction;
 
   // fuctionalities for data purchase
   if (nextAction === 'selectDataNetwork')
