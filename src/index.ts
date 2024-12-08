@@ -103,14 +103,16 @@ app.use(
 app.use(noCacheMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// set cookies
+const isProducion = process.env.NODE_ENV === 'production';
 app.use(
   session({
     secret: 'ewfdwsdnncenuivrgeianviaivnreuveq9anvrv',
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProducion ? true : false,
       httpOnly: true,
       maxAge: 1000000,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      sameSite: isProducion ? 'none' : 'lax',
     },
     resave: false,
     saveUninitialized: false,
