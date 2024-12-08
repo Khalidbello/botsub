@@ -31,6 +31,10 @@ import { handleReportIssueResponse } from './message-responses/report-issue';
 async function processMessage(event: any, res: Response) {
   // check user previousky stored action to determine how to respond to user messages
 
+  return sendMessage(event.sender.id, {
+    text: `We are excited to introduce BotSub soon! Stay tuned for updates on its public release.`,
+  });
+
   if (process.env.MAINTENANCE === 'true')
     return sendMessage(event.sender.id, {
       text: 'BotSub is currently under maintenance. \nCheck back later.',
