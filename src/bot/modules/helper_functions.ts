@@ -191,7 +191,7 @@ async function remindToFundWallet(
   await sendMessage(senderId, { text: 'Sorry your account balance is currently low.' });
   await sendMessage(senderId, { text: `Your current account balance is: ₦${balance}` });
   await sendMessage(senderId, {
-    text: `Kindly fund your account with a minimum amount of ₦${Math.abs(amount)}`,
+    text: `Kindly fund your permanent account with a minimum amount of ₦${Math.abs(amount)}`,
   });
   await sendMessage(senderId, { text: `Bank Name: ${accountDetails.bankName}` });
   await sendMessage(senderId, { text: `Account Name: ${accountDetails.accountName}` });

@@ -32,6 +32,7 @@ async function createVAccount(
   }
 
   // first check to confirm no account with specific referance occurs
+  const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
   const existing = await PaymentAccounts.findOne({ refrence: senderId });
 
   if (existing) return sendMessage(senderId, { text: 'You already have a virtual account.' });
@@ -66,15 +67,23 @@ async function createVAccount(
     const vAccount = new PaymentAccounts(account);
 
     await vAccount.save();
-    await sendMessage(senderId, { text: 'Creation of dedicated virtual account succesful.' });
-    await sendMessage(senderId, { text: 'Your dedicated virtual account details: ' });
+
+    // check if bvn was requested when user was carrying out a transaction
+    if (user?.purchasePayload) {
+      await sendMessage(senderId, { text: 'Creation of permanent account number was succesful.' });
+      initMakePurchase(senderId);
+      return;
+    }
+
+    await sendMessage(senderId, { text: 'Creation of permanent account number was succesful.' });
+    await sendMessage(senderId, { text: 'Your permanent account details: ' });
     await sendMessage(senderId, { text: `Bank Name: ${account.bankName}` });
     await sendMessage(senderId, { text: `Account Name: ${account.accountName}` });
     await sendMessage(senderId, { text: 'Acccount Number: ' });
     await sendMessage(senderId, { text: account.accountNumber });
     await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
     await sendMessage(senderId, {
-      text: 'Fund your dedicated virtual account once and make mutltiple purchases seamlessly',
+      text: 'Fund permanent account and make purchases with ease.',
     });
   } catch (error) {
     console.log('in virtual account catch error:::', currentCount, error);

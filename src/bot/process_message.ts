@@ -27,13 +27,14 @@ import {
 import { handleEnterEmailToProcedWithPurchase } from './message-responses/generic-2';
 import { enteredEmailForAccount, handleBvnEntred } from './message-responses/virtual-account';
 import { handleReportIssueResponse } from './message-responses/report-issue';
+import { handleSelectPaymentMethod } from './message-responses/message-responses2';
 
 async function processMessage(event: any, res: Response) {
   // check user previousky stored action to determine how to respond to user messages
 
-  return sendMessage(event.sender.id, {
-    text: `We are excited to introduce BotSub soon! Stay tuned for updates on its public release.`,
-  });
+  // return sendMessage(event.sender.id, {
+  //   text: `We are excited to introduce BotSub soon! Stay tuned for updates on its public release.`,
+  // });
 
   if (process.env.MAINTENANCE === 'true')
     return sendMessage(event.sender.id, {
@@ -92,6 +93,7 @@ async function processMessage(event: any, res: Response) {
   if (nextAction === 'enterEmailToProceedWithPurchase')
     return handleEnterEmailToProcedWithPurchase(event);
 
+  if (nextAction === 'selectAccount') return handleSelectPaymentMethod(event, user?.transactNum);
   // handlers related to virtual account
   if (nextAction === 'enterMailForAccount') return enteredEmailForAccount(event);
   if (nextAction === 'enterBvn') return handleBvnEntred(event);

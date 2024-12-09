@@ -5,6 +5,7 @@ import { defaaultMessage } from './message_responses';
 import PaymentAccounts from '../../models/payment-accounts';
 import { createVAccount } from '../../modules/gateway';
 import { defaultText } from './generic';
+import { confirmDataPurchaseResponse } from '../modules/buy-data';
 
 // function to show user account details
 async function showAccountDetails(event: any) {
@@ -14,17 +15,17 @@ async function showAccountDetails(event: any) {
   if (!account) {
     const user = await BotUsers.findOne({ id: senderId }).select('email');
     if (!user?.email) {
-      await sendMessage(senderId, { text: 'You do not have a dedicated virtual account yet.' });
+      await sendMessage(senderId, { text: 'You do not have a permanent account number yet.' });
       await sendMessage(senderId, {
-        text: 'Kindly enter your email to create your virtual accont. \nEnter X to quit',
+        text: 'Kindly enter your email to create your permanent acount number. \nEnter X to quit',
       });
       await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterMailForAccount' } });
       return;
     }
 
-    await sendMessage(senderId, { text: 'You do not a dedicated virtual account yet.' });
+    await sendMessage(senderId, { text: 'You do not have a permanent account number yet.' });
     sendMessage(senderId, {
-      text: ' Kindly enter your BVN to create a virtul accunt. \n\nYour BVN is required in compliance with CBN regualation. \n\nEnter X to quit.',
+      text: ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regualation. \n\nEnter X to quit.',
     });
     await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
     return;
@@ -96,6 +97,20 @@ const handleBvnEntred = async (event: any) => {
     let parsedBvn;
 
     if (bvn.toLowerCase() === 'x') {
+      const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
+
+      // check if bvn was requested when user was carrying out a transaction
+      if (user?.purchasePayload) {
+        const user = await BotUsers.findOneAndUpdate(
+          { id: senderId },
+          { $set: { nextAction: 'confirmProductPurchase' } }
+        );
+
+        await sendMessage(senderId, { text: 'Creation of permanent account number cancled.' });
+        await confirmDataPurchaseResponse(senderId, user, null);
+        return;
+      }
+
       await sendMessage(senderId, { text: 'Creation of dedicated virtiual account cancled.' });
       await sendMessage(senderId, { text: defaultText });
       // updaet user colletion
@@ -109,10 +124,10 @@ const handleBvnEntred = async (event: any) => {
     // Check if the parsed number is an integer and has exactly 11 digits
     if (!isNaN(parsedBvn) && Number.isInteger(parsedBvn) && bvn.length === 11) {
       const user = await BotUsers.findOne({ id: senderId }).select('email');
-      await createVAccount(user?.email, senderId, bvn, 'facebook', 0);
 
       // upate user database
-      await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      await createVAccount(user?.email, senderId, bvn, 'facebook', 0);
     } else {
       await sendMessage(senderId, {
         text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter X to cancle.',

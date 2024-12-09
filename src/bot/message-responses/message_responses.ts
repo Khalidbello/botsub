@@ -17,6 +17,7 @@ import { createVAccount } from '../../modules/gateway';
 import { generateRandomString } from '../../modules/helper_functions';
 import ReportedIssues from '../../models/reported-issues';
 import { handleBuyAirtime } from './airtime';
+import { CancellationToken } from 'mongodb';
 
 const defaaultMessage =
   'Hy what can i do for you today. \n\n 1. Buy data. \n 2. Buy Airtime. \n 3. My amount. \n 4. Refer a friend. \n 5. Report an issue.';
@@ -279,7 +280,7 @@ async function newPhoneNumberBeforeTransactResponse(
 // function to handle issue reporting
 async function reportIssue(event: any) {
   const senderId = event.sender.id;
-  const message = event.message.text.trim();
+  const message = event.message.text.trim().toLowerCase();
   const date = new Date();
   const id = generateRandomString(10);
 
@@ -289,6 +290,8 @@ async function reportIssue(event: any) {
     });
     return;
   }
+
+  if (message === 'x') return cancelTransaction(senderId, false);
 
   const issue = new ReportedIssues({
     id,

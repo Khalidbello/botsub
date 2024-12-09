@@ -15,6 +15,7 @@ import { showDataPrices } from './data-prices';
 import { showActiveReferalls, showReferralCode } from './referral_message_responses';
 import { handleReportIssue } from './report-issue';
 import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../modules/helper_function_2';
+import fbBotRouter from '../../routes/fb-bot-webhook';
 
 // text to contain bot functionalities
 const defaultText =
@@ -75,9 +76,16 @@ async function selectPurchaseMethod(event: any, transactNum: number) {
   const senderId = event.sender.id;
   const userAcount = await PaymentAccounts.findOne({ refrence: senderId });
 
+  // if user has virtual account proceed with transaction else show user prompt to select payment type
   if (userAcount) return initMakePurchase(senderId);
 
-  await generateAccountNumber(event, transactNum);
+  sendMessage(senderId, {
+    text:
+      'Select Payment method. \n\nA. Create a virtual account for quick and hassle-free future payments.' +
+      ' \n\nB. Use a one-time account number for this transaction only. \n\nEnter X to cancel.',
+  });
+  await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAccount' } });
+  //await generateAccountNumber(event, transactNum);
 } // end of selectPurchaseMehod
 
 // function to generate account number
@@ -291,4 +299,5 @@ export {
   selectPurchaseMethod,
   handleNewEmailBeforeTransasctionEntred,
   handleChangeNumberBeforeTransaction,
+  generateAccountNumber,
 };
