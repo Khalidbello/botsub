@@ -112,10 +112,12 @@ async function generateAccountNumber(event: any, transactNum: number) {
     payload.firstPurchase = botUser?.firstPurchase;
     payload.senderId = senderId;
 
-    // check if data network is active bbefore proceeding
-    let check = await checkDataStatus(payload.network);
+    // check if data network is active bbefore proceedinn
+    if (payload.type === 'data') {
+      let check = await checkDataStatus(payload.network);
 
-    if (!check) return handleDataNetworkNotAvailable(senderId, payload.network);
+      if (!check) return handleDataNetworkNotAvailable(senderId, payload.network);
+    }
 
     await sendMessage(senderId, {
       text: 'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.',

@@ -1,6 +1,7 @@
 import BotUsers from '../../models/fb_bot_users';
 import { networkDetailsType } from '../../types/bot/module-buy-data-types';
 import { confirmDataPurchaseResponse, formDataOffers } from '../modules/buy-data';
+import { checkDataStatus, handleDataNetworkNotAvailable } from '../modules/data-network-checker';
 import { computeDiscount, mapAlpaheToNum } from '../modules/helper_function_2';
 import { validateNumber } from '../modules/helper_functions';
 import { sendMessage } from '../modules/send_message';
@@ -56,8 +57,15 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
 
     //console.log('network details', networkDetails, networkDetails['1']);
     const { network, networkID } = networkDetails['1'];
-    const response = await formDataOffers(networkDetails, transactNum);
+    let check = await checkDataStatus(network); // check if network available for purchase
 
+    // check if network aavilable if not return to select network for data purchase
+    if (!check) {
+      handleDataNetworkNotAvailable(senderId, network);
+      return handleBuyData(event);
+    }
+
+    const response = await formDataOffers(networkDetails, transactNum);
     await sendMessage(senderId, { text: response });
 
     // Update bot user info
@@ -89,10 +97,15 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
   try {
     if (message.toLocaleLowerCase() === 'x') return cancelTransaction(senderId, true);
     const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
-    // @ts-expect-error
-    const network: number = user?.purchasePayload?.network;
-    // @ts-expect-error
-    const networkID: number = user?.purchasePayload?.networkID;
+    const network: any = user?.purchasePayload?.network; // a string
+    const networkID: any = user?.purchasePayload?.networkID; // a number
+    let check = await checkDataStatus(network); // check if network available for purchase
+
+    // check if network aavilable if not return to select network for data purchase
+    if (!check) {
+      handleDataNetworkNotAvailable(senderId, network);
+      return handleBuyData(event);
+    }
 
     let dataDetails: any = await fs.promises.readFile('files/data-details.json'); // get data details
     dataDetails = JSON.parse(dataDetails);

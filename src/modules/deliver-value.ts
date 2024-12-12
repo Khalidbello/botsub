@@ -107,7 +107,7 @@ const makePurchaseRequest = async (
     if (resp.data.Status === 'successful') {
       if (response.data.meta.type === 'data') {
         await updateTransactNum(response.data.meta.senderId);
-        await updateNetworkStatus(response.data.meta.network, true); // updating network status to true
+        await fs(response.data.meta.network, true); // updating network status to true
       }
 
       await helpSuccesfulDelivery(response, resp.data.balance_after, type);
