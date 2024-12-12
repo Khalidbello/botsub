@@ -33,17 +33,17 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
     }
 
     // check for bonus delivery
-    if (Number(response.data.meta.firstPurchase) === 1 && type === 'data')
-      await creditReferrer(response.data.meta.senderId);
-    // add email to meta
-    response.data.meta.email = response.data.customer.email;
-    if (type === 'data')
-      await handleFirstMonthBonus(
-        response.data.id as string,
-        response.data.meta,
-        response.data.meta.senderId,
-        false
-      );
+    // if (Number(response.data.meta.firstPurchase) === 1 && type === 'data')
+    //   await creditReferrer(response.data.meta.senderId);
+    // // add email to meta
+    // response.data.meta.email = response.data.customer.email;
+    // if (type === 'data')
+    //   await handleFirstMonthBonus(
+    //     response.data.id as string,
+    //     response.data.meta,
+    //     response.data.meta.senderId,
+    //     false
+    //   ); // commented out first month bonus and referall bonus
 
     await sendMessage(response.data.meta.senderId, {
       text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub',

@@ -1,6 +1,14 @@
 {
-  "MTN": true,
-  "Glo": true,
-  "9mobile": true,
-  "Airtel": true
+  "MTN": {
+    "status": true, "info" : "Working"
+  } ,
+  "Glo":  {
+    "status": true, "info" : "Working"
+  } ,
+  "9mobile": {
+    "status": true, "info" : "Working"
+  }, 
+  "Airtel": {
+    "status": true, "info" : "Working"
+  } 
 }

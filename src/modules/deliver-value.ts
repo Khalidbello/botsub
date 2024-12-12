@@ -107,21 +107,26 @@ const makePurchaseRequest = async (
     if (resp.data.Status === 'successful') {
       if (response.data.meta.type === 'data') {
         await updateTransactNum(response.data.meta.senderId);
-        await fs(response.data.meta.network, true); // updating network status to true
+        await updateNetworkStatus(response.data.meta.network, true, 'Network working fine'); // updating network status to true
       }
 
+      console.log('Response in makePurchaseRequest: ', resp);
       await helpSuccesfulDelivery(response, resp.data.balance_after, type);
       return { status: true, message: 'Value succesfully delivered' };
-    } else {
-      if (response.data.meta.type === 'data')
-        updateNetworkStatus(response.data.meta.network, false); // updating network status to false
-      console.log('Resp in makePurchaseRequest: ', resp);
-      throw 'Could not deliver value';
     }
+
+    throw 'Could not deliver value';
   } catch (error: any) {
+    if (response.data.meta.type === 'data')
+      await updateNetworkStatus(
+        response.data.meta.network,
+        false,
+        error?.response?.data || 'Data Trnasaction failed error not captured'
+      ); // updating network status to false
+
     error?.response?.data
       ? console.error('Error specific error', error?.response?.data)
-      : console.error('in make purchase request failed in cacth error block:', error);
+      : console.error('in make purchase request failed in catch error block:', error);
 
     setAutoRetryTrue(); // set auto retry all transaction to true
     await helpFailedDelivery(response, error?.response?.data?.error[0] || resp?.data.info);
@@ -138,11 +143,19 @@ const simulateMakePurchaseRequest = async (
   try {
     if (condition) {
       updateTransactNum(response.data.meta.senderId);
-      await updateNetworkStatus(response.data.meta.network, true);
+      await updateNetworkStatus(
+        response.data.meta.network,
+        true,
+        'In simulation data network working fine.'
+      );
       await helpSuccesfulDelivery(response, 6000, type);
       return { status: true, message: 'value succesfully delivered in simulate deliver value' };
     }
-    updateNetworkStatus(response.data.meta.network, false);
+    updateNetworkStatus(
+      response.data.meta.network,
+      false,
+      'In simulation, data delivery for network not going through'
+    );
     throw 'product purchas request not successful';
   } catch (error) {
     console.log('make purchase request simulation failed in cacth error block:', error);
