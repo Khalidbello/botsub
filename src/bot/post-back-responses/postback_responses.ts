@@ -22,6 +22,7 @@ import {
 import PaymentAccounts from '../../models/payment-accounts';
 import { makePurchase } from '../../modules/v-account-make-purcchase';
 import handleFirstMonthBonus from '../../modules/monthly_bonuses';
+import { defaaultMessage } from '../message-responses/message_responses';
 
 // function to response to newConversations
 async function sendNewConversationResponse(event: any) {
@@ -284,13 +285,14 @@ async function initMakePurchase(senderId: any) {
   const purchasePayload = data[0].purchasePayload;
   console.log('purchase ayload in initmakePurchase', purchasePayload);
 
-  console.log('prchase payload: ', purchasePayload);
-  if (!purchasePayload.transactionType) {
+  if (!purchasePayload?.transactionType) {
     await sendMessage(senderId, { text: 'No transaction found' });
     await sendMessage(senderId, { text: 'Please intiate a new transaction.' });
-    await sendTemplates(senderId, responseServices);
-    await sendTemplates(senderId, responseServices2);
-    await sendTemplates(senderId, responseServices3);
+    await sendMessage(senderId, { text: defaaultMessage });
+    // await sendTemplates(senderId, responseServices);
+    // await sendTemplates(senderId, responseServices2);
+    // await sendTemplates(senderId, responseServices3);
+    await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
     return;
   }
 

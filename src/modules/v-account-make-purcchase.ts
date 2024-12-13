@@ -16,6 +16,7 @@ import BotUsers from '../models/fb_bot_users';
 import { confirmDataPurchaseResponse } from '../bot/modules/buy-data';
 import { sendMessage } from '../bot/modules/send_message';
 import { updateNetworkStatus } from '../bot/modules/data-network-checker';
+import { addDataProfit } from './save-profit';
 
 // function to carryout purchase
 async function makePurchase(purchasePayload: any, bot: string, senderId: string) {
@@ -92,12 +93,16 @@ async function makePurchaseRequest(
 
     if (resp.data.Status === 'successful') {
       if (purchasePayload.transactionType === 'data')
-        updateNetworkStatus(purchasePayload?.network, true); // set network availablity to true
+        updateNetworkStatus(purchasePayload?.network, true, 'Network data delivery working fine'); // set network availablity to true
       return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
     }
 
     if (purchasePayload.transactionType === 'data')
-      updateNetworkStatus(purchasePayload?.network, false); // set network availability to false
+      updateNetworkStatus(
+        purchasePayload?.network,
+        false,
+        'Network data delvery failed in virtual account make purchase.'
+      ); // set network availability to false
     throw { message: 'An error occured delivering data' };
   } catch (error: any) {
     if (error.response) {
@@ -196,27 +201,47 @@ async function helpSuccesfulDelivery(
 
 // function to add transaction to delivered transaction
 async function addToDelivered(id: string, purchasePayload: any, senderId: string) {
-  let product, newTransaction, response2;
+  try {
+    let product, newTransaction, response2;
 
-  product = formProduct(purchasePayload);
+    cancelTransaction(senderId, true);
 
-  newTransaction = new Transactions({
-    id: id,
-    email: purchasePayload.email,
-    status: true,
-    date: Date(),
-    product: product,
-    beneficiary: parseInt(purchasePayload.phoneNumber),
-  });
-  response2 = await newTransaction.save();
+    product = formProduct(purchasePayload);
 
-  cancelTransaction(senderId, true);
+    newTransaction = new Transactions({
+      id: id,
+      email: purchasePayload.email,
+      status: true,
+      date: Date(),
+      product: product,
+      beneficiary: parseInt(purchasePayload.phoneNumber),
+      accountType: 'virtual',
+      info: 'delivery successful in virtual account',
+      transactionType: purchasePayload.transactionType,
+    });
+    await newTransaction.save();
 
-  if (Number(purchasePayload.firstPurchase) === 1 && purchasePayload.transactionType === 'data')
-    await creditReferrer(senderId);
-  if (purchasePayload.transactionType === 'data')
-    await handleFirstMonthBonus(id, purchasePayload, senderId, false);
-  return;
+    await addDataProfit(
+      senderId,
+      id,
+      purchasePayload.price,
+      purchasePayload.transactionType,
+      'virtual',
+      purchasePayload.networkID,
+      purchasePayload.index,
+      Date()
+    );
+
+    cancelTransaction(senderId, true);
+
+    // if (Number(purchasePayload.firstPurchase) === 1 && purchasePayload.transactionType === 'data')
+    //   await creditReferrer(senderId);
+    // if (purchasePayload.transactionType === 'data')
+    //   await handleFirstMonthBonus(id, purchasePayload, senderId, false);
+    return;
+  } catch (err) {
+    console.error('An error occured in addToDelivered for virtual account', err);
+  }
 } // end of addToDelivered
 
 // helper function to form product

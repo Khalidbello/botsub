@@ -1,10 +1,11 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const schema = new mongoose.Schema({
-    amount: Number,
-    transactionId: String,
-    date: Date, // Changed from 'data' to 'date'
-    transactionType: String, // Changed from 'string' to String
+  amount: Number,
+  transactionId: String,
+  date: Date,
+  transactionType: String,
+  paymentAccountType: String,
 });
 
 const Profits = mongoose.model('Profits', schema);

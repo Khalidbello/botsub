@@ -12,6 +12,8 @@ const schema = new mongoose.Schema({
   status: String, // 'delivered', 'refunded'
   product: String,
   beneficiary: String,
+  accountType: String,
+  transactionType: String,
   info: String, // this will hold info as to the error encountered when the transaction failed or succes message
   date: Date,
 });

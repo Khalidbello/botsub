@@ -97,6 +97,8 @@ const addToDelivered = async (response: any, type: 'data' | 'airtime') => {
     date: Date(),
     product: prod,
     senderId: response.data.meta.senderId,
+    transactionType: response.data.meta.transactionType,
+    accountType: 'oneTime',
     beneficiary: parseInt(response.data.meta.phoneNumber),
     info: 'Value succesfully delvered',
   });
@@ -121,6 +123,8 @@ const addFailed = async (response: any, info: string) => {
       date: Date(),
       product: prod + ' ' + response.data.meta.network,
       senderId: response.data.meta.senderId,
+      transactionType: response.data.meta.transactionType,
+      accountType: 'oneTime',
       beneficiary: parseInt(response.data.meta.phoneNumber),
       info: info || 'Transaction delivery failed.',
     });
