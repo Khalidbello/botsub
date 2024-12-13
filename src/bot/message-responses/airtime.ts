@@ -57,7 +57,7 @@ const handleAirtimeNetworkSelected = async (event: any) => {
       return;
     }
 
-    await sendMessage(senderId, { text: 'Enter airtime amount.' });
+    await sendMessage(senderId, { text: 'Enter airtime amount. \n\nEnter X to cancle.' });
     await BotUsers.updateOne(
       { id: senderId },
       {
@@ -71,7 +71,7 @@ const handleAirtimeNetworkSelected = async (event: any) => {
   } catch (err) {
     console.error('An error occurred in handleDataNetWorkSelected', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nOr enter 0 to cancel',
+      text: 'An error occurred, please try again. \n\nOr enter X to cancel',
     });
   }
 }; // end of handleAirtimeNetworkSelected
@@ -82,7 +82,7 @@ const handleEnterAirtimeAmount = async (event: any) => {
   const message: string = event.message.text.trim();
 
   try {
-    if (message === 'x') return cancelTransaction(senderId, true);
+    if (message.toLowerCase() === 'x') return cancelTransaction(senderId, true);
     const amountValid = await validateAmount(message);
     console.log('Amont validdddddddddddddddd', amountValid);
     if (!amountValid)
