@@ -19,8 +19,8 @@ async function getNetworkStatus(req: Request, res: Response) {
 }
 
 async function setNetworkStatus(req: Request, res: Response) {
-  const { network, status } = req.body;
-  await updateNetworkStatus(network, status);
+  const { network, status, info } = req.body;
+  await updateNetworkStatus(network, status, info);
   res.json({ message: `${network} update to ${status}` });
 }
 
