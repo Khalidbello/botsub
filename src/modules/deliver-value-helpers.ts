@@ -6,6 +6,7 @@ import creditReferrer from './credit_referrer';
 import { dateFormatter } from './helper_functions';
 import handleFirstMonthBonus from './monthly_bonuses';
 import refundTransaction from './refund-transaction';
+import { addDataProfit } from './save-profit';
 
 // helper function for succesfull response
 const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data' | 'airtime') => {
@@ -31,6 +32,18 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
         err
       );
     }
+
+    // add trnasaction to profit
+    await addDataProfit(
+      response.data.meta.senderId,
+      response.data.id,
+      response.data.meta.price,
+      response.data.meta.transactionType,
+      'oneTime',
+      response.data.meta.networkID,
+      response.data.meta.index,
+      date
+    );
 
     // check for bonus delivery
     // if (Number(response.data.meta.firstPurchase) === 1 && type === 'data')

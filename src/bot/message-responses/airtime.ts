@@ -87,7 +87,7 @@ const handleEnterAirtimeAmount = async (event: any) => {
     console.log('Amont validdddddddddddddddd', amountValid);
     if (!amountValid)
       return sendMessage(senderId, {
-        text: 'Invalid amount entered.\nAmount should be a number and at least 100. \n\nEnter X to cancel.',
+        text: 'Invalid amount entered.\nAir amount should be      at least 100. \n\nEnter X to cancel.',
       });
 
     const user = await BotUsers.findOne({ id: senderId });
