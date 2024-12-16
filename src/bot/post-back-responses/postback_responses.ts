@@ -23,28 +23,52 @@ import PaymentAccounts from '../../models/payment-accounts';
 import { makePurchase } from '../../modules/v-account-make-purcchase';
 import handleFirstMonthBonus from '../../modules/monthly_bonuses';
 import { defaaultMessage } from '../message-responses/message_responses';
+import { defaultText } from '../message-responses/generic';
 
 // function to response to newConversations
 async function sendNewConversationResponse(event: any) {
   const senderId = event.sender.id;
   const userName = await getUserName(senderId);
 
+  // await sendMessage(senderId, {
+  //   text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.`,
+  // });
+  // await sendMessage(senderId, {
+  //   text: `Kindly enter referral code below \nIf no referral code enter 0`,
+  // });
+
+  // // adding new botuser
+  // const newBotUser = new BotUsers({
+  //   id: senderId,
+  //   transactNum: 0,
+  //   botResponse: true,
+  //   nextAction: 'referralCode',
+  // });
+
+  // run with out requesting referral code
   await sendMessage(senderId, {
     text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.`,
   });
-  await sendMessage(senderId, {
-    text: `Kindly enter referral code below \nIf no referral code enter 0`,
-  });
 
-  // adding new botuser
-  const newBotUser = new BotUsers({
-    id: senderId,
-    transactNum: 0,
-    botResponse: true,
-    nextAction: 'referralCode',
-  });
-  await newBotUser.save();
-  console.log('end of new bot user', newBotUser);
+  const user = await BotUsers.findOne({ id: senderId });
+
+  if (!user) {
+    await sendMessage(senderId, {
+      text: 'Welcome to BotSub, Get data offers for as low as $200/GB. \nHurry while it last!',
+    });
+    // adding new botuser
+    const newBotUser = new BotUsers({
+      id: senderId,
+      transactNum: 0,
+      botResponse: true,
+      nextAction: null,
+      referrer: 0,
+      firstPurchase: true,
+    });
+    newBotUser.save();
+  }
+
+  await sendMessage(senderId, { text: defaultText });
 } // end of newConversationResponse
 
 // function to respond when buy data button is clicked

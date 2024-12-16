@@ -20,7 +20,7 @@ const handleReportIssue = async (event: any) => {
   } catch (err) {
     console.error('An error occured in handleReportIssue', err);
     sendMessage(senderId, {
-      text: 'An error occured. \nPlease enter response again. \n\nEnter 0 to cancel.',
+      text: 'An error occured. \nPlease enter response again. \n\nEnter X to cancel.',
     });
   }
 };

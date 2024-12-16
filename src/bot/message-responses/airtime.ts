@@ -110,7 +110,7 @@ const handleEnterAirtimeAmount = async (event: any) => {
   } catch (err) {
     console.error('An error occurred in handleDataNetWorkSelected', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nOr enter 0 to cancel',
+      text: 'An error occurred, please try again. \n\nOr enter X to cancel',
     });
   }
 };

@@ -83,7 +83,7 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
   } catch (err) {
     console.error('An error occurred in handleDataNetWorkSelected', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nOr enter 0 to cancel',
+      text: 'An error occurred, please try again. \n\nOr enter X to cancel',
     });
   }
 };
@@ -137,7 +137,7 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
   } catch (err) {
     console.error('An error occured in handleOfferSelected', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancel',
+      text: 'An error occured plase enter resposne again.  \n Or enter X to cancel',
     });
   }
 };
@@ -188,12 +188,12 @@ const handlePhoneNumberEntred = async (event: any) => {
     }
 
     sendMessage(senderId, {
-      text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter 0 to cancel.',
+      text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter X to cancel.',
     });
   } catch (err) {
     console.error('An error occured in phoneNumberEntred', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancel',
+      text: 'An error occured plase enter resposne again.  \n Or enter X to cancel',
     });
   }
 };
