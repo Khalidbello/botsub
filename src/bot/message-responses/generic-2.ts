@@ -28,6 +28,8 @@ async function handleEnterEmailToProcedWithPurchase(event: any) {
         },
         { upsert: true }
       );
+
+      user.email = email;
       await confirmDataPurchaseResponse(senderId, user, null);
       return;
     } else {
