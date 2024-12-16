@@ -226,7 +226,7 @@ async function handleChangeNumberBeforeTransaction(event: any) {
             },
           }
         );
-        await confirmDataPurchaseResponse(event, user, validatedNum);
+        await confirmDataPurchaseResponse(senderId, user, validatedNum);
         return;
       }
 
