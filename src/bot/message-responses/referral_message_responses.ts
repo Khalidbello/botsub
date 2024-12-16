@@ -10,12 +10,21 @@ import { defaultText } from './generic';
 async function showReferralCode(event: any) {
   const senderId = event.sender.id;
 
-  await sendMessage(senderId, { text: 'Invite a friend and earn free data!!!' });
-  await sendMessage(senderId, { text: `Your referral code is:` });
-  await sendMessage(senderId, { text: `${senderId}` });
-  await sendMessage(senderId, {
-    text: 'For each referral you earn: \n100MB for Airtel. \n150MB for MTN. \n200MB for Glo. \n500MB for 9mobile',
-  });
+  // await sendMessage(senderId, { text: 'Invite a friend and earn free data!!!' });
+  // await sendMessage(senderId, { text: `Your referral code is:` });
+  // await sendMessage(senderId, { text: `${senderId}` });
+  // await sendMessage(senderId, {
+  //   text: 'For each referral you earn: \n100MB for Airtel. \n150MB for MTN. \n200MB for Glo. \n500MB for 9mobile',
+  // });
+
+  try {
+    await sendMessage(senderId, { text: 'Service currently not available' });
+    await sendMessage(senderId, { text: defaultText });
+  } catch (err) {
+    console.error('An error occured in showActiveReferalls', err);
+    await sendMessage(senderId, { text: 'An erro occured' });
+    await sendMessage(senderId, { text: defaultText });
+  }
 } // end of showReferralCode
 
 // function to show user active referalls
