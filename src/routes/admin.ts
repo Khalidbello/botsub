@@ -41,7 +41,7 @@ const adminRouter = Router();
 function authChecker(req: any, res: Response, next: NextFunction) {
   console.log(req.session, 'sessions......');
   if (req.session.user) {
-    if (req.session.user.authenticated === true && req.session.user.admin === true) {
+    if (req.cookies.user.authenticated === true && req.cookies.user.admin === true) {
       next();
     }
   } else {
@@ -58,9 +58,17 @@ adminRouter.post('/login', (req: any, res: Response) => {
 
   //console.log(userName, password, 'credentials.......', req.sessionID);
   if (userName === process.env.ADMIN_NAME && password === process.env.ADMIN_PASSWORD) {
-    req.session.user = { authenticated: true, admin: true }; //{ user: userName, admin: true };
-    console.log('res hadersssss........: ', res.getHeaders());
-    res.status(200).json(req.session);
+    const userData = { authenticated: true, admin: true }; // Example user data
+    const cookieOptions = {
+      httpOnly: true, // Prevents access via JavaScript
+      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+      maxAge: 1000 * 60 * 10, // Expires in 10 minutes
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust for cross-origin
+    };
+
+    // @ts-ignore
+    res.cookie('user', JSON.stringify(userData), cookieOptions);
+    res.json({ message: 'Succesfully logged in.........' });
   } else {
     res.status(404).send('no user with detailsfound');
   }
