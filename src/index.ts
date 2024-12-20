@@ -100,19 +100,17 @@ app.use(
     credentials: true,
   })
 );
-// set cookies
-const isProducion = process.env.NODE_ENV === 'production';
 app.use(
   session({
-    secret: 'ewfdwsdnncenuivrgeianviaivnreuveq9anvrv',
-    cookie: {
-      secure: isProducion ? true : false,
-      httpOnly: true,
-      maxAge: 1000000,
-      sameSite: isProducion ? 'none' : 'lax',
-    },
-    resave: true,
+    secret: 'yourSecretKey', // Use a strong secret for production
+    resave: false,
     saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+      maxAge: 1000 * 60 * 10, // Session cookie expires after 10 minutes
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust SameSite based on environment
+    },
   })
 );
 
@@ -134,12 +132,14 @@ app.use((req, res, next) => {
 // Route to set a cookie
 app.get('/set-cookie', (req, res) => {
   // Set a cookie named 'exampleCookie' with a value 'testValue'
-  res.cookie('exampleCookie', 'testValue', {
-    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-    secure: process.env.NODE_ENV === 'production', // Ensures the cookie is sent only over HTTPS in production
-    maxAge: 1000 * 60 * 10, // Cookie expires after 10 minutes (in milliseconds)
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust SameSite based on environment
-  });
+  // res.cookie('exampleCookie', 'testValue', {
+  //   httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+  //   secure: process.env.NODE_ENV === 'production', // Ensures the cookie is sent only over HTTPS in production
+  //   maxAge: 1000 * 60 * 10, // Cookie expires after 10 minutes (in milliseconds)
+  //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust SameSite based on environment
+  // });
+  // @ts-ignore
+  req.session.exampleData = 'This is session data';
 
   res.send('Cookie has been set!');
 });
