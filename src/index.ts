@@ -106,10 +106,10 @@ app.use(
   session({
     secret: 'ewfdwsdnncenuivrgeianviaivnreuveq9anvrv',
     cookie: {
-      secure: false,
+      secure: isProducion ? true : true,
       httpOnly: true,
       maxAge: 1000000,
-      sameSite: isProducion ? 'none' : 'lax',
+      sameSite: isProducion ? 'none' : 'none',
     },
     resave: true,
     saveUninitialized: true,
