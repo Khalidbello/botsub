@@ -66,11 +66,11 @@ if (process.env.NODE_ENV === 'development') {
   //allowedOrigins = ['https://admin.botsub.com.ng', 'http://admin.botsub.com.ng'];
 }
 
-// setting __filename since its not supported in type: module
-console.log(__filename, process.env.FLW_H);
+// // setting __filename since its not supported in type: module
+// console.log(__filename, process.env.FLW_H);
 
-// // setting __dirname since its not supported in type: module
-console.log('directory-name 👉️', __dirname);
+// // // setting __dirname since its not supported in type: module
+// console.log('directory-name 👉️', __dirname);
 
 // initialising app
 const app = express();
@@ -114,8 +114,8 @@ app.use(
       maxAge: 1000000,
       sameSite: isProducion ? 'none' : 'lax',
     },
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
   })
 );
 
