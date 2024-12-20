@@ -100,16 +100,13 @@ app.use(
     credentials: true,
   })
 );
-app.use(noCacheMiddleware);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 // set cookies
 const isProducion = process.env.NODE_ENV === 'production';
 app.use(
   session({
     secret: 'ewfdwsdnncenuivrgeianviaivnreuveq9anvrv',
     cookie: {
-      secure: isProducion ? true : false,
+      secure: false,
       httpOnly: true,
       maxAge: 1000000,
       sameSite: isProducion ? 'none' : 'lax',
@@ -118,6 +115,10 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+app.use(noCacheMiddleware);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // static middleware
 app.use(express.static('public'));
