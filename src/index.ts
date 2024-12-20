@@ -106,10 +106,10 @@ app.use(
   session({
     secret: 'ewfdwsdnncenuivrgeianviaivnreuveq9anvrv',
     cookie: {
-      secure: isProducion ? true : true,
+      secure: isProducion ? true : false,
       httpOnly: true,
       maxAge: 1000000,
-      sameSite: isProducion ? 'none' : 'none',
+      sameSite: isProducion ? 'none' : 'lax',
     },
     resave: true,
     saveUninitialized: true,
@@ -122,6 +122,27 @@ app.use(express.urlencoded({ extended: true }));
 
 // static middleware
 app.use(express.static('public'));
+
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    const setCookieHeader = res.getHeader('Set-Cookie');
+    console.log('Set-Cookie Header:', setCookieHeader);
+  });
+  next();
+});
+
+// Route to set a cookie
+app.get('/set-cookie', (req, res) => {
+  // Set a cookie named 'exampleCookie' with a value 'testValue'
+  res.cookie('exampleCookie', 'testValue', {
+    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+    secure: process.env.NODE_ENV === 'production', // Ensures the cookie is sent only over HTTPS in production
+    maxAge: 1000 * 60 * 10, // Cookie expires after 10 minutes (in milliseconds)
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust SameSite based on environment
+  });
+
+  res.send('Cookie has been set!');
+});
 
 // connecting db
 connectDB();
