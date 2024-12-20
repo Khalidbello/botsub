@@ -39,8 +39,8 @@ const adminRouter = Router();
 
 // middle ware to check if user is authenticated
 function authChecker(req: any, res: Response, next: NextFunction) {
-  console.log(req.session, 'sessions......');
-  if (req.cookies?.user?.authenticated === true && req.cookies?.user?.admin === true) {
+  console.log(req.cookie, 'sessions......');
+  if (req.cookie?.user?.authenticated === true && req.cookies.user?.admin === true) {
     return next();
   }
 
