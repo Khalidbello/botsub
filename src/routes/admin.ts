@@ -59,8 +59,8 @@ adminRouter.post('/login', (req: any, res: Response) => {
   //console.log(userName, password, 'credentials.......', req.sessionID);
   if (userName === process.env.ADMIN_NAME && password === process.env.ADMIN_PASSWORD) {
     req.session.user = { authenticated: true, admin: true }; //{ user: userName, admin: true };
+    console.log('res hadersssss........: ', res.getHeaders());
     res.status(200).json(req.session);
-    console.log(req.session);
   } else {
     res.status(404).send('no user with detailsfound');
   }
