@@ -49,21 +49,14 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
     }
     // Get details of user selected network
     const networkDetails: networkDetailsType = dataDetails[index];
-
-    // if (!networkDetails) {
-    //   await sendMessage(senderId, { text: 'Invalid response received.' });
-    //   return handleBuyData(event); // Ensure handleBuyData is an asynchronous function if needed
-    // }
-
-    //console.log('network details', networkDetails, networkDetails['1']);
     const { network, networkID } = networkDetails['1'];
     let check = await checkDataStatus(network); // check if network available for purchase
 
-    // check if network aavilable if not return to select network for data purchase
-    if (!check) {
-      await handleDataNetworkNotAvailable(senderId, network);
-      return handleBuyData(event);
-    }
+    // // check if network aavilable if not return to select network for data purchase
+    // if (!check) {
+    //   await handleDataNetworkNotAvailable(senderId, network);
+    //   return handleBuyData(event);
+    // }
 
     const response = await formDataOffers(networkDetails, transactNum);
     await sendMessage(senderId, { text: response });
