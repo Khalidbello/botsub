@@ -9,7 +9,7 @@ const handleReportIssue = async (event: any) => {
 
   try {
     sendMessage(senderId, {
-      text: 'Please enter a detailed description of your issue. \n\nEnter 0 to cancel.',
+      text: 'Please enter a detailed description of your issue. \n\nEnter X to cancel.',
     });
     await BotUsers.updateOne(
       { id: senderId },
@@ -38,7 +38,7 @@ const handleReportIssueResponse = async (event: any) => {
 
     if (message.toLowerCase() === 'x') {
       await sendMessage(senderId, { text: 'Issue report has beeen cancled' });
-      return cancelTransaction(event, true);
+      return cancelTransaction(event, false);
     }
 
     const issue = new ReportedIssues({
