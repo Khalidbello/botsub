@@ -14,7 +14,7 @@ const handleBuyAirtime = async (event: any) => {
     });
     await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAritimeNetwork' } });
   } catch (err) {
-    console.error('An error occurred in handleDataNetWorkSelected', err);
+    console.error('An error occurred in handleBuyAirtime', err);
     await sendMessage(senderId, {
       text: 'An error occurred, please try again. \n\nEnter X to cancel',
     });
@@ -69,7 +69,7 @@ const handleAirtimeNetworkSelected = async (event: any) => {
       }
     );
   } catch (err) {
-    console.error('An error occurred in handleDataNetWorkSelected', err);
+    console.error('An error occurred in handleAirtimeNetworkSelected', err);
     await sendMessage(senderId, {
       text: 'An error occurred, please try again. \n\nOr enter X to cancel',
     });
@@ -108,7 +108,7 @@ const handleEnterAirtimeAmount = async (event: any) => {
       }
     );
   } catch (err) {
-    console.error('An error occurred in handleDataNetWorkSelected', err);
+    console.error('An error occurred in handleAirtimeAmount: ', err);
     await sendMessage(senderId, {
       text: 'An error occurred, please try again. \n\nOr enter X to cancel',
     });
