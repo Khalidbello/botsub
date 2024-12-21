@@ -16,7 +16,7 @@ async function updateNetworkStatus(network: string, status: boolean, info: strin
     let data = JSON.parse(fileContent);
 
     // Modify the object as needed
-    data[network] = { status: status, info: info };
+    data[network] = { status: status, info: info || 'Network working fine' };
 
     // Convert the modified object back to JSON
     const updatedContent = JSON.stringify(data, null, 2);
