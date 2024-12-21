@@ -149,7 +149,7 @@ async function respondToWebhook(webhookPayload: any, res: Response, host: string
       await sendMessage(reference, {
         text: `Your account account topup of ₦${amount} was successful.`,
       });
-      await sendMessage(reference, { text: `Your new account balance is: ${account.balance}` });
+      await sendMessage(reference, { text: `Your new account balance is: ₦${account.balance}` });
 
       // check if user has an outsanding transaction and automatic initiate if any
       const response = await BotUsers.findOne({ id: reference }).select('purchasePayload');
