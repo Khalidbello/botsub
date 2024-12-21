@@ -40,13 +40,15 @@ const adminRouter = Router();
 // middle ware to check if user is authenticated
 function authChecker(req: any, res: Response, next: NextFunction) {
   console.log('sessions cookies in auth checker......: ', req.cookies);
-  const user = JSON.parse(req.cookies?.user);
 
-  if (user?.authenticated === true && user?.admin === true) {
-    return next();
+  if (req.cookies.user) {
+    const user = JSON.parse(req.cookies.user);
+
+    if (user?.authenticated === true && user?.admin === true) {
+      return next();
+    }
   }
 
-  console.log('user not loggd in');
   res
     .status(401)
     .send('Unauthorized access: you do not have permission to request this resources........');
