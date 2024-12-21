@@ -8,14 +8,14 @@ import { sendMessage } from '../modules/send_message';
 import { cancelTransaction } from './generic';
 import fs from 'fs';
 
-const text = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C. 9mobile \n D. Airtel \n\n X. cancel`;
+const butDataText = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C. 9mobile \n D. Airtel \n\n X. cancel`;
 const confirmPurchaseText = ``;
 
 // function to handle buy data selected
 async function handleBuyData(event: any) {
   const senderId = event.sender.id;
 
-  sendMessage(senderId, { text: text });
+  sendMessage(senderId, { text: butDataText });
   await BotUsers.updateOne(
     { id: senderId },
     {
@@ -46,6 +46,8 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
       index = 3;
     } else if (message === 'd') {
       index = 4;
+    } else {
+      return sendMessage(senderId, { text: butDataText });
     }
     // Get details of user selected network
     const networkDetails: networkDetailsType = dataDetails[index];
