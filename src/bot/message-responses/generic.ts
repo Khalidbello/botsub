@@ -147,7 +147,7 @@ async function generateAccountNumber(event: any, transactNum: number) {
       await sendMessage(senderId, { text: data.transfer_account });
       await sendMessage(senderId, { text: 'Amount: ₦' + data.transfer_amount });
       // removing purchasePayload
-      cancelTransaction(senderId, false);
+      cancelTransaction(senderId, true);
       return;
     }
     throw response;
