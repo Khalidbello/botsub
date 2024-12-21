@@ -47,6 +47,7 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
     } else if (message === 'd') {
       index = 4;
     } else {
+      await sendMessage(senderId, { text: 'Invalid resposne entred.' });
       return sendMessage(senderId, { text: buyDataText });
     }
     // Get details of user selected network
