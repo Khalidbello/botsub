@@ -174,7 +174,9 @@ const carryOutNonVAccount = async (
       response.data.currency
     );
 
-    if (!valid.status)
+    console.log('validity check resonse in carry out no v accont::: ', valid);
+
+    if (!valid)
       return {
         status: false,
         message: 'Transaction validation of transaction failed in check payment validity',
