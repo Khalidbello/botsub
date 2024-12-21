@@ -61,7 +61,7 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
 
     // check if network aavilable if not return to select network for data purchase
     if (!check) {
-      handleDataNetworkNotAvailable(senderId, network);
+      await handleDataNetworkNotAvailable(senderId, network);
       return handleBuyData(event);
     }
 
@@ -103,7 +103,7 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
 
     // check if network aavilable if not return to select network for data purchase
     // if (!check) {
-    //   handleDataNetworkNotAvailable(senderId, network);
+    //   await handleDataNetworkNotAvailable(senderId, network);
     //   return handleBuyData(event);
     // }
 
