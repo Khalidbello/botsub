@@ -6,6 +6,7 @@ require('dotenv').config();
 const handlebars = require('express-handlebars');
 const cors = require('cors');
 
+import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
@@ -100,6 +101,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(cookieParser());
 app.use(
   session({
     secret: 'yourSecretKey', // Use a strong secret for production
