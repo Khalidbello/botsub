@@ -205,7 +205,6 @@ async function addToDelivered(id: string, purchasePayload: any, senderId: string
     let product, newTransaction, response2;
 
     cancelTransaction(senderId, true);
-
     product = formProduct(purchasePayload);
 
     newTransaction = new Transactions({
@@ -231,8 +230,6 @@ async function addToDelivered(id: string, purchasePayload: any, senderId: string
       purchasePayload.index,
       Date()
     );
-
-    cancelTransaction(senderId, true);
 
     // if (Number(purchasePayload.firstPurchase) === 1 && purchasePayload.transactionType === 'data')
     //   await creditReferrer(senderId);

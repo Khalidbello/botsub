@@ -53,7 +53,7 @@ async function defaultMessageHandler(event: any, isMessage: any, transactNum: nu
 async function cancelTransaction(senderId: string, end: boolean) {
   await reset(senderId);
 
-  if (!end) return;
+  if (end) return;
   await sendMessage(senderId, { text: 'Transaction  canceled.' });
   sendMessage(senderId, { text: defaultText });
 } // end of cancelTransaction

@@ -60,7 +60,7 @@ async function sendEmailEnteredResponse(event: any) {
   const senderId = event.sender.id;
   const email = event.message.text.trim();
 
-  if (email.toLowerCase() === 'x') return cancelTransaction(senderId, true);
+  if (email.toLowerCase() === 'x') return cancelTransaction(senderId, false);
   if (emailValidator.validate(email)) {
     await sendMessage(senderId, { text: 'email saved \nYou can change email when ever you want' });
     const saveEmail = await BotUsers.updateOne(
@@ -134,7 +134,7 @@ async function sendAirtimeAmountReceived(event: any) {
   const amount = event.message.text.trim();
   const userData = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
 
-  if (amount.toLowerCase() === 'x') return cancelTransaction(senderId, true);
+  if (amount.toLowerCase() === 'x') return cancelTransaction(senderId, false);
   if (await validateAmount(amount)) {
     await sendMessage(senderId, { text: 'Amount recieved' });
     await sendMessage(senderId, {
@@ -167,7 +167,7 @@ async function sendPhoneNumberEnteredResponses(event: any) {
   const validatedNum = validateNumber(phoneNumber);
   let user;
 
-  if (phoneNumber.toLowerCase() === 'x') return cancelTransaction(senderId, true);
+  if (phoneNumber.toLowerCase() === 'x') return cancelTransaction(senderId, false);
   if (validatedNum) {
     await sendMessage(senderId, { text: 'phone  number recieved' });
     user = await BotUsers.findOne({ id: senderId });

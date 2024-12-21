@@ -12,7 +12,7 @@ const handleConfirmProductPurchase = async (event: any, transactNum: number) => 
   const message: string = event.message.text.trim().toLowerCase();
 
   try {
-    if (message === 'x') return cancelTransaction(senderId, true);
+    if (message === 'x') return cancelTransaction(senderId, false);
 
     const user = await BotUsers.findOne({ id: senderId });
 

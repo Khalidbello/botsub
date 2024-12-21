@@ -395,7 +395,7 @@ async function cancelTransaction(senderId: string, end: boolean) {
 
   if (end) return;
   await sendMessage(senderId, { text: 'Transaction successfully canceled.' });
-  sendMessage(senderId, { text: 'What do you want to do next. \n 1. Buy data \n 2. Buy Airtime' });
+  sendMessage(senderId, { text: defaultText });
   // await sendMessage(senderId, { text: 'Transaction Cancled' });
   // await sendMessage(senderId, { text: 'What do you want to do next' });
   // await sendTemplates(senderId, responseServices);

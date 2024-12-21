@@ -10,7 +10,7 @@ async function handleEnterEmailToProcedWithPurchase(event: any) {
   const email = event.message.text.trim();
 
   try {
-    if (email.toLowerCase() === 'X') return cancelTransaction(senderId, true);
+    if (email.toLowerCase() === 'X') return cancelTransaction(senderId, false);
 
     const user = await BotUsers.findOne({ id: senderId });
 

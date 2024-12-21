@@ -31,7 +31,7 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
   let index: number = 0;
 
   try {
-    if (message === 'x') return cancelTransaction(senderId, true);
+    if (message === 'x') return cancelTransaction(senderId, false);
 
     // Read data-details.json file
     let dataDetails: any = await fs.promises.readFile('files/data-details.json', 'utf-8');
@@ -88,7 +88,7 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
   const discount = computeDiscount(transactNum);
 
   try {
-    if (message.toLocaleLowerCase() === 'x') return cancelTransaction(senderId, true);
+    if (message.toLocaleLowerCase() === 'x') return cancelTransaction(senderId, false);
     const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
     const network: any = user?.purchasePayload?.network; // a string
     const networkID: any = user?.purchasePayload?.networkID; // a number
@@ -141,7 +141,7 @@ const handlePhoneNumberEntred = async (event: any) => {
   const message: string = event.message.text.trim();
 
   try {
-    if (message.toLowerCase() === 'x') return cancelTransaction(senderId, true);
+    if (message.toLowerCase() === 'x') return cancelTransaction(senderId, false);
 
     const validatedNum = validateNumber(message);
     const user = await BotUsers.findOne({ id: senderId });
