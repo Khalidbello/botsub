@@ -38,7 +38,7 @@ const handleReportIssueResponse = async (event: any) => {
 
     if (message.toLowerCase() === 'x') {
       await sendMessage(senderId, { text: 'Issue report has beeen cancled' });
-      return cancelTransaction(event, false);
+      return cancelTransaction(senderId, false);
     }
 
     const issue = new ReportedIssues({
