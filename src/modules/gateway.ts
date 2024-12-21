@@ -146,7 +146,9 @@ async function respondToWebhook(webhookPayload: any, res: Response, host: string
     console.log('account in wallet topup', account);
     if (account?.botType === 'facebook') {
       // send botuser a notification to
-      await sendMessage(reference, { text: 'Your account account topup was successful.' });
+      await sendMessage(reference, {
+        text: `Your account account topup of ₦${amount} was successful.`,
+      });
       await sendMessage(reference, { text: `Your new account balance is: ${account.balance}` });
 
       // check if user has an outsanding transaction and automatic initiate if any

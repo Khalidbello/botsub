@@ -64,7 +64,7 @@ adminRouter.post('/login', (req: any, res: Response) => {
     const cookieOptions = {
       httpOnly: true, // Prevents access via JavaScript
       secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
-      maxAge: 1000 * 60 * 10, // Expires in 10 minutes
+      maxAge: 1000 * 60 * 30, // Expires in 10 minutes
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust for cross-origin
     };
 
