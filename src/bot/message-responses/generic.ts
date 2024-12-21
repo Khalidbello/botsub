@@ -6,7 +6,7 @@ import PaymentAccounts from '../../models/payment-accounts';
 import { checkDataStatus, handleDataNetworkNotAvailable } from '../modules/data-network-checker';
 import { sendMessage } from '../modules/send_message';
 import { handleBuyAirtime } from './airtime';
-import { handleBuyData, text } from './data';
+import { handleBuyData, buyDataText } from './data';
 import { confirmDataPurchaseResponse } from '../modules/buy-data';
 import { makePurchase } from '../../modules/v-account-make-purcchase';
 import { remindToFundWallet, validateNumber } from '../modules/helper_functions';
