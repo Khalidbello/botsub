@@ -36,7 +36,7 @@ const handleReportIssueResponse = async (event: any) => {
     if (!message)
       return await sendMessage(senderId, { text: 'Sorry issue report can not be empty.' });
 
-    if (message.toLowerCase() === 'X') {
+    if (message.toLowerCase() === 'x') {
       await sendMessage(senderId, { text: 'Issue report has beeen cancled' });
       return cancelTransaction(event, true);
     }
