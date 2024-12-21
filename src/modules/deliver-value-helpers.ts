@@ -24,7 +24,9 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
       await sendMessage(response.data.meta.senderId, {
         text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${
           response.data.meta.number
-        } \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+        }\nPrice: ${response.data.amount} \nTransaction ID: ${
+          response.data.id
+        } \nDate: ${nigeriaTimeString}`,
       });
     } catch (err) {
       console.error(

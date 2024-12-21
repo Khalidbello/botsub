@@ -189,7 +189,7 @@ async function helpSuccesfulDelivery(
       text: `Your current account balance is:   ₦${accBalance?.balance}`,
     });
     await sendMessage(senderId, {
-      text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
+      text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
     });
     await sendMessage(senderId, {
       text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub',
