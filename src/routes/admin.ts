@@ -63,9 +63,9 @@ adminRouter.post('/login', (req: any, res: Response) => {
     const userData = { authenticated: true, admin: true }; // Example user data
     const cookieOptions = {
       httpOnly: true, // Prevents access via JavaScript
-      secure: process.env.NODE_ENV === 'productio', // Use HTTPS in production
+      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
       maxAge: 1000 * 60 * 30, // Expires in 10 minutes
-      sameSite: process.env.NODE_ENV === 'productio' ? 'none' : 'lax', // Adjust for cross-origin
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust for cross-origin
     };
 
     // @ts-ignore
