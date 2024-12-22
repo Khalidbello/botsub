@@ -1,14 +1,18 @@
 {
   "MTN": {
-    "status": true, "info" : "Working"
-  } ,
-  "Glo":  {
-    "status": true, "info" : "Working"
-  } ,
+    "status": false,
+    "info": "You are not sending to a valid MTN number."
+  },
+  "Glo": {
+    "status": true,
+    "info": "Working"
+  },
   "9mobile": {
-    "status": true, "info" : "Working"
-  }, 
+    "status": true,
+    "info": "Working"
+  },
   "Airtel": {
-    "status": true, "info" : "Working"
-  } 
+    "status": true,
+    "info": "Working"
+  }
 }

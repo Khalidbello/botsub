@@ -127,7 +127,10 @@ const addToDelivered = async (response: any, type: 'data' | 'airtime') => {
 const addFailed = async (response: any, info: string) => {
   try {
     let transaction = await Transactions.findOne({ id: response.data.id });
-    if (transaction) return console.log('Refuned transaction already exits', transaction);
+    if (transaction) {
+      await Transactions.updateOne({ id: response.data.id }, { $set: { info: info } });
+      return console.log('Refuned transaction succesfully udated info', info);
+    }
 
     let prod = product(response);
     const newTransaction = new Transactions({
@@ -137,6 +140,7 @@ const addFailed = async (response: any, info: string) => {
       status: 'failed',
       date: Date(),
       product: prod + ' ' + response.data.meta.network,
+      amount: response.data.meta.price,
       senderId: response.data.meta.senderId,
       transactionType: response.data.meta.transactionType,
       accountType: 'oneTime',

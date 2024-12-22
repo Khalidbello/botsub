@@ -11,6 +11,7 @@ const schema = new mongoose.Schema({
   txRef: String,
   status: String, // 'delivered', 'refunded'
   product: String,
+  amount: Number,
   beneficiary: String,
   accountType: String,
   transactionType: String,

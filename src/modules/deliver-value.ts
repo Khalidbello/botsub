@@ -102,7 +102,7 @@ const makePurchaseRequest = async (
   let resp;
   try {
     resp = await axios.post(options.url, options.payload, { headers: options.headers });
-    console.log('response: ', resp.data);
+    console.log('response: ', resp?.data);
 
     if (resp.data.Status === 'successful') {
       if (response.data.meta.type === 'data') {
@@ -115,13 +115,15 @@ const makePurchaseRequest = async (
       return { status: true, message: 'Value succesfully delivered' };
     }
 
-    throw 'Could not deliver value';
+    throw resp.data.api_response || 'Transaction failed could not get why';
   } catch (error: any) {
     if (response.data.meta.type === 'data')
       await updateNetworkStatus(
         response.data.meta.network,
         false,
-        error?.response?.data || 'Data Trnasaction failed error not captured'
+        error?.response?.data ||
+          resp?.data?.api_response ||
+          'Data Trnasaction failed error not captured'
       ); // updating network status to false
 
     error?.response?.data
@@ -129,7 +131,7 @@ const makePurchaseRequest = async (
       : console.error('in make purchase request failed in catch error block:', error);
 
     setAutoRetryTrue(); // set auto retry all transaction to true
-    await helpFailedDelivery(response, error?.response?.data?.error[0] || resp?.data.info);
+    await helpFailedDelivery(response, resp?.data?.api_response || error?.response?.data?.error[0]);
     return { status: false, message: error?.response?.data || error };
   }
 }; // end of makePurchaseRequest
