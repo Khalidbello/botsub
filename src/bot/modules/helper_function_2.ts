@@ -23,7 +23,8 @@ const computeDiscount = (transactNum: number): number => {
 // function to increase the number of transaction the user has carried out
 const updateTransactNum = async (userId: string): Promise<boolean> => {
   try {
-    await BotUsers.updateOne({ id: userId }, { $inc: { transactNum: 1 } });
+    const incresee = await BotUsers.updateOne({ id: userId }, { $inc: { transactNum: 1 } });
+    console.log('User transation number incresed: ', incresee);
     return true;
   } catch (err) {
     console.error('AN error occured in updating user transactNum', err);

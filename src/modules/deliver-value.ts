@@ -144,7 +144,7 @@ const simulateMakePurchaseRequest = async (
 ): Promise<{ status: boolean; message: string }> => {
   try {
     if (condition) {
-      updateTransactNum(response.data.meta.senderId);
+      await updateTransactNum(response.data.meta.senderId);
       await updateNetworkStatus(
         response.data.meta.network,
         true,

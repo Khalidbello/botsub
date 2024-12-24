@@ -17,6 +17,7 @@ import { confirmDataPurchaseResponse } from '../bot/modules/buy-data';
 import { sendMessage } from '../bot/modules/send_message';
 import { updateNetworkStatus } from '../bot/modules/data-network-checker';
 import { addDataProfit } from './save-profit';
+import { updateTransactNum } from '../bot/modules/helper_function_2';
 
 // function to carryout purchase
 async function makePurchase(purchasePayload: any, bot: string, senderId: string) {
@@ -92,8 +93,10 @@ async function makePurchaseRequest(
     console.log('response for virtual acount make purchase: ', resp);
 
     if (resp.data.Status === 'successful') {
-      if (purchasePayload.transactionType === 'data')
+      if (purchasePayload.transactionType === 'data') {
+        updateTransactNum(purchasePayload.senderId);
         updateNetworkStatus(purchasePayload?.network, true, 'Network data delivery working fine'); // set network availablity to true
+      }
       return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
     }
 
