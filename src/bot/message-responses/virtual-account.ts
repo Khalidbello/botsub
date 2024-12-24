@@ -95,22 +95,21 @@ const handleBvnEntred = async (event: any) => {
   try {
     let bvn = event.message.text.trim();
     let parsedBvn;
+    const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
+
+    // check if bvn was requested when user was carrying out a transaction
+    if (bvn.toLowerCase() === 'x' && user?.purchasePayload) {
+      const user = await BotUsers.findOneAndUpdate(
+        { id: senderId },
+        { $set: { nextAction: 'confirmProductPurchase' } }
+      );
+
+      await sendMessage(senderId, { text: 'Creation of permanent account number cancled.' });
+      await confirmDataPurchaseResponse(senderId, user, null);
+      return;
+    }
 
     if (bvn.toLowerCase() === 'x') {
-      const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
-
-      // check if bvn was requested when user was carrying out a transaction
-      if (user?.purchasePayload) {
-        const user = await BotUsers.findOneAndUpdate(
-          { id: senderId },
-          { $set: { nextAction: 'confirmProductPurchase' } }
-        );
-
-        await sendMessage(senderId, { text: 'Creation of permanent account number cancled.' });
-        await confirmDataPurchaseResponse(senderId, user, null);
-        return;
-      }
-
       await sendMessage(senderId, { text: 'Creation of dedicated virtiual account cancled.' });
       await sendMessage(senderId, { text: defaultText });
       // updaet user colletion
@@ -125,8 +124,15 @@ const handleBvnEntred = async (event: any) => {
     if (!isNaN(parsedBvn) && Number.isInteger(parsedBvn) && bvn.length === 11) {
       const user = await BotUsers.findOne({ id: senderId }).select('email');
 
-      // upate user database
-      BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      // set next action appropriately if the user was carrying out transaction before update
+      if (user?.purchasePayload) {
+        const user = await BotUsers.findOneAndUpdate(
+          { id: senderId },
+          { $set: { nextAction: 'confirmProductPurchase' } }
+        );
+      } else {
+        BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      }
       await createVAccount(user?.email, senderId, bvn, 'facebook', 0);
     } else {
       await sendMessage(senderId, {
