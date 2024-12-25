@@ -106,8 +106,8 @@ const makePurchaseRequest = async (
 
     if (resp.data.Status === 'successful') {
       if (response.data.meta.type === 'data') {
-        await updateTransactNum(response.data.meta.senderId);
-        await updateNetworkStatus(response.data.meta.network, true, 'Network working fine'); // updating network status to true
+        updateTransactNum(response.data.meta.senderId);
+        updateNetworkStatus(response.data.meta.network, true, 'Network working fine'); // updating network status to true
       }
 
       console.log('Response in makePurchaseRequest: ', resp);
