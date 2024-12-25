@@ -94,7 +94,7 @@ async function makePurchaseRequest(
 
     if (resp.data.Status === 'successful') {
       if (purchasePayload.transactionType === 'data') {
-        updateTransactNum(purchasePayload.senderId);
+        updateTransactNum(senderId);
         updateNetworkStatus(purchasePayload?.network, true, 'Network data delivery working fine'); // set network availablity to true
       }
       return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
