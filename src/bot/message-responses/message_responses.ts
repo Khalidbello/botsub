@@ -139,7 +139,7 @@ async function sendAirtimeAmountReceived(event: any) {
     await sendMessage(senderId, { text: 'Amount recieved' });
     await sendMessage(senderId, {
       // @ts-expect-error
-      text: ` Enter ${userData?.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancel`,
+      text: ` Enter ${userData?.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancle`,
     });
 
     await BotUsers.updateOne(
@@ -156,7 +156,7 @@ async function sendAirtimeAmountReceived(event: any) {
     return null;
   }
   await sendMessage(senderId, {
-    text: 'Invalid amount entered \nPlease enter a valid amount. \nEnter Q to cancel',
+    text: 'Invalid amount entered \nPlease enter a valid amount. \nEnter Q to cancle',
   });
 } // end of sendAirtimeAmountReceived
 
@@ -201,7 +201,7 @@ async function sendPhoneNumberEnteredResponses(event: any) {
     return;
   }
   await sendMessage(senderId, {
-    text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
+    text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancle.',
   });
 } // end of sendPhoneNumberEnteredResponses
 
@@ -230,14 +230,14 @@ async function newEmailBeforeTransactResponse(event: any, transactionType: 'data
       return helperConfirmPurchase(transactionType, senderId);
     } else {
       const response = {
-        text: 'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancel.',
+        text: 'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancle.',
       };
       await sendMessage(senderId, response);
     }
   } catch (err) {
     console.error('Error occured in newEmailBeforeTransactResponse', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancel',
+      text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancle',
     });
   }
 } // end of newEmailBeforeTransactResponse
@@ -271,7 +271,7 @@ async function newPhoneNumberBeforeTransactResponse(
     helperConfirmPurchase(transactionType, senderId);
   } else {
     const response = {
-      text: 'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
+      text: 'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancle.',
     };
     await sendMessage(senderId, response);
   }

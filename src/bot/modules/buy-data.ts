@@ -19,7 +19,7 @@ const formDataOffers = async (networkInfo: networkDetailsType, transactNum: numb
     }`;
   }
 
-  text += '\n\nEnter X to Cancel';
+  text += '\n\nEnter X to cancle';
   return text;
 };
 
@@ -38,7 +38,7 @@ async function confirmDataPurchaseResponse(senderId: string, user: any, phoneNum
       (phoneNumber ? phoneNumber : user?.purchasePayload?.phoneNumber) +
       '\nEmail: ' +
       user?.email +
-      '\n\n A. Make purchase. \n B. Change number. \n C. Change Email \n\n X. Cancel transaction',
+      '\n\n A. Make purchase. \n B. Change number. \n C. Change Email \n\n X. cancle transaction',
   };
   await sendMessage(senderId, message1);
 
@@ -67,7 +67,7 @@ async function changePhoneBeforeTransaction(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter X to cancel' });
+  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter X to cancle' });
   await BotUsers.updateOne(
     { id: senderId },
     { $set: { nextAction: 'changePhoneNumberBeforeTransact' } }
@@ -91,7 +91,7 @@ async function changeMailBeforeTransact(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new email \n\nEnter X to cancel' });
+  await sendMessage(senderId, { text: 'Enter new email \n\nEnter X to cancle' });
   await BotUsers.updateOne(
     { id: senderId },
     {

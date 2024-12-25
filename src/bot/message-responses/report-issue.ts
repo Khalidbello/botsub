@@ -9,7 +9,7 @@ const handleReportIssue = async (event: any) => {
 
   try {
     sendMessage(senderId, {
-      text: 'Please enter a detailed description of your issue. \n\nEnter X to cancel.',
+      text: 'Please enter a detailed description of your issue. \n\nEnter X to cancle.',
     });
     await BotUsers.updateOne(
       { id: senderId },
@@ -20,7 +20,7 @@ const handleReportIssue = async (event: any) => {
   } catch (err) {
     console.error('An error occured in handleReportIssue', err);
     sendMessage(senderId, {
-      text: 'An error occured. \nPlease enter response again. \n\nEnter X to cancel.',
+      text: 'An error occured. \nPlease enter response again. \n\nEnter X to cancle.',
     });
   }
 };

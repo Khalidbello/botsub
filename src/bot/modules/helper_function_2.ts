@@ -7,22 +7,26 @@ import { generateRandomString } from '../../modules/helper_functions';
 const FlutterWave = require('flutterwave-node-v3');
 import axios from 'axios';
 
-// fucntion to calculate user current data prices discount
+// fucntion to comput
 const computeDiscount = (transactNum: number): number => {
-  if (transactNum > 7) return 0;
-  if (transactNum === 7) return 10;
-  if (transactNum === 6) return 20;
-  if (transactNum === 5) return 30;
-  if (transactNum === 4) return 30;
-  if (transactNum === 3) return 90;
-  if (transactNum === 2) return 90;
-  if (transactNum < 2) return 100;
-  return 0;
+  switch (transactNum) {
+    case 0:
+      return 70; // First transaction: 70 Naira discount
+    case 1:
+      return 60; // Second transaction: 60 Naira discount
+    case 2:
+      return 40; // Third transaction: 40 Naira discount
+    case 3:
+      return 10; // Fourth transaction: 10 Naira discount
+    default:
+      return 0; // Fifth and beyond: no discount
+  }
 };
 
 // function to increase the number of transaction the user has carried out
 const updateTransactNum = async (userId: string): Promise<boolean> => {
   try {
+    console.log('in updateTransactNum::::::::::::::::::::::::;');
     const incresee = await BotUsers.updateOne({ id: userId }, { $inc: { transactNum: 1 } });
     console.log('User transation number incresed: ', incresee);
     return true;

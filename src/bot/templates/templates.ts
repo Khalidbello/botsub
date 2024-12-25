@@ -9,8 +9,7 @@ const responseServices = {
       {
         type: 'postback',
         title: 'Buy Data',
-        payload:
-          'dataPurchase', // Remove unnecessary quotes
+        payload: 'dataPurchase', // Remove unnecessary quotes
       },
       {
         type: 'postback',
@@ -21,9 +20,9 @@ const responseServices = {
         type: 'postback',
         title: 'View Data Prices',
         payload: 'dataPrices', // Remove unnecessary quotes
-      }
-    ]
-  }
+      },
+    ],
+  },
 };
 
 const responseServices2 = {
@@ -41,11 +40,10 @@ const responseServices2 = {
         type: 'postback',
         title: 'My referrals',
         payload: '{"title": "myReferrals"}',
-      }
+      },
     ],
   },
 }; // end of responseServices
-
 
 const responseServices3 = {
   type: 'template',
@@ -62,7 +60,7 @@ const responseServices3 = {
         type: 'postback',
         title: 'Report Issue',
         payload: '{"title": "issueReport"}',
-      }
+      },
     ],
   },
 };
@@ -86,7 +84,6 @@ const dataNetworks1 = {
   },
 };
 
-
 const dataNetworks2 = {
   type: 'template',
   payload: {
@@ -106,7 +103,6 @@ const dataNetworks2 = {
     ],
   },
 }; // end of dataNetworks
-
 
 // button for comfirm data purchase
 const confrimDataPurchaseButton1 = {
@@ -129,7 +125,6 @@ const confrimDataPurchaseButton1 = {
   },
 }; // end of confrimDataPurchaseButton
 
-
 const confrimDataPurchaseButton2 = {
   type: 'template',
   payload: {
@@ -143,13 +138,12 @@ const confrimDataPurchaseButton2 = {
       },
       {
         type: 'postback',
-        title: 'Cancel Transaction',
-        payload: `{"title": "cancel"}`,
+        title: 'cancle Transaction',
+        payload: `{"title": "cancle"}`,
       },
     ],
   },
 }; // end of confrimDataPurchaseButton2
-
 
 //=================================================
 // section for airtime templates
@@ -162,7 +156,7 @@ const airtimeNetworks1 = {
     buttons: [
       {
         type: 'postback',
-        title: 'MTN', 
+        title: 'MTN',
         payload: `{
           "title": "enterAirtimeAmount",
           "network": "mtn",
@@ -183,7 +177,6 @@ const airtimeNetworks1 = {
     ],
   },
 }; // end of dataNetworks1
-
 
 const airtimeNetworks2 = {
   type: 'template',
@@ -215,7 +208,6 @@ const airtimeNetworks2 = {
   },
 }; // end of dataNetworks2
 
-
 // function to generate offers
 function generatePostbackButton(title: string, payload: any) {
   const json = JSON.stringify(payload);
@@ -227,8 +219,7 @@ function generatePostbackButton(title: string, payload: any) {
     payload: json,
   };
   return button;
-};
-
+}
 
 function generatePostbackTemplate(buttons: any, network: string, i: number) {
   const title = i === 3 ? `Select ${network} offer` : '...';
@@ -241,8 +232,7 @@ function generatePostbackTemplate(buttons: any, network: string, i: number) {
     },
   };
   return template;
-};
-
+}
 
 async function generateFacebookPosts(id: string, network: string) {
   const file = JSON.parse(await fs.promises.readFile('files/data-details.json', 'utf-8'));
@@ -279,9 +269,7 @@ async function generateFacebookPosts(id: string, network: string) {
   });
 
   return templates;
-};
-
-
+}
 
 function retryFailedTemplate(transaction_id: string, tx_ref: string) {
   return {
@@ -289,15 +277,16 @@ function retryFailedTemplate(transaction_id: string, tx_ref: string) {
     payload: {
       template_type: 'button',
       text: 'Click To Retry Transaction',
-      buttons: [{
-        type: 'postback',
-        title: 'Retry Transaction',
-        payload: `{"title": "retryFailed", "transaction_id": "${transaction_id}", "tx_ref": "${tx_ref}"}`,
-      }],
-    }
+      buttons: [
+        {
+          type: 'postback',
+          title: 'Retry Transaction',
+          payload: `{"title": "retryFailed", "transaction_id": "${transaction_id}", "tx_ref": "${tx_ref}"}`,
+        },
+      ],
+    },
   };
-}; // end of failedDeliveryTemplate
-
+} // end of failedDeliveryTemplate
 
 function failedMonthlyBonusTemplate(email: string, number: string, networkID: number) {
   return {
@@ -310,12 +299,11 @@ function failedMonthlyBonusTemplate(email: string, number: string, networkID: nu
           type: 'postback',
           title: 'Reclaim',
           payload: `{"title": "failedMonthlyBonusRetry", "email": "${email}", "number": "${number}", "networkID": "${networkID}", "retry": "retry"}`,
-        }
+        },
       ],
     },
   };
-}; // end of failedMonthlyBonusTemplate
-
+} // end of failedMonthlyBonusTemplate
 
 // get virtualacount template
 const getVirtualAccountTemp = {
@@ -327,8 +315,8 @@ const getVirtualAccountTemp = {
       {
         type: 'postback',
         title: 'Get virtual account.',
-        payload: `{"title": "myAccount"}`
-      }
+        payload: `{"title": "myAccount"}`,
+      },
     ],
   },
 }; // end of getVirtualAccountemp

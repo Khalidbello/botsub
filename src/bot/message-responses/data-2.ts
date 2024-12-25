@@ -25,7 +25,7 @@ const handleConfirmProductPurchase = async (event: any, transactNum: number) => 
   } catch (err) {
     console.error('An error occured in phoneNumberEntred', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n\n Enter X to cancel',
+      text: 'An error occured plase enter resposne again.  \n\n Enter X to cancle',
     });
   }
 };

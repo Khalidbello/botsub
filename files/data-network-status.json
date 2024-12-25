@@ -1,7 +1,7 @@
 {
   "MTN": {
-    "status": false,
-    "info": "You are not sending to a valid MTN number."
+    "status": true,
+    "info": "In simulation data network working fine."
   },
   "Glo": {
     "status": true,

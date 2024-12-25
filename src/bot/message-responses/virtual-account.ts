@@ -25,7 +25,7 @@ async function showAccountDetails(event: any) {
 
     await sendMessage(senderId, { text: 'You do not have a permanent account number yet.' });
     sendMessage(senderId, {
-      text: ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regualation. \n\nEnter X to quit.',
+      text: ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter X to quit.',
     });
     await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
     return;
@@ -73,17 +73,17 @@ async function enteredEmailForAccount(event: any) {
 
       await sendMessage(senderId, { text: 'Please enter your BVN.' });
       return sendMessage(senderId, {
-        text: 'In accordeance with CBN regulations, your BVN is required to create a virtual account. \nEnter Q to  cancel',
+        text: 'In accordeance with CBN regulations, your BVN is required to create a virtual account. \nEnter Q to  cancle',
       });
     } else {
       sendMessage(senderId, {
-        text: 'The email you entred is invalid. \nPlease enter a valid email for the creation of dedicated virtual account. \n\nEner X to cancel',
+        text: 'The email you entred is invalid. \nPlease enter a valid email for the creation of dedicated virtual account. \n\nEner X to cancle',
       });
     }
   } catch (err) {
     console.error('An error occured in enteredEmailForAccount', err);
     await sendMessage(senderId, {
-      text: 'An error occured. \nPlease enter response again. \n\nEnter X to cancel.',
+      text: 'An error occured. \nPlease enter response again. \n\nEnter X to cancle.',
     });
   }
 } // end of sendEmailEntere
@@ -95,7 +95,7 @@ const handleBvnEntred = async (event: any) => {
   try {
     let bvn = event.message.text.trim();
     let parsedBvn;
-    const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
+    const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload email');
 
     // check if bvn was requested when user was carrying out a transaction
     if (bvn.toLowerCase() === 'x' && user?.purchasePayload) {
@@ -122,18 +122,7 @@ const handleBvnEntred = async (event: any) => {
 
     // Check if the parsed number is an integer and has exactly 11 digits
     if (!isNaN(parsedBvn) && Number.isInteger(parsedBvn) && bvn.length === 11) {
-      const user = await BotUsers.findOne({ id: senderId }).select('email');
-
-      // set next action appropriately if the user was carrying out transaction before update
-      if (user?.purchasePayload) {
-        const user = await BotUsers.findOneAndUpdate(
-          { id: senderId },
-          { $set: { nextAction: 'confirmProductPurchase' } }
-        );
-      } else {
-        BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
-      }
-      await createVAccount(user?.email, senderId, bvn, 'facebook', 0);
+      return createVAccount(user?.email, senderId, bvn, 'facebook', 0);
     } else {
       await sendMessage(senderId, {
         text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter X to cancle.',

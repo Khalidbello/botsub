@@ -82,7 +82,7 @@ async function selectPurchaseMethod(event: any, transactNum: number) {
   sendMessage(senderId, {
     text:
       'Select Payment method. \n\nA. Create a virtual account for quick and hassle-free future payments.' +
-      ' \n\nB. Use a one-time account number for this transaction only. \n\nEnter X to cancel.',
+      ' \n\nB. Use a one-time account number for this transaction only. \n\nEnter X to cancle.',
   });
   await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAccount' } });
   //await generateAccountNumber(event, transactNum);
@@ -246,7 +246,7 @@ async function handleChangeNumberBeforeTransaction(event: any) {
       return;
     }
     await sendMessage(senderId, {
-      text: 'Phone number not valid. \nPlease enter a valid phone number. \n\nEnter X to cancel.',
+      text: 'Phone number not valid. \nPlease enter a valid phone number. \n\nEnter X to cancle.',
     });
   } catch (err) {}
 } // end of sendPhoneNumberEnteredResponses
@@ -281,14 +281,14 @@ async function handleNewEmailBeforeTransasctionEntred(event: any) {
       await confirmDataPurchaseResponse(senderId, user, null);
     } else {
       const response = {
-        text: 'The email format you entered is invalid. \nPlease enter a valid email. \n\nEnter x to cancel.',
+        text: 'The email format you entered is invalid. \nPlease enter a valid email. \n\nEnter x to cancle.',
       };
       await sendMessage(senderId, response);
     }
   } catch (err) {
     console.error('Error occured in changeEmailBeforeTransaction', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n\nEnter X to cancel',
+      text: 'An error occured plase enter resposne again.  \n\nEnter X to cancle',
     });
   }
 } // end of changeEmailBeforeTransaction

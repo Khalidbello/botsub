@@ -8,7 +8,7 @@ import { sendMessage } from '../modules/send_message';
 import { cancelTransaction } from './generic';
 import fs from 'fs';
 
-const buyDataText = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C. 9mobile \n D. Airtel \n\n X. cancel`;
+const buyDataText = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C. 9mobile \n D. Airtel \n\n X. cancle`;
 const confirmPurchaseText = ``;
 
 // function to handle buy data selected
@@ -79,7 +79,7 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
   } catch (err) {
     console.error('An error occurred in handleDataNetWorkSelected', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nOr enter X to cancel',
+      text: 'An error occurred, please try again. \n\nOr enter X to cancle',
     });
   }
 };
@@ -133,7 +133,7 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
   } catch (err) {
     console.error('An error occured in handleOfferSelected', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter X to cancel',
+      text: 'An error occured plase enter resposne again.  \n Or enter X to cancle',
     });
   }
 };
@@ -184,12 +184,12 @@ const handlePhoneNumberEntred = async (event: any) => {
     }
 
     sendMessage(senderId, {
-      text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter X to cancel.',
+      text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter X to cancle.',
     });
   } catch (err) {
     console.error('An error occured in phoneNumberEntred', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter X to cancel',
+      text: 'An error occured plase enter resposne again.  \n Or enter X to cancle',
     });
   }
 };

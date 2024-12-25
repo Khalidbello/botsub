@@ -4,10 +4,10 @@ import { sendMessage } from '../modules/send_message';
 import { generateAccountNumber } from './generic';
 
 const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
-  const senderId = event.sender.id;
-  const message = event.message.text.trim().toLowerCase();
-
   try {
+    const senderId = event.sender.id;
+    const message = event.message.text.trim().toLowerCase();
+
     if (message === 'x') {
       const user = await BotUsers.findOneAndUpdate(
         { id: senderId },
@@ -19,7 +19,7 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
     }
     if (message === 'a') {
       sendMessage(senderId, {
-        text: ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regualation. \n\nEnter X to quit.',
+        text: ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter X to quit.',
       });
       await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
     }

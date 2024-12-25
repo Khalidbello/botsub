@@ -1,6 +1,5 @@
 <!!DOCTYPE html>
-  <html>
-
+<html>
   <head>
     {{#if TEST}}
     <script src="scripts/eruda.min.js"></script>
@@ -62,7 +61,7 @@
           align-items: stretch;
         }
 
-        .responsive>* {
+        .responsive > * {
           max-width: 800px;
           margin: 10px;
           flex-grow: 1;
@@ -74,8 +73,16 @@
 
   <body>
     <nav id="nav-menu" class="border-r20 bg-white l-border small">
-      <svg id="cancel-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        id="cancle-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <circle cx="12" cy="12" r="10" />
         <line x1="15" y1="9" x2="9" y2="15" />
         <line x1="9" y1="9" x2="15" y2="15" />
@@ -89,15 +96,34 @@
     </nav>
     <br />
     <header class="bg-white flex flex-sp-ar">
-      <svg class="l-border" onclick="home();" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-        viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"
-        stroke-linejoin="round">
+      <svg
+        class="l-border"
+        onclick="home();"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#000000"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9" />
         <path d="M9 22V12h6v10M2 10.6L12 2l10 8.6" />
       </svg>
       <span class="l-border bg-white bold flex flex-jst-cent">Data Pricing</span>
-      <svg id="menu-icon" class="padding-10 bg-darkorange" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        id="menu-icon"
+        class="padding-10 bg-darkorange"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M3 12h18M3 6h18M3 18h18" />
       </svg>
     </header>
@@ -141,20 +167,20 @@
     </section>
 
     <script type="text/template" id="table-template">
-        <table>
+      <table>
+          <tr>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Validity</th>
+          </tr>
+          \{{#each products}}
             <tr>
-              <th>Size</th>
-              <th>Price</th>
-              <th>Validity</th>
+              <td>\{{this.size}}</td>
+              <td>₦\{{this.price}}</td>
+              <td>\{{this.validity}}</td>
             </tr>
-            \{{#each products}}
-              <tr>
-                <td>\{{this.size}}</td>
-                <td>₦\{{this.price}}</td>
-                <td>\{{this.validity}}</td>
-              </tr>
-            \{{/each}}
-          </table>
+          \{{/each}}
+        </table>
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.min.js"></script>
@@ -162,7 +188,7 @@
     <script>
       const menuIcon = document.getElementById('menu-icon');
       const navMenu = document.getElementById('nav-menu');
-      const hideIcon = document.getElementById('cancel-icon');
+      const hideIcon = document.getElementById('cancle-icon');
       let menuFlag = 'hidden';
 
       menuIcon.addEventListener('click', toggleNavMenu);
@@ -229,5 +255,4 @@
       addTables();
     </script>
   </body>
-
-  </html>
+</html>

@@ -68,7 +68,7 @@ function home() {
 
 const menuIcon = document.getElementById('menu-icon');
 const navMenu = document.getElementById('nav-menu');
-const hideIcon = document.getElementById('cancel-icon');
+const hideIcon = document.getElementById('cancle-icon');
 let menuFlag = 'hidden';
 
 menuIcon.addEventListener('click', toggleNavMenu);
@@ -190,7 +190,7 @@ function showNetwork(ele) {
     blur.style.display = 'block';
     currentBox = networks;
   }, 10);
-};
+}
 
 //function to be called when the value of select network changes
 
@@ -200,7 +200,7 @@ function networkChange() {
   offerBox.dataset.details = null;
   offerBox.innerHTML = '<option selected hidden' + " value='empty' disabled>••••••••</option>";
   offerBox.dataset.network = null;
-}; // end networkChange
+} // end networkChange
 
 //function to hide boxes
 
@@ -222,7 +222,7 @@ function hideBox() {
       ele.style.backgroundColor = 'transparent';
     }
   }, 500);
-}; // end hideBox
+} // end hideBox
 
 // function to react to animationend
 
@@ -337,7 +337,6 @@ function offerSelected() {
   hideBox();
 } // end of offerSelected
 
-
 //function to be called by email info show important of email
 function showEmailInfo() {
   let ele = event.currentTarget;
@@ -402,8 +401,7 @@ async function getContact() {
   } catch (ex) {
     handlePhoneError();
   };*/
-};
-
+}
 
 // function to be called  by email field and number field
 
@@ -447,27 +445,25 @@ changeBorder = function () {
   }
 }; // end of changeBorder
 
-
 // validate number when clicked
 function validateNigeriaPhoneNumber(number) {
-    if (number.length !== 11) {
-        return false;
+  if (number.length !== 11) {
+    return false;
+  }
+  if (number[0] !== '0') {
+    return false;
+  }
+  const secondDigit = parseInt(number[1]);
+  if (secondDigit < 7 || secondDigit > 9) {
+    return false;
+  }
+  for (let i = 2; i < 11; i++) {
+    if (isNaN(parseInt(number[i]))) {
+      return false;
     }
-    if (number[0] !== '0') {
-        return false;
-    }
-    const secondDigit = parseInt(number[1]);
-    if (secondDigit < 7 || secondDigit > 9) {
-        return false;
-    }
-    for (let i = 2; i < 11; i++) {
-        if (isNaN(parseInt(number[i]))) {
-            return false;
-        }
-    }
-    return true;
-}; // end of validtae nigeria number
-
+  }
+  return true;
+} // end of validtae nigeria number
 
 // function to validate form
 function formValidate() {
@@ -555,7 +551,7 @@ hideInvalidNumberBox = function () {
 makePayment = function () {
   FlutterwaveCheckout({
     public_key: flwKey,
-    tx_ref: "6083883438362251",//txCode(),
+    tx_ref: '6083883438362251', //txCode(),
     amount: parseInt(offerBox.dataset.price),
     currency: 'NGN',
     redirect_url: 'after-pay',

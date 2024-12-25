@@ -10,13 +10,13 @@ const handleBuyAirtime = async (event: any) => {
 
   try {
     await sendMessage(senderId, {
-      text: 'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancel.',
+      text: 'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancle.',
     });
     await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAritimeNetwork' } });
   } catch (err) {
     console.error('An error occurred in handleBuyAirtime', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nEnter X to cancel',
+      text: 'An error occurred, please try again. \n\nEnter X to cancle',
     });
   }
 };
@@ -24,27 +24,28 @@ const handleBuyAirtime = async (event: any) => {
 // fucntion to handle selection of netework for airtime purchase
 const handleAirtimeNetworkSelected = async (event: any) => {
   const senderId = event.sender.id;
-  const message: string = event.message.text.trim().toLowerCase();
-  const airtimeNetwork: airtimeNetworkType = {
-    a: {
-      network: 'MTN',
-      id: 1,
-    },
-    b: {
-      network: 'GLO',
-      id: 2,
-    },
-    c: {
-      network: 'Airtel',
-      id: 4,
-    },
-    d: {
-      network: '9mobile',
-      id: 3,
-    },
-  };
 
   try {
+    const message: string = event.message.text.trim().toLowerCase();
+    const airtimeNetwork: airtimeNetworkType = {
+      a: {
+        network: 'MTN',
+        id: 1,
+      },
+      b: {
+        network: 'GLO',
+        id: 2,
+      },
+      c: {
+        network: 'Airtel',
+        id: 4,
+      },
+      d: {
+        network: '9mobile',
+        id: 3,
+      },
+    };
+
     if (message === 'x') return cancelTransaction(senderId, false);
 
     if (!airtimeNetwork[message]) {
@@ -52,7 +53,7 @@ const handleAirtimeNetworkSelected = async (event: any) => {
         text: 'Invalid response recieved',
       });
       await sendMessage(senderId, {
-        text: 'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancel.',
+        text: 'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancle.',
       });
       return;
     }
@@ -71,7 +72,7 @@ const handleAirtimeNetworkSelected = async (event: any) => {
   } catch (err) {
     console.error('An error occurred in handleAirtimeNetworkSelected', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nOr enter X to cancel',
+      text: 'An error occurred, please try again. \n\nOr enter X to cancle',
     });
   }
 }; // end of handleAirtimeNetworkSelected
@@ -87,13 +88,13 @@ const handleEnterAirtimeAmount = async (event: any) => {
     console.log('Amont validdddddddddddddddd', amountValid);
     if (!amountValid)
       return sendMessage(senderId, {
-        text: 'Invalid amount entered.\nAir amount should be      at least 100. \n\nEnter X to cancel.',
+        text: 'Invalid amount entered.\nAir amount should be      at least 100. \n\nEnter X to cancle.',
       });
 
     const user = await BotUsers.findOne({ id: senderId });
 
     await sendMessage(senderId, {
-      text: `Enter phone number for ${user?.purchasePayload?.network} airtime purchase.  \n\nEnter X to cancel.`,
+      text: `Enter phone number for ${user?.purchasePayload?.network} airtime purchase.  \n\nEnter X to cancle.`,
     });
 
     await BotUsers.updateOne(
@@ -110,7 +111,7 @@ const handleEnterAirtimeAmount = async (event: any) => {
   } catch (err) {
     console.error('An error occurred in handleAirtimeAmount: ', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nOr enter X to cancel',
+      text: 'An error occurred, please try again. \n\nOr enter X to cancle',
     });
   }
 };

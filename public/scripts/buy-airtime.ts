@@ -33,8 +33,8 @@ let key;
 async function getKey() {
   const response = await fetch('front-api/get-key');
   const datas = await response.json();
-  key = datas.key
-};
+  key = datas.key;
+}
 getKey();
 
 //adding event listener for animation to networks
@@ -57,7 +57,7 @@ function home() {
 
 const menuIcon = document.getElementById('menu-icon');
 const navMenu = document.getElementById('nav-menu');
-const hideIcon = document.getElementById('cancel-icon');
+const hideIcon = document.getElementById('cancle-icon');
 let menuFlag = 'hidden';
 
 menuIcon.addEventListener('click', toggleNavMenu);

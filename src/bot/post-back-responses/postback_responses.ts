@@ -352,7 +352,7 @@ async function changeMailBeforeTransact(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new email \n\nEnter Q to cancel' });
+  await sendMessage(senderId, { text: 'Enter new email \n\nEnter Q to cancle' });
   await BotUsers.updateOne(
     { id: senderId },
     {
@@ -379,7 +379,7 @@ async function changePhoneNumber(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter Q to cancel' });
+  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter Q to cancle' });
   await BotUsers.updateOne(
     { id: senderId },
     {
@@ -491,7 +491,7 @@ async function showAccountDetails(event: any) {
 
     await sendMessage(senderId, { text: 'You do not a dedicated virtual account yet.' });
     sendMessage(senderId, {
-      text: ' Kindly enter your BVN to create a virtul accunt. \n\nYour BVN is required in compliance with CBN regualation. \n\nEnter Q to quit.',
+      text: ' Kindly enter your BVN to create a virtul accunt. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter Q to quit.',
     });
     await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
     return;

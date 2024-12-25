@@ -1,353 +1,383 @@
 <html lang="en">
-
-<head>
-  {{#if TEST}}
-  <script src="scripts/eruda.min.js"></script>
-  <script>
-    eruda.init();
-  </script>
-  {{/if }}
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,
-    initial-scale=1.0" />
-  <meta name="author" content="Khalid Bello" />
-  <title>BotSub After Payment</title>
-  <link rel="stylesheet" href="styles/generic.css" />
-  <link rel="stylesheet" href="styles/generic.css" />
-  <link rel="icon" href="images/chatbot.png" />
-  <style>
-    #response-header {
-      display: inline-block;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 20px 10px 10px;
-    }
-
-    #left-header {
-      height: 2.5em;
-      width: 45%;
-      max-width: 10em;
-      border-radius: 0 1em 1em 0;
-      padding: 0.5em;
-      margin: 3em 0;
-    }
-
-    #status {
-      margin-top: 20px;
-    }
-
-    #loader {
-      height: 60vw;
-      width: 60vw;
-      border-radius: 50%;
-      position: relative;
-      transition: all 2s;
-      animation: 3s infinite rotate;
-    }
-
-    @keyframes rotate {
-      from {
-        transform: rotateZ(0deg);
+  <head>
+    {{#if TEST}}
+    <script src="scripts/eruda.min.js"></script>
+    <script>
+      eruda.init();
+    </script>
+    {{/if }}
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+    initial-scale=1.0"
+    />
+    <meta name="author" content="Khalid Bello" />
+    <title>BotSub After Payment</title>
+    <link rel="stylesheet" href="styles/generic.css" />
+    <link rel="stylesheet" href="styles/generic.css" />
+    <link rel="icon" href="images/chatbot.png" />
+    <style>
+      #response-header {
+        display: inline-block;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 20px 10px 10px;
       }
 
-      to {
-        transform: rotateZ(360deg);
-      }
-    }
-
-    #loader>* {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: thin solid #112;
-    }
-
-    .x {
-      animation: 3s infinite alternate x;
-    }
-
-    @keyframes x {
-      from {
-        transform: rotateX(0deg);
+      #left-header {
+        height: 2.5em;
+        width: 45%;
+        max-width: 10em;
+        border-radius: 0 1em 1em 0;
+        padding: 0.5em;
+        margin: 3em 0;
       }
 
-      to {
-        transform: rotateX(360deg);
-      }
-    }
-
-    .y {
-      animation: 3s infinite alternate y;
-    }
-
-    @keyframes y {
-      from {
-        transform: rotateZ(0deg);
+      #status {
+        margin-top: 20px;
       }
 
-      to {
-        transform: rotateY(360deg);
+      #loader {
+        height: 60vw;
+        width: 60vw;
+        border-radius: 50%;
+        position: relative;
+        transition: all 2s;
+        animation: 3s infinite rotate;
       }
-    }
 
-    /* styling for specific request result */
-    .head {
-      margin: 0.5em 0;
-      text-align: center;
-      color: darkorange;
-    }
+      @keyframes rotate {
+        from {
+          transform: rotateZ(0deg);
+        }
 
-    #response-box {
-      display: none;
-      width: 90%;
-      min-height: 8em;
-      border-radius: 1em;
-      padding: 1em;
-      opacity: 0;
-      transition: all 2s;
-      margin-bottom: 1em;
-    }
-
-    .mark {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 200%;
-      width: 2em;
-      height: 2em;
-      margin: 0 auto;
-      box-shadow: black 0 0 10px -3px;
-      border-radius: 50%;
-      animation: 5s infinite alternate spin;
-      animation-delay: 5s;
-    }
-
-    .email {
-      color: orange;
-      border-radius: 0.25em;
-      padding: 0.25em;
-      display: inline-block;
-      margin-top: 0.25em;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotateY(360deg);
+        to {
+          transform: rotateZ(360deg);
+        }
       }
-    }
 
-    #trans-dcrp {
-      padding-left: 1em;
-    }
+      #loader > * {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: thin solid #112;
+      }
 
-    footer {
-      width: 100%;
-      padding: 10px;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      border-radius: 20px 20px 0 0;
-    }
+      .x {
+        animation: 3s infinite alternate x;
+      }
 
-    footer button {
-      height: 2.5em;
-      background-color: darkorange;
-      border: none;
-      border-radius: 1em;
-      padding: 0.5em 1em;
-      color: white;
-    }
+      @keyframes x {
+        from {
+          transform: rotateX(0deg);
+        }
 
-    .green {
-      color: green;
-    }
+        to {
+          transform: rotateX(360deg);
+        }
+      }
 
-    .red {
-      color: red;
-    }
+      .y {
+        animation: 3s infinite alternate y;
+      }
 
-    .blue {
-      color: #005;
-    }
+      @keyframes y {
+        from {
+          transform: rotateZ(0deg);
+        }
 
-    /* generic styles */
-    .bg-prp,
-    .bg-drkb {
-      background-color: #112;
-    }
+        to {
+          transform: rotateY(360deg);
+        }
+      }
 
-    .bg-white {
-      background-color: white;
-    }
+      /* styling for specific request result */
+      .head {
+        margin: 0.5em 0;
+        text-align: center;
+        color: darkorange;
+      }
 
-    .clrw {
-      color: white;
-    }
+      #response-box {
+        display: none;
+        width: 90%;
+        min-height: 8em;
+        border-radius: 1em;
+        padding: 1em;
+        opacity: 0;
+        transition: all 2s;
+        margin-bottom: 1em;
+      }
 
-    .flex {
-      display: flex;
-      align-items: center;
-    }
+      .mark {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 200%;
+        width: 2em;
+        height: 2em;
+        margin: 0 auto;
+        box-shadow: black 0 0 10px -3px;
+        border-radius: 50%;
+        animation: 5s infinite alternate spin;
+        animation-delay: 5s;
+      }
 
-    .flex-col {
-      flex-direction: column;
-    }
+      .email {
+        color: orange;
+        border-radius: 0.25em;
+        padding: 0.25em;
+        display: inline-block;
+        margin-top: 0.25em;
+      }
 
-    .flex-sp-btw {
-      justify-content: space-between;
-    }
+      @keyframes spin {
+        to {
+          transform: rotateY(360deg);
+        }
+      }
 
-    .flex-sp-ar {
-      justify-content: space-around;
-    }
+      #trans-dcrp {
+        padding-left: 1em;
+      }
 
-    .flex-justify-center {
-      justify-content: center;
-    }
+      footer {
+        width: 100%;
+        padding: 10px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        border-radius: 20px 20px 0 0;
+      }
 
-    .flex-col {
-      flex-direction: column;
-    }
+      footer button {
+        height: 2.5em;
+        background-color: darkorange;
+        border: none;
+        border-radius: 1em;
+        padding: 0.5em 1em;
+        color: white;
+      }
 
-    .flex-align-start {
-      align-items: flex-start;
-    }
-  </style>
-</head>
+      .green {
+        color: green;
+      }
 
-<body>
-  <nav id="nav-menu" class="border-r20 bg-white l-border small">
-    <svg id="cancel-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="15" y1="9" x2="9" y2="15" />
-      <line x1="9" y1="9" x2="15" y2="15" />
-    </svg>
-    <a href="/buy-data" class="l-border txt-cent">Buy Data</a>
-    <a href="/buy-airtime" class="l-border txt-cent">Buy Airtime</a>
-    <a href="" class="l-border txt-cent">Chat BotSub</a>
-    <a href="data-pricing" class="l-border txt-cent">View Data Pricing</a>
-    <a href="report-issue" class="l-border txt-cent">Report An Issue</a>
-    <a href="/#about-us" class="l-border txt-cent">About Us</a>
-  </nav>
-  <br />
-  <header class="bg-white flex flex-sp-ar">
-    <svg class="l-border" onclick="home()" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-      fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9" />
-      <path d="M9 22V12h6v10M2 10.6L12 2l10 8.6" />
-    </svg>
-    <span class="l-border bg-white bold flex flex-jst-cent">After Payment</span>
-    <svg id="menu-icon" class="padding-10 bg-darkorange" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 12h18M3 6h18M3 18h18" />
-    </svg>
-  </header>
+      .red {
+        color: red;
+      }
 
-  <div id="response-header" class="bg-white l-border">processing....</div>
+      .blue {
+        color: #005;
+      }
 
-  <div id="status" class="flex flex-justify-center">
-    <div id="loader" class="shdw flex flex-justify-center">
-      <div class="x"></div>
-      <div class="y"></div>
+      /* generic styles */
+      .bg-prp,
+      .bg-drkb {
+        background-color: #112;
+      }
+
+      .bg-white {
+        background-color: white;
+      }
+
+      .clrw {
+        color: white;
+      }
+
+      .flex {
+        display: flex;
+        align-items: center;
+      }
+
+      .flex-col {
+        flex-direction: column;
+      }
+
+      .flex-sp-btw {
+        justify-content: space-between;
+      }
+
+      .flex-sp-ar {
+        justify-content: space-around;
+      }
+
+      .flex-justify-center {
+        justify-content: center;
+      }
+
+      .flex-col {
+        flex-direction: column;
+      }
+
+      .flex-align-start {
+        align-items: flex-start;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav id="nav-menu" class="border-r20 bg-white l-border small">
+      <svg
+        id="cancle-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
+      </svg>
+      <a href="/buy-data" class="l-border txt-cent">Buy Data</a>
+      <a href="/buy-airtime" class="l-border txt-cent">Buy Airtime</a>
+      <a href="" class="l-border txt-cent">Chat BotSub</a>
+      <a href="data-pricing" class="l-border txt-cent">View Data Pricing</a>
+      <a href="report-issue" class="l-border txt-cent">Report An Issue</a>
+      <a href="/#about-us" class="l-border txt-cent">About Us</a>
+    </nav>
+    <br />
+    <header class="bg-white flex flex-sp-ar">
+      <svg
+        class="l-border"
+        onclick="home()"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#000000"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9" />
+        <path d="M9 22V12h6v10M2 10.6L12 2l10 8.6" />
+      </svg>
+      <span class="l-border bg-white bold flex flex-jst-cent">After Payment</span>
+      <svg
+        id="menu-icon"
+        class="padding-10 bg-darkorange"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 12h18M3 6h18M3 18h18" />
+      </svg>
+    </header>
+
+    <div id="response-header" class="bg-white l-border">processing....</div>
+
+    <div id="status" class="flex flex-justify-center">
+      <div id="loader" class="shdw flex flex-justify-center">
+        <div class="x"></div>
+        <div class="y"></div>
+      </div>
+      <div id="response-box" class="shdw"></div>
     </div>
-    <div id="response-box" class="shdw"></div>
-  </div>
-</body>
+  </body>
 
-<script>
-  function home() {
-    const ele = event.target;
-    ele.style.backgroundColor = 'darkorange';
-    setTimeout(() => {
-      ele.style.backgroundColor = 'transparent';
-      window.location = '/';
-    }, 200);
-  }
-
-  const menuIcon = document.getElementById('menu-icon');
-  const navMenu = document.getElementById('nav-menu');
-  const hideIcon = document.getElementById('cancel-icon');
-  let menuFlag = 'hidden';
-
-  menuIcon.addEventListener('click', toggleNavMenu);
-  navMenu.addEventListener('click', toggleNavMenu);
-
-  // function to show nav bar
-  function toggleNavMenu() {
-    if (menuFlag === 'hidden') {
-      navMenu.style.top = '10px';
-      menuIcon.style.opacity = '0.4';
-      hideIcon.style.backgroundColor = 'transparent';
-      menuFlag = 'visible';
-    } else {
-      navMenu.style.top = '-800px';
-      hideIcon.style.backgroundColor = 'darkorange';
-      menuIcon.style.opacity = '1';
-      menuFlag = 'hidden';
+  <script>
+    function home() {
+      const ele = event.target;
+      ele.style.backgroundColor = 'darkorange';
+      setTimeout(() => {
+        ele.style.backgroundColor = 'transparent';
+        window.location = '/';
+      }, 200);
     }
-    console.log(navMenu.style.left);
-    console.log(navMenu.style.display);
-  } // end of toggle navMenuv
 
-  let leftHeader = document.querySelector('#response-header');
-  let loader = document.querySelector('#loader');
-  let responseBox = document.querySelector('#response-box');
-  let mockData = {
-    status: 'successful',
-    data: {
-      product: '1GB',
-      price: '400',
-      number: '08188146243',
-      network: 'mtn',
-      email: 'bellokhalid74@gmail.com',
-      date: '05-06-2023',
-    },
-  };
+    const menuIcon = document.getElementById('menu-icon');
+    const navMenu = document.getElementById('nav-menu');
+    const hideIcon = document.getElementById('cancle-icon');
+    let menuFlag = 'hidden';
 
-  // function to fetch transaction
+    menuIcon.addEventListener('click', toggleNavMenu);
+    navMenu.addEventListener('click', toggleNavMenu);
 
-  async function fetchTransaction() {
-    const url = new URL(window.location.href);
-    const queries = url.searchParams;
-    const transaction_id = queries.get('transaction_id');
-    const tx_ref = queries.get('tx_ref');
+    // function to show nav bar
+    function toggleNavMenu() {
+      if (menuFlag === 'hidden') {
+        navMenu.style.top = '10px';
+        menuIcon.style.opacity = '0.4';
+        hideIcon.style.backgroundColor = 'transparent';
+        menuFlag = 'visible';
+      } else {
+        navMenu.style.top = '-800px';
+        hideIcon.style.backgroundColor = 'darkorange';
+        menuIcon.style.opacity = '1';
+        menuFlag = 'hidden';
+      }
+      console.log(navMenu.style.left);
+      console.log(navMenu.style.display);
+    } // end of toggle navMenuv
 
-    try {
-      let response = await fetch(
-        `gateway/confirm?transaction_id=${transaction_id}&tx_ref=${tx_ref}`
-      );
-      response = await response.json();
-      console.error('transaction fetch response', response);
-      showResponse(response);
-    } catch (err) {
-      console.error('error in fetching transaction', err);
-      leftHeader.innerHTML = 'failed';
-      responseBox.innerHTML = 'failed';
-      showResponse({ status: 'error' });
+    let leftHeader = document.querySelector('#response-header');
+    let loader = document.querySelector('#loader');
+    let responseBox = document.querySelector('#response-box');
+    let mockData = {
+      status: 'successful',
+      data: {
+        product: '1GB',
+        price: '400',
+        number: '08188146243',
+        network: 'mtn',
+        email: 'bellokhalid74@gmail.com',
+        date: '05-06-2023',
+      },
+    };
+
+    // function to fetch transaction
+
+    async function fetchTransaction() {
+      const url = new URL(window.location.href);
+      const queries = url.searchParams;
+      const transaction_id = queries.get('transaction_id');
+      const tx_ref = queries.get('tx_ref');
+
+      try {
+        let response = await fetch(
+          `gateway/confirm?transaction_id=${transaction_id}&tx_ref=${tx_ref}`
+        );
+        response = await response.json();
+        console.error('transaction fetch response', response);
+        showResponse(response);
+      } catch (err) {
+        console.error('error in fetching transaction', err);
+        leftHeader.innerHTML = 'failed';
+        responseBox.innerHTML = 'failed';
+        showResponse({ status: 'error' });
+      }
+    } // end of fetchTransaction
+
+    // function to hide element
+    function hide(ele) {
+      ele.style.opacity = 0;
+      setTimeout(() => (ele.style.display = 'none'), 2000);
     }
-  } // end of fetchTransaction
 
-  // function to hide element
-  function hide(ele) {
-    ele.style.opacity = 0;
-    setTimeout(() => (ele.style.display = 'none'), 2000);
-  }
+    // function to show info box and display fetch response
+    function showResponse(response) {
+      let show = false;
 
-  // function to show info box and display fetch response
-  function showResponse(response) {
-    let show = false;
-
-    loader.style.opacity = 0;
-    setTimeout(() => (loader.style.display = 'none'), 2000);
-    if (response.status === 'successful') {
-      let data = response.data;
-      leftHeader.innerHTML = 'successful';
-      loader.style.display = 'none';
-      responseBox.innerHTML = `
+      loader.style.opacity = 0;
+      setTimeout(() => (loader.style.display = 'none'), 2000);
+      if (response.status === 'successful') {
+        let data = response.data;
+        leftHeader.innerHTML = 'successful';
+        loader.style.display = 'none';
+        responseBox.innerHTML = `
      <div>
       <div class="mark green" class="shdw flex
         flex-justify-center"> &#10004;  </div>
@@ -364,10 +394,10 @@
        <em class="l-border email">${data.email}</em>
      </div>
     </div>`;
-    } else if (response.status === 'settled') {
-      let data = response.data;
-      leftHeader.innerHTML = 'Delivered';
-      responseBox.innerHTML = `
+      } else if (response.status === 'settled') {
+        let data = response.data;
+        leftHeader.innerHTML = 'Delivered';
+        responseBox.innerHTML = `
       <div class="mark blue" class="shdw flex flex-justify-center"> !  </div>
       <div class="rep-title bold head">
        Prevously Concluded Transaction
@@ -382,10 +412,10 @@
        &nbsp; &nbsp;
        <em class="l-border email">${data.email}</em>
       </div>`;
-    } else if (response.status === 'pending') {
-      let data = response.data;
-      leftHeader.innerHTML = 'Pending';
-      responseBox.innerHTML = `
+      } else if (response.status === 'pending') {
+        let data = response.data;
+        leftHeader.innerHTML = 'Pending';
+        responseBox.innerHTML = `
       <div class="mark blue" class="shdw flex flex-justify-center"> !  </div>
       <div class="rep-title bold head">
        Pending Transaction
@@ -401,36 +431,35 @@
        &nbsp; &nbsp;
        <em class="l-border email">${data.email}</em>
       </div>`;
-    } else if (response.status === 'error') {
-      leftHeader.innerHTML = 'error';
-      leftHeader.style.color = 'red';
-      responseBox.innerHTML = `
+      } else if (response.status === 'error') {
+        leftHeader.innerHTML = 'error';
+        leftHeader.style.color = 'red';
+        responseBox.innerHTML = `
        <div class="mark red" class="shdw flex flex-justify-center">×</div>
        <br>
        <strong>an error occured</strong> 
        navigate to homepage or try reloading page`;
-    } else {
-      leftHeader.innerHTML = 'error';
-      leftHeader.style.color = 'red';
-      loader.style.display = 'none';
-      responseBox.innerHTML = 'something went wrong pls navigate to home page';
+      } else {
+        leftHeader.innerHTML = 'error';
+        leftHeader.style.color = 'red';
+        loader.style.display = 'none';
+        responseBox.innerHTML = 'something went wrong pls navigate to home page';
+      }
+      setTimeout(() => (responseBox.style.display = 'block'), 2100);
+      setTimeout(() => (responseBox.style.opacity = 1), 2200);
+    } //end of showResponse
+
+    //function to be called by buy buttons
+    function changeLocation(location) {
+      let ele = event.target;
+
+      ele.style.opacity = 0.6;
+      setTimeout(() => {
+        window.location = location;
+        ele.style.opacity = 1;
+      }, 300);
     }
-    setTimeout(() => (responseBox.style.display = 'block'), 2100);
-    setTimeout(() => (responseBox.style.opacity = 1), 2200);
-  } //end of showResponse
 
-  //function to be called by buy buttons
-  function changeLocation(location) {
-    let ele = event.target;
-
-    ele.style.opacity = 0.6;
-    setTimeout(() => {
-      window.location = location;
-      ele.style.opacity = 1;
-    }, 300);
-  }
-
-  fetchTransaction();
-</script>
-
+    fetchTransaction();
+  </script>
 </html>

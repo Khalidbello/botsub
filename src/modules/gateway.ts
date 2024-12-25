@@ -23,11 +23,12 @@ async function createVAccount(
   console.log('viertual account current count is: ', currentCount);
 
   if (currentCount > 5) {
-    await sendMessage(senderId, { text: 'Creation of dedicated virtual account failed.' });
     await sendMessage(senderId, {
-      text: 'Please kindly select my account to restart process and ensure all provided infrmations are accurate ',
+      text: 'An error occured trying to create your vierual account.',
     });
-    sendMessage(senderId, { text: defaultText });
+    await sendMessage(senderId, {
+      text: 'Please renter BVN to proceed with creation of virtual account. \n\nEnter X to cancle.',
+    });
     return;
   }
 
@@ -72,6 +73,12 @@ async function createVAccount(
     if (user?.purchasePayload) {
       await sendMessage(senderId, { text: 'Creation of permanent account number was succesful.' });
       initMakePurchase(senderId);
+      const resonse = await BotUsers.updateOne(
+        { id: senderId },
+        { $set: { nextAction: 'confirmProductPurchase' } }
+      );
+
+      console.log('Updated to confirmDataPurhcase in create v account: ', resonse);
       return;
     }
 
@@ -85,6 +92,9 @@ async function createVAccount(
     await sendMessage(senderId, {
       text: 'Fund permanent account and make purchases with ease.',
     });
+
+    const response = await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+    console.log('updated next action to null in createVaccount: ', response);
   } catch (error) {
     console.log('in virtual account catch error:::', currentCount, error);
     return createVAccount(email, senderId, bvn, botType, currentCount + 1);
