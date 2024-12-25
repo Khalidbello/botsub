@@ -33,7 +33,8 @@ const createFailedAuoRetryInterval = () => {
 const setAutoRetryTrue = () => {
   autoRetry = true;
 };
-//createFailedAuoRetryInterval();
+
+createFailedAuoRetryInterval();
 
 const adminRouter = Router();
 

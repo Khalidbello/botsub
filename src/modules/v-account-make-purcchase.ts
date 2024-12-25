@@ -213,7 +213,7 @@ async function addToDelivered(id: string, purchasePayload: any, senderId: string
     newTransaction = new Transactions({
       id: id,
       email: purchasePayload.email,
-      status: true,
+      status: 'delivered',
       date: Date(),
       product: product,
       beneficiary: parseInt(purchasePayload.phoneNumber),
