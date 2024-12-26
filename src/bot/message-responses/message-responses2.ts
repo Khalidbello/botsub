@@ -4,8 +4,9 @@ import { sendMessage } from '../modules/send_message';
 import { generateAccountNumber } from './generic';
 
 const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
+  const senderId = event.sender.id;
+
   try {
-    const senderId = event.sender.id;
     const message = event.message.text.trim().toLowerCase();
 
     if (message === 'x') {
@@ -37,7 +38,20 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
       await confirmDataPurchaseResponse(senderId, user, null);
       return;
     }
+
+    await sendMessage(senderId, { text: 'Invalid response recieved.' });
+    sendMessage(senderId, {
+      text:
+        'Select Payment method. \n\nA. Create a virtual account for quick and hassle-free future payments.' +
+        ' \n\nB. Use a one-time account number for this transaction only. \n\nEnter X to cancle.',
+    });
   } catch (err: any) {
+    sendMessage(senderId, { text: 'An error occured please try again.' });
+    sendMessage(senderId, {
+      text:
+        'Select Payment method. \n\nA. Create a virtual account for quick and hassle-free future payments.' +
+        ' \n\nB. Use a one-time account number for this transaction only. \n\nEnter X to cancle.',
+    });
     console.error('An error occured in handleSelectPaymentMethod: ', err);
   }
 };
