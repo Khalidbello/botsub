@@ -9,6 +9,7 @@ import axios from 'axios';
 import { defaultText } from '../bot/message-responses/generic';
 import { checkPaymentValidity } from '../bot/modules/helper_function_2';
 import { deliverValue } from './deliver-value';
+import WalletFundings from '../models/wallet-funding';
 
 const Flutterwave = require('flutterwave-node-v3');
 
@@ -146,6 +147,24 @@ async function respondToWebhook(webhookPayload: any, res: Response, host: string
       return;
     }
 
+    // check if top up had not been carried out before it true save and update user balance
+    const topUpExits = await WalletFundings.findOne({ transactionId: id });
+
+    if (topUpExits) {
+      console.timeLog('This top up already exits', topUpExits);
+      return;
+    }
+
+    // save topUp
+    const newTopUp = new WalletFundings({
+      transactionId: id,
+      email: response.data.customer.email,
+      userId: response.data.meta.senderId,
+      amount: response.data.amount,
+      data: new Date(),
+    });
+    const topUpSaved = await newTopUp.save();
+
     // fetch user account and update user balance
     const account = await PaymentAccounts.findOneAndUpdate(
       { refrence: reference },
@@ -153,7 +172,8 @@ async function respondToWebhook(webhookPayload: any, res: Response, host: string
       { new: true }
     );
 
-    console.log('account in wallet topup', account);
+    console.log('account in wallet topup', account), 'top up saved: ', topUpSaved;
+
     if (account?.botType === 'facebook') {
       // send botuser a notification to
       await sendMessage(reference, {
