@@ -24,18 +24,19 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
         text: ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter X to quit.',
       });
       await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
+      return;
     }
 
     if (message === 'b') {
       // await generateAccountNumber(event, transactNum);
-      const user = await BotUsers.findOneAndUpdate(
-        { id: senderId },
-        { $set: { nextAction: 'confirmProductPurchase' } }
-      );
       await sendMessage(senderId, {
-        text: 'Creation of one time account is currently not available. \nKindly create a permanent account to proceed  with purchase.',
+        text: 'Creation of one-time account is currently not available. \n\nKindly create a permanent account to proceed with transaction.',
       });
-      await confirmDataPurchaseResponse(senderId, user, null);
+      sendMessage(senderId, {
+        text:
+          'Select Payment method. \n\nA. Create a Permanent virtual account number. will be used for all future transactions.' +
+          ' \n\nB. Use a one-time account number. Valid for this transaction only. \n\nEnter X to cancle.',
+      });
       return;
     }
 
