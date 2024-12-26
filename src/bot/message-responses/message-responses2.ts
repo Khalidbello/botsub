@@ -17,14 +17,24 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
       await confirmDataPurchaseResponse(senderId, user, null);
       return;
     }
+
     if (message === 'a') {
       sendMessage(senderId, {
         text: ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter X to quit.',
       });
       await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
     }
+
     if (message === 'b') {
-      await generateAccountNumber(event, transactNum);
+      // await generateAccountNumber(event, transactNum);
+      const user = await BotUsers.findOneAndUpdate(
+        { id: senderId },
+        { $set: { nextAction: 'confirmProductPurchase' } }
+      );
+      await sendMessage(senderId, {
+        text: 'Creation of one time account is currently not available. \nKindly create a permanent account to proceed  with purchase.',
+      });
+      await confirmDataPurchaseResponse(senderId, user, null);
       return;
     }
   } catch (err: any) {
