@@ -81,8 +81,8 @@ async function selectPurchaseMethod(event: any, transactNum: number) {
 
   sendMessage(senderId, {
     text:
-      'Select Payment method. \n\nA. Create a virtual account for quick and hassle-free future payments.' +
-      ' \n\nB. Use a one-time account number for this transaction only. \n\nEnter X to cancle.',
+      'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
+      ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancle.',
   });
   await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAccount' } });
   //await generateAccountNumber(event, transactNum);

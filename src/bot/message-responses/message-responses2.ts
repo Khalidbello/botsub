@@ -28,30 +28,30 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
     }
 
     if (message === 'b') {
-      // await generateAccountNumber(event, transactNum);
-      await sendMessage(senderId, {
-        text: 'Creation of one-time account is currently not available. \n\nKindly create a permanent account to proceed with transaction.',
-      });
-      sendMessage(senderId, {
-        text:
-          'Select Payment method. \n\nA. Create a Permanent virtual account number. will be used for all future transactions.' +
-          ' \n\nB. Use a one-time account number. Valid for this transaction only. \n\nEnter X to cancle.',
-      });
+      await generateAccountNumber(event, transactNum);
+      // await sendMessage(senderId, {
+      //   text: 'Creation of one-time account is currently not available. \n\nKindly create a permanent account to proceed with transaction.',
+      // });
+      // sendMessage(senderId, {
+      //   text:
+      //     'Select Payment method. \n\nA. Create a Permanent virtual account number. will be used for all future transactions.' +
+      //     ' \n\nB. Use a one-time account number. Valid for this transaction only. \n\nEnter X to cancle.',
+      // });
       return;
     }
 
     await sendMessage(senderId, { text: 'Invalid response recieved.' });
     sendMessage(senderId, {
       text:
-        'Select Payment method. \n\nA. Create a virtual account for quick and hassle-free future payments.' +
-        ' \n\nB. Use a one-time account number for this transaction only. \n\nEnter X to cancle.',
+        'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
+        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancle.',
     });
   } catch (err: any) {
     sendMessage(senderId, { text: 'An error occured please try again.' });
     sendMessage(senderId, {
       text:
-        'Select Payment method. \n\nA. Create a virtual account for quick and hassle-free future payments.' +
-        ' \n\nB. Use a one-time account number for this transaction only. \n\nEnter X to cancle.',
+        'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
+        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancle.',
     });
     console.error('An error occured in handleSelectPaymentMethod: ', err);
   }
