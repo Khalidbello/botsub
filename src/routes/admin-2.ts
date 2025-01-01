@@ -2,6 +2,7 @@ import { Response, Request } from 'express';
 import { Router } from 'express';
 import BotUsers from '../models/fb_bot_users';
 import { sendMessage } from '../bot/modules/send_message';
+import { doCustomFlwWebhook, fetchTransactionLists } from '../modules/admin/controls';
 
 const adminRouter2 = Router();
 
@@ -38,5 +39,12 @@ adminRouter2.post('/set-bot-response/:senderId', async (req: Request, res: Respo
   }
 });
 
+// route to get lsit of all specfic transaction from flutterwave, from specific date to specific date
+adminRouter2.get('/list-transactions', (req: Request, res: Response) =>
+  fetchTransactionLists(req, res)
+);
+
+// route to carry out custom webhook  // basiclally thsi just calls the handle webhook function with transaction details to carry redo process
+adminRouter2.post('custom-flw-webhook', (req, res) => doCustomFlwWebhook(req, res));
 //
 export default adminRouter2;

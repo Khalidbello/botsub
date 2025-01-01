@@ -1,7 +1,7 @@
 {
   "MTN": {
-    "status": true,
-    "info": "Activated by admin"
+    "status": false,
+    "info": "In simulation, data delivery for network not going through"
   },
   "Glo": {
     "status": true,

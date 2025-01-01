@@ -4,12 +4,12 @@ import fs from 'fs';
 import ReportedIssues from '../../models/reported-issues';
 import Transactions from '../../models/transactions';
 import { sendMessage } from '../../bot/modules/send_message';
-import axios from 'axios';
 import { updateNetworkStatus } from '../../bot/modules/data-network-checker';
 import BotUsers from '../../models/fb_bot_users';
 import { dateFormatter } from '../helper_functions';
-import { carryOutNonVAccount } from '../gateway';
+import { carryOutNonVAccount, respondToWebhook } from '../gateway';
 const Flutterwave = require('flutterwave-node-v3');
+import axios from 'axios';
 
 async function getNetworkStatus(req: Request, res: Response) {
   // Read the file content
@@ -106,7 +106,7 @@ async function retryTransaction(transactionId: string, txRef: string, res: Respo
 
 // function to ssettle transaction
 async function settleTransaction(transactionId: string, senderId: string, res: Response) {
-  await Transactions.updateOne({ id: transactionId }, { $set: { status: true } });
+  await Transactions.updateOne({ id: transactionId }, { $set: { status: 'settled' } });
 
   try {
     sendMessage(senderId, {
@@ -119,6 +119,56 @@ async function settleTransaction(transactionId: string, senderId: string, res: R
   res.json({ status: true });
 }
 
+// function to ftch trnsacction list
+const fetchTransactionLists = async (req: Request, res: Response) => {
+  try {
+    const { from, to, status } = req.body;
+
+    if (!from || !to) return res.status(400).json({ message: 'bad request date limit not set' });
+    if (!status) return res.status(400).json({ message: 'bad request, status not set' });
+
+    const options = {
+      method: 'POST',
+      url: 'https://api.ravepay.co/v2/gpx/transactions/query',
+      headers: { accept: 'application/json', 'Content-Type': 'application/json' },
+      data: {
+        seckey: process.env.FLW_SCRT_KEY,
+        from: from,
+        to: to,
+        currency: 'NGN',
+        status: status,
+      },
+    };
+
+    const response = await axios.request(options);
+    const data = await response.data;
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'An error occured getting trnasactions listing.' });
+    console.error('An error occured in list-transactions adminRouter 2', err);
+  }
+};
+
+// fucnton to initiate custom webhoo
+const doCustomFlwWebhook = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.body;
+
+    if (!id) return res.status(400).json({ message: 'Bad request, id not provided.' });
+
+    const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
+    const resp = await flw.Transaction.verify({ id: id }); // check again if transaction is succesful
+
+    console.log('transaction details:::: ', resp);
+    if (!resp) return res.status(404).json({ message: 'No transasction with id found' });
+
+    const response = respondToWebhook(resp, res, 'custom');
+  } catch (err) {
+    res.status(500).json({ error: 'An arryng out custom webhook' });
+    console.error('An error occured in carrying out custom webhook, in doCustomFlwWebhook', err);
+  }
+};
+
 export {
   getNetworkStatus,
   setNetworkStatus,
@@ -128,4 +178,6 @@ export {
   fetchPedndingTransactions,
   retryTransaction,
   settleTransaction,
+  fetchTransactionLists,
+  doCustomFlwWebhook,
 };

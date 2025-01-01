@@ -103,7 +103,7 @@ async function createVAccount(
 } // end of create virtual account
 
 // webhook handler function to handle updating user balance
-async function respondToWebhook(webhookPayload: any, res: Response, host: string) {
+async function respondToWebhook(webhookPayload: any, res: Response, type: string) {
   const data = webhookPayload.data || webhookPayload;
   if (data.status.toLowerCase() !== 'successful') {
     console.error(
@@ -116,7 +116,7 @@ async function respondToWebhook(webhookPayload: any, res: Response, host: string
   const reference = Number(data.txRef) || Number(data.tx_ref); // this vlaue is same as that of bot user sender id
   const amount = Number(data.amount);
   try {
-    res.status(200).send(); // return ok response to webhook
+    if (type !== 'costum') res.status(200).send(); // return ok response to webhook
     // verify if payment was made
     const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
 
