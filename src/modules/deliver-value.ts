@@ -143,7 +143,7 @@ const simulateMakePurchaseRequest = async (
   type: 'data' | 'airtime'
 ): Promise<{ status: boolean; message: string }> => {
   try {
-    if (condition) {
+    if (false && condition) {
       await updateTransactNum(response.data.meta.senderId);
       await updateNetworkStatus(
         response.data.meta.network,

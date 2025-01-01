@@ -97,7 +97,7 @@ const noCacheMiddleware = (req: Request, res: Response, next: NextFunction) => {
 // Use the middleware for all routes
 app.use(
   cors({
-    origin: 'https://botsub.vercel.app',
+    origin: ['https://botsub.vercel.app', 'http://localhost:3000'],
     credentials: true,
   })
 );

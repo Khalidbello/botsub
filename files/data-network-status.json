@@ -1,18 +1,18 @@
 {
   "MTN": {
     "status": true,
-    "info": "In simulation data network working fine."
+    "info": "Activated by admin"
   },
   "Glo": {
     "status": true,
-    "info": "In simulation data network working fine."
+    "info": "Activated by admin"
   },
   "9mobile": {
     "status": true,
-    "info": "Working"
+    "info": "Activated by admin"
   },
   "Airtel": {
     "status": true,
-    "info": "Working"
+    "info": "Activated by admin"
   }
 }
