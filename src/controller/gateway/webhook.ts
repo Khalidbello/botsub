@@ -17,7 +17,7 @@ const webhook = async (req: Request, res: Response) => {
 
     console.log('btw hook body', payload);
 
-    respondToWebhook(payload, res, 'non-custom');
+    respondToWebhook(payload?.data?.id || payload.id, res, false);
   } catch (err: any) {
     res.status(300).send('an error occured');
     console.error('error in webhook::::::::::::::::::::::::::    value of flag:::::::::   ', flag);

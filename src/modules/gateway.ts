@@ -103,47 +103,33 @@ async function createVAccount(
 } // end of create virtual account
 
 // webhook handler function to handle updating user balance
-async function respondToWebhook(webhookPayload: any, res: Response, type: string) {
-  const data = webhookPayload.data || webhookPayload;
-  if (data.status.toLowerCase() !== 'successful') {
-    console.error(
-      'transaction not succesful::::::::::::: account funding not sucesfully carried out'
-    ); // check if transaction was succesful
-    return;
-  }
-
-  const id = data.id;
-  const reference = Number(data.txRef) || Number(data.tx_ref); // this vlaue is same as that of bot user sender id
-  const amount = Number(data.amount);
+async function respondToWebhook(id: any, res: Response, custom: boolean) {
   try {
-    if (type !== 'costum') res.status(200).send(); // return ok response to webhook
-    // verify if payment was made
+    // reverify if payment was made
     const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
 
     const response = await flw.Transaction.verify({ id: id }); // check again if transaction is succesful
     console.log('transaction details', response);
 
-    if (response.status === 'error') {
-      console.log('error occured while confirming tansacion');
-      return;
-    }
-
     if (response.data.status.toLowerCase() !== 'successful') {
       console.log('transaction not successfully carried out: in wallet top up');
-      return;
+      return res.status(300).json({ message: 'Payment not successfully carried out' });
     }
+
+    if (!custom) res.status(200).send(); // return ok response to webhook
 
     console.log(
       'reference in wallet topup: ',
-      reference,
-      data,
+      response.data.tx_ref,
       'reponse from v3 query: ',
       response
     );
 
     // check if transaction was made by user with no virtual account
     if (response.data.meta && response.data.meta.type) {
-      await carryOutNonVAccount(response);
+      const noVaccountResponse = await carryOutNonVAccount(response, custom);
+      console.log('response for no v account: ', noVaccountResponse);
+      if (custom) return res.json(noVaccountResponse);
       return;
     }
 
@@ -151,7 +137,8 @@ async function respondToWebhook(webhookPayload: any, res: Response, type: string
     const topUpExits = await WalletFundings.findOne({ transactionId: id });
 
     if (topUpExits) {
-      console.timeLog('This top up already exits', topUpExits);
+      console.log('This top up already exits', topUpExits);
+      if (custom) res.json({ messae: 'wallet topup already exits' });
       return;
     }
 
@@ -167,8 +154,8 @@ async function respondToWebhook(webhookPayload: any, res: Response, type: string
 
     // fetch user account and update user balance
     const account = await PaymentAccounts.findOneAndUpdate(
-      { refrence: reference },
-      { $inc: { balance: amount } },
+      { refrence: response.data.tx_ref },
+      { $inc: { balance: response.data.amount } },
       { new: true }
     );
 
@@ -176,16 +163,24 @@ async function respondToWebhook(webhookPayload: any, res: Response, type: string
 
     if (account?.botType === 'facebook') {
       // send botuser a notification to
-      await sendMessage(reference, {
-        text: `Your account account topup of ₦${amount} was successful.`,
+      await sendMessage(response.data.tx_ref, {
+        text: `Your account account topup of ₦${response.data.amount} was successful.`,
       });
-      await sendMessage(reference, { text: `Your new account balance is: ₦${account.balance}` });
+      await sendMessage(response.data.tx_ref, {
+        text: `Your new account balance is: ₦${account.balance}`,
+      });
 
       // check if user has an outsanding transaction and automatic initiate if any
-      const response = await BotUsers.findOne({ id: reference }).select('purchasePayload');
-      const purchasePayload = response?.purchasePayload;
+      const resp = await BotUsers.findOne({ id: response.data.tx_ref }).select('purchasePayload');
+      const purchasePayload = resp?.purchasePayload;
 
-      if (purchasePayload?.outStanding) initMakePurchase(reference);
+      if (purchasePayload?.outStanding) await initMakePurchase(response.data.tx_ref);
+    }
+
+    if (custom) {
+      return res.json({
+        message: 'user wallet topup sucessfull, user balance: ' + account?.balance,
+      });
     }
   } catch (error) {
     console.error('an error ocured wallet topping up:::::::::::::::::         ', error);
@@ -194,7 +189,8 @@ async function respondToWebhook(webhookPayload: any, res: Response, type: string
 
 // helper function to carry out non-v-account purchase request
 const carryOutNonVAccount = async (
-  response: any
+  response: any,
+  custom: boolean
 ): Promise<{ status: boolean; message: string } | undefined> => {
   try {
     // check is payment is as expected
@@ -213,7 +209,7 @@ const carryOutNonVAccount = async (
       };
 
     // deliver value
-    const result = await deliverValue(response);
+    const result = await deliverValue(response, custom);
     return result;
   } catch (err) {}
 }; // end of carryOutVAccount

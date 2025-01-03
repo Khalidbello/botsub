@@ -149,7 +149,7 @@ const retryAllFaledTransactions = async () => {
 
       const tPromise = transactions.map(async (trnasaction) => {
         const response = await flw.Transaction.verify({ id: trnasaction.id }); // check again if transaction is succesful
-        carryOutNonVAccount(response);
+        carryOutNonVAccount(response, true);
       });
 
       await Promise.all(tPromise);

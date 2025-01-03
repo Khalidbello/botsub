@@ -97,7 +97,7 @@ async function retryTransaction(transactionId: string, txRef: string, res: Respo
       });
     }
 
-    const result = await carryOutNonVAccount(response);
+    const result = await carryOutNonVAccount(response, true);
     res.json(result);
   } catch (err) {
     console.error('An error occured in retry retryTransaction: ');
@@ -122,7 +122,7 @@ async function settleTransaction(transactionId: string, senderId: string, res: R
 // function to ftch trnsacction list
 const fetchTransactionLists = async (req: Request, res: Response) => {
   try {
-    const { from, to, status } = req.body;
+    const { from, to, status } = req.params;
 
     if (!from || !to) return res.status(400).json({ message: 'bad request date limit not set' });
     if (!status) return res.status(400).json({ message: 'bad request, status not set' });
@@ -152,19 +152,13 @@ const fetchTransactionLists = async (req: Request, res: Response) => {
 // fucnton to initiate custom webhoo
 const doCustomFlwWebhook = async (req: Request, res: Response) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
 
     if (!id) return res.status(400).json({ message: 'Bad request, id not provided.' });
 
-    const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-    const resp = await flw.Transaction.verify({ id: id }); // check again if transaction is succesful
-
-    console.log('transaction details:::: ', resp);
-    if (!resp) return res.status(404).json({ message: 'No transasction with id found' });
-
-    const response = respondToWebhook(resp, res, 'custom');
+    respondToWebhook(id, res, true);
   } catch (err) {
-    res.status(500).json({ error: 'An arryng out custom webhook' });
+    //res.status(500).json({ error: 'An arryng out custom webhook' });
     console.error('An error occured in carrying out custom webhook, in doCustomFlwWebhook', err);
   }
 };

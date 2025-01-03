@@ -6,29 +6,40 @@ import axios from 'axios';
 import { updateTransactNum } from '../bot/modules/helper_function_2';
 import { helpFailedDelivery, helpSuccesfulDelivery } from './deliver-value-helpers';
 import { setAutoRetryTrue } from '../routes/admin';
+import { dateFormatter } from './helper_functions';
 
 const transactionMutex = new Mutex(); // mutex for delivering transactions
 
 // function to initiate delvering of values
-const deliverValue = async (response: any): Promise<{ status: boolean; message: string }> => {
+const deliverValue = async (
+  response: any,
+  custom: boolean
+): Promise<{ status: boolean; message: string }> => {
   // Attempt to acquire the lock for the transaction
   const release = await transactionMutex.acquire();
   try {
     const transaction = await Transactions.findOne({ id: response.data.id });
+    console.log('trnasactiosn fethced: ', transaction);
     if (transaction?.status === 'delivered') {
       if (response.data.meta.bot) {
-        try {
-          await sendMessage(response.data.meta.senderId, {
-            text: `Sorry this transaction has already been delivered \nProduct: ₦${response.data.meta.size} ${response.data.meta.network} data \nTransaction ID: ${response.data.id} \nDate:`,
-          });
-        } catch (err) {
-          console.error(
-            'an error occurd trying to send bot response for alredy deliered value in deliverValue',
-            err
-          );
+        if (!custom) {
+          try {
+            await sendMessage(response.data.meta.senderId, {
+              text: `Sorry this transaction has already been delivered \nProduct: ₦${
+                response.data.meta.size
+              } ${response.data.meta.network} data \nTransaction ID: ${
+                response.data.id
+              } \nDate: ${dateFormatter(response.data.created_at)}`,
+            });
+          } catch (err) {
+            console.error(
+              'an error occurd trying to send bot response for alredy deliered value in deliverValue',
+              err
+            );
+          }
         }
       }
-      return { status: true, message: 'Transaction has already been settled' };
+      return { status: true, message: 'Transaction has already been delivered.' };
     }
 
     // Proceed with delivery process...
@@ -143,7 +154,7 @@ const simulateMakePurchaseRequest = async (
   type: 'data' | 'airtime'
 ): Promise<{ status: boolean; message: string }> => {
   try {
-    if (condition) {
+    if (false && condition) {
       await updateTransactNum(response.data.meta.senderId);
       await updateNetworkStatus(
         response.data.meta.network,

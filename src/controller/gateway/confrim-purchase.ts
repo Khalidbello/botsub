@@ -25,7 +25,7 @@ const confirmTransaction = async (req: Request, res: Response) => {
 
   // calling function to check if all transaction requirement were met
   let checkRequirement = await checkcheckRequirement(response, req);
-  if (checkRequirement.status) return deliverValue(response);
+  if (checkRequirement.status) return deliverValue(response, false);
 
   // @ts-expect-error calling refund payment if proper conditions were not met
   const finalResp = await refundPayment(response, checkRequirement.price);
