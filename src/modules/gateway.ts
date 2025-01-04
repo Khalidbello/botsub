@@ -113,7 +113,7 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
 
     if (response.data.status.toLowerCase() !== 'successful') {
       console.log('transaction not successfully carried out: in wallet top up');
-      return res.status(300).json({ message: 'Payment not successfully carried out' });
+      return res.status(400).json({status: false, message: 'Payment not successfully carried out' });
     }
 
     if (!custom) res.status(200).send(); // return ok response to webhook
@@ -138,7 +138,7 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
 
     if (topUpExits) {
       console.log('This top up already exits', topUpExits);
-      if (custom) res.json({ messae: 'wallet topup already exits' });
+      if (custom) res.json({status: true, message: 'wallet topup already exits' });
       return;
     }
 
@@ -179,6 +179,7 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
 
     if (custom) {
       return res.json({
+        status: true,
         message: 'user wallet topup sucessfull, user balance: ' + account?.balance,
       });
     }

@@ -40,7 +40,7 @@ adminRouter2.post('/set-bot-response/:senderId', async (req: Request, res: Respo
 });
 
 // route to get lsit of all specfic transaction from flutterwave, from specific date to specific date
-adminRouter2.get('/list-transactions/:from/:to/:status', (req: Request, res: Response) =>
+adminRouter2.get('/list-transactions/:from/:to/:status/:pageNum', (req: Request, res: Response) =>
   fetchTransactionLists(req, res)
 );
 
