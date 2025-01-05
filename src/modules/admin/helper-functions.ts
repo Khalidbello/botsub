@@ -1,5 +1,6 @@
 import Profits from '../../models/profits';
 import Transactions from '../../models/transactions';
+import { getAveTransPerUser } from './helper-function2';
 
 // function to count all transactions
 async function transactionCount(startDate: Date, endDate: Date) {
@@ -19,7 +20,7 @@ async function pendingCount(startDate: Date, endDate: Date) {
     {
       $match: {
         date: { $gte: startDate, $lte: endDate },
-        status: 'refunded',
+        status: 'failed',
       },
     },
     { $count: 'refundedTransCount' },
@@ -70,4 +71,170 @@ async function average(startDate: Date, endDate: Date) {
   return value;
 }
 
-export { transactionCount, pendingCount, successfulCount, profitCount, average };
+///==========================================================================================
+// user specific helpers
+
+// count number of user that made purchse
+const countUsersWithPurchase = async (startDate: Date, endDate: Date) => {
+  try {
+    const result = await Transactions.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$senderId',
+        },
+      },
+      {
+        $count: 'uniqueUserCount',
+      },
+    ]);
+
+    if (result.length < 1) return 0;
+    return result[0].uniqueUserCount;
+  } catch (err) {
+    console.error('An error occured in countUsersWithPurchase: ', err);
+    throw err;
+  }
+};
+
+// get max of min profit profit per user for speific time frame
+const getMaxOrMinProfitPerUserOrPurchaseCount = async (
+  startDate: Date,
+  endDate: Date,
+  max: boolean,
+  profit: boolean
+) => {
+  // query to return top five with highest amount of profit for specific time frame
+  try {
+    const result = await Profits.aggregate([
+      // stage one
+      {
+        $match: {
+          date: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      },
+      // stage two
+      {
+        $group: {
+          _id: '$senderId',
+          totalProfit: { $sum: '$amount' },
+          purchseCount: { $sum: 1 },
+        },
+      },
+      // stage three
+      {
+        $sort: {
+          [profit ? 'totalProfit' : 'purhaseCount']: max ? -1 : 1,
+        },
+      },
+      // stage four
+      {
+        $limit: 5,
+      },
+      // stage five
+      {
+        $project: {
+          _id: 0,
+          totalProfit: 1,
+          purchseCount: 1,
+        },
+      },
+    ]);
+
+    if (result.length < 1) return 0;
+    return result;
+  } catch (err) {
+    console.error('An error occured in getMaxOrMinProfitPerUserOrPurchaseCount: ', err);
+    throw err;
+  }
+};
+
+// fucntion to getaverage profit per user with in specific timefrae
+const getAveProfitPerUser = async (startDate: Date, endDate: Date) => {
+  try {
+    const result = await Profits.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$senderId',
+          profitSum: { $sum: '$amount' },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          aveProfitPerUser: { $avg: '$profitSum' },
+        },
+      },
+    ]);
+
+    if (result.length < 1) return 0;
+    return result[0].aveProfitPerUser;
+  } catch (err) {
+    console.error('An error occured in getAveProfitPerUser: ', err);
+    throw err;
+  }
+};
+
+// function to calculate averge prrofit per trnacton
+const getAveProfPerTrans = async (startDate: Date, endDate: Date) => {
+  try {
+    const result = await Profits.aggregate([
+      {
+        $match: {
+          $gte: startDate,
+          $lte: endDate,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalProfit: { $sum: '$amount' },
+          totalTransaction: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          aveProfitPerTrans: { $divide: ['$totalProfit', '$totalTransaction'] },
+        },
+      },
+    ]);
+
+    if (result.length < 1) return 0;
+    return result[0].aveProfitPerTrans;
+  } catch (err) {
+    console.error('An error occured in getAveProfPerTrans: ', err);
+    throw err;
+  }
+};
+
+export {
+  transactionCount,
+  pendingCount,
+  successfulCount,
+  profitCount,
+  average,
+  countUsersWithPurchase,
+  getMaxOrMinProfitPerUserOrPurchaseCount,
+  getAveProfitPerUser,
+  getAveProfPerTrans,
+  getAveTransPerUser,
+};

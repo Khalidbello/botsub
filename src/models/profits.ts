@@ -6,6 +6,7 @@ const schema = new mongoose.Schema({
   date: Date,
   transactionType: String,
   paymentAccountType: String,
+  senderId: String,
 });
 
 const Profits = mongoose.model('Profits', schema);
