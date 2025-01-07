@@ -121,7 +121,7 @@ const makePurchaseRequest = async (
         updateNetworkStatus(response.data.meta.network, true, 'Network working fine'); // updating network status to true
       }
 
-      console.log('Response in makePurchaseRequest: ', resp);
+      //console.log('Response in makePurchaseRequest: ', resp);
       await helpSuccesfulDelivery(response, resp.data.balance_after, type);
       return { status: true, message: 'Value succesfully delivered' };
     }

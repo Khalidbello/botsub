@@ -98,7 +98,10 @@ const addToDelivered = async (response: any, type: 'data' | 'airtime') => {
   const transaction = await Transactions.findOne({ id: response.data.id });
   if (transaction) {
     if (transaction.status === 'delvered') return;
-    const response = transaction.updateOne({ status: true, info: 'value succesfully delivered' });
+    const response = transaction.updateOne({
+      status: 'delivered',
+      info: 'value succesfully delivered',
+    });
     return response;
   }
 
