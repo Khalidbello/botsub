@@ -39,8 +39,8 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
     await addDataProfit(
       response.data.meta.senderId,
       response.data.id,
-      response.data.meta.price,
-      response.data.meta.transactionType,
+      response.data.amount,
+      response.data.meta.type,
       'oneTime',
       response.data.meta.networkID,
       response.data.meta.index,
