@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { sendMessage } from './send_message';
-import { responseServices, responseServices2 } from '../templates/templates';
 import BotUsers from '../../models/fb_bot_users';
+//import { responseServices, responseServices2 } from '../templates/templates';
+//import BotUsers from '../../models/fb_bot_users';
 
 // function to respond to cases when no purchase payload is found for a transact
 async function noTransactFound(senderId: string) {

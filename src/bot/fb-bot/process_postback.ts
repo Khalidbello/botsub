@@ -18,7 +18,7 @@ import {
   showDataPrices,
 } from './post-back-responses/postback_responses';
 import { defaultMessageHandler } from './message-responses/generic';
-import { sendMessage } from './modules/send_message';
+import { sendMessage } from '../modules/send_message';
 import { Response } from 'express';
 
 const processPostback = async (event: any, res: Response): Promise<void> => {

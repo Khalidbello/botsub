@@ -1,10 +1,10 @@
-import BotUsers from '../../models/fb_bot_users';
+import BotUsers from '../../../models/fb_bot_users';
 import {
   changeMailBeforeTransact,
   changePhoneBeforeTransaction,
   confirmDataPurchaseResponse,
-} from '../modules/buy-data';
-import { sendMessage } from '../modules/send_message';
+} from '../../modules/buy-data';
+import { sendMessage } from '../../modules/send_message';
 import { cancelTransaction, selectPurchaseMethod } from './generic';
 
 const handleConfirmProductPurchase = async (event: any, transactNum: number) => {

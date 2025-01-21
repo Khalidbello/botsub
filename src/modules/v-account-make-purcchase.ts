@@ -11,7 +11,7 @@ import { dateFormatter } from '../bot/modules/helper_functions';
 import { generateRandomString } from './helper_functions';
 import * as fs from 'fs';
 import axios from 'axios';
-import { cancelTransaction } from '../bot/post-back-responses/postback_responses';
+import { cancelTransaction } from '../bot/fb-bot/post-back-responses/postback_responses';
 import BotUsers from '../models/fb_bot_users';
 import { confirmDataPurchaseResponse } from '../bot/modules/buy-data';
 import { sendMessage } from '../bot/modules/send_message';

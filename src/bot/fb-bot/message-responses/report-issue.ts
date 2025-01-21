@@ -1,7 +1,7 @@
-import BotUsers from '../../models/fb_bot_users';
-import ReportedIssues from '../../models/reported-issues';
-import { generateRandomString } from '../../modules/helper_functions';
-import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
+import ReportedIssues from '../../../models/reported-issues';
+import { generateRandomString } from '../../../modules/helper_functions';
+import { sendMessage } from '../../modules/send_message';
 import { cancelTransaction } from './generic';
 
 const handleReportIssue = async (event: any) => {

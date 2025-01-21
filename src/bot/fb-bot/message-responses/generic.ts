@@ -1,21 +1,21 @@
 // file to contain generic functionality for
 
 import emailValidator from 'email-validator';
-import BotUsers from '../../models/fb_bot_users';
-import PaymentAccounts from '../../models/payment-accounts';
-import { checkDataStatus, handleDataNetworkNotAvailable } from '../modules/data-network-checker';
-import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
+import PaymentAccounts from '../../../models/payment-accounts';
+import { checkDataStatus, handleDataNetworkNotAvailable } from '../../modules/data-network-checker';
+import { sendMessage } from '../../modules/send_message';
 import { handleBuyAirtime } from './airtime';
 import { handleBuyData, buyDataText } from './data';
-import { confirmDataPurchaseResponse } from '../modules/buy-data';
-import { makePurchase } from '../../modules/v-account-make-purcchase';
-import { remindToFundWallet, validateNumber } from '../modules/helper_functions';
+import { confirmDataPurchaseResponse } from '../../modules/buy-data';
+import { makePurchase } from '../../../modules/v-account-make-purcchase';
+import { remindToFundWallet, validateNumber } from '../../modules/helper_functions';
 import { showAccountDetails } from './virtual-account';
 import { showDataPrices } from './data-prices';
 import { showActiveReferalls, showReferralCode } from './referral_message_responses';
 import { handleReportIssue } from './report-issue';
-import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../modules/helper_function_2';
-import fbBotRouter from '../../routes/fb-bot-webhook';
+import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../../modules/helper_function_2';
+import fbBotRouter from '../../../routes/fb-bot-webhook';
 
 // text to contain bot functionalities
 const defaultText =

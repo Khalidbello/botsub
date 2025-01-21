@@ -1,7 +1,7 @@
-import BotUsers from '../../models/fb_bot_users';
-import { validateNumber } from '../modules/helper_functions';
-import { sendMessage } from '../modules/send_message';
-import sendTemplates from '../modules/send_templates';
+import BotUsers from '../../../models/fb_bot_users';
+import { validateNumber } from '../../modules/helper_functions';
+import { sendMessage } from '../../modules/send_message';
+import sendTemplates from '../../modules/send_templates';
 import { responseServices, responseServices2, responseServices3 } from '../templates/templates';
 import { referralTemp } from '../templates/templates_2';
 import { defaultText } from './generic';

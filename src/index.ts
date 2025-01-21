@@ -16,6 +16,7 @@ import fbBotRouter from './routes/fb-bot-webhook';
 import paymentGateWayRouter from './routes/payment-gateway';
 import frontEndApiRouter from './routes/frontend-api';
 import adminRouter from './routes/admin';
+import whatsaapRouter from './routes/whatsaap-bot-hook';
 
 // setting  configurations for different environment
 if (process.env.NODE_ENV === 'development') {
@@ -33,6 +34,9 @@ if (process.env.NODE_ENV === 'development') {
   env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_TEST;
   env.FBM_TOKEN = env.FBM_TOKEN_TEST;
   env.OPENSUB_KEY = env.OPENSUB_KEY_TEST;
+  env.WHATSAAP_VERIF_TOKEN = env.WHATSAAP_VERIF_TOKEN_TEST;
+  env.WHATSAPP_NUM_ID = env.WHATSAPP_NUM_ID_TEST;
+  env.WHATSAPP_ACCESS_TOK = env.WHATSAPP_ACCESS_TOK_TEST;
 } else if (process.env.NODE_ENV === 'staging') {
   console.log('in staging mode');
   const env = process.env;
@@ -153,6 +157,7 @@ connectDB();
 //locking in middlewares for route handling
 app.use('/', viewsRouter);
 app.use('/', fbBotRouter);
+app.use('/whatsapp', whatsaapRouter);
 app.use('/gateway', paymentGateWayRouter);
 app.use('/front-api', frontEndApiRouter);
 app.use('/admin', adminRouter);

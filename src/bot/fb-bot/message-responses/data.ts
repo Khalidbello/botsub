@@ -1,10 +1,10 @@
-import BotUsers from '../../models/fb_bot_users';
-import { networkDetailsType } from '../../types/bot/module-buy-data-types';
-import { confirmDataPurchaseResponse, formDataOffers } from '../modules/buy-data';
-import { checkDataStatus, handleDataNetworkNotAvailable } from '../modules/data-network-checker';
-import { computeDiscount, mapAlpaheToNum } from '../modules/helper_function_2';
-import { validateNumber } from '../modules/helper_functions';
-import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
+import { networkDetailsType } from '../../../types/bot/module-buy-data-types';
+import { confirmDataPurchaseResponse, formDataOffers } from '../../modules/buy-data';
+import { checkDataStatus, handleDataNetworkNotAvailable } from '../../modules/data-network-checker';
+import { computeDiscount, mapAlpaheToNum } from '../../modules/helper_function_2';
+import { validateNumber } from '../../modules/helper_functions';
+import { sendMessage } from '../../modules/send_message';
 import { cancelTransaction } from './generic';
 import fs from 'fs';
 

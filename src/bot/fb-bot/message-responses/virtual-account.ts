@@ -1,11 +1,11 @@
-import BotUsers from '../../models/fb_bot_users';
-import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
+import { sendMessage } from '../../modules/send_message';
 import emailValidator from 'email-validator';
 import { defaaultMessage } from './message_responses';
-import PaymentAccounts from '../../models/payment-accounts';
-import { createVAccount } from '../../modules/gateway';
+import PaymentAccounts from '../../../models/payment-accounts';
+import { createVAccount } from '../../../modules/gateway';
 import { defaultText } from './generic';
-import { confirmDataPurchaseResponse } from '../modules/buy-data';
+import { confirmDataPurchaseResponse } from '../../modules/buy-data';
 
 // function to show user account details
 async function showAccountDetails(event: any) {

@@ -1,6 +1,6 @@
-import { networkDetailsType } from '../../types/bot/module-buy-data-types';
-import { computeDiscount } from '../modules/helper_function_2';
-import { sendMessage } from '../modules/send_message';
+import { networkDetailsType } from '../../../types/bot/module-buy-data-types';
+import { computeDiscount } from '../../modules/helper_function_2';
+import { sendMessage } from '../../modules/send_message';
 import { defaultText } from './generic';
 import fs from 'fs';
 

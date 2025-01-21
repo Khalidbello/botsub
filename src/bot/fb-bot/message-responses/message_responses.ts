@@ -1,21 +1,21 @@
 // message responses
 import emailValidator from 'email-validator';
-import { getUserName } from '../modules/get_user_info';
+import { getUserName } from '../../modules/get_user_info';
 import { cancelTransaction } from '../post-back-responses/postback_responses';
 import { handleBuyData } from './data';
-import { sendMessage } from '../modules/send_message';
-import BotUsers from '../../models/fb_bot_users';
+import { sendMessage } from '../../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
 import {
   confirmDataPurchaseResponse,
   helperConfirmPurchase,
   validateAmount,
   validateNumber,
-} from '../modules/helper_functions';
-import sendTemplates from '../modules/send_templates';
+} from '../../modules/helper_functions';
+import sendTemplates from '../../modules/send_templates';
 import { responseServices, responseServices2, responseServices3 } from '../templates/templates';
-import { createVAccount } from '../../modules/gateway';
-import { generateRandomString } from '../../modules/helper_functions';
-import ReportedIssues from '../../models/reported-issues';
+import { createVAccount } from '../../../modules/gateway';
+import { generateRandomString } from '../../../modules/helper_functions';
+import ReportedIssues from '../../../models/reported-issues';
 import { handleBuyAirtime } from './airtime';
 import { CancellationToken } from 'mongodb';
 

@@ -1,7 +1,7 @@
 // module that hoouses the functionality of adding up profit
 import fs from 'fs';
 import Profits from '../models/profits';
-import { sendReferralCodeRecieved } from '../bot/message-responses/referral_message_responses';
+import { sendReferralCodeRecieved } from '../bot/fb-bot/message-responses/referral_message_responses';
 
 async function addDataProfit(
   senderId: string,

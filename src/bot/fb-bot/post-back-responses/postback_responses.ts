@@ -1,14 +1,14 @@
 import axios from 'axios';
-import BotUsers from '../../models/fb_bot_users';
-import { checkDataStatus, handleDataNetworkNotAvailable } from '../modules/data-network-checker';
-import { getUserName } from '../modules/get_user_info';
+import BotUsers from '../../../models/fb_bot_users';
+import { checkDataStatus, handleDataNetworkNotAvailable } from '../../modules/data-network-checker';
+import { getUserName } from '../../modules/get_user_info';
 import {
   confirmDataPurchaseResponse,
   noTransactFound,
   remindToFundWallet,
-} from '../modules/helper_functions';
-import { sendMessage } from '../modules/send_message';
-import sendTemplates from '../modules/send_templates';
+} from '../../modules/helper_functions';
+import { sendMessage } from '../../modules/send_message';
+import sendTemplates from '../../modules/send_templates';
 import {
   airtimeNetworks1,
   airtimeNetworks2,
@@ -19,11 +19,11 @@ import {
   responseServices2,
   responseServices3,
 } from '../templates/templates';
-import PaymentAccounts from '../../models/payment-accounts';
-import { makePurchase } from '../../modules/v-account-make-purcchase';
-import handleFirstMonthBonus from '../../modules/monthly_bonuses';
-import { defaaultMessage } from '../message-responses/message_responses';
-import { defaultText } from '../message-responses/generic';
+import PaymentAccounts from '../../../models/payment-accounts';
+import { makePurchase } from '../../../modules/v-account-make-purcchase';
+import handleFirstMonthBonus from '../../../modules/monthly_bonuses';
+import { defaaultMessage } from '../../fb-bot/message-responses/message_responses';
+import { defaultText } from '../../fb-bot/message-responses/generic';
 
 // function to response to newConversations
 async function sendNewConversationResponse(event: any) {

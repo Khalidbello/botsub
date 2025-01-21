@@ -1,7 +1,7 @@
-import BotUsers from '../../models/fb_bot_users';
-import { airtimeNetworkType } from '../../types/bot/module-airtime-types';
-import { validateAmount } from '../modules/helper_functions';
-import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
+import { airtimeNetworkType } from '../../../types/bot/module-airtime-types';
+import { validateAmount } from '../../modules/helper_functions';
+import { sendMessage } from '../../modules/send_message';
 import { cancelTransaction } from './generic';
 
 // const function to respond to buy airtime

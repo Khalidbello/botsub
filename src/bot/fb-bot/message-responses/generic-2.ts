@@ -1,6 +1,6 @@
-import BotUsers from '../../models/fb_bot_users';
-import { confirmDataPurchaseResponse } from '../modules/buy-data';
-import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
+import { confirmDataPurchaseResponse } from '../../modules/buy-data';
+import { sendMessage } from '../../modules/send_message';
 import { cancelTransaction } from './generic';
 import emailValidator from 'email-validator';
 

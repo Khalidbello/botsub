@@ -1,33 +1,28 @@
 import { Response } from 'express';
 import * as fs from 'fs';
-import { sendMessage } from './modules/send_message';
-import BotUsers from '../models/fb_bot_users';
+import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../models/fb_bot_users';
+
 import { sendNewConversationResponse } from './post-back-responses/postback_responses';
 import {
   handleDataNetWorkSelected,
   handleOfferSelected,
   handlePhoneNumberEntred,
 } from './message-responses/data';
-import { bvnEntred } from './message-responses/message_responses';
 import {
-  changeReferralBonusPhoneNumber,
-  referralBonusPhoneNumberRecieved,
-  sendReferralCodeRecieved,
-} from './message-responses/referral_message_responses';
+  handleAirtimeNetworkSelected,
+  handleEnterAirtimeAmount,
+} from './message-responses/airtime';
+import { handleConfirmProductPurchase } from './message-responses/data-2';
 import {
   defaultMessageHandler,
   handleChangeNumberBeforeTransaction,
   handleNewEmailBeforeTransasctionEntred,
 } from './message-responses/generic';
-import { handleConfirmProductPurchase } from './message-responses/data-2';
-import {
-  handleAirtimeNetworkSelected,
-  handleEnterAirtimeAmount,
-} from './message-responses/airtime';
 import { handleEnterEmailToProcedWithPurchase } from './message-responses/generic-2';
+import { handleSelectPaymentMethod } from './message-responses/message-responses2';
 import { enteredEmailForAccount, handleBvnEntred } from './message-responses/virtual-account';
 import { handleReportIssueResponse } from './message-responses/report-issue';
-import { handleSelectPaymentMethod } from './message-responses/message-responses2';
 
 async function processMessage(event: any, res: Response) {
   // check user previousky stored action to determine how to respond to user messages
@@ -101,15 +96,10 @@ async function processMessage(event: any, res: Response) {
   // controls related to issue report
   if (nextAction === 'enterIssue') return handleReportIssueResponse(event);
 
-  // if (nextAction === 'phoneNumber') return sendPhoneNumberEnteredResponses(event);
-  // if (nextAction === 'enterAirtimeAmount') return sendAirtimeAmountReceived(event);
-  // if (nextAction === 'changeEmailBeforeTransact') return newEmailBeforeTransactResponse(event, transactionType);
-  // if (nextAction === 'changePhoneNumberBeforeTransact') return newPhoneNumberBeforeTransactResponse(event, transactionType);
-
   // rferral related switch
-  if (nextAction === 'referralCode') return sendReferralCodeRecieved(event);
-  if (nextAction === 'referralBonusPhoneNumber') return referralBonusPhoneNumberRecieved(event);
-  if (nextAction === 'changeReferralBonusPhoneNumber') return changeReferralBonusPhoneNumber(event);
+  // if (nextAction === 'referralCode') return sendReferralCodeRecieved(event);
+  // if (nextAction === 'referralBonusPhoneNumber') return referralBonusPhoneNumberRecieved(event);
+  // if (nextAction === 'changeReferralBonusPhoneNumber') return changeReferralBonusPhoneNumber(event);
 
   // default message handler
   defaultMessageHandler(event, true, user?.transactNum || 4);

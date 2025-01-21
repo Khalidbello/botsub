@@ -4,9 +4,9 @@ import { Response } from 'express';
 import { sendMessage } from '../bot/modules/send_message';
 import PaymentAccounts from '../models/payment-accounts';
 import BotUsers from '../models/fb_bot_users';
-import { initMakePurchase } from '../bot/post-back-responses/postback_responses';
+import { initMakePurchase } from '../bot/fb-bot/post-back-responses/postback_responses';
 import axios from 'axios';
-import { defaultText } from '../bot/message-responses/generic';
+import { defaultText } from '../bot/fb-bot/message-responses/generic';
 import { checkPaymentValidity } from '../bot/modules/helper_function_2';
 import { deliverValue } from './deliver-value';
 import WalletFundings from '../models/wallet-funding';
@@ -113,7 +113,9 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
 
     if (response.data.status.toLowerCase() !== 'successful') {
       console.log('transaction not successfully carried out: in wallet top up');
-      return res.status(400).json({status: false, message: 'Payment not successfully carried out' });
+      return res
+        .status(400)
+        .json({ status: false, message: 'Payment not successfully carried out' });
     }
 
     if (!custom) res.status(200).send(); // return ok response to webhook
@@ -138,7 +140,7 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
 
     if (topUpExits) {
       console.log('This top up already exits', topUpExits);
-      if (custom) res.json({status: true, message: 'wallet topup already exits' });
+      if (custom) res.json({ status: true, message: 'wallet topup already exits' });
       return;
     }
 
