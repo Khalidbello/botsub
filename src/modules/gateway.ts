@@ -4,12 +4,14 @@ import { Response } from 'express';
 import { sendMessage } from '../bot/modules/send_message';
 import PaymentAccounts from '../models/payment-accounts';
 import BotUsers from '../models/fb_bot_users';
-import { initMakePurchase } from '../bot/fb-bot/post-back-responses/postback_responses';
+import { initMakePurchase } from '../bot/fb_bot/post-back-responses/postback_responses';
 import axios from 'axios';
-import { defaultText } from '../bot/fb-bot/message-responses/generic';
+import { defaultText } from '../bot/fb_bot/message-responses/generic';
 import { checkPaymentValidity } from '../bot/modules/helper_function_2';
 import { deliverValue } from './deliver-value';
 import WalletFundings from '../models/wallet-funding';
+import sendMessageW from '../bot/whatsaap_bot/send_message_w';
+import WhatsaapBotUsers from '../models/whatsaap_bot_users';
 
 const Flutterwave = require('flutterwave-node-v3');
 
@@ -99,6 +101,92 @@ async function createVAccount(
   } catch (error) {
     console.log('in virtual account catch error:::', currentCount, error);
     return createVAccount(email, senderId, bvn, botType, currentCount + 1);
+  }
+} // end of create virtual account
+
+// function to create a virtual account
+async function createVAccountW(
+  email: string | null | undefined,
+  senderId: string,
+  bvn: string,
+  botType: string,
+  currentCount: number
+) {
+  console.log('viertual account current count is: ', currentCount);
+
+  if (currentCount > 5) {
+    await sendMessageW(senderId, 'An error occured trying to create your vierual account.');
+    await sendMessageW(
+      senderId,
+      'Please renter BVN to proceed with creation of virtual account. \n\nEnter X to cancle.'
+    );
+    return;
+  }
+
+  // first check to confirm no account with specific referance occurs
+  const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload');
+  const existing = await PaymentAccounts.findOne({ refrence: senderId });
+
+  if (existing) return sendMessageW(senderId, 'You already have a virtual account.');
+
+  const num = await PaymentAccounts.countDocuments({});
+  const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
+  const details = {
+    email: email,
+    tx_ref: senderId,
+    is_permanent: true,
+    bvn: bvn,
+    firstname: 'Botsub',
+    lastname: 'FLW00' + `${num + 1}`,
+  };
+
+  try {
+    const accountDetails = await flw.VirtualAcct.create(details);
+    console.log('create virtual account deatails::::::::: ', accountDetails);
+    if (accountDetails.status !== 'success')
+      return createVAccountW(email, senderId, bvn, botType, currentCount + 1);
+
+    // save user account in vrtual accounts db
+    let account = {
+      refrence: senderId,
+      balance: 0,
+      accountName: 'Botsub ' + 'FLW00' + `${num + 1}`,
+      accountNumber: accountDetails.data.account_number,
+      botType: botType,
+      bankName: accountDetails.data.bank_name,
+      bvn: bvn,
+    };
+    const vAccount = new PaymentAccounts(account);
+
+    await vAccount.save();
+
+    // check if bvn was requested when user was carrying out a transaction
+    if (user?.purchasePayload) {
+      await sendMessageW(senderId, 'Creation of permanent account number was succesful.');
+      initMakePurchase(senderId);
+      const resonse = await BotUsers.updateOne(
+        { id: senderId },
+        { $set: { nextAction: 'confirmProductPurchase' } }
+      );
+
+      console.log('Updated to confirmDataPurhcase in create v account: ', resonse);
+      return;
+    }
+
+    await sendMessageW(senderId, 'Creation of permanent account number was succesful.');
+    await sendMessageW(senderId, 'Your permanent account details: ');
+    await sendMessageW(senderId, `Bank Name: ${account.bankName}`);
+    await sendMessageW(senderId, `Account Name: ${account.accountName}`);
+    await sendMessageW(senderId, 'Acccount Number: ');
+    await sendMessageW(senderId, account.accountNumber);
+    await sendMessageW(senderId, `Account Balance: ₦${account.balance}`);
+    await sendMessageW(senderId, 'Fund permanent account and make purchases with ease.');
+
+    const response = await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+    console.log('updated next action to null in createVaccount: ', response);
+  } catch (error) {
+    console.log('in virtual account catch error:::', currentCount, error);
+    return createVAccountW(email, senderId, bvn, botType, currentCount + 1);
   }
 } // end of create virtual account
 
@@ -217,4 +305,4 @@ const carryOutNonVAccount = async (
   } catch (err) {}
 }; // end of carryOutVAccount
 
-export { respondToWebhook, createVAccount, carryOutNonVAccount };
+export { respondToWebhook, createVAccount, carryOutNonVAccount, createVAccountW };

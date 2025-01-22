@@ -5,6 +5,7 @@ const schema = new mongoose.Schema({
   amount: Number,
   email: String,
   userId: String,
+  whatsaapId: String,
   date: Date,
 });
 

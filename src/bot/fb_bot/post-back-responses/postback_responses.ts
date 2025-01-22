@@ -22,8 +22,8 @@ import {
 import PaymentAccounts from '../../../models/payment-accounts';
 import { makePurchase } from '../../../modules/v-account-make-purcchase';
 import handleFirstMonthBonus from '../../../modules/monthly_bonuses';
-import { defaaultMessage } from '../../fb-bot/message-responses/message_responses';
-import { defaultText } from '../../fb-bot/message-responses/generic';
+import { defaaultMessage } from '../message-responses/message_responses';
+import { defaultText } from '../message-responses/generic';
 
 // function to response to newConversations
 async function sendNewConversationResponse(event: any) {

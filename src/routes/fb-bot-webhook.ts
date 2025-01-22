@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
-import { processPostback } from '../bot/fb-bot/process_postback';
-import processMessage from '../bot/fb-bot/process_message';
+import { processPostback } from '../bot/fb_bot/process_postback';
+import processMessage from '../bot/fb_bot/process_message';
 import axios from 'axios';
 const fbBotRouter = Router();
 

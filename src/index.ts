@@ -127,13 +127,13 @@ app.use(express.urlencoded({ extended: true }));
 // static middleware
 app.use(express.static('public'));
 
-app.use((req, res, next) => {
-  res.on('finish', () => {
-    const setCookieHeader = res.getHeader('Set-Cookie');
-    console.log('Set-Cookie Header:', setCookieHeader);
-  });
-  next();
-});
+// app.use((req, res, next) => {
+//   res.on('finish', () => {
+//     const setCookieHeader = res.getHeader('Set-Cookie');
+//     console.log('Set-Cookie Header:', setCookieHeader);
+//   });
+//   next();
+// });
 
 // Route to set a cookie
 app.get('/set-cookie', (req, res) => {
