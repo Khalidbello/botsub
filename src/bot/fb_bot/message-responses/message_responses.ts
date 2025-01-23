@@ -20,7 +20,7 @@ import { handleBuyAirtime } from './airtime';
 import { CancellationToken } from 'mongodb';
 
 const defaaultMessage =
-  'Hy what can i do for you today. \n\n 1. Buy data. \n 2. Buy Airtime. \n 3. My amount. \n 4. Refer a friend. \n 5. Report an issue.';
+  'Hi what can i do for you today. \n\n 1. Buy data. \n 2. Buy Airtime. \n 3. My amount. \n 4. Refer a friend. \n 5. Report an issue.';
 
 // function to respond to unexpected message
 async function defaultMessageHandler(event: any, message: any) {
@@ -45,7 +45,7 @@ async function defaultMessageHandler(event: any, message: any) {
     }
 
     await sendMessage(senderId, { text: defaaultMessage });
-    // await sendMessage(senderId, { text: `Hy ${userName || ''} what can i do for you` });
+    // await sendMessage(senderId, { text: `Hi ${userName || ''} what can i do for you` });
     // await sendTemplate(senderId, responseServices);
     // await sendTemplate(senderId, responseServices2);
     // sendTemplate(senderId, responseServices3);
@@ -116,7 +116,7 @@ async function bvnEntred(event: any) {
       await createVAccount(user?.email, senderId, bvn, 'facebook', 0);
     } else {
       await sendMessage(senderId, {
-        text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter Q to cancle.',
+        text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter Q to cancel.',
       });
     }
   } catch (err) {
@@ -139,7 +139,7 @@ async function sendAirtimeAmountReceived(event: any) {
     await sendMessage(senderId, { text: 'Amount recieved' });
     await sendMessage(senderId, {
       // @ts-expect-error
-      text: ` Enter ${userData?.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancle`,
+      text: ` Enter ${userData?.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancel`,
     });
 
     await BotUsers.updateOne(
@@ -156,7 +156,7 @@ async function sendAirtimeAmountReceived(event: any) {
     return null;
   }
   await sendMessage(senderId, {
-    text: 'Invalid amount entered \nPlease enter a valid amount. \nEnter Q to cancle',
+    text: 'Invalid amount entered \nPlease enter a valid amount. \nEnter Q to cancel',
   });
 } // end of sendAirtimeAmountReceived
 
@@ -201,7 +201,7 @@ async function sendPhoneNumberEnteredResponses(event: any) {
     return;
   }
   await sendMessage(senderId, {
-    text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancle.',
+    text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
   });
 } // end of sendPhoneNumberEnteredResponses
 
@@ -230,14 +230,14 @@ async function newEmailBeforeTransactResponse(event: any, transactionType: 'data
       return helperConfirmPurchase(transactionType, senderId);
     } else {
       const response = {
-        text: 'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancle.',
+        text: 'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancel.',
       };
       await sendMessage(senderId, response);
     }
   } catch (err) {
     console.error('Error occured in newEmailBeforeTransactResponse', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancle',
+      text: 'An error occured plase enter resposne again.  \n Or enter 0 to cancel',
     });
   }
 } // end of newEmailBeforeTransactResponse
@@ -271,7 +271,7 @@ async function newPhoneNumberBeforeTransactResponse(
     helperConfirmPurchase(transactionType, senderId);
   } else {
     const response = {
-      text: 'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancle.',
+      text: 'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
     };
     await sendMessage(senderId, response);
   }
@@ -298,7 +298,7 @@ async function reportIssue(event: any) {
     description: message,
     date,
     reporterId: senderId,
-    platformType: 'facebook',
+    platform: 'facebook',
     status: true,
   });
 

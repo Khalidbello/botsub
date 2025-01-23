@@ -23,20 +23,19 @@ import { handleEnterEmailToProcedWithPurchase } from './message-responses/generi
 import { handleSelectPaymentMethod } from './message-responses/message-responses2';
 import { enteredEmailForAccount, handleBvnEntred } from './message-responses/virtual-account';
 import { handleReportIssueResponse } from './message-responses/report-issue';
+import { updateLastMesageDate } from '../modules/helper_function_2';
 
 async function processMessage(event: any, res: Response) {
   // check user previousky stored action to determine how to respond to user messages
+  const senderId = event?.sender?.id;
 
-  // return sendMessage(event.sender.id, {
-  //   text: `We are excited to introduce BotSub soon! Stay tuned for updates on its public release.`,
-  // });
+  updateLastMesageDate(senderId); // update user last messgae
 
   if (process.env.MAINTENANCE === 'true')
     return sendMessage(event.sender.id, {
       text: 'BotSub is currently under maintenance. \nCheck back later.',
     }); // emergency response incase of bug fixes
 
-  const senderId = event.sender.id;
   const user = await BotUsers.findOne({ id: senderId }).select(
     '_id purchasePayload nextAction transactNum botResponse'
   );

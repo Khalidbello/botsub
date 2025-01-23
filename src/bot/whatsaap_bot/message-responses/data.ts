@@ -8,7 +8,7 @@ import sendMessageW from '../send_message_w';
 import { cancelTransactionW } from './generic';
 import fs from 'fs';
 
-const buyDataTextW = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C. 9mobile \n D. Airtel \n\n X. cancle`;
+const buyDataTextW = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C. 9mobile \n D. Airtel \n\n X. cancel`;
 const confirmPurchaseTextW = ``;
 
 // function to handle buy data selected
@@ -71,7 +71,7 @@ const handleDataNetWorkSelectedW = async (messageObj: any, transactNum: number) 
     );
   } catch (err) {
     console.error('An error occurred in handleDataNetWorkSelectedW', err);
-    await sendMessageW(senderId, 'An error occurred, please try again. \n\nOr enter X to cancle');
+    await sendMessageW(senderId, 'An error occurred, please try again. \n\nOr enter X to cancel');
   }
 };
 
@@ -91,10 +91,7 @@ const handleOfferSelectedW = async (messageObj: any, transactNum: number) => {
     const networkDetails: networkDetailsType = dataDetails[networkID]; // details of user selected network
     const dataOffer = networkDetails[mapAlpaheToNum(message)]; // the offer user selected
 
-    if (!dataOffer) {
-      await sendMessageW(senderId, 'Invalid response entred.');
-      return handleDataNetWorkSelectedW(messageObj, transactNum);
-    }
+    if (!dataOffer) return handleDataNetWorkSelectedW(messageObj, transactNum);
 
     sendMessageW(senderId, `Enter phone number for ${network} data purchase`);
 
@@ -115,7 +112,7 @@ const handleOfferSelectedW = async (messageObj: any, transactNum: number) => {
     );
   } catch (err) {
     console.error('An error occured in handleOfferSelectedW', err);
-    sendMessageW(senderId, 'An error occured plase enter resposne again.  \n Or enter X to cancle');
+    sendMessageW(senderId, 'An error occured plase enter resposne again.  \n Or enter X to cancel');
   }
 };
 
@@ -167,11 +164,14 @@ const handlePhoneNumberEntredW = async (messageObj: any) => {
 
     sendMessageW(
       senderId,
-      'Phone number not valid. \nPlease enter a valid phone number. \nEnter X to cancle.'
+      'Phone number not valid. \nPlease enter a valid phone number. \n\nEnter X to cancel.'
     );
   } catch (err) {
     console.error('An error occured in phoneNumberEntred', err);
-    sendMessageW(senderId, 'An error occured plase enter resposne again.  \n Or enter X to cancle');
+    sendMessageW(
+      senderId,
+      'An error occured plase enter resposne again.  \n\nOr enter X to cancel'
+    );
   }
 };
 

@@ -22,7 +22,7 @@ import {
 
 // text to contain bot functionalities
 const defaultTextW =
-  'Hy what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
+  'Hi what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
   '\n E. Refer a friend \n F. Active referals \n G. Report issue';
 
 // function to respond to messages with out next action
@@ -85,7 +85,7 @@ async function selectPurchaseMethodW(messageObj: any, transactNum: number) {
   sendMessageW(
     senderId,
     'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
-      ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancle.'
+      ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancel.'
   );
   await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAccount' } });
   //await generateAccountNumberW(messageObj, transactNum);
@@ -117,7 +117,7 @@ async function generateAccountNumberW(messageObj: any, transactNum: number) {
     payload = whatsaapBotUser?.purchasePayload.toObject();
     payload.email = whatsaapBotUser?.email;
     payload.bot = true;
-    payload.platform = 'whatsaap'; // to id which bot generated account
+    payload.platform = 'whatsapp'; // to id which bot generated account
     payload.firstPurchase = whatsaapBotUser?.firstPurchase;
     payload.senderId = senderId;
 
@@ -199,7 +199,7 @@ async function initMakePurchaseW(senderId: any) {
         data[1]
       ); // returning function to remind user to fund wallet
 
-    makePurchase(purchasePayload, 'facebook', senderId); // calling function to make function
+    makePurchase(purchasePayload, 'whatsaap', senderId); // calling function to make function
   } catch (err) {
     console.error('an error occured in initMakePurchaseW', err);
   }
@@ -208,7 +208,7 @@ async function initMakePurchaseW(senderId: any) {
 // function to handle phone number entred
 async function handleChangeNumberBeforeTransactionW(messageObj: any) {
   const senderId = messageObj.from;
-  const phoneNumber = messageObj.text ? messageObj.text.body.trim() : '';
+  const phoneNumber = messageObj?.text?.body.trim();
 
   try {
     const user = await WhatsaapBotUsers.findOne({ id: senderId });
@@ -259,7 +259,7 @@ async function handleChangeNumberBeforeTransactionW(messageObj: any) {
     }
     await sendMessageW(
       senderId,
-      'Phone number not valid. \nPlease enter a valid phone number. \n\nEnter X to cancle.'
+      'Phone number not valid. \nPlease enter a valid phone number. \n\nEnter X to cancel.'
     );
   } catch (err) {}
 } // end of sendPhoneNumberEnteredResponses
@@ -267,7 +267,7 @@ async function handleChangeNumberBeforeTransactionW(messageObj: any) {
 // function to handle change of email before transaction
 async function handleNewEmailBeforeTransasctionEntredW(messageObj: any) {
   const senderId = messageObj.from;
-  const email = messageObj.message.text.trim();
+  const email = messageObj?.text?.body.trim();
 
   try {
     const user = await WhatsaapBotUsers.findOne({ id: senderId });
@@ -281,6 +281,7 @@ async function handleNewEmailBeforeTransasctionEntredW(messageObj: any) {
           $set: { nextAction: 'confirmProductPurchase' },
         }
       );
+      return;
     }
 
     if (emailValidator.validate(email)) {
@@ -295,12 +296,12 @@ async function handleNewEmailBeforeTransasctionEntredW(messageObj: any) {
     } else {
       await sendMessageW(
         senderId,
-        'The email format you entered is invalid. \nPlease enter a valid email. \n\nEnter x to cancle.'
+        'The email format you entered is invalid. \nPlease enter a valid email. \n\nEnter x to cancel.'
       );
     }
   } catch (err) {
     console.error('Error occured in changeEmailBeforeTransaction', err);
-    sendMessageW(senderId, 'An error occured plase enter resposne again.  \n\nEnter X to cancle');
+    sendMessageW(senderId, 'An error occured plase enter resposne again.  \n\nEnter X to cancel');
   }
 } // end of changeEmailBeforeTransaction
 

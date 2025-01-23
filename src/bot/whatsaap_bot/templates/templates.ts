@@ -138,8 +138,8 @@ const confrimDataPurchaseButton2 = {
       },
       {
         type: 'postback',
-        title: 'cancle Transaction',
-        payload: `{"title": "cancle"}`,
+        title: 'cancel Transaction',
+        payload: `{"title": "cancel"}`,
       },
     ],
   },

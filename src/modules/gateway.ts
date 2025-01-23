@@ -12,6 +12,8 @@ import { deliverValue } from './deliver-value';
 import WalletFundings from '../models/wallet-funding';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
 import WhatsaapBotUsers from '../models/whatsaap_bot_users';
+import { initMakePurchaseW } from '../bot/whatsaap_bot/message-responses/generic';
+import { isConversationOpenW } from '../bot/whatsaap_bot/helper_functions';
 
 const Flutterwave = require('flutterwave-node-v3');
 
@@ -30,7 +32,7 @@ async function createVAccount(
       text: 'An error occured trying to create your vierual account.',
     });
     await sendMessage(senderId, {
-      text: 'Please renter BVN to proceed with creation of virtual account. \n\nEnter X to cancle.',
+      text: 'Please renter BVN to proceed with creation of virtual account. \n\nEnter X to cancel.',
     });
     return;
   }
@@ -73,7 +75,7 @@ async function createVAccount(
     await vAccount.save();
 
     // check if bvn was requested when user was carrying out a transaction
-    if (user?.purchasePayload) {
+    if (user?.purchasePayload?.price) {
       await sendMessage(senderId, { text: 'Creation of permanent account number was succesful.' });
       initMakePurchase(senderId);
       const resonse = await BotUsers.updateOne(
@@ -115,10 +117,13 @@ async function createVAccountW(
   console.log('viertual account current count is: ', currentCount);
 
   if (currentCount > 5) {
-    await sendMessageW(senderId, 'An error occured trying to create your vierual account.');
     await sendMessageW(
       senderId,
-      'Please renter BVN to proceed with creation of virtual account. \n\nEnter X to cancle.'
+      'An error occured trying to create your permanent account number. \nPLease try again.'
+    );
+    await sendMessageW(
+      senderId,
+      'Please renter BVN to proceed with creation of virtual account. \n\nEnter X to cancel.'
     );
     return;
   }
@@ -161,10 +166,10 @@ async function createVAccountW(
     await vAccount.save();
 
     // check if bvn was requested when user was carrying out a transaction
-    if (user?.purchasePayload) {
+    if (user?.purchasePayload?.price) {
       await sendMessageW(senderId, 'Creation of permanent account number was succesful.');
-      initMakePurchase(senderId);
-      const resonse = await BotUsers.updateOne(
+      initMakePurchaseW(senderId);
+      const resonse = await WhatsaapBotUsers.updateOne(
         { id: senderId },
         { $set: { nextAction: 'confirmProductPurchase' } }
       );
@@ -182,7 +187,10 @@ async function createVAccountW(
     await sendMessageW(senderId, `Account Balance: ₦${account.balance}`);
     await sendMessageW(senderId, 'Fund permanent account and make purchases with ease.');
 
-    const response = await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+    const response = await WhatsaapBotUsers.updateOne(
+      { id: senderId },
+      { $set: { nextAction: null } }
+    );
     console.log('updated next action to null in createVaccount: ', response);
   } catch (error) {
     console.log('in virtual account catch error:::', currentCount, error);
@@ -218,7 +226,8 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
     // check if transaction was made by user with no virtual account
     if (response.data.meta && response.data.meta.type) {
       const noVaccountResponse = await carryOutNonVAccount(response, custom);
-      console.log('response for no v account: ', noVaccountResponse);
+      //console.log('response for no v account: ', noVaccountResponse);
+
       if (custom) return res.json(noVaccountResponse);
       return;
     }
@@ -265,6 +274,29 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
       const purchasePayload = resp?.purchasePayload;
 
       if (purchasePayload?.outStanding) await initMakePurchase(response.data.tx_ref);
+    } else if (account?.botType === 'whatsapp') {
+      const conversationOpen = await isConversationOpenW(response.data.tx_ref);
+
+      // if no openconversation, billing will occur
+      if (conversationOpen) {
+        // send botuser a notification to
+        await sendMessageW(
+          response.data.tx_ref,
+          `Your account account topup of ₦${response.data.amount} was successful.`
+        );
+        await sendMessageW(
+          response.data.tx_ref,
+          `Your new account balance is: ₦${account.balance}`
+        );
+
+        // check if user has an outsanding transaction and automatic initiate if any
+        const resp = await WhatsaapBotUsers.findOne({ id: response.data.tx_ref }).select(
+          'purchasePayload'
+        );
+        const purchasePayload = resp?.purchasePayload;
+
+        if (purchasePayload?.outStanding) await initMakePurchaseW(response.data.tx_ref);
+      }
     }
 
     if (custom) {

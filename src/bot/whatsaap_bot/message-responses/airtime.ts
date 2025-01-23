@@ -11,7 +11,7 @@ const handleBuyAirtimeW = async (messageObj: any) => {
   try {
     await sendMessageW(
       senderId,
-      'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancle.'
+      'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancel.'
     );
     await WhatsaapBotUsers.updateOne(
       { id: senderId },
@@ -19,7 +19,7 @@ const handleBuyAirtimeW = async (messageObj: any) => {
     );
   } catch (err) {
     console.error('An error occurred in handleBuyAirtimeW', err);
-    await sendMessageW(senderId, 'An error occurred, please try again. \n\nEnter X to cancle');
+    await sendMessageW(senderId, 'An error occurred, please try again. \n\nEnter X to cancel');
   }
 };
 
@@ -28,7 +28,7 @@ const handleAirtimeNetworkSelectedW = async (messageObj: any) => {
   const senderId = messageObj.from;
 
   try {
-    const message: string = messageObj.text ? messageObj.text.body : ''; // Message text
+    const message: string = messageObj?.text?.body.trim().toLowerCase(); // Message text
     const airtimeNetwork: airtimeNetworkType = {
       a: {
         network: 'MTN',
@@ -54,12 +54,12 @@ const handleAirtimeNetworkSelectedW = async (messageObj: any) => {
       await sendMessageW(senderId, 'Invalid response recieved');
       await sendMessageW(
         senderId,
-        'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancle.'
+        'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancel.'
       );
       return;
     }
 
-    await sendMessageW(senderId, 'Enter airtime amount. \n\nEnter X to cancle.');
+    await sendMessageW(senderId, 'Enter airtime amount. \n\nEnter X to cancel.');
     await WhatsaapBotUsers.updateOne(
       { id: senderId },
       {
@@ -72,7 +72,7 @@ const handleAirtimeNetworkSelectedW = async (messageObj: any) => {
     );
   } catch (err) {
     console.error('An error occurred in handleAirtimeNetworkSelectedW', err);
-    await sendMessageW(senderId, 'An error occurred, please try again. \n\nOr enter X to cancle');
+    await sendMessageW(senderId, 'An error occurred, please try again. \n\nOr enter X to cancel');
   }
 }; // end of handleAirtimeNetworkSelectedW
 
@@ -89,14 +89,14 @@ const handleEnterAirtimeAmountW = async (messageObj: any) => {
     if (!amountValid)
       return sendMessageW(
         senderId,
-        'Invalid amount entered.\nAir amount should be      at least 100. \n\nEnter X to cancle.'
+        'Invalid amount entered.\nAir amount should be      at least 100. \n\nEnter X to cancel.'
       );
 
     const user = await WhatsaapBotUsers.findOne({ id: senderId });
 
     await sendMessageW(
       senderId,
-      `Enter phone number for ${user?.purchasePayload?.network} airtime purchase.  \n\nEnter X to cancle.`
+      `Enter phone number for ${user?.purchasePayload?.network} airtime purchase.  \n\nEnter X to cancel.`
     );
 
     await WhatsaapBotUsers.updateOne(
@@ -112,7 +112,7 @@ const handleEnterAirtimeAmountW = async (messageObj: any) => {
     );
   } catch (err) {
     console.error('An error occurred in handleAirtimeAmount: ', err);
-    await sendMessageW(senderId, 'An error occurred, please try again. \n\nOr enter X to cancle');
+    await sendMessageW(senderId, 'An error occurred, please try again. \n\nOr enter X to cancel');
   }
 };
 

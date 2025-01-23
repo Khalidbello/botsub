@@ -73,17 +73,17 @@ async function enteredEmailForAccount(event: any) {
 
       await sendMessage(senderId, { text: 'Please enter your BVN.' });
       return sendMessage(senderId, {
-        text: 'In accordeance with CBN regulations, your BVN is required to create a virtual account. \nEnter Q to  cancle',
+        text: 'In accordeance with CBN regulations, your BVN is required to create a virtual account. \nEnter Q to  cancel',
       });
     } else {
       sendMessage(senderId, {
-        text: 'The email you entred is invalid. \nPlease enter a valid email for the creation of dedicated virtual account. \n\nEner X to cancle',
+        text: 'The email you entred is invalid. \nPlease enter a valid email for the creation of dedicated virtual account. \n\nEner X to cancel',
       });
     }
   } catch (err) {
     console.error('An error occured in enteredEmailForAccount', err);
     await sendMessage(senderId, {
-      text: 'An error occured. \nPlease enter response again. \n\nEnter X to cancle.',
+      text: 'An error occured. \nPlease enter response again. \n\nEnter X to cancel.',
     });
   }
 } // end of sendEmailEntere
@@ -98,7 +98,7 @@ const handleBvnEntred = async (event: any) => {
     const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload email');
 
     // check if bvn was requested when user was carrying out a transaction
-    if (bvn.toLowerCase() === 'x' && user?.purchasePayload) {
+    if (bvn.toLowerCase() === 'x' && user?.purchasePayload?.price) {
       const user = await BotUsers.findOneAndUpdate(
         { id: senderId },
         { $set: { nextAction: 'confirmProductPurchase' } }
@@ -125,7 +125,7 @@ const handleBvnEntred = async (event: any) => {
       return createVAccount(user?.email, senderId, bvn, 'facebook', 0);
     } else {
       await sendMessage(senderId, {
-        text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter X to cancle.',
+        text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter X to cancel.',
       });
     }
   } catch (err) {

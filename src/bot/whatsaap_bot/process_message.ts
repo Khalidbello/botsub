@@ -23,10 +23,13 @@ import { handleEnterEmailToProcedWithPurchase } from './message-responses/generi
 import { handleSelectPaymentMethodW } from './message-responses/message-responses2';
 import { enteredEmailForAccountW, handleBvnEntredW } from './message-responses/virtual-account';
 import { handleReportIssueResponseW } from './message-responses/report-issue';
+import { updateLastMesageDateW } from './helper_functions';
 
 async function processMessageW(messageObj: any) {
   const senderId = messageObj.from; // Sender's phone number
   const text = messageObj.text ? messageObj.text.body : ''; // Message text
+
+  updateLastMesageDateW(senderId); // update user last message date
 
   if (process.env.MAINTENANCE === 'true')
     return sendMessageW(senderId, 'BotSub is currently under maintenance. \nCheck back later.'); // emergency response incase of bug fixes

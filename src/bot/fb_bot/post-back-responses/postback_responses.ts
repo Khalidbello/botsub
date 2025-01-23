@@ -31,7 +31,7 @@ async function sendNewConversationResponse(event: any) {
   const userName = await getUserName(senderId);
 
   // await sendMessage(senderId, {
-  //   text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.`,
+  //   text: `Hi ${userName ? userName : ''} i am BotSub virtual assitance.`,
   // });
   // await sendMessage(senderId, {
   //   text: `Kindly enter referral code below \nIf no referral code enter 0`,
@@ -47,7 +47,7 @@ async function sendNewConversationResponse(event: any) {
 
   // run with out requesting referral code
   await sendMessage(senderId, {
-    text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.`,
+    text: `Hi ${userName ? userName : ''} i am BotSub virtual assitance.`,
   });
 
   const user = await BotUsers.findOne({ id: senderId });
@@ -352,7 +352,7 @@ async function changeMailBeforeTransact(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new email \n\nEnter Q to cancle' });
+  await sendMessage(senderId, { text: 'Enter new email \n\nEnter Q to cancel' });
   await BotUsers.updateOne(
     { id: senderId },
     {
@@ -379,7 +379,7 @@ async function changePhoneNumber(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter Q to cancle' });
+  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter Q to cancel' });
   await BotUsers.updateOne(
     { id: senderId },
     {

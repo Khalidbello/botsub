@@ -106,7 +106,7 @@ async function referralBonusPhoneNumberRecieved(messageObj: any) {
   if (!validateNum)
     return sendMessageW(
       senderId,
-      'Phone number entred not valid. \nplease enter a valid phone number. \nEnter X to cancle'
+      'Phone number entred not valid. \nplease enter a valid phone number. \nEnter X to cancel'
     );
   await sendMessageW(senderId, 'Number to deliver referral bonus to recieved.');
   await WhatsaapBotUsers.updateOne(
@@ -142,7 +142,7 @@ async function changeReferralBonusPhoneNumber(messageObj: any) {
   const validatedNum = validateNumber(message);
   console.log('in change phone number');
   if (message.toLowerCase() === 'x') {
-    console.log('in q cancle');
+    console.log('in q cancel');
     sendMessageW(senderId, 'Change of Phone number cancled');
     confirmClaimReferralBonus(messageObj);
     await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
@@ -152,7 +152,7 @@ async function changeReferralBonusPhoneNumber(messageObj: any) {
   if (!validatedNum)
     return sendMessageW(
       senderId,
-      'Phone number not valid. \nEnter a valid phone number of enter Q to cancle'
+      'Phone number not valid. \nEnter a valid phone number of enter Q to cancel'
     );
 
   await sendMessageW(senderId, 'Phone number changed');

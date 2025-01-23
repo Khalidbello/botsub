@@ -11,7 +11,7 @@ async function sendNewConversationResponseW(messageObj: any) {
   const senderId = messageObj.from;
 
   // run with out requesting referral code
-  await sendMessageW(senderId, 'Hy. \nI am BotSub virtual assitance.');
+  await sendMessageW(senderId, 'Hi. \nI am BotSub virtual assitance.');
 
   const user = await WhatsaapBotUsers.findOne({ id: senderId });
 

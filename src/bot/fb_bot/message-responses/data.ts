@@ -8,7 +8,7 @@ import { sendMessage } from '../../modules/send_message';
 import { cancelTransaction } from './generic';
 import fs from 'fs';
 
-const buyDataText = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C. 9mobile \n D. Airtel \n\n X. cancle`;
+const buyDataText = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C. 9mobile \n D. Airtel \n\n X. cancel`;
 const confirmPurchaseText = ``;
 
 // function to handle buy data selected
@@ -79,7 +79,7 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
   } catch (err) {
     console.error('An error occurred in handleDataNetWorkSelected', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nOr enter X to cancle',
+      text: 'An error occurred, please try again. \n\nOr enter X to cancel',
     });
   }
 };
@@ -95,23 +95,12 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
     const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
     const network: any = user?.purchasePayload?.network; // a string
     const networkID: any = user?.purchasePayload?.networkID; // a number
-    let check = await checkDataStatus(network); // check if network available for purchase
-
-    // check if network aavilable if not return to select network for data purchase
-    // if (!check) {
-    //   await handleDataNetworkNotAvailable(senderId, network);
-    //   return handleBuyData(event);
-    // }
-
     let dataDetails: any = await fs.promises.readFile('files/data-details.json'); // get data details
     dataDetails = JSON.parse(dataDetails);
     const networkDetails: networkDetailsType = dataDetails[networkID]; // details of user selected network
     const dataOffer = networkDetails[mapAlpaheToNum(message)]; // the offer user selected
 
-    if (!dataOffer) {
-      await sendMessage(senderId, { text: 'Invalid response entred.' });
-      return handleDataNetWorkSelected(event, transactNum);
-    }
+    if (!dataOffer) return handleDataNetWorkSelected(event, transactNum);
 
     sendMessage(senderId, { text: `Enter phone number for ${network} data purchase` });
 
@@ -133,7 +122,7 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
   } catch (err) {
     console.error('An error occured in handleOfferSelected', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter X to cancle',
+      text: 'An error occured plase enter resposne again.  \n Or enter X to cancel',
     });
   }
 };
@@ -184,12 +173,12 @@ const handlePhoneNumberEntred = async (event: any) => {
     }
 
     sendMessage(senderId, {
-      text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter X to cancle.',
+      text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter X to cancel.',
     });
   } catch (err) {
     console.error('An error occured in phoneNumberEntred', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n Or enter X to cancle',
+      text: 'An error occured plase enter resposne again.  \n Or enter X to cancel',
     });
   }
 };

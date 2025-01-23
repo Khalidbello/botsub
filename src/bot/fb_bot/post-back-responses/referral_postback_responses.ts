@@ -90,7 +90,7 @@ async function referralBonusOfferSelected(event: any, payload: any) {
 // function to initiate change rferral bonus phone Number
 async function changeReferralBonusPhoneNumber(event: any) {
   const senderId = event.sender.id;
-  sendMessage(senderId, { text: 'Enter new phone number: Enter Q to cancle' });
+  sendMessage(senderId, { text: 'Enter new phone number: Enter Q to cancel' });
   await BotUsers.updateOne(
     { id: senderId },
     { $set: { nextAction: 'changeReferralBonusPhoneNumber' } }

@@ -1,4 +1,4 @@
-import BotUsers from '../../../models/fb_bot_users';
+import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
 import ReportedIssues from '../../../models/reported-issues';
 import { generateRandomString } from '../../../modules/helper_functions';
 import sendMessageW from '../send_message_w';
@@ -10,9 +10,9 @@ const handleReportIssueW = async (messaageObj: any) => {
   try {
     sendMessageW(
       senderId,
-      'Please enter a detailed description of your issue. \n\nEnter X to cancle.'
+      'Please enter a detailed description of your issue. \n\nEnter X to cancel.'
     );
-    await BotUsers.updateOne(
+    await WhatsaapBotUsers.updateOne(
       { id: senderId },
       {
         $set: { nextAction: 'enterIssue' },
@@ -22,7 +22,7 @@ const handleReportIssueW = async (messaageObj: any) => {
     console.error('An error occured in handleReportIssueW', err);
     sendMessageW(
       senderId,
-      'An error occured. \nPlease enter response again. \n\nEnter X to cancle.'
+      'An error occured. \nPlease enter response again. \n\nEnter X to cancel.'
     );
   }
 };
@@ -47,7 +47,7 @@ const handleReportIssueResponseW = async (messaageObj: any) => {
       description: message,
       date,
       reporterId: senderId,
-      platformType: 'facebook',
+      platform: 'whatsapp',
       status: true,
     });
 
@@ -56,7 +56,7 @@ const handleReportIssueResponseW = async (messaageObj: any) => {
       senderId,
       'Your issue have beign directed to BotSub support team. \nSorry for any inconveniences caused. \n You will recieve a resposne in the neext 5 mins'
     );
-    await BotUsers.updateOne(
+    await WhatsaapBotUsers.updateOne(
       { id: senderId },
       {
         $set: { nextAction: null },

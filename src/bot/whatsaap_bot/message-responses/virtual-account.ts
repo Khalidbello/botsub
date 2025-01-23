@@ -2,9 +2,9 @@ import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
 import sendMessageW from '../send_message_w';
 import emailValidator from 'email-validator';
 import PaymentAccounts from '../../../models/payment-accounts';
-import { createVAccount } from '../../../modules/gateway';
+import { createVAccount, createVAccountW } from '../../../modules/gateway';
 import { defaultTextW } from './generic';
-import { confirmDataPurchaseResponse } from '../../modules/buy-data';
+import { confirmDataPurchaseResponseW } from '../helper_functions';
 
 // function to show user account details
 async function showAccountDetailsW(messageObj: any) {
@@ -79,19 +79,19 @@ async function enteredEmailForAccountW(messageObj: any) {
       await sendMessageW(senderId, 'Please enter your BVN.');
       return sendMessageW(
         senderId,
-        'In accordeance with CBN regulations, your BVN is required to create a virtual account. \nEnter Q to  cancle'
+        'In accordeance with CBN regulations, your BVN is required to create a virtual account. \nEnter Q to  cancel'
       );
     } else {
       sendMessageW(
         senderId,
-        'The email you entred is invalid. \nPlease enter a valid email for the creation of dedicated virtual account. \n\nEner X to cancle'
+        'The email you entred is invalid. \nPlease enter a valid email for the creation of dedicated virtual account. \n\nEner X to cancel'
       );
     }
   } catch (err) {
     console.error('An error occured in enteredEmailForAccountW', err);
     await sendMessageW(
       senderId,
-      'An error occured. \nPlease enter response again. \n\nEnter X to cancle.'
+      'An error occured. \nPlease enter response again. \n\nEnter X to cancel.'
     );
   }
 } // end of sendEmailEntere
@@ -106,14 +106,14 @@ const handleBvnEntredW = async (messageObj: any) => {
     const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload email');
 
     // check if bvn was requested when user was carrying out a transaction
-    if (bvn.toLowerCase() === 'x' && user?.purchasePayload) {
+    if (bvn.toLowerCase() === 'x' && user?.purchasePayload?.price) {
       const user = await WhatsaapBotUsers.findOneAndUpdate(
         { id: senderId },
         { $set: { nextAction: 'confirmProductPurchase' } }
       );
 
       await sendMessageW(senderId, 'Creation of permanent account number cancled.');
-      await confirmDataPurchaseResponse(senderId, user, null);
+      await confirmDataPurchaseResponseW(senderId, user, null);
       return;
     }
 
@@ -130,11 +130,11 @@ const handleBvnEntredW = async (messageObj: any) => {
 
     // Check if the parsed number is an integer and has exactly 11 digits
     if (!isNaN(parsedBvn) && Number.isInteger(parsedBvn) && bvn.length === 11) {
-      return createVAccount(user?.email, senderId, bvn, 'facebook', 0);
+      return createVAccountW(user?.email, senderId, bvn, 'whatsapp', 0);
     } else {
       await sendMessageW(
         senderId,
-        'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter X to cancle.'
+        'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter X to cancel.'
       );
     }
   } catch (err) {

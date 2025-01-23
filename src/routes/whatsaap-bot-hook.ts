@@ -46,7 +46,7 @@ whatsaapRouter.post('/webhook', (req: Request, res: Response) => {
             // // Example: Reply to the user
             // sendMessage(
             //   from,
-            //   `Hy ${user}. \n\n I am *BotSub* whatsapp virtual assistant. \n\nWill be available on whatsaap soon.`
+            //   `Hi ${user}. \n\n I am *BotSub* whatsapp virtual assistant. \n\nWill be available on whatsaap soon.`
             // );
           });
         }

@@ -1,11 +1,15 @@
 import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
-import { changePhoneBeforeTransactionW, confirmDataPurchaseResponseW } from '../helper_functions';
+import {
+  changeMailBeforeTransactW,
+  changePhoneBeforeTransactionW,
+  confirmDataPurchaseResponseW,
+} from '../helper_functions';
 import sendMessageW from '../send_message_w';
 import { cancelTransactionW, selectPurchaseMethodW } from './generic';
 
 const handleConfirmProductPurchaseW = async (messageObj: any, transactNum: number) => {
   const senderId = messageObj.from;
-  const message: string = messageObj.message.text.trim().toLowerCase();
+  const message: string = messageObj?.text?.body.toLowerCase();
 
   try {
     if (message === 'x') return cancelTransactionW(senderId, false);
@@ -20,11 +24,8 @@ const handleConfirmProductPurchaseW = async (messageObj: any, transactNum: numbe
     confirmDataPurchaseResponseW(senderId, user, null);
   } catch (err) {
     console.error('An error occured in phoneNumberEntred', err);
-    sendMessageW(senderId, 'An error occured plase enter resposne again.  \n\n Enter X to cancle');
+    sendMessageW(senderId, 'An error occured plase enter resposne again.  \n\n Enter X to cancel');
   }
 };
 
 export { handleConfirmProductPurchaseW };
-function changeMailBeforeTransactW(messageObj: any) {
-  throw new Error('Function not implemented.');
-}

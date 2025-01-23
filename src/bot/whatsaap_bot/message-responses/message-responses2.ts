@@ -1,5 +1,5 @@
-import BotUsers from '../../../models/fb_bot_users';
-import { confirmDataPurchaseResponse } from '../../modules/buy-data';
+import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import { confirmDataPurchaseResponseW } from '../helper_functions';
 import sendMessageW from '../send_message_w';
 import { generateAccountNumberW } from './generic';
 
@@ -7,15 +7,15 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
   const senderId = messageObj.from;
 
   try {
-    const message = messageObj.message.text.trim().toLowerCase();
+    const message = messageObj?.text?.body.trim().toLowerCase();
 
     if (message === 'x') {
-      const user = await BotUsers.findOneAndUpdate(
+      const user = await WhatsaapBotUsers.findOneAndUpdate(
         { id: senderId },
         { $set: { nextAction: 'confirmProductPurchase' } }
       );
       await sendMessageW(senderId, 'Payment method selection cancled.');
-      await confirmDataPurchaseResponse(senderId, user, null);
+      await confirmDataPurchaseResponseW(senderId, user, null);
       return;
     }
 
@@ -24,7 +24,7 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
         senderId,
         ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter X to quit.'
       );
-      await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
+      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
       return;
     }
 
@@ -36,7 +36,7 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
       // sendMessageW(senderId, {
       //   text:
       //     'Select Payment method. \n\nA. Create a Permanent virtual account number. will be used for all future transactions.' +
-      //     ' \n\nB. Use a one-time account number. Valid for this transaction only. \n\nEnter X to cancle.',
+      //     ' \n\nB. Use a one-time account number. Valid for this transaction only. \n\nEnter X to cancel.',
       // });
       return;
     }
@@ -45,14 +45,14 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
     sendMessageW(
       senderId,
       'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
-        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancle.'
+        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancel.'
     );
   } catch (err: any) {
     sendMessageW(senderId, 'An error occured please try again.');
     sendMessageW(
       senderId,
       'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
-        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancle.'
+        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancel.'
     );
     console.error('An error occured in handleSelectPaymentMethodW: ', err);
   }

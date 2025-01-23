@@ -34,7 +34,7 @@ async function handleEnterEmailToProcedWithPurchase(event: any) {
       return;
     } else {
       const response = {
-        text: 'The email format you entered is invalid \nPlease enter a valid email. \n\nEnter X to cancle.',
+        text: 'The email format you entered is invalid \nPlease enter a valid email. \n\nEnter X to cancel.',
       };
       await sendMessage(senderId, response);
     }

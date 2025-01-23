@@ -201,7 +201,7 @@ async function remindToFundWallet(
   await sendMessage(senderId, {
     text: 'purchase would be automatically made once account is funded.',
   });
-  await sendMessage(senderId, { text: 'Enter X to cancle auto delivering on wallet funding.' });
+  await sendMessage(senderId, { text: 'Enter X to cancel auto delivering on wallet funding.' });
   await BotUsers.updateOne({ id: senderId }, { $set: { 'purchasePayload.outStanding': true } });
 } // end of remind to fund wallet
 

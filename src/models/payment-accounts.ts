@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 const schema = new mongoose.Schema({
   refrence: String,
-  whatsaapId: String,
   bankName: String,
   balance: Number,
   accountName: String,

@@ -105,7 +105,7 @@ async function referralBonusPhoneNumberRecieved(event: any) {
 
   if (!validateNum)
     return sendMessage(senderId, {
-      text: 'Phone number entred not valid. \nplease enter a valid phone number. \nEnter X to cancle',
+      text: 'Phone number entred not valid. \nplease enter a valid phone number. \nEnter X to cancel',
     });
   await sendMessage(senderId, { text: 'Number to deliver referral bonus to recieved.' });
   await BotUsers.updateOne(
@@ -140,7 +140,7 @@ async function changeReferralBonusPhoneNumber(event: any) {
   const validatedNum = validateNumber(message);
   console.log('in change phone number');
   if (message.toLowerCase() === 'x') {
-    console.log('in q cancle');
+    console.log('in q cancel');
     sendMessage(senderId, { text: 'Change of Phone number cancled' });
     confirmClaimReferralBonus(event);
     await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
@@ -149,7 +149,7 @@ async function changeReferralBonusPhoneNumber(event: any) {
 
   if (!validatedNum)
     return sendMessage(senderId, {
-      text: 'Phone number not valid. \nEnter a valid phone number of enter Q to cancle',
+      text: 'Phone number not valid. \nEnter a valid phone number of enter Q to cancel',
     });
 
   await sendMessage(senderId, { text: 'Phone number changed' });

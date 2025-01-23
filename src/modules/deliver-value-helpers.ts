@@ -2,11 +2,9 @@ const fs = require('fs');
 import Handlebars from 'handlebars';
 import { sendMessage } from '../bot/modules/send_message';
 import Transactions from '../models/transactions';
-import creditReferrer from './credit_referrer';
 import { dateFormatter } from './helper_functions';
-import handleFirstMonthBonus from './monthly_bonuses';
-import refundTransaction from './refund-transaction';
 import { addDataProfit } from './save-profit';
+import sendMessageW from '../bot/whatsaap_bot/send_message_w';
 
 // helper function for succesfull response
 const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data' | 'airtime') => {
@@ -14,20 +12,52 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
   await addToDelivered(response, type);
 
   // calling function to send mail and json response object
-  await sendSuccessfulResponse(response);
+  //await sendSuccessfulResponse(response);
 
   if (response.data.meta.bot) {
     const date = new Date(); //new Date(response.data.customer.created_at);
     const nigeriaTimeString = dateFormatter(date);
 
     try {
-      await sendMessage(response.data.meta.senderId, {
-        text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${
-          response.data.meta.phoneNumber
-        }\nPrice: ${response.data.amount} \nTransaction ID: ${
-          response.data.id
-        } \nDate: ${nigeriaTimeString}`,
-      });
+      if (response.data.meta.platform === 'facebook') {
+        await sendMessage(response.data.meta.senderId, {
+          text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${
+            response.data.meta.phoneNumber
+          }\nPrice: ${response.data.amount} \nTransaction ID: ${
+            response.data.id
+          } \nDate: ${nigeriaTimeString}`,
+        });
+
+        await sendMessage(response.data.meta.senderId, {
+          text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub',
+        });
+
+        await sendMessage(response.data.meta.senderId, {
+          text:
+            '\nTired of making tranfers to different account for every transaction...?' +
+            '\nGet a permanet account number and experience faster and safer transactions. \n\nC. Create a virtual account',
+        });
+      } else if (response.data.meta.platform === 'whatsapp') {
+        await sendMessageW(
+          response.data.meta.senderId,
+          `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${
+            response.data.meta.phoneNumber
+          }\nPrice: ${response.data.amount} \nTransaction ID: ${
+            response.data.id
+          } \nDate: ${nigeriaTimeString}`
+        );
+
+        await sendMessageW(
+          response.data.meta.senderId,
+          'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub'
+        );
+
+        await sendMessageW(
+          response.data.meta.senderId,
+          '\nTired of making tranfers to different account for every transaction...?' +
+            '\nGet a permanet account number and experience faster and safer transactions. \n\nC. Create a virtual account'
+        );
+      }
     } catch (err) {
       console.error(
         'An error ocured trying to sending succesfll transaction response in helpSuccesfulDelivery',
@@ -47,27 +77,6 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
       date
     );
 
-    // check for bonus delivery
-    // if (Number(response.data.meta.firstPurchase) === 1 && type === 'data')
-    //   await creditReferrer(response.data.meta.senderId);
-    // // add email to meta
-    // response.data.meta.email = response.data.customer.email;
-    // if (type === 'data')
-    //   await handleFirstMonthBonus(
-    //     response.data.id as string,
-    //     response.data.meta,
-    //     response.data.meta.senderId,
-    //     false
-    //   ); // commented out first month bonus and referall bonus
-
-    await sendMessage(response.data.meta.senderId, {
-      text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub',
-    });
-    await sendMessage(response.data.meta.senderId, {
-      text:
-        '\nTired of making tranfers to different account for every transaction...?' +
-        '\nGet a permanet account number and experience faster and safer transactions. \n\nC. Create a virtual account',
-    });
     //await sendTemplates(response.data.meta.senderId, getVirtualAccountTemp);
   }
   //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
@@ -82,14 +91,29 @@ const helpFailedDelivery = async (response: any, info: string) => {
     const nigeriaTimeString = dateFormatter(date);
 
     console.log('bot feed back');
-    await sendMessage(response.data.meta.senderId, {
-      text: `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${
-        response.data.meta.phoneNumber
-      } \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-    });
-    await sendMessage(response.data.meta.senderId, {
-      text: `Auto retry has been initiated for your transaction. If value is not delivered after 2 minutes, please kindly report an issue.`,
-    });
+    if (response.data.meta.platform === 'facebook') {
+      await sendMessage(response.data.meta.senderId, {
+        text: `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${
+          response.data.meta.phoneNumber
+        } \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
+      });
+
+      await sendMessage(response.data.meta.senderId, {
+        text: `Auto retry has been initiated for your transaction. If value is not delivered after 2 minutes, please kindly report an issue.`,
+      });
+    } else if (response.data.meta.platform === 'whatsapp') {
+      await sendMessageW(
+        response.data.meta.senderId,
+        `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${
+          response.data.meta.phoneNumber
+        } \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`
+      );
+
+      await sendMessageW(
+        response.data.meta.senderId,
+        `Auto retry has been initiated for your transaction. If value is not delivered after 2 minutes, please kindly report an issue.`
+      );
+    }
   }
 }; // end of failed delivery helper
 

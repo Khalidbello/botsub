@@ -10,13 +10,13 @@ const handleBuyAirtime = async (event: any) => {
 
   try {
     await sendMessage(senderId, {
-      text: 'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancle.',
+      text: 'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancel.',
     });
     await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAritimeNetwork' } });
   } catch (err) {
     console.error('An error occurred in handleBuyAirtime', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nEnter X to cancle',
+      text: 'An error occurred, please try again. \n\nEnter X to cancel',
     });
   }
 };
@@ -53,12 +53,12 @@ const handleAirtimeNetworkSelected = async (event: any) => {
         text: 'Invalid response recieved',
       });
       await sendMessage(senderId, {
-        text: 'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancle.',
+        text: 'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancel.',
       });
       return;
     }
 
-    await sendMessage(senderId, { text: 'Enter airtime amount. \n\nEnter X to cancle.' });
+    await sendMessage(senderId, { text: 'Enter airtime amount. \n\nEnter X to cancel.' });
     await BotUsers.updateOne(
       { id: senderId },
       {
@@ -72,7 +72,7 @@ const handleAirtimeNetworkSelected = async (event: any) => {
   } catch (err) {
     console.error('An error occurred in handleAirtimeNetworkSelected', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nOr enter X to cancle',
+      text: 'An error occurred, please try again. \n\nOr enter X to cancel',
     });
   }
 }; // end of handleAirtimeNetworkSelected
@@ -88,13 +88,13 @@ const handleEnterAirtimeAmount = async (event: any) => {
     console.log('Amont validdddddddddddddddd', amountValid);
     if (!amountValid)
       return sendMessage(senderId, {
-        text: 'Invalid amount entered.\nAir amount should be      at least 100. \n\nEnter X to cancle.',
+        text: 'Invalid amount entered.\nAir amount should be      at least 100. \n\nEnter X to cancel.',
       });
 
     const user = await BotUsers.findOne({ id: senderId });
 
     await sendMessage(senderId, {
-      text: `Enter phone number for ${user?.purchasePayload?.network} airtime purchase.  \n\nEnter X to cancle.`,
+      text: `Enter phone number for ${user?.purchasePayload?.network} airtime purchase.  \n\nEnter X to cancel.`,
     });
 
     await BotUsers.updateOne(
@@ -111,7 +111,7 @@ const handleEnterAirtimeAmount = async (event: any) => {
   } catch (err) {
     console.error('An error occurred in handleAirtimeAmount: ', err);
     await sendMessage(senderId, {
-      text: 'An error occurred, please try again. \n\nOr enter X to cancle',
+      text: 'An error occurred, please try again. \n\nOr enter X to cancel',
     });
   }
 };

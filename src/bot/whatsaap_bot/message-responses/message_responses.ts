@@ -3,20 +3,16 @@ import emailValidator from 'email-validator';
 import { handleBuyDataW } from './data';
 import sendMessageW from '../send_message_w';
 import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
-import {
-  confirmDataPurchaseResponse,
-  helperConfirmPurchase,
-  validateAmount,
-  validateNumber,
-} from '../../modules/helper_functions';
+import { validateAmount, validateNumber } from '../../modules/helper_functions';
 import { createVAccount } from '../../../modules/gateway';
 import { generateRandomString } from '../../../modules/helper_functions';
 import ReportedIssues from '../../../models/reported-issues';
 import { handleBuyAirtimeW } from './airtime';
 import { cancelTransactionW } from './generic';
+import { confirmDataPurchaseResponseW } from '../helper_functions';
 
 const defaaultMessageW =
-  'Hy what can i do for you today. \n\n 1. Buy data. \n 2. Buy Airtime. \n 3. My amount. \n 4. Refer a friend. \n 5. Report an issue.';
+  'Hi what can i do for you today. \n\n 1. Buy data. \n 2. Buy Airtime. \n 3. My amount. \n 4. Refer a friend. \n 5. Report an issue.';
 
 // function to respond to unexpected message
 async function defaultMessageHandlerW(messageObj: any, message: any) {
@@ -41,7 +37,7 @@ async function defaultMessageHandlerW(messageObj: any, message: any) {
     }
 
     await sendMessageW(senderId, defaaultMessageW);
-    // await sendMessageW(senderId, { text: `Hy ${userName || ''} what can i do for you` });
+    // await sendMessageW(senderId, { text: `Hi ${userName || ''} what can i do for you` });
     // await sendTemplate(senderId, responseServices);
     // await sendTemplate(senderId, responseServices2);
     // sendTemplate(senderId, responseServices3);
@@ -69,8 +65,9 @@ async function sendEmailEnteredResponseW(messageObj: any) {
       },
       { upsert: true }
     );
-    console.log('in save enail', saveEmail);
-    await confirmDataPurchaseResponse(senderId);
+    //console.log('in save enail', saveEmail);
+    const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload');
+    await confirmDataPurchaseResponseW(senderId, user, null);
   } else {
     await sendMessageW(
       senderId,
@@ -110,7 +107,7 @@ async function bvnEntredW(messageObj: any) {
     } else {
       await sendMessageW(
         senderId,
-        'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter Q to cancle.'
+        'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter Q to cancel.'
       );
     }
   } catch (err) {
@@ -133,7 +130,7 @@ async function sendAirtimeAmountReceivedW(messageObj: any) {
     await sendMessageW(senderId, 'Amount recieved');
     await sendMessageW(
       senderId,
-      ` Enter ${userData?.purchasePayload?.network} phone number for airtime purchase. \nEnter Q to cancle`
+      ` Enter ${userData?.purchasePayload?.network} phone number for airtime purchase. \nEnter Q to cancel`
     );
 
     await WhatsaapBotUsers.updateOne(
@@ -151,7 +148,7 @@ async function sendAirtimeAmountReceivedW(messageObj: any) {
   }
   await sendMessageW(
     senderId,
-    'Invalid amount entered \nPlease enter a valid amount. \nEnter Q to cancle'
+    'Invalid amount entered \nPlease enter a valid amount. \nEnter Q to cancel'
   );
 } // end of sendAirtimeAmountReceivedW
 
@@ -176,7 +173,7 @@ async function sendPhoneNumberEnteredResponsesW(messageObj: any) {
           },
         }
       );
-      await confirmDataPurchaseResponse(senderId);
+      await confirmDataPurchaseResponseW(senderId, user, null);
       return;
     }
 
@@ -198,7 +195,7 @@ async function sendPhoneNumberEnteredResponsesW(messageObj: any) {
   }
   await sendMessageW(
     senderId,
-    'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancle.'
+    'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.'
   );
 } // end of sendPhoneNumberEnteredResponsesW
 
@@ -209,11 +206,12 @@ async function newEmailBeforeTransactResponseW(
 ) {
   const senderId = messageObj.from;
   const email = messageObj?.text?.body;
+  const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload email');
 
   try {
     if (email.toLowerCase() === 'x') {
       await sendMessageW(senderId, 'Change email cancled');
-      return await helperConfirmPurchase(transactionType, senderId);
+      return confirmDataPurchaseResponseW(senderId, user, null);
     }
 
     if (emailValidator.validate(email)) {
@@ -227,16 +225,16 @@ async function newEmailBeforeTransactResponseW(
         }
       );
       await sendMessageW(senderId, 'Email changed successfully.');
-      return helperConfirmPurchase(transactionType, senderId);
+      return confirmDataPurchaseResponseW(senderId, user, null);
     } else {
       await sendMessageW(
         senderId,
-        'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancle.'
+        'the email format you entered is invalid. \nPlease enter a valid email. \n\nEnter 0 to cancel.'
       );
     }
   } catch (err) {
     console.error('Error occured in newEmailBeforeTransactResponseW', err);
-    sendMessageW(senderId, 'An error occured plase enter resposne again.  \n Or enter 0 to cancle');
+    sendMessageW(senderId, 'An error occured plase enter resposne again.  \n Or enter 0 to cancel');
   }
 } // end of newEmailBeforeTransactResponseW
 
@@ -248,10 +246,10 @@ async function newPhoneNumberBeforeTransactResponseW(
   const senderId = messageObj.from;
   const phoneNumber = messageObj?.text?.body;
   const validatedNum = validateNumber(phoneNumber);
-
+  const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload email');
   if (phoneNumber.toLowerCase() === 'x') {
     await sendMessageW(senderId, 'Change phone number cancled');
-    return await helperConfirmPurchase(transactionType, senderId);
+    return confirmDataPurchaseResponseW(senderId, user, null);
   }
 
   if (validatedNum) {
@@ -265,12 +263,12 @@ async function newPhoneNumberBeforeTransactResponseW(
       }
     );
     await sendMessageW(senderId, 'Phone number changed successfully');
-    console.log('transactionType', transactionType);
-    helperConfirmPurchase(transactionType, senderId);
+    //console.log('transactionType', transactionType);
+    confirmDataPurchaseResponseW(senderId, user, null);
   } else {
     await sendMessageW(
       senderId,
-      'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancle.'
+      'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancel.'
     );
   }
 } // end of newPhoneNumberBeforeTransactResponseW
@@ -294,7 +292,7 @@ async function reportIssueW(messageObj: any) {
     description: message,
     date,
     reporterId: senderId,
-    platformType: 'facebook',
+    platform: 'whatsapp',
     status: true,
   });
 
