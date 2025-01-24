@@ -48,7 +48,7 @@ async function processMessageW(messageObj: any) {
 
   // check if bot auto response is active and activate if command deems
   if (user?.botResponse === false) {
-    if (text !== 'activate') {
+    if (text.toLowerCase() !== 'activate') {
       return console.log('Bot Auto response if off for user: ', senderId);
     } else {
       await sendMessageW(

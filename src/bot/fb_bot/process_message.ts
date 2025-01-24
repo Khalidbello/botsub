@@ -55,7 +55,7 @@ async function processMessage(event: any, res: Response) {
     const senderId = event.sender.id;
     const message: string = event.message.text.trim().toLowerCase();
 
-    if (message !== 'activate') {
+    if (message.toLowerCase() !== 'activate') {
       return console.log('Bot Auto response if off for user: ', senderId);
     } else {
       await sendMessage(senderId, {
