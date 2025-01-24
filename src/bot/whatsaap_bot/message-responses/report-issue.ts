@@ -54,7 +54,9 @@ const handleReportIssueResponseW = async (messaageObj: any) => {
     await issue.save();
     await sendMessageW(
       senderId,
-      'Your issue have beign directed to BotSub support team. \nSorry for any inconveniences caused. \n You will recieve a resposne in the neext 5 mins'
+      `Your issue has been directed to the BotSub support team. \n
+      We apologize for any inconvenience caused. \n\n
+      you will receive a response within the next 5 minutes.`
     );
     await WhatsaapBotUsers.updateOne(
       { id: senderId },

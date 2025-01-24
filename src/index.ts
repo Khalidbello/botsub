@@ -68,6 +68,9 @@ if (process.env.NODE_ENV === 'development') {
   env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_PRODUCTION;
   env.FBM_TOKEN = env.FBM_TOKEN_PRODUCTION;
   env.OPENSUB_KEY = env.OPENSUB_KEY_PRODUCTION;
+  env.WHATSAAP_VERIF_TOKEN = env.WHATSAAP_VERIF_TOKEN_PRODUCTION;
+  env.WHATSAPP_NUM_ID = env.WHATSAPP_NUM_ID_PRODUCTION;
+  env.WHATSAPP_ACCESS_TOK = env.WHATSAPP_ACCESS_TOK_PRODUCTION;
   //allowedOrigins = ['https://admin.botsub.com.ng', 'http://admin.botsub.com.ng'];
 }
 
