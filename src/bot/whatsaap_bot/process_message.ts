@@ -1,5 +1,3 @@
-import { Response } from 'express';
-import * as fs from 'fs';
 import sendMessageW from './send_message_w';
 import WhatsaapBotUsers from '../../models/whatsaap_bot_users';
 
@@ -50,10 +48,7 @@ async function processMessageW(messageObj: any) {
 
   // check if bot auto response is active and activate if command deems
   if (user?.botResponse === false) {
-    const senderId = messageObj.sender.id;
-    const message: string = messageObj.message.text.trim().toLowerCase();
-
-    if (message !== 'activate') {
+    if (text !== 'activate') {
       return console.log('Bot Auto response if off for user: ', senderId);
     } else {
       await sendMessageW(
