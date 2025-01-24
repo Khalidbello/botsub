@@ -12,6 +12,7 @@ const Flutterwave = require('flutterwave-node-v3');
 import axios from 'axios';
 import sendMessageW from '../../bot/whatsaap_bot/send_message_w';
 import { isConversationOpenW } from '../../bot/whatsaap_bot/helper_functions';
+import WhatsaapBotUsers from '../../models/whatsaap_bot_users';
 
 async function getNetworkStatus(req: Request, res: Response) {
   // Read the file content
@@ -55,23 +56,42 @@ async function fetchIssues(req: Request, res: Response) {
 async function closeIssue(req: Request, res: Response) {
   const issueId = req.params.issueId;
   const senderId = req.params.reporterId;
-  const issue = req.body.issue;
+  const { issue, platform } = req.body;
   const date = new Date();
 
   try {
     await ReportedIssues.updateOne({ id: issueId }, { status: false }); // set issue to false
-    await BotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } }); // activate bot auto response
+
+    if (platform === 'facebook') {
+      await BotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } }); // activate bot auto response
+
+      sendMessage(senderId, {
+        text: `Your issue with with ID: ${issueId} \n\nIssue: ${issue.substring(
+          0,
+          15
+        )}.... \n\n has been closed.  \nFor any complains please kindly report a new issue thank you. \nBotSub Cares. \n\n ${dateFormatter(
+          date
+        )}`,
+      });
+    }
+    if (platform === 'whatsapp') {
+      const sendable = await isConversationOpenW(senderId);
+      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } }); // activate bot auto response
+
+      if (sendable) {
+        sendMessageW(
+          senderId,
+          `Your issue with with ID: ${issueId} \n\nIssue: ${issue.substring(
+            0,
+            15
+          )}.... \n\n has been closed.  \nFor any complains please kindly report a new issue thank you. \nBotSub Cares. \n\n ${dateFormatter(
+            date
+          )}`
+        );
+      }
+    }
 
     res.json({ ok: 'isseu successfully closed' });
-
-    sendMessage(senderId, {
-      text: `Your issue with with ID: ${issueId} \n\nIssue: ${issue.substring(
-        0,
-        15
-      )}.... \n\n has been closed.  \nFor any complains please kindly report a new issue thank you. \nBotSub Cares. \n\n ${dateFormatter(
-        date
-      )}`,
-    });
   } catch (err) {
     console.log('An error occured in closeIssue: ', err);
   }
