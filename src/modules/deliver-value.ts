@@ -7,6 +7,8 @@ import { updateTransactNum } from '../bot/modules/helper_function_2';
 import { helpFailedDelivery, helpSuccesfulDelivery } from './deliver-value-helpers';
 import { setAutoRetryTrue } from '../routes/admin';
 import { dateFormatter } from './helper_functions';
+import sendMessageW from '../bot/whatsaap_bot/send_message_w';
+import { updateTransactNumW } from '../bot/whatsaap_bot/helper_functions';
 
 const transactionMutex = new Mutex(); // mutex for delivering transactions
 
@@ -24,13 +26,24 @@ const deliverValue = async (
       if (response.data.meta.bot) {
         if (!custom) {
           try {
-            await sendMessage(response.data.meta.senderId, {
-              text: `Sorry this transaction has already been delivered \nProduct: ₦${
-                response.data.meta.size
-              } ${response.data.meta.network} data \nTransaction ID: ${
-                response.data.id
-              } \nDate: ${dateFormatter(response.data.created_at)}`,
-            });
+            if (response.data.meta.platform === 'facebook') {
+              await sendMessage(response.data.meta.senderId, {
+                text: `Sorry this transaction has already been delivered \nProduct: ₦${
+                  response.data.meta.size
+                } ${response.data.meta.network} data \nTransaction ID: ${
+                  response.data.id
+                } \nDate: ${dateFormatter(response.data.created_at)}`,
+              });
+            } else if (response.data.meta.platform === 'whatsapp') {
+              await sendMessageW(
+                response.data.meta.senderId,
+                `Sorry this transaction has already been delivered \nProduct: ₦${
+                  response.data.meta.size
+                } ${response.data.meta.network} data \nTransaction ID: ${
+                  response.data.id
+                } \nDate: ${dateFormatter(response.data.created_at)}`
+              );
+            }
           } catch (err) {
             console.error(
               'an error occurd trying to send bot response for alredy deliered value in deliverValue',
@@ -117,7 +130,10 @@ const makePurchaseRequest = async (
 
     if (resp.data.Status === 'successful') {
       if (response.data.meta.type === 'data') {
-        updateTransactNum(response.data.meta.senderId);
+        if (response.data.meta.platform === 'facebook')
+          updateTransactNum(response.data.meta.senderId);
+        if (response.data.meta.platform === 'whatsapp')
+          updateTransactNumW(response.data.meta.senderId);
         updateNetworkStatus(response.data.meta.network, true, 'Network working fine'); // updating network status to true
       }
 

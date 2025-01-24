@@ -1,25 +1,25 @@
 // file to contain generic functionality for
 
 import emailValidator from 'email-validator';
-import BotUsers from '../../models/fb_bot_users';
-import PaymentAccounts from '../../models/payment-accounts';
-import { checkDataStatus, handleDataNetworkNotAvailable } from '../modules/data-network-checker';
-import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
+import PaymentAccounts from '../../../models/payment-accounts';
+import { checkDataStatus, handleDataNetworkNotAvailable } from '../../modules/data-network-checker';
+import { sendMessage } from '../../modules/send_message';
 import { handleBuyAirtime } from './airtime';
 import { handleBuyData, buyDataText } from './data';
-import { confirmDataPurchaseResponse } from '../modules/buy-data';
-import { makePurchase } from '../../modules/v-account-make-purcchase';
-import { remindToFundWallet, validateNumber } from '../modules/helper_functions';
+import { confirmDataPurchaseResponse } from '../../modules/buy-data';
+import { makePurchase } from '../../../modules/v-account-make-purcchase';
+import { remindToFundWallet, validateNumber } from '../../modules/helper_functions';
 import { showAccountDetails } from './virtual-account';
 import { showDataPrices } from './data-prices';
 import { showActiveReferalls, showReferralCode } from './referral_message_responses';
 import { handleReportIssue } from './report-issue';
-import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../modules/helper_function_2';
-import fbBotRouter from '../../routes/fb-bot-webhook';
+import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../../modules/helper_function_2';
+import fbBotRouter from '../../../routes/fb-bot-webhook';
 
 // text to contain bot functionalities
 const defaultText =
-  'Hy what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
+  'Hi what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
   '\n E. Refer a friend \n F. Active referals \n G. Report issue';
 
 // function to respond to messages with out next action
@@ -82,7 +82,7 @@ async function selectPurchaseMethod(event: any, transactNum: number) {
   sendMessage(senderId, {
     text:
       'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
-      ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancle.',
+      ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancel.',
   });
   await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAccount' } });
   //await generateAccountNumber(event, transactNum);
@@ -111,6 +111,7 @@ async function generateAccountNumber(event: any, transactNum: number) {
     payload.bot = true;
     payload.firstPurchase = botUser?.firstPurchase;
     payload.senderId = senderId;
+    payload.platform = 'facebook';
 
     // check if data network is active bbefore proceedinn
     if (payload.type === 'data') {
@@ -246,7 +247,7 @@ async function handleChangeNumberBeforeTransaction(event: any) {
       return;
     }
     await sendMessage(senderId, {
-      text: 'Phone number not valid. \nPlease enter a valid phone number. \n\nEnter X to cancle.',
+      text: 'Phone number not valid. \nPlease enter a valid phone number. \n\nEnter X to cancel.',
     });
   } catch (err) {}
 } // end of sendPhoneNumberEnteredResponses
@@ -281,14 +282,14 @@ async function handleNewEmailBeforeTransasctionEntred(event: any) {
       await confirmDataPurchaseResponse(senderId, user, null);
     } else {
       const response = {
-        text: 'The email format you entered is invalid. \nPlease enter a valid email. \n\nEnter x to cancle.',
+        text: 'The email format you entered is invalid. \nPlease enter a valid email. \n\nEnter x to cancel.',
       };
       await sendMessage(senderId, response);
     }
   } catch (err) {
     console.error('Error occured in changeEmailBeforeTransaction', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n\nEnter X to cancle',
+      text: 'An error occured plase enter resposne again.  \n\nEnter X to cancel',
     });
   }
 } // end of changeEmailBeforeTransaction

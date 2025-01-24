@@ -1,6 +1,6 @@
-import BotUsers from '../../models/fb_bot_users';
-import { confirmDataPurchaseResponse } from '../modules/buy-data';
-import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
+import { confirmDataPurchaseResponse } from '../../modules/buy-data';
+import { sendMessage } from '../../modules/send_message';
 import { cancelTransaction } from './generic';
 import emailValidator from 'email-validator';
 
@@ -34,7 +34,7 @@ async function handleEnterEmailToProcedWithPurchase(event: any) {
       return;
     } else {
       const response = {
-        text: 'The email format you entered is invalid \nPlease enter a valid email. \n\nEnter X to cancle.',
+        text: 'The email format you entered is invalid \nPlease enter a valid email. \n\nEnter X to cancel.',
       };
       await sendMessage(senderId, response);
     }

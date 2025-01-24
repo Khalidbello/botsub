@@ -1,10 +1,10 @@
-import BotUsers from '../../models/fb_bot_users';
+import BotUsers from '../../../models/fb_bot_users';
 import {
   changeMailBeforeTransact,
   changePhoneBeforeTransaction,
   confirmDataPurchaseResponse,
-} from '../modules/buy-data';
-import { sendMessage } from '../modules/send_message';
+} from '../../modules/buy-data';
+import { sendMessage } from '../../modules/send_message';
 import { cancelTransaction, selectPurchaseMethod } from './generic';
 
 const handleConfirmProductPurchase = async (event: any, transactNum: number) => {
@@ -25,7 +25,7 @@ const handleConfirmProductPurchase = async (event: any, transactNum: number) => 
   } catch (err) {
     console.error('An error occured in phoneNumberEntred', err);
     sendMessage(senderId, {
-      text: 'An error occured plase enter resposne again.  \n\n Enter X to cancle',
+      text: 'An error occured plase enter resposne again.  \n\n Enter X to cancel',
     });
   }
 };

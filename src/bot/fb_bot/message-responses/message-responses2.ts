@@ -1,6 +1,6 @@
-import BotUsers from '../../models/fb_bot_users';
-import { confirmDataPurchaseResponse } from '../modules/buy-data';
-import { sendMessage } from '../modules/send_message';
+import BotUsers from '../../../models/fb_bot_users';
+import { confirmDataPurchaseResponse } from '../../modules/buy-data';
+import { sendMessage } from '../../modules/send_message';
 import { generateAccountNumber } from './generic';
 
 const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
@@ -35,7 +35,7 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
       // sendMessage(senderId, {
       //   text:
       //     'Select Payment method. \n\nA. Create a Permanent virtual account number. will be used for all future transactions.' +
-      //     ' \n\nB. Use a one-time account number. Valid for this transaction only. \n\nEnter X to cancle.',
+      //     ' \n\nB. Use a one-time account number. Valid for this transaction only. \n\nEnter X to cancel.',
       // });
       return;
     }
@@ -44,14 +44,14 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
     sendMessage(senderId, {
       text:
         'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
-        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancle.',
+        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancel.',
     });
   } catch (err: any) {
     sendMessage(senderId, { text: 'An error occured please try again.' });
     sendMessage(senderId, {
       text:
         'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
-        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancle.',
+        ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancel.',
     });
     console.error('An error occured in handleSelectPaymentMethod: ', err);
   }

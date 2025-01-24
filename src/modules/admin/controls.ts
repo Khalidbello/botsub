@@ -10,6 +10,8 @@ import { dateFormatter } from '../helper_functions';
 import { carryOutNonVAccount, respondToWebhook } from '../gateway';
 const Flutterwave = require('flutterwave-node-v3');
 import axios from 'axios';
+import sendMessageW from '../../bot/whatsaap_bot/send_message_w';
+import { isConversationOpenW } from '../../bot/whatsaap_bot/helper_functions';
 
 async function getNetworkStatus(req: Request, res: Response) {
   // Read the file content
@@ -25,13 +27,16 @@ async function setNetworkStatus(req: Request, res: Response) {
 }
 
 async function sendIssueResponse(req: Request, res: Response) {
-  const { id, platformType, response, reporterId } = req.body;
-  console.log(reporterId, 'in send issue response..............');
-  if (platformType === 'facebook') {
+  const { id, platform, response, reporterId } = req.body;
+
+  if (platform === 'facebook') {
     await sendMessage(reporterId, { text: `issue id: ${id} \n${response}` });
+  } else if (platform === 'whatsapp') {
+    const sendable = await isConversationOpenW(reporterId);
+    if (sendable) await sendMessageW(reporterId, `issue id: ${id} \n${response}`);
   }
 
-  res.json({ ok: 'ooook' });
+  res.json({ ok: 'ok' });
 }
 
 async function fetchIssues(req: Request, res: Response) {

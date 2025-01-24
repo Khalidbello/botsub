@@ -5,19 +5,22 @@ const handlebars = require('handlebars');
 
 import Transactions from '../models/transactions';
 import PaymentAccounts from '../models/payment-accounts';
-import creditReferrer from './credit_referrer';
-import handleFirstMonthBonus from './monthly_bonuses';
-import { dateFormatter } from '../bot/modules/helper_functions';
-import { generateRandomString } from './helper_functions';
 import * as fs from 'fs';
 import axios from 'axios';
-import { cancelTransaction } from '../bot/post-back-responses/postback_responses';
+import { cancelTransaction } from '../bot/fb_bot/post-back-responses/postback_responses';
 import BotUsers from '../models/fb_bot_users';
 import { confirmDataPurchaseResponse } from '../bot/modules/buy-data';
 import { sendMessage } from '../bot/modules/send_message';
 import { updateNetworkStatus } from '../bot/modules/data-network-checker';
 import { addDataProfit } from './save-profit';
 import { updateTransactNum } from '../bot/modules/helper_function_2';
+import WhatsaapBotUsers from '../models/whatsaap_bot_users';
+import sendMessageW from '../bot/whatsaap_bot/send_message_w';
+import {
+  confirmDataPurchaseResponseW,
+  updateTransactNumW,
+} from '../bot/whatsaap_bot/helper_functions';
+import { dateFormatter, generateRandomString } from './helper_functions';
 
 // function to carryout purchase
 async function makePurchase(purchasePayload: any, bot: string, senderId: string) {
@@ -94,7 +97,8 @@ async function makePurchaseRequest(
 
     if (resp.data.Status === 'successful') {
       if (purchasePayload.transactionType === 'data') {
-        updateTransactNum(senderId);
+        if (bot === 'facebook') updateTransactNum(senderId);
+        if (bot === 'whatsapp') updateTransactNumW(senderId);
         updateNetworkStatus(purchasePayload?.network, true, 'Network data delivery working fine'); // set network availablity to true
       }
       return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
@@ -127,6 +131,10 @@ async function makePurchaseRequest(
       await sendMessage(senderId, { text: 'Transaction failed please try again.' });
       const user = await BotUsers.findOne({ id: senderId });
       return confirmDataPurchaseResponse(senderId, user, null);
+    } else if (bot === 'whatsapp') {
+      await sendMessageW(senderId, 'Transaction failed please try again.');
+      const user = await WhatsaapBotUsers.findOne({ id: senderId });
+      return confirmDataPurchaseResponseW(senderId, user, null);
     }
   }
 } // end of actualBuyData
@@ -148,6 +156,10 @@ async function simulateMakePurchaseRequest(
       await sendMessage(senderId, { text: 'Transaction failed please try again' });
       const user = await BotUsers.findOne({ id: senderId });
       return confirmDataPurchaseResponse(senderId, user, null);
+    } else if (bot === 'whatsapp') {
+      await sendMessageW(senderId, 'Transaction failed please try again');
+      const user = await WhatsaapBotUsers.findOne({ id: senderId });
+      return confirmDataPurchaseResponseW(senderId, user, null);
     }
   }
 } // end of makePurchaserequest simulaing
@@ -197,6 +209,17 @@ async function helpSuccesfulDelivery(
     await sendMessage(senderId, {
       text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub',
     });
+  } else if (bot === 'whatsapp') {
+    //await sendMessage(senderId, { text: `Transaction Succesful \nProduct: ${product}\nTransaction ID: ${id} \nDate: ${nigeriaTimeString}` });
+    await sendMessageW(senderId, `Your current account balance is:   ₦${accBalance?.balance}`);
+    await sendMessageW(
+      senderId,
+      `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`
+    );
+    await sendMessageW(
+      senderId,
+      'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub'
+    );
   }
 
   //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));

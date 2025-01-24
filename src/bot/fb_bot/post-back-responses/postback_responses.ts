@@ -1,14 +1,14 @@
 import axios from 'axios';
-import BotUsers from '../../models/fb_bot_users';
-import { checkDataStatus, handleDataNetworkNotAvailable } from '../modules/data-network-checker';
-import { getUserName } from '../modules/get_user_info';
+import BotUsers from '../../../models/fb_bot_users';
+import { checkDataStatus, handleDataNetworkNotAvailable } from '../../modules/data-network-checker';
+import { getUserName } from '../../modules/get_user_info';
 import {
   confirmDataPurchaseResponse,
   noTransactFound,
   remindToFundWallet,
-} from '../modules/helper_functions';
-import { sendMessage } from '../modules/send_message';
-import sendTemplates from '../modules/send_templates';
+} from '../../modules/helper_functions';
+import { sendMessage } from '../../modules/send_message';
+import sendTemplates from '../../modules/send_templates';
 import {
   airtimeNetworks1,
   airtimeNetworks2,
@@ -19,9 +19,9 @@ import {
   responseServices2,
   responseServices3,
 } from '../templates/templates';
-import PaymentAccounts from '../../models/payment-accounts';
-import { makePurchase } from '../../modules/v-account-make-purcchase';
-import handleFirstMonthBonus from '../../modules/monthly_bonuses';
+import PaymentAccounts from '../../../models/payment-accounts';
+import { makePurchase } from '../../../modules/v-account-make-purcchase';
+import handleFirstMonthBonus from '../../../modules/monthly_bonuses';
 import { defaaultMessage } from '../message-responses/message_responses';
 import { defaultText } from '../message-responses/generic';
 
@@ -31,7 +31,7 @@ async function sendNewConversationResponse(event: any) {
   const userName = await getUserName(senderId);
 
   // await sendMessage(senderId, {
-  //   text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.`,
+  //   text: `Hi ${userName ? userName : ''} i am BotSub virtual assitance.`,
   // });
   // await sendMessage(senderId, {
   //   text: `Kindly enter referral code below \nIf no referral code enter 0`,
@@ -47,7 +47,7 @@ async function sendNewConversationResponse(event: any) {
 
   // run with out requesting referral code
   await sendMessage(senderId, {
-    text: `Hy ${userName ? userName : ''} i am BotSub virtual assitance.`,
+    text: `Hi ${userName ? userName : ''} i am BotSub virtual assitance.`,
   });
 
   const user = await BotUsers.findOne({ id: senderId });
@@ -352,7 +352,7 @@ async function changeMailBeforeTransact(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new email \n\nEnter Q to cancle' });
+  await sendMessage(senderId, { text: 'Enter new email \n\nEnter Q to cancel' });
   await BotUsers.updateOne(
     { id: senderId },
     {
@@ -379,7 +379,7 @@ async function changePhoneNumber(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter Q to cancle' });
+  await sendMessage(senderId, { text: 'Enter new phone number \n\nEnter Q to cancel' });
   await BotUsers.updateOne(
     { id: senderId },
     {

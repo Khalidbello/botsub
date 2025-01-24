@@ -33,6 +33,6 @@ const Schema = new mongoose.Schema({
   claimedReferrals: [{ id: Number }],
 });
 
-const BotUsers = mongoose.model('botUsers', Schema);
+const WhatsaapBotUsers = mongoose.model('whatsaapBotUsers', Schema);
 
-export default BotUsers;
+export default WhatsaapBotUsers;

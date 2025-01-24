@@ -2,7 +2,7 @@
 
 const menuIcon = document.getElementById('menu-icon');
 const navMenu = document.getElementById('nav-menu');
-const hideIcon = document.getElementById('cancle-icon');
+const hideIcon = document.getElementById('cancel-icon');
 let menuFlag = 'hidden';
 
 menuIcon.addEventListener('click', toggleNavMenu);

@@ -1,11 +1,11 @@
-import { networkDetailsType } from '../../types/bot/module-buy-data-types';
-import { computeDiscount } from '../modules/helper_function_2';
-import { sendMessage } from '../modules/send_message';
-import { defaultText } from './generic';
+import { networkDetailsType } from '../../../types/bot/module-buy-data-types';
+import { computeDiscount } from '../../modules/helper_function_2';
+import sendMessageW from '../send_message_w';
+import { defaultTextW } from './generic';
 import fs from 'fs';
 
-const showDataPrices = async (event: any, transactNum: number) => {
-  const senderId = event.sender.id;
+const showDataPricesW = async (messageObj: any, transactNum: number) => {
+  const senderId = messageObj.from;
   const discount = computeDiscount(transactNum);
 
   try {
@@ -23,14 +23,14 @@ const showDataPrices = async (event: any, transactNum: number) => {
         }`;
       }
 
-      await sendMessage(senderId, { text: text });
+      await sendMessageW(senderId, text);
     }
-    await sendMessage(senderId, { text: defaultText });
+    await sendMessageW(senderId, defaultTextW);
   } catch (err) {
     console.error('An error occured in showDataPrices', err);
-    await sendMessage(senderId, { text: 'An error occured.' });
-    await sendMessage(senderId, { text: defaultText });
+    await sendMessageW(senderId, 'An error occured.');
+    await sendMessageW(senderId, defaultTextW);
   }
 };
 
-export { showDataPrices };
+export { showDataPricesW };

@@ -79,6 +79,7 @@ const generateOneTimeAccountHelper = async (datas: any): Promise<any> => {
         bot: datas.bot,
         senderId: datas.senderId,
         firstPurchase: datas.firstPurchase,
+        platform: datas.platform,
       };
     } else if (datas.transactionType == 'airtime') {
       payload = {
@@ -90,6 +91,7 @@ const generateOneTimeAccountHelper = async (datas: any): Promise<any> => {
         bot: datas.bot,
         senderId: datas.senderId,
         firstPurchase: datas.firstPurchase,
+        platform: datas.platform,
       };
     }
 
@@ -200,6 +202,12 @@ const checkFundBalance = async () => {
     console.error('An error occured in checkFundBalance :', err);
   }
 };
+
+// fucntiion to save userslast message date
+const updateLastMesageDate = async (senderId: string) => {
+  const date = new Date();
+  await BotUsers.updateOne({ id: senderId }, { $set: { lastMessage: date } });
+};
 export {
   computeDiscount,
   updateTransactNum,
@@ -208,4 +216,5 @@ export {
   checkPaymentValidity,
   retryAllFaledTransactions,
   mapAlpaheToNum,
+  updateLastMesageDate,
 };
