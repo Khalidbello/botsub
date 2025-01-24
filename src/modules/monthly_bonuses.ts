@@ -2,8 +2,6 @@ import axios from 'axios';
 import { sendMessage } from '../bot/modules/send_message';
 import BotUsers from '../models/fb_bot_users';
 import Users from '../models/users';
-import { failedMonthlyBonusTemplate } from '../bot/templates/templates';
-import { addDataProfit } from './save-profit';
 
 require('dotenv').config();
 
