@@ -93,7 +93,7 @@ async function createVAccount(
     await sendMessage(senderId, { text: `Account Name: ${account.accountName}` });
     await sendMessage(senderId, { text: 'Acccount Number: ' });
     await sendMessage(senderId, { text: account.accountNumber });
-    await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
+    await sendMessage(senderId, { text: `Account Balance: ₦${account.balance.toFixed(2)}` });
     await sendMessage(senderId, {
       text: 'Fund permanent account and make purchases with ease.',
     });
@@ -184,7 +184,7 @@ async function createVAccountW(
     await sendMessageW(senderId, `Account Name: ${account.accountName}`);
     await sendMessageW(senderId, 'Acccount Number: ');
     await sendMessageW(senderId, account.accountNumber);
-    await sendMessageW(senderId, `Account Balance: ₦${account.balance}`);
+    await sendMessageW(senderId, `Account Balance: ₦${account.balance.toFixed(2)}`);
     await sendMessageW(senderId, 'Fund permanent account and make purchases with ease.');
 
     const response = await WhatsaapBotUsers.updateOne(
@@ -266,7 +266,7 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
         text: `Your account account topup of ₦${response.data.amount} was successful.`,
       });
       await sendMessage(response.data.tx_ref, {
-        text: `Your new account balance is: ₦${account.balance}`,
+        text: `Your new account balance is: ₦${account?.balance?.toFixed(2)}`,
       });
 
       // check if user has an outsanding transaction and automatic initiate if any
@@ -286,7 +286,7 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
         );
         await sendMessageW(
           response.data.tx_ref,
-          `Your new account balance is: ₦${account.balance}`
+          `Your new account balance is: ₦${account?.balance?.toFixed(2)}`
         );
 
         // check if user has an outsanding transaction and automatic initiate if any

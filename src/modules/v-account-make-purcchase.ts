@@ -24,11 +24,11 @@ import { dateFormatter, generateRandomString } from './helper_functions';
 
 // function to carryout purchase
 async function makePurchase(purchasePayload: any, bot: string, senderId: string) {
-  console.log('in make purchase');
   if (purchasePayload.transactionType === 'data')
     return deliverData(purchasePayload, bot, senderId);
   if (purchasePayload.transactionType === 'airtime')
     return deliverAirtime(purchasePayload, bot, senderId);
+
   console.log('no matched transaction type::::::::::::::::::::::::   ');
 } // end of function to make purchase
 
@@ -201,7 +201,7 @@ async function helpSuccesfulDelivery(
   if (bot === 'facebook') {
     //await sendMessage(senderId, { text: `Transaction Succesful \nProduct: ${product}\nTransaction ID: ${id} \nDate: ${nigeriaTimeString}` });
     await sendMessage(senderId, {
-      text: `Your current account balance is:   ₦${accBalance?.balance}`,
+      text: `Your current account balance is:   ₦${accBalance?.balance?.toFixed(2)}`,
     });
     await sendMessage(senderId, {
       text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
@@ -211,7 +211,10 @@ async function helpSuccesfulDelivery(
     });
   } else if (bot === 'whatsapp') {
     //await sendMessage(senderId, { text: `Transaction Succesful \nProduct: ${product}\nTransaction ID: ${id} \nDate: ${nigeriaTimeString}` });
-    await sendMessageW(senderId, `Your current account balance is:   ₦${accBalance?.balance}`);
+    await sendMessageW(
+      senderId,
+      `Your current account balance is:   ₦${accBalance?.balance?.toFixed(2)}`
+    );
     await sendMessageW(
       senderId,
       `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`

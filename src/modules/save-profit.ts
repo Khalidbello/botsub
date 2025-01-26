@@ -28,7 +28,7 @@ async function addDataProfit(
     }
 
     const newProfit = new Profits({
-      userId: senderId,
+      senderId: senderId,
       amount: profit,
       transactionId: transactionId,
       transactionType: 'data',

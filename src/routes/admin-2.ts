@@ -6,6 +6,7 @@ import { doCustomFlwWebhook, fetchTransactionLists } from '../modules/admin/cont
 import WhatsaapBotUsers from '../models/whatsaap_bot_users';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
 import { isConversationOpenW } from '../bot/whatsaap_bot/helper_functions';
+import { getRobustUserStatistics } from '../modules/admin/robust-users-statistics';
 
 const adminRouter2 = Router();
 
@@ -77,5 +78,10 @@ adminRouter2.get('/list-transactions/:from/:to/:status/:pageNum', (req: Request,
 
 // route to carry out custom webhook  // basiclally thsi just calls the handle webhook function with transaction details to carry redo process
 adminRouter2.post('/custom-flw-webhook/:id', (req, res) => doCustomFlwWebhook(req, res));
-//
+
+// route to fetch user specific robust statistics
+adminRouter2.get('/robust-users-statistics/:startDate/:endDate', (req, res) =>
+  getRobustUserStatistics(req, res)
+);
+
 export default adminRouter2;
