@@ -77,8 +77,9 @@ adminRouter2.post('/set-bot-response/:senderId', async (req: Request, res: Respo
 });
 
 // route to get lsit of all specfic transaction from flutterwave, from specific date to specific date
-adminRouter2.get('/list-transactions/:from/:to/:status/:pageNum', (req: Request, res: Response) =>
-  fetchTransactionLists(req, res)
+adminRouter2.get(
+  '/list-transactions/:from/:to/:status/:pageNum/:email',
+  (req: Request, res: Response) => fetchTransactionLists(req, res)
 );
 
 // route to carry out custom webhook  // basiclally thsi just calls the handle webhook function with transaction details to carry redo process

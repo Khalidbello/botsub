@@ -147,8 +147,9 @@ async function settleTransaction(transactionId: string, senderId: string, res: R
 // function to ftch trnsacction list
 const fetchTransactionLists = async (req: Request, res: Response) => {
   try {
-    const { from, to, status, pageNum } = req.params;
+    const { from, to, status, pageNum, email } = req.params;
 
+    console.log('Email in ');
     if (!from || !to) return res.status(400).json({ message: 'bad request date limit not set' });
     if (!status) return res.status(400).json({ message: 'bad request, status not set' });
     if (!pageNum) return res.status(400).json({ message: 'pageNum not provided.' });
@@ -163,6 +164,7 @@ const fetchTransactionLists = async (req: Request, res: Response) => {
         to: to,
         currency: 'NGN',
         status: status,
+        customer_email: email === 'null' ? '' : email,
         page: parseInt(pageNum),
       },
     };
