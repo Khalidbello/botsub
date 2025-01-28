@@ -1,12 +1,17 @@
-import { Response, Request } from 'express';
+import { Response, Request, response } from 'express';
 import { Router } from 'express';
 import BotUsers from '../models/fb_bot_users';
 import { sendMessage } from '../bot/modules/send_message';
-import { doCustomFlwWebhook, fetchTransactionLists } from '../modules/admin/controls';
+import {
+  dataAccontDetails,
+  doCustomFlwWebhook,
+  fetchTransactionLists,
+} from '../modules/admin/controls';
 import WhatsaapBotUsers from '../models/whatsaap_bot_users';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
 import { isConversationOpenW } from '../bot/whatsaap_bot/helper_functions';
 import { getRobustUserStatistics } from '../modules/admin/robust-users-statistics';
+import { fundWallet } from '../modules/helper_functions';
 
 const adminRouter2 = Router();
 
@@ -84,4 +89,31 @@ adminRouter2.get('/robust-users-statistics/:startDate/:endDate', (req, res) =>
   getRobustUserStatistics(req, res)
 );
 
+// route to get accoun name and return
+adminRouter2.get('/transfer-account-info', (req: Request, res: Response) =>
+  dataAccontDetails(req, res)
+);
+
+adminRouter2.post('/fund-wallet', async (req: Request, res: Response) => {
+  try {
+    const { amount } = req.body;
+
+    if (!amount || amount < 100)
+      return res.status(400).json({
+        message:
+          'Make sure amount and account number is provided in request bosy and amount is greater than 100',
+      });
+
+    const response = await fundWallet(
+      process.env.BANK_CODE as string,
+      process.env.DATA_WALLET_ACCOUNT_NUM as string,
+      parseInt(amount)
+    );
+
+    return res.json({ status: response.status, message: response.message });
+  } catch (err) {
+    console.error('An error occured in /fund-wallet: ', err);
+    res.status(500).json({ message: 'An error occured funding wallet' });
+  }
+});
 export default adminRouter2;

@@ -190,6 +190,35 @@ const doCustomFlwWebhook = async (req: Request, res: Response) => {
   }
 };
 
+// handler to get data wallet account info
+const dataAccontDetails = async (req: Request, res: Response) => {
+  try {
+    const options = {
+      method: 'POST',
+      url: 'https://api.flutterwave.com/v3/accounts/resolve',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${process.env.FLW_SCRT_KEY_PRODUCTION}`,
+        'Content-Type': 'application/json',
+      },
+      data: {
+        account_number: process.env.DATA_WALLET_ACCOUNT_NUM,
+        account_bank: process.env.BANK_CODE,
+      },
+    };
+
+    const response = await axios.request(options);
+
+    res.json({
+      accountNumber: response.data.data.account_number,
+      accountName: response.data.data.account_name,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'An error occured in gettng account details.' });
+    console.error('An error occured in carrying out custom webhook, in doCustomFlwWebhook', err);
+  }
+};
+
 export {
   getNetworkStatus,
   setNetworkStatus,
@@ -201,4 +230,5 @@ export {
   settleTransaction,
   fetchTransactionLists,
   doCustomFlwWebhook,
+  dataAccontDetails,
 };

@@ -2,7 +2,7 @@ const fs = require('fs');
 import Handlebars from 'handlebars';
 import { sendMessage } from '../bot/modules/send_message';
 import Transactions from '../models/transactions';
-import { dateFormatter } from './helper_functions';
+import { dateFormatter, fundWallet } from './helper_functions';
 import { addDataProfit } from './save-profit';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
 

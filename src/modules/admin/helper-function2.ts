@@ -1,5 +1,7 @@
+import axios from 'axios';
 import Profits from '../../models/profits';
 import Transactions from '../../models/transactions';
+import PaymentAccounts from '../../models/payment-accounts';
 
 // fucntion to getaverage profit per user with in specific timefrae
 const getAveProfitPerUser = async (startDate: Date, endDate: Date) => {
@@ -104,4 +106,74 @@ const getAveTransPerUser = async (startDate: Date, endDate: Date) => {
   }
 };
 
-export { getAveTransPerUser, getAveProfitPerUser, getAveProfPerTrans };
+// helper function to get data wallet balance
+const getDataWalletBalance = async () => {
+  try {
+    const options = {
+      method: 'GET',
+      url: 'https://opendatasub.com/api/user/',
+      headers: {
+        Authorization: `Token ${process.env.OPENSUB_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const response = await axios.request(options);
+    console.log('orpendat user rsposne: ', response.data.user);
+
+    return response?.data?.user?.wallet_balance;
+  } catch (err) {
+    console.error('An error occured in getDataWalletBalance : ', err);
+  }
+};
+
+// helper function to get wallet balance request and data platform balance request
+const getFlutterWaveBalance = async () => {
+  try {
+    const options = {
+      method: 'GET',
+      url: 'https://api.flutterwave.com/v3/balances/NGN',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${process.env.FLW_SCRT_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const response = await axios.request(options);
+    // console.log('resposne in getWallet balane: ', response.data);
+
+    return [response?.data?.data?.available_balance, response?.data?.data?.ledger_balance];
+  } catch (err) {
+    console.error('An error occured in getFlutterWaveBalance : ', err);
+  }
+};
+
+// function to get virtual account balances
+const getVirtualAccountBalances = async () => {
+  try {
+    const virtualAccountBalance = await PaymentAccounts.aggregate([
+      { $match: {} },
+      {
+        $group: {
+          _id: null,
+          totalBalance: { $sum: '$balance' },
+        },
+      },
+    ]);
+
+    //console.log('Virtual account balance: ', virtualAccountBalance);
+    return virtualAccountBalance[0] ? virtualAccountBalance[0].totalBalance : 0;
+  } catch (err) {
+    console.error('An error occured in getVirtualAccountBalances : ', err);
+  }
+};
+
+export {
+  getAveTransPerUser,
+  getAveProfitPerUser,
+  getAveProfPerTrans,
+  getDataWalletBalance,
+  getFlutterWaveBalance,
+  getVirtualAccountBalances,
+};

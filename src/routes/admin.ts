@@ -1,6 +1,12 @@
 // route to handle admin related functionalities
 import { NextFunction, Request, Response, Router } from 'express';
-import { balances, statistics, todaysStatistic, trendData } from '../modules/admin/statistics';
+import {
+  balances,
+  getBalances,
+  statistics,
+  todaysStatistic,
+  trendData,
+} from '../modules/admin/statistics';
 import {
   closeIssue,
   fetchIssues,
@@ -129,7 +135,7 @@ adminRouter.get('/statistics/:startDate/:endDate', async (req: Request, res: Res
 
 adminRouter.get('/balances', async (req: Request, res: Response) => {
   try {
-    await balances(req, res);
+    await getBalances(req, res);
   } catch (err) {
     console.error('error in balances.............', err);
     res.status(500).json({ data: 'an error occured' });

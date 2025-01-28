@@ -246,18 +246,43 @@ async function retryAllFailedDelivery(req: Request) {
 } // end  of retryAllFailed
 
 // function to fundvtu wallet
-async function fundWallet(bankCode: number, accNum: string, amount: number) {
-  const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-  const details = {
-    account_bank: bankCode,
-    account_number: accNum,
-    amount: amount,
-    narration: 'Funding wallet',
-    currency: 'NGN',
-    debit_currency: 'NGN',
-  };
+async function fundWallet(bankCode: string, accNum: string, amount: number) {
+  try {
+    const options = {
+      method: 'POST',
+      url: 'https://api.ravepay.co/v2/gpx/transfers/create',
+      headers: { accept: 'application/json', 'Content-Type': 'application/json' },
+      data: {
+        meta: {
+          FirstName: 'BotSub',
+          LastName: 'Admin',
+          EmailAddress: 'bellokhalid74@gmail.com',
+          MobileNumber: '+23409166871328',
+          Address: 'BotSub Headquaters',
+        },
+        account_bank: parseInt(bankCode),
+        account_number: accNum,
+        amount: amount,
+        seckey: process.env.FLW_SCRT_KEY_PRODUCTION,
+        narration: 'New transfer',
+        currency: 'NGN',
+        beneficiary_name: 'Opendatasub BotSub ',
+      },
+    };
 
-  flw.Transfer.initiate(details).then(console.log).catch(console.log);
+    const response = await axios.request(options);
+
+    if (response.data.status === 'success')
+      return {
+        status: false,
+        message: `Request for transfer of ${response.data.data.amount} to  ${response.data.data.account_number}  ${response.data.data.full_name} has been succesfully initiated.`,
+      };
+
+    return { status: false, message: response.data?.message };
+  } catch (err) {
+    console.error('An error occured in fundWallet: ', err);
+    return { status: false, message: 'An error ocured making wallet funding request' };
+  }
 } // end of fund wallet
 
 export {

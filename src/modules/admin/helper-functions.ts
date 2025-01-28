@@ -144,7 +144,6 @@ const getMaxProfitPerUser = async (startDate: Date, endDate: Date) => {
       },
     ]);
 
-    if (result.length < 1) return 0;
     return result;
   } catch (err) {
     console.error('An error occured in getMaxProfitPerUser: ', err);
@@ -192,7 +191,6 @@ const getMinProfitPerUser = async (startDate: Date, endDate: Date) => {
       },
     ]);
 
-    if (result.length < 1) return 0;
     return result;
   } catch (err) {
     console.error('An error occured in getMaxProfitPerUser: ', err);
@@ -240,7 +238,6 @@ const getMaxTransactionPerUser = async (startDate: Date, endDate: Date) => {
       },
     ]);
 
-    if (result.length < 1) return 0;
     return result;
   } catch (err) {
     console.error('An error occured in getMaxProfitPerUser: ', err);
@@ -288,7 +285,6 @@ const getMinTransactionPerUser = async (startDate: Date, endDate: Date) => {
       },
     ]);
 
-    if (result.length < 1) return 0;
     return result;
   } catch (err) {
     console.error('An error occured in getMaxProfitPerUser: ', err);
