@@ -51,7 +51,7 @@ async function createVAccount(
     is_permanent: true,
     bvn: bvn,
     firstname: 'Botsub',
-    lastname: 'FLW00' + `${num + 1}`,
+    lastname: 'FLW020' + `${num + 1}`,
   };
 
   try {
