@@ -116,7 +116,7 @@ async function bvnEntred(event: any) {
       await createVAccount(user?.email, senderId, bvn, 'facebook', 0);
     } else {
       await sendMessage(senderId, {
-        text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter Q to cancel.',
+        text: 'The NIN  you entred is invalid. \n\nPlease enter a valid NIN. \n\nEnter Q to cancel.',
       });
     }
   } catch (err) {

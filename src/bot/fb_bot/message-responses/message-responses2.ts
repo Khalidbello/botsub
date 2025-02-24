@@ -20,14 +20,6 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
     }
 
     if (message === 'a') {
-      sendMessage(senderId, {
-        text: ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter X to quit.',
-      });
-      await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
-      return;
-    }
-
-    if (message === 'b') {
       await generateAccountNumber(event, transactNum);
       // await sendMessage(senderId, {
       //   text: 'Creation of one-time account is currently not available. \n\nKindly create a permanent account to proceed with transaction.',
@@ -37,6 +29,14 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
       //     'Select Payment method. \n\nA. Create a Permanent virtual account number. will be used for all future transactions.' +
       //     ' \n\nB. Use a one-time account number. Valid for this transaction only. \n\nEnter X to cancel.',
       // });
+      return;
+    }
+
+    if (message === 'b') {
+      sendMessage(senderId, {
+        text: ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.',
+      });
+      await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
       return;
     }
 

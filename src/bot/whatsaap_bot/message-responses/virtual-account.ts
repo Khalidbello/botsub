@@ -29,7 +29,7 @@ async function showAccountDetailsW(messageObj: any) {
     await sendMessageW(senderId, 'You do not have a permanent account number yet.');
     sendMessageW(
       senderId,
-      ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter X to quit.'
+      ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.'
     );
     await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
     return;
@@ -76,10 +76,10 @@ async function enteredEmailForAccountW(messageObj: any) {
         { upsert: true }
       );
 
-      await sendMessageW(senderId, 'Please enter your BVN.');
+      await sendMessageW(senderId, 'Please enter your NIN.');
       return sendMessageW(
         senderId,
-        'In accordeance with CBN regulations, your BVN is required to create a virtual account. \nEnter Q to  cancel'
+        'In accordeance with CBN regulations, your NIN is required to create a virtual account. \nEnter Q to  cancel'
       );
     } else {
       sendMessageW(
@@ -134,7 +134,7 @@ const handleBvnEntredW = async (messageObj: any) => {
     } else {
       await sendMessageW(
         senderId,
-        'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter X to cancel.'
+        'The NIN  you entred is invalid. \n\nPlease enter a valid NIN. \n\nEnter X to cancel.'
       );
     }
   } catch (err) {

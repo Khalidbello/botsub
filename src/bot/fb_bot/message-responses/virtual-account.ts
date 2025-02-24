@@ -25,7 +25,7 @@ async function showAccountDetails(event: any) {
 
     await sendMessage(senderId, { text: 'You do not have a permanent account number yet.' });
     sendMessage(senderId, {
-      text: ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter X to quit.',
+      text: ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.',
     });
     await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
     return;
@@ -71,9 +71,9 @@ async function enteredEmailForAccount(event: any) {
         { upsert: true }
       );
 
-      await sendMessage(senderId, { text: 'Please enter your BVN.' });
+      await sendMessage(senderId, { text: 'Please enter your NIN.' });
       return sendMessage(senderId, {
-        text: 'In accordeance with CBN regulations, your BVN is required to create a virtual account. \nEnter Q to  cancel',
+        text: 'In accordeance with CBN regulations, your NIN is required to create a virtual account. \nEnter Q to  cancel',
       });
     } else {
       sendMessage(senderId, {
@@ -125,7 +125,7 @@ const handleBvnEntred = async (event: any) => {
       return createVAccount(user?.email, senderId, bvn, 'facebook', 0);
     } else {
       await sendMessage(senderId, {
-        text: 'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter X to cancel.',
+        text: 'The NIN  you entred is invalid. \n\nPlease enter a valid NIN. \n\nEnter X to cancel.',
       });
     }
   } catch (err) {

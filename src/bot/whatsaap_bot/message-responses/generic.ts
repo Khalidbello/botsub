@@ -84,8 +84,8 @@ async function selectPurchaseMethodW(messageObj: any, transactNum: number) {
 
   sendMessageW(
     senderId,
-    'Select Payment method. \n\nA. Create a permanent account number, will be used for all future transactions.' +
-      ' \n\nB. Create a one-time account number for this transaction only. \n\nEnter X to cancel.'
+    'Select Payment Method: \n\nA. One-time account number (for this transaction only).' +
+      ' \n\nB. Permanent account number (use for all future transactions, NIN required). \n\nChoose B for faster, hassle-free payments in the future! Enter X to cancel.'
   );
   await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAccount' } });
   //await generateAccountNumberW(messageObj, transactNum);

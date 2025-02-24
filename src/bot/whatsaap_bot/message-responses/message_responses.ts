@@ -107,7 +107,7 @@ async function bvnEntredW(messageObj: any) {
     } else {
       await sendMessageW(
         senderId,
-        'The BVN  you entred is invalid. \n\nPlease enter a valid BVN. \n\nEnter Q to cancel.'
+        'The NIN  you entred is invalid. \n\nPlease enter a valid NIN. \n\nEnter Q to cancel.'
       );
     }
   } catch (err) {
@@ -315,7 +315,7 @@ async function reportIssueW(messageObj: any) {
     })
     .catch((err: Error) => {
       console.error('error occured in report issue fucntion', err);
-      sendMessageW(senderId, 'Sorry somrthing went wrong. \nPlease enter issue again');
+      sendMessageW(senderId, 'Sorry something went wrong. \nPlease enter issue again');
     });
 } // end of report issue function
 

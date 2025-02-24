@@ -20,15 +20,6 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
     }
 
     if (message === 'a') {
-      sendMessageW(
-        senderId,
-        ' Kindly enter your BVN to create a permanent account number. \n\nYour BVN is required in compliance with CBN regulation. \n\nEnter X to quit.'
-      );
-      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
-      return;
-    }
-
-    if (message === 'b') {
       await generateAccountNumberW(messageObj, transactNum);
       // await sendMessageW(senderId, {
       //   text: 'Creation of one-time account is currently not available. \n\nKindly create a permanent account to proceed with transaction.',
@@ -38,6 +29,15 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
       //     'Select Payment method. \n\nA. Create a Permanent virtual account number. will be used for all future transactions.' +
       //     ' \n\nB. Use a one-time account number. Valid for this transaction only. \n\nEnter X to cancel.',
       // });
+      return;
+    }
+
+    if (message === 'b') {
+      sendMessageW(
+        senderId,
+        ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.'
+      );
+      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
       return;
     }
 

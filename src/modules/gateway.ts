@@ -32,7 +32,7 @@ async function createVAccount(
       text: 'An error occured trying to create your vierual account.',
     });
     await sendMessage(senderId, {
-      text: 'Please renter BVN to proceed with creation of virtual account. \n\nEnter X to cancel.',
+      text: 'Please renter NIN to proceed with creation of virtual account. \n\nEnter X to cancel.',
     });
     return;
   }
@@ -123,7 +123,7 @@ async function createVAccountW(
     );
     await sendMessageW(
       senderId,
-      'Please renter BVN to proceed with creation of virtual account. \n\nEnter X to cancel.'
+      'Please renter NIN to proceed with creation of virtual account. \n\nEnter X to cancel.'
     );
     return;
   }
@@ -142,7 +142,7 @@ async function createVAccountW(
     is_permanent: true,
     bvn: bvn,
     firstname: 'Botsub',
-    lastname: 'FLW00' + `${num + 1}`,
+    lastname: 'FLW020' + `${num + 1}`,
   };
 
   try {
