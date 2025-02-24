@@ -9,17 +9,26 @@ const flw = new Flutterwave(FLW_PB_KEY_PRODUCTION, FLW_SCRT_KEY_PRODUCTION );
 
 const createVirtualAccount = async () => {
     try {
+        // const payload = {
+        //     "email": "user@example.com",
+        //     "is_permanent": true,
+        //     "bvn": "69607417179", // BVN is required here
+        //     "tx_ref": "unique-transaction-reference",
+        //     "narration": "John Doe",
+        //     "firstname": "John",
+        //     "lastname": "Doe",
+        //     "phonenumber": "08012345678",
+        //     "amount": 1000
+        // };
         const payload = {
-            "email": "user@example.com",
-            "is_permanent": true,
-            "bvn": "69607417179", // BVN is required here
-            "tx_ref": "unique-transaction-reference",
-            "narration": "John Doe",
-            "firstname": "John",
-            "lastname": "Doe",
-            "phonenumber": "08012345678",
-            "amount": 1000
-        };
+        email: 'botsubteam@gmail.com',
+        is_permanent: true,
+        bvn: '69607417179', // BVN is required here
+        tx_ref: '09166871328',
+        narration: 'John test0080',
+        firstname: 'John',
+        lastname: 'test0090',
+        }
 
         const response = await flw.VirtualAcct.create(payload);
         console.log(response);

@@ -47,11 +47,12 @@ async function createVAccount(
   const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const details = {
     email: email,
-    tx_ref: senderId,
     is_permanent: true,
-    bvn: bvn,
+    bvn: bvn, // BVN is required here
+    tx_ref: senderId,
+    narration: `Botsub FLW00 + ${num + 1}`,
     firstname: 'Botsub',
-    lastname: 'FLW020' + `${num + 1}`,
+    lastname: 'FLW00' + `${num + 1}`,
   };
 
   try {
@@ -64,7 +65,7 @@ async function createVAccount(
     let account = {
       refrence: senderId,
       balance: 0,
-      accountName: 'Botsub ' + 'FLW00' + `${num + 1}`,
+      accountName: details.narration,
       accountNumber: accountDetails.data.account_number,
       botType: botType,
       bankName: accountDetails.data.bank_name,
@@ -138,11 +139,12 @@ async function createVAccountW(
   const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const details = {
     email: email,
-    tx_ref: senderId,
     is_permanent: true,
-    bvn: bvn,
+    bvn: bvn, // BVN is required here
+    tx_ref: senderId,
+    narration: `Botsub FLW00 + ${num + 1}`,
     firstname: 'Botsub',
-    lastname: 'Test020' + `${num + 1}`,
+    lastname: 'FLW00' + `${num + 1}`,
   };
 
   try {
@@ -155,7 +157,7 @@ async function createVAccountW(
     let account = {
       refrence: senderId,
       balance: 0,
-      accountName: 'Botsub ' + 'FLW00' + `${num + 1}`,
+      accountName: details.narration,
       accountNumber: accountDetails.data.account_number,
       botType: botType,
       bankName: accountDetails.data.bank_name,
