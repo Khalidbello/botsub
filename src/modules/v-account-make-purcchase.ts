@@ -93,7 +93,8 @@ async function makePurchaseRequest(
 ) {
   try {
     const resp = await axios.post(options.url, options.payload, { headers: options.headers });
-    console.log('response for virtual acount make purchase: ', resp);
+    console.log('response for virtual acount make purchase: ', resp.data);
+    console.log('see bot type in v account deliver value', bot);
 
     if (resp.data.Status === 'successful') {
       if (purchasePayload.transactionType === 'data') {

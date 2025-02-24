@@ -113,7 +113,7 @@ async function handleDataNetworkNotAvailableW(senderId: string, network: string)
 // function to increase the number of transaction the user has carried out
 const updateTransactNumW = async (userId: string): Promise<boolean> => {
   try {
-    console.log('in updateTransactNum::::::::::::::::::::::::;');
+    console.log('in updateTransactNum::::::::::::::::::::::::;', userId);
     const incresee = await WhatsaapBotUsers.updateOne({ id: userId }, { $inc: { transactNum: 1 } });
     console.log('User transation number incresed: ', incresee);
     return true;
