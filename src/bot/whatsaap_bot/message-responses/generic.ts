@@ -199,7 +199,7 @@ async function initMakePurchaseW(senderId: any) {
         data[1]
       ); // returning function to remind user to fund wallet
 
-    makePurchase(purchasePayload, 'whatsaap', senderId); // calling function to make function
+    makePurchase(purchasePayload, 'whatsapp', senderId); // calling function to make function
   } catch (err) {
     console.error('an error occured in initMakePurchaseW', err);
   }

@@ -24,6 +24,8 @@ import { makePurchase } from '../../../modules/v-account-make-purcchase';
 import handleFirstMonthBonus from '../../../modules/monthly_bonuses';
 import { defaaultMessage } from '../message-responses/message_responses';
 import { defaultText } from '../message-responses/generic';
+import sendMessageW from '../../whatsaap_bot/send_message_w';
+import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
 
 // function to response to newConversations
 async function sendNewConversationResponse(event: any) {
@@ -391,21 +393,39 @@ async function changePhoneNumber(event: any) {
 // function to reset user payload
 async function cancelTransaction(senderId: string, end: boolean) {
   await reset(senderId);
-  console.log('condition in cancelTraanscation::::::  ', end);
+  console.log('condition in cancelTraanscation in fb bot::::::  ', end);
 
   if (end) return;
   await sendMessage(senderId, { text: 'Transaction successfully canceled.' });
   sendMessage(senderId, { text: defaultText });
-  // await sendMessage(senderId, { text: 'Transaction Cancled' });
-  // await sendMessage(senderId, { text: 'What do you want to do next' });
-  // await sendTemplates(senderId, responseServices);
-  // await sendTemplates(senderId, responseServices2);
-  // await sendTemplates(senderId, responseServices3);
 } // end of cancelTransaction
+
+// function to reset user payload
+async function cancelTransactionW(senderId: string, end: boolean) {
+  await resetW(senderId);
+  console.log('condition in cancelTraanscation in whatsapp bot::::::  ', end);
+
+  if (end) return;
+  await sendMessageW(senderId, 'Transaction successfully canceled.');
+  sendMessageW(senderId, defaultText);
+}
 
 // helper to help in resetting
 const reset = async (senderId: string) => {
   await BotUsers.updateOne(
+    { id: senderId },
+    {
+      $set: {
+        nextAction: null,
+        purchasePayload: {},
+      },
+    }
+  );
+}; // end of reset helpers
+
+// helper to help in resetting
+const resetW = async (senderId: string) => {
+  await WhatsaapBotUsers.updateOne(
     { id: senderId },
     {
       $set: {
@@ -525,6 +545,7 @@ export {
   changeMailBeforeTransact,
   changePhoneNumber,
   cancelTransaction,
+  cancelTransactionW,
   showDataPrices,
   retryFailed,
   // handleRetryFailedMonthlyDelivery,

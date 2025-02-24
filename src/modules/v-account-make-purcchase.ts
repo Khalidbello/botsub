@@ -7,7 +7,10 @@ import Transactions from '../models/transactions';
 import PaymentAccounts from '../models/payment-accounts';
 import * as fs from 'fs';
 import axios from 'axios';
-import { cancelTransaction } from '../bot/fb_bot/post-back-responses/postback_responses';
+import {
+  cancelTransaction,
+  cancelTransactionW,
+} from '../bot/fb_bot/post-back-responses/postback_responses';
 import BotUsers from '../models/fb_bot_users';
 import { confirmDataPurchaseResponse } from '../bot/modules/buy-data';
 import { sendMessage } from '../bot/modules/send_message';
@@ -182,7 +185,7 @@ async function helpSuccesfulDelivery(
     id = generateRandomString(15);
     let existing = await Transactions.findOne({ id: id });
     if (existing) {
-      console.log('id exists');
+      console.log('id exists: in help successfull delivery for vritual account');
     } else {
       break;
     }
@@ -196,7 +199,7 @@ async function helpSuccesfulDelivery(
   );
   console.log('account balance::::::::::', accBalance);
 
-  addToDelivered(id, purchasePayload, senderId); // fuction to add trnasction to sucesful purchase
+  addToDelivered(id, purchasePayload, senderId, bot); // fuction to add trnasction to sucesful purchase
   //sendSuccessfulResponse(purchasePayload); // functio to send succsful delivery response
 
   if (bot === 'facebook') {
@@ -230,11 +233,13 @@ async function helpSuccesfulDelivery(
 } // end of helpSuccesfulDelivery
 
 // function to add transaction to delivered transaction
-async function addToDelivered(id: string, purchasePayload: any, senderId: string) {
+async function addToDelivered(id: string, purchasePayload: any, senderId: string, bot: string) {
   try {
     let product, newTransaction, response2;
 
-    cancelTransaction(senderId, true);
+    if (bot === 'facebook') cancelTransaction(senderId, true); // to reset user next action and purchse payload for fb bot
+    if (bot === 'whatapp') cancelTransactionW(senderId, true); // to reset user next action and purchse payload for whatsapp bot
+
     product = formProduct(purchasePayload);
 
     newTransaction = new Transactions({
