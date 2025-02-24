@@ -208,7 +208,7 @@ async function helpSuccesfulDelivery(
       text: `Your current account balance is:   ₦${accBalance?.balance?.toFixed(2)}`,
     });
     await sendMessage(senderId, {
-      text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
+      text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ₦${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
     });
     await sendMessage(senderId, {
       text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub',
@@ -221,7 +221,7 @@ async function helpSuccesfulDelivery(
     );
     await sendMessageW(
       senderId,
-      `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`
+      `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ₦${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`
     );
     await sendMessageW(
       senderId,
@@ -238,7 +238,7 @@ async function addToDelivered(id: string, purchasePayload: any, senderId: string
     let product, newTransaction, response2;
 
     if (bot === 'facebook') cancelTransaction(senderId, true); // to reset user next action and purchse payload for fb bot
-    if (bot === 'whatapp') cancelTransactionW(senderId, true); // to reset user next action and purchse payload for whatsapp bot
+    if (bot === 'whatsapp') cancelTransactionW(senderId, true); // to reset user next action and purchse payload for whatsapp bot
 
     product = formProduct(purchasePayload);
 
