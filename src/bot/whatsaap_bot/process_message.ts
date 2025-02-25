@@ -34,7 +34,7 @@ async function processMessageW(messageObj: any) {
   }
 
   const user = await WhatsaapBotUsers.findOne({ id: senderId }).select(
-    'purchasePayload nextAction transactNum botResponse'
+    'purchasePayload lastMessage nextAction transactNum botResponse'
   );
 
   console.log('user mongo db payload process message in whatsaap bot:   ', senderId, user, text);
