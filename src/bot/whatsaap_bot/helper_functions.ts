@@ -130,7 +130,7 @@ const updateLastMesageDateW = async (senderId: string) => {
     { id: senderId },
     { $set: { lastMessage: date } }
   );
-  consoe.log('message update response::::: ', resposne);
+  console.log('message update response::::: ', resposne);
 };
 
 // function to check is window is still open to send user a message
