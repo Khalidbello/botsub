@@ -148,6 +148,14 @@ const isConversationOpenW = async (senderId: string) => {
   }
 };
 
+function isDateGreaterThan10Minutes(date: Date): boolean {
+  const currentDate = new Date();
+  const timeDifference = date.getTime() - currentDate.getTime();
+  const tenMinutesInMilliseconds = 10 * 60 * 1000;
+
+  return timeDifference > tenMinutesInMilliseconds;
+}
+
 export {
   confirmDataPurchaseResponseW,
   remindToFundWalletW,
@@ -157,4 +165,5 @@ export {
   updateTransactNumW,
   updateLastMesageDateW,
   isConversationOpenW,
+  isDateGreaterThan10Minutes,
 };

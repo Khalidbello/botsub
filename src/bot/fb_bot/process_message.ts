@@ -15,6 +15,7 @@ import {
 } from './message-responses/airtime';
 import { handleConfirmProductPurchase } from './message-responses/data-2';
 import {
+  cancelTransaction,
   defaultMessageHandler,
   handleChangeNumberBeforeTransaction,
   handleNewEmailBeforeTransasctionEntred,
@@ -24,26 +25,30 @@ import { handleSelectPaymentMethod } from './message-responses/message-responses
 import { enteredEmailForAccount, handleBvnEntred } from './message-responses/virtual-account';
 import { handleReportIssueResponse } from './message-responses/report-issue';
 import { updateLastMesageDate } from '../modules/helper_function_2';
+import { isDateGreaterThan10Minutes } from '../whatsaap_bot/helper_functions';
 
 async function processMessage(event: any, res: Response) {
   // check user previousky stored action to determine how to respond to user messages
   const senderId = event?.sender?.id;
 
-  updateLastMesageDate(senderId); // update user last messgae
+  if (process.env.MAINTENANCE === 'true') {
+    updateLastMesageDate(senderId); // update user last messgae
 
-  if (process.env.MAINTENANCE === 'true')
     return sendMessage(event.sender.id, {
       text: 'BotSub is currently under maintenance. \nCheck back later.',
     }); // emergency response incase of bug fixes
+  }
 
   const user = await BotUsers.findOne({ id: senderId }).select(
-    '_id purchasePayload nextAction transactNum botResponse'
+    '_id lastMessage purchasePayload nextAction transactNum botResponse'
   );
+
   console.log('user mongo db payload process message', senderId, user);
 
   if (!user) return sendNewConversationResponse(event);
 
   let transactionType;
+
   try {
     transactionType = user?.purchasePayload?.transactionType;
   } catch (err) {
@@ -52,6 +57,8 @@ async function processMessage(event: any, res: Response) {
 
   // check if bot auto response is active and activate if command deems
   if (user?.botResponse === false) {
+    updateLastMesageDate(event.sender.id); // update user last messgae
+
     const senderId = event.sender.id;
     const message: string = event.message.text.trim().toLowerCase();
 
@@ -63,6 +70,17 @@ async function processMessage(event: any, res: Response) {
       });
       await BotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } });
     }
+  }
+
+  // check users last message if it is greater than 10 mins, reset user next action and send default text
+  // @ts-ignore
+  const lastMessage = new Date(user?.lastMessage);
+  const isLastMessgeGreaterThan10mins = isDateGreaterThan10Minutes(lastMessage);
+
+  if (isLastMessgeGreaterThan10mins) {
+    cancelTransaction(senderId, true);
+    await defaultMessageHandler(event, true, user?.transactNum || 4);
+    return updateLastMesageDate(event.sender.id); // update user last messgae
   }
 
   const nextAction = user?.nextAction;

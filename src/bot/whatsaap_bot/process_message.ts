@@ -13,6 +13,7 @@ import {
 } from './message-responses/airtime';
 import { handleConfirmProductPurchaseW } from './message-responses/data-2';
 import {
+  cancelTransactionW,
   defaultMessageHandlerW,
   handleChangeNumberBeforeTransactionW,
   handleNewEmailBeforeTransasctionEntredW,
@@ -21,20 +22,21 @@ import { handleEnterEmailToProcedWithPurchase } from './message-responses/generi
 import { handleSelectPaymentMethodW } from './message-responses/message-responses2';
 import { enteredEmailForAccountW, handleBvnEntredW } from './message-responses/virtual-account';
 import { handleReportIssueResponseW } from './message-responses/report-issue';
-import { updateLastMesageDateW } from './helper_functions';
+import { isDateGreaterThan10Minutes, updateLastMesageDateW } from './helper_functions';
 
 async function processMessageW(messageObj: any) {
   const senderId = messageObj.from; // Sender's phone number
   const text = messageObj.text ? messageObj.text.body : ''; // Message text
 
-  updateLastMesageDateW(senderId); // update user last message date
-
-  if (process.env.MAINTENANCE === 'true')
+  if (process.env.MAINTENANCE === 'true') {
+    updateLastMesageDateW(senderId); // update user last message date
     return sendMessageW(senderId, 'BotSub is currently under maintenance. \nCheck back later.'); // emergency response incase of bug fixes
+  }
 
   const user = await WhatsaapBotUsers.findOne({ id: senderId }).select(
     'purchasePayload nextAction transactNum botResponse'
   );
+
   console.log('user mongo db payload process message in whatsaap bot:   ', senderId, user, text);
 
   if (!user) return sendNewConversationResponseW(messageObj);
@@ -48,6 +50,8 @@ async function processMessageW(messageObj: any) {
 
   // check if bot auto response is active and activate if command deems
   if (user?.botResponse === false) {
+    updateLastMesageDateW(senderId); // update user last message date
+
     if (text.toLowerCase() !== 'activate') {
       return console.log('Bot Auto response if off for user: ', senderId);
     } else {
@@ -59,7 +63,19 @@ async function processMessageW(messageObj: any) {
     }
   }
 
+  // check users last message if it is greater than 10 mins, reset user next action and send default text
+  // @ts-ignore
+  const lastMessage = new Date(user?.lastMessage);
+  const isLastMessgeGreaterThan10mins = isDateGreaterThan10Minutes(lastMessage);
+
+  if (isLastMessgeGreaterThan10mins) {
+    cancelTransactionW(senderId, true);
+    await defaultMessageHandlerW(messageObj, true, user?.transactNum || 4);
+    return updateLastMesageDateW(senderId); // update user last message date
+  }
+
   const nextAction = user?.nextAction;
+  updateLastMesageDateW(senderId); // update user last message date
 
   // fuctionalities for data purchase
   if (nextAction === 'selectDataNetwork')
