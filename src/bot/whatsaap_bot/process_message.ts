@@ -71,6 +71,7 @@ async function processMessageW(messageObj: any) {
   if (isLastMessgeGreaterThan10mins) {
     cancelTransactionW(senderId, true);
     await defaultMessageHandlerW(messageObj, true, user?.transactNum || 4);
+
     return updateLastMesageDateW(senderId); // update user last message date
   }
 

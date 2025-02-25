@@ -80,6 +80,7 @@ async function processMessage(event: any, res: Response) {
   if (isLastMessgeGreaterThan10mins) {
     cancelTransaction(senderId, true);
     await defaultMessageHandler(event, true, user?.transactNum || 4);
+
     return updateLastMesageDate(event.sender.id); // update user last messgae
   }
 
