@@ -68,7 +68,7 @@ async function processMessageW(messageObj: any) {
   const lastMessage = new Date(user?.lastMessage);
   const isLastMessgeGreaterThan10mins = isDateGreaterThan10Minutes(lastMessage);
 
-  console.log('time diffe in whatapp bot:::::::::::: ', isLastMessgeGreaterThan10mins);
+  // console.log('time diffe in whatapp bot:::::::::::: ', isLastMessgeGreaterThan10mins);
   if (isLastMessgeGreaterThan10mins) {
     cancelTransactionW(senderId, true);
     await defaultMessageHandlerW(messageObj, true, user?.transactNum || 4);

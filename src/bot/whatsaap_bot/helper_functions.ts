@@ -154,10 +154,10 @@ const isConversationOpenW = async (senderId: string) => {
 
 function isDateGreaterThan10Minutes(date: Date): boolean {
   const currentDate = new Date();
-  const tenMinutesInMilliseconds = 2 * 60 * 1000;
+  const tenMinutesInMilliseconds = 10 * 60 * 1000;
   const difference = Math.abs(currentDate.getTime() - date.getTime());
 
-  console.log('in time checker', currentDate, difference, tenMinutesInMilliseconds);
+  //console.log('in time checker', currentDate, difference, tenMinutesInMilliseconds);
 
   return difference > tenMinutesInMilliseconds;
 }
