@@ -126,7 +126,11 @@ const updateTransactNumW = async (userId: string): Promise<boolean> => {
 // fucntiion to save userslast message date
 const updateLastMesageDateW = async (senderId: string) => {
   const date = new Date();
-  await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { lastMessage: date } });
+  const resposne = await WhatsaapBotUsers.updateOne(
+    { id: senderId },
+    { $set: { lastMessage: date } }
+  );
+  consoe.log('message update response::::: ', resposne);
 };
 
 // function to check is window is still open to send user a message
