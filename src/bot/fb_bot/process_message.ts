@@ -17,6 +17,7 @@ import { handleConfirmProductPurchase } from './message-responses/data-2';
 import {
   cancelTransaction,
   defaultMessageHandler,
+  defaultText,
   handleChangeNumberBeforeTransaction,
   handleNewEmailBeforeTransasctionEntred,
 } from './message-responses/generic';
@@ -79,7 +80,7 @@ async function processMessage(event: any, res: Response) {
 
   if (isLastMessgeGreaterThan10mins) {
     cancelTransaction(senderId, true);
-    await defaultMessageHandler(event, true, user?.transactNum || 4);
+    sendMessage(senderId, { text: defaultText });
 
     return updateLastMesageDate(event.sender.id); // update user last messgae
   }

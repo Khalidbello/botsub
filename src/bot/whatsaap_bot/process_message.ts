@@ -15,6 +15,7 @@ import { handleConfirmProductPurchaseW } from './message-responses/data-2';
 import {
   cancelTransactionW,
   defaultMessageHandlerW,
+  defaultTextW,
   handleChangeNumberBeforeTransactionW,
   handleNewEmailBeforeTransasctionEntredW,
 } from './message-responses/generic';
@@ -71,7 +72,7 @@ async function processMessageW(messageObj: any) {
   // console.log('time diffe in whatapp bot:::::::::::: ', isLastMessgeGreaterThan10mins);
   if (isLastMessgeGreaterThan10mins) {
     cancelTransactionW(senderId, true);
-    await defaultMessageHandlerW(messageObj, true, user?.transactNum || 4);
+    sendMessageW(senderId, defaultTextW);
 
     return updateLastMesageDateW(senderId); // update user last message date
   }
