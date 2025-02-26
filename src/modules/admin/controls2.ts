@@ -11,7 +11,7 @@ const sendWhatsappUsersMessage = async (message: string, res: Response) => {
     let totalSent = 0; // Counter for successful transactions
     let totalFailed = 0; // Counter for failed transactions
     let totalDateOut = 0;
-    let batchSize = 0;
+    let batchSize = 100;
     let skip = 0;
 
     while (true) {
