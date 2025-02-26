@@ -267,11 +267,11 @@ adminRouter.post('/set-auto-retry', (req: Request, res: Response) => {
 // route to handle sending message to users from control panel
 adminRouter.post('/send-broadcast', (req: Request, res: Response) => {
   try {
-    const platform = req.body.platform;
+    const platform = req.body?.platform.toLowerCase();
 
     if (platform === 'facebook') return sendFacebookUsersMessage(req.body.message, res);
 
-    if (platform === 'whatsapp') return sendWhtsappUsersMessage(req.body.message, res);
+    if (platform === 'whatsapp') return sendWhatsappUsersMessage(req.body.message, res);
 
     throw 'Platform does not match';
   } catch (err) {
@@ -285,6 +285,3 @@ adminRouter.use('/', adminRouter2);
 export default adminRouter;
 
 export { setAutoRetryTrue };
-function sendWhtsappUsersMessage(message: any, res: Response<any, Record<string, any>>): void {
-  throw new Error('Function not implemented.');
-}
