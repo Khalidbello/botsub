@@ -20,8 +20,10 @@ const sendMessageW = async (recipientId: string, message: string) => {
     });
 
     console.log('Message sent successfully:', response.data);
+    return true;
   } catch (error: any) {
     console.error('Error sending message:', error.response?.data || error.message);
+    return false;
   }
 };
 

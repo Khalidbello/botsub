@@ -19,6 +19,7 @@ import {
 } from '../modules/admin/controls';
 import { retryAllFaledTransactions } from '../bot/modules/helper_function_2';
 import adminRouter2 from './admin-2';
+import { sendFacebookUsersMessage } from '../modules/admin/controls2';
 
 let autoRetry: boolean = true;
 
@@ -263,8 +264,27 @@ adminRouter.post('/set-auto-retry', (req: Request, res: Response) => {
   }
 });
 
+// route to handle sending message to users from control panel
+adminRouter.post('/send-broadcast', (req: Request, res: Response) => {
+  try {
+    const platform = req.body.platform;
+
+    if (platform === 'facebook') return sendFacebookUsersMessage(req.body.message, res);
+
+    if (platform === 'whatsapp') return sendWhtsappUsersMessage(req.body.message, res);
+
+    throw 'Platform does not match';
+  } catch (err) {
+    console.error('send-broadcast: ', err);
+    res.status(500).send('Something went wrong');
+  }
+});
+
 adminRouter.use('/', adminRouter2);
 
 export default adminRouter;
 
 export { setAutoRetryTrue };
+function sendWhtsappUsersMessage(message: any, res: Response<any, Record<string, any>>): void {
+  throw new Error('Function not implemented.');
+}

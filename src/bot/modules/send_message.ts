@@ -18,6 +18,7 @@ async function sendMessage(sender_psid: any, response: { text: string }) {
 
     //resp = await resp.data;
     //console.log(resp);
+    return true;
   } catch (error: any) {
     if (error.response) {
       console.error('Response Error in send message:', error.response.data);
@@ -29,6 +30,8 @@ async function sendMessage(sender_psid: any, response: { text: string }) {
       console.error('Error  in send message:', error.message);
     }
     console.error('error sending message ,,,,,,,,, Config  in send message:', error.config);
+
+    return false;
   }
 }
 
