@@ -1,12 +1,6 @@
 // route to handle admin related functionalities
 import { NextFunction, Request, Response, Router } from 'express';
-import {
-  balances,
-  getBalances,
-  statistics,
-  todaysStatistic,
-  trendData,
-} from '../modules/admin/statistics';
+import { getBalances, statistics, todaysStatistic, trendData } from '../modules/admin/statistics';
 import {
   closeIssue,
   fetchIssues,
@@ -19,7 +13,7 @@ import {
 } from '../modules/admin/controls';
 import { retryAllFaledTransactions } from '../bot/modules/helper_function_2';
 import adminRouter2 from './admin-2';
-import { sendFacebookUsersMessage } from '../modules/admin/controls2';
+import { sendFacebookUsersMessage, sendWhatsappUsersMessage } from '../modules/admin/controls2';
 
 let autoRetry: boolean = true;
 
