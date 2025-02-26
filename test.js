@@ -1,40 +1,14 @@
 
-FLW_PB_KEY_PRODUCTION  = 'FLWPUBK-590aaa094196a6eb6991ba317e109044-X'
-FLW_SCRT_KEY_PRODUCTION = 'FLWSECK-7f22111f57ae63ee3cbed6305979cfa3-190cfda5185vt-X'
+// helper function to check if user whatsapp user can recieve messge
+const canIsendWhatsappUserMessage = async (lastMessage) => {
+    const lastMessageDate = new Date(lastMessage);
+    const nowDate = new Date();
+  
+    const millisecondsIn24Hours = 24 * 60 * 60 * 1000;
+    const difference = Math.abs(nowDate.getTime() - lastMessageDate.getTime());
+    console.log('time difference in isConversationOpenW : ', difference);
+  
+    return difference < millisecondsIn24Hours;
+  };
 
-
-const Flutterwave = require('flutterwave-node-v3');
-
-const flw = new Flutterwave(FLW_PB_KEY_PRODUCTION, FLW_SCRT_KEY_PRODUCTION );
-
-const createVirtualAccount = async () => {
-    try {
-        // const payload = {
-        //     "email": "user@example.com",
-        //     "is_permanent": true,
-        //     "bvn": "69607417179", // BVN is required here
-        //     "tx_ref": "unique-transaction-reference",
-        //     "narration": "John Doe",
-        //     "firstname": "John",
-        //     "lastname": "Doe",
-        //     "phonenumber": "08012345678",
-        //     "amount": 1000
-        // };
-        const payload = {
-        email: 'botsubteam@gmail.com',
-        is_permanent: true,
-        bvn: '69607417179', // BVN is required here
-        tx_ref: '09166871328',
-        narration: 'John test0080',
-        firstname: 'John',
-        lastname: 'test0090',
-        }
-
-        const response = await flw.VirtualAcct.create(payload);
-        console.log(response);
-    } catch (error) {
-        console.error(error);
-    }
-};
-
-createVirtualAccount();
+  console.log(canIsendWhatsappUserMessage('2025-02-21T21:43:57.215+00:00'))

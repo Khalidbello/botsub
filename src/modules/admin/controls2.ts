@@ -112,7 +112,7 @@ const sendFacebookUsersMessage = async (message: string, res: Response) => {
 };
 
 // helper function to check if user whatsapp user can recieve messge
-const canIsendWhatsappUserMessage = async (lastMessage: any) => {
+const canIsendWhatsappUserMessage = (lastMessage: any) => {
   const lastMessageDate = new Date(lastMessage);
   const nowDate = new Date();
 
