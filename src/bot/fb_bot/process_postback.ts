@@ -23,13 +23,16 @@ import { Response } from 'express';
 
 const processPostback = async (event: any, res: Response): Promise<void> => {
   // first set nextAction to null
-  if (process.env.botMaintenance === 'true')
-    return sendMessage(event.sender.id, {
+  if (process.env.botMaintenance === 'true') {
+    sendMessage(event.sender.id, {
       text: 'Sorry network services are currenly down and would be restored by 10:30 PM',
     });
+    return;
+  }
 
   if (event.postback.payload == 'newConversation') {
-    return sendNewConversationResponse(event);
+    sendNewConversationResponse(event);
+    return;
   }
 
   let payload = event.postback.payload;
@@ -42,7 +45,8 @@ const processPostback = async (event: any, res: Response): Promise<void> => {
 
   const payloadTitle = payload.title;
   console.log('postback payload title', payloadTitle);
-  return defaultMessageHandler(event, true, 0);
+  defaultMessageHandler(event, true, 0);
+  return;
 }; // end of processPostback
 
 export { processPostback };
