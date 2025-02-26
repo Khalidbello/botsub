@@ -18,6 +18,11 @@ const sendWhatsappUsersMessage = async (message: string, res: Response) => {
       // Fetch a batch of users
       let users = await WhatsaapBotUsers.find().skip(skip).limit(batchSize); //.toArray();
 
+      console.log("users length: ", users.length);
+      console.log("skip: ", skip);
+      console.log("batchSize: ", batchSize);
+      console.log("users: ", users);
+      
       // If no more users, break the loop
       if (users.length === 0) {
         break;
@@ -37,9 +42,9 @@ const sendWhatsappUsersMessage = async (message: string, res: Response) => {
       );
 
       // Count successful and failed transactions
-      const successfulTransactions = results.filter((isSent) => (isSent = 'sent')).length;
-      const failedTransactions = results.filter((isSent) => (isSent = 'failedToSend')).length;
-      const dateOut = results.filter((isSent) => (isSent = 'outOfDate')).length;
+      const successfulTransactions = results.filter((isSent) => isSent === 'sent').length;
+      const failedTransactions = results.filter((isSent) => isSent === 'failedToSend').length;
+      const dateOut = results.filter((isSent) => isSent === 'outOfDate').length;
 
       totalSent += successfulTransactions;
       totalFailed += failedTransactions;
@@ -87,9 +92,9 @@ const sendFacebookUsersMessage = async (message: string, res: Response) => {
       );
 
       // Count successful and failed transactions
-      const successfulTransactions = results.filter((isSent) => (isSent = 'sent')).length;
-      const failedTransactions = results.filter((isSent) => (isSent = 'failedToSend')).length;
-      const dateOut = results.filter((isSent) => (isSent = 'outOfDate')).length;
+      const successfulTransactions = results.filter((isSent) => isSent === 'sent').length;
+      const failedTransactions = results.filter((isSent) => isSent ==== 'failedToSend').length;
+      const dateOut = results.filter((isSent) => isSent ==== 'outOfDate').length;
 
       totalSent += successfulTransactions;
       totalFailed += failedTransactions;
