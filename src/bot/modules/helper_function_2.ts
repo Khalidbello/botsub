@@ -28,7 +28,7 @@ const updateTransactNum = async (userId: string): Promise<boolean> => {
   try {
     console.log('in updateTransactNum::::::::::::::::::::::::;');
     const incresee = await BotUsers.updateOne({ id: userId }, { $inc: { transactNum: 1 } });
-    console.log('User transation number incresed: ', incresee);
+    console.log('User transation number incresed in facebook bot: ', incresee);
     return true;
   } catch (err) {
     console.error('AN error occured in updating user transactNum', err);

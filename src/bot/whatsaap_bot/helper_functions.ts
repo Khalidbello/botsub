@@ -115,7 +115,7 @@ const updateTransactNumW = async (userId: string): Promise<boolean> => {
   try {
     console.log('in updateTransactNum::::::::::::::::::::::::;', userId);
     const incresee = await WhatsaapBotUsers.updateOne({ id: userId }, { $inc: { transactNum: 1 } });
-    console.log('User transation number incresed: ', incresee);
+    console.log('User transation number incresed for whatsapp users : ', incresee);
     return true;
   } catch (err) {
     console.error('AN error occured in updating user transactNum', err);

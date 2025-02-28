@@ -79,11 +79,11 @@ function deliverAirtime(purchasePayload: any, bot: string, senderId: string) {
   };
 
   if (process.env.NODE_ENV === 'production')
-    makePurchaseRequest(purchasePayload, options, bot, 'data', senderId);
+    makePurchaseRequest(purchasePayload, options, bot, 'airtime', senderId);
   if (process.env.NODE_ENV === 'staging')
-    simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
+    simulateMakePurchaseRequest(purchasePayload, true, bot, 'airtime', senderId);
   if (process.env.NODE_ENV === 'development')
-    simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
+    simulateMakePurchaseRequest(purchasePayload, true, bot, 'airtime', senderId);
 } // end of deliverAirtime
 
 // function to make product purchase request
