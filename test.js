@@ -1,14 +1,27 @@
+const fs = require('fs');
 
-// helper function to check if user whatsapp user can recieve messge
-const canIsendWhatsappUserMessage = async (lastMessage) => {
-    const lastMessageDate = new Date(lastMessage);
-    const nowDate = new Date();
+const   calculateNetworkDataProfit = async ()=> {
+    const fileContent =  await fs.promises.readFile('files/data-details.json', 'utf-8');
+    let data = JSON.parse(fileContent);
+   
+    for (const networkId in data) {
+      const plans = data[networkId];
+      for (const planId in plans) {
+        const planData = plans[planId];
+        const network = planData.network;
+        const price = planData.price;
+        const aPrice = planData.aPrice;
   
-    const millisecondsIn24Hours = 24 * 60 * 60 * 1000;
-    const difference = Math.abs(nowDate.getTime() - lastMessageDate.getTime());
-    console.log('time difference in isConversationOpenW : ', difference);
+        // Calculate profit
+        const profit = price - price * 0.014 - aPrice;
   
-    return difference < millisecondsIn24Hours;
-  };
+        // Log the network and profit
+        console.log(
+          `Network: ${network}, Plan: ${planData.size}, Profit: ${profit.toFixed(2)}`
+        );
+      }
+    }
+  }
 
-  console.log(canIsendWhatsappUserMessage('2025-02-21T21:43:57.215+00:00'))
+
+  calculateNetworkDataProfit();

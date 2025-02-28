@@ -52,6 +52,7 @@ async function sendNewConversationResponse(event: any) {
     text: `Hi ${userName ? userName : ''} i am BotSub virtual assitance.`,
   });
 
+  const date = new Date();
   const user = await BotUsers.findOne({ id: senderId });
 
   if (!user) {
@@ -66,6 +67,7 @@ async function sendNewConversationResponse(event: any) {
       nextAction: null,
       referrer: 0,
       firstPurchase: true,
+      lastMessage: date,
     });
     newBotUser.save();
   }

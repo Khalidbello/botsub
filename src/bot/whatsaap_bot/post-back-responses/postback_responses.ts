@@ -13,6 +13,7 @@ async function sendNewConversationResponseW(messageObj: any) {
   // run with out requesting referral code
   await sendMessageW(senderId, 'Hi. \nI am BotSub virtual assitance.');
 
+  const date = new Date();
   const user = await WhatsaapBotUsers.findOne({ id: senderId });
 
   if (!user) {
@@ -28,6 +29,7 @@ async function sendNewConversationResponseW(messageObj: any) {
       nextAction: null,
       referrer: 0,
       firstPurchase: true,
+      lastMessage: date,
     });
     newBotUser.save();
   }

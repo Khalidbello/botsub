@@ -85,6 +85,8 @@ async function processMessage(event: any, res: Response) {
     return updateLastMesageDate(event.sender.id); // update user last messgae
   }
 
+  updateLastMesageDate(event.sender.id);
+
   const nextAction = user?.nextAction;
 
   // fuctionalities for data purchase

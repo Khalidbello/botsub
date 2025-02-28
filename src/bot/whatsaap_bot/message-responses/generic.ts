@@ -34,7 +34,7 @@ async function defaultMessageHandlerW(messageObj: any, isMessage: any, transactN
     //const userName = await getUserName(senderId);
 
     if (!isMessage) return sendMessageW(senderId, defaultTextW);
-    ``;
+
     text = messageObj.text ? messageObj.text.body : '';
 
     if (text.toLowerCase() === 'a') return handleBuyDataW(messageObj);
