@@ -3,61 +3,71 @@
   "1": {
     "networkID": 1,
     "planID": 302,
-    "size": "500MB",
-    "price": 310,
+    "size": "1GB",
+    "price": 400,
     "aPrice": 360,
-    "validity": "one day\n",
+    "validity": "one day",
     "index": "1",
     "network": "MTN"
   },
   "2": {
+    "networkID": 1,
+    "planID": 337,
+    "size": "1.5GB",
+    "price": 500,
+    "aPrice": 420,
+    "validity": "one day\n",
+    "index": "2",
+    "network": "MTN"
+  },
+  "3": {
       "networkID": 1,
       "planID": 6,
       "size": "500MB",
       "price": 310,
       "aPrice": 280,
       "validity": "one month",
-      "index": "2",
+      "index": "3",
       "network": "MTN"
     },
-    "3": {
+    "4": {
       "networkID": 1,
       "planID": 7,
       "size": "1GB",
       "price": 650,
       "aPrice": 605,
       "validity": "one month",
-      "index": "3",
+      "index": "4",
       "network": "MTN"
     },
-    "4": {
+    "5": {
       "networkID": 1,
       "planID": 8,
       "size": "2GB",
       "price": 1300,
       "aPrice": 1210,
       "validity": "one month",
-      "index": "4",
+      "index": "5",
       "network": "MTN"
     },
-    "5": {
+    "6": {
       "networkID": 1,
       "planID": 44,
       "size": "3GB",
       "price": 1900,
       "aPrice": 1815,
       "validity": "one month",
-      "index": "5",
+      "index": "6",
       "network": "MTN"
     },
-    "6": {
+    "7": {
       "networkID": 1,
       "planID": 43,
       "size": "10GB",
       "price": 6300,
       "aPrice": 6050,
       "validity": "one month",
-      "index": "6",
+      "index": "7",
         "network": "MTN"
     }
   },
