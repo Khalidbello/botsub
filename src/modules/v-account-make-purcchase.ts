@@ -103,7 +103,11 @@ async function makePurchaseRequest(
       if (purchasePayload.transactionType === 'data') {
         if (bot === 'facebook') updateTransactNum(senderId);
         if (bot === 'whatsapp') updateTransactNumW(senderId);
-        updateNetworkStatus(purchasePayload?.network, true, 'Network data delivery working fine'); // set network availablity to true
+        updateNetworkStatus(
+          purchasePayload?.network,
+          true,
+          resp?.data?.api_response ? resp?.data?.api_response : 'Network data delivery working fine'
+        ); // set network availablity to true
       }
       return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
     }
@@ -112,9 +116,16 @@ async function makePurchaseRequest(
       updateNetworkStatus(
         purchasePayload?.network,
         false,
-        'Network data delvery failed in virtual account make purchase.'
+        resp?.data?.api_response
+          ? resp?.data?.api_response
+          : 'Network data delvery failed in virtual account make purchase. and api response was empty'
       ); // set network availability to false
-    throw { message: 'An error occured delivering data' };
+
+    throw {
+      message: resp?.data?.api_response
+        ? resp?.data?.api_response
+        : 'An error occured delivering data',
+    };
   } catch (error: any) {
     if (error.response) {
       // The request was made and the server responded with a status code
