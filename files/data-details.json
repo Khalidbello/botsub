@@ -227,8 +227,8 @@
   },
   "4": {
     "1": {
-      "networkID": 331,
-      "planID": 217,
+      "networkID": 4,
+      "planID": 331,
       "size": "500MB",
       "price": 200,
       "aPrice": 160,
@@ -237,8 +237,8 @@
       "network": "Airtel"
     },
     "2": {
-      "networkID": 333,
-      "planID": 217,
+      "networkID": 4,
+      "planID": 333,
       "size": "1GB",
       "price": 350,
       "aPrice": 300,
@@ -247,8 +247,8 @@
       "network": "Airtel"
     },
     "3": {
-      "networkID": 317,
-      "planID": 217,
+      "networkID": 4,
+      "planID": 317,
       "size": "1.5GB",
       "price": 450,
       "aPrice": 400,
@@ -257,8 +257,8 @@
       "network": "Airtel"
     },
     "4": {
-      "networkID": 309,
-      "planID": 217,
+      "networkID": 4,
+      "planID": 309,
       "size": "3GB",
       "price": 1150,
       "aPrice": 1070,
@@ -267,8 +267,8 @@
       "network": "Airtel"
     },
     "5": {
-      "networkID": 310,
-      "planID": 217,
+      "networkID": 4,
+      "planID": 310,
       "size": "7GB",
       "price": 2300,
       "aPrice": 2200,
