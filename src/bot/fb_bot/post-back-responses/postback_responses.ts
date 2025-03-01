@@ -57,7 +57,7 @@ async function sendNewConversationResponse(event: any) {
 
   if (!user) {
     await sendMessage(senderId, {
-      text: 'Welcome to BotSub, Get data offers for as low as ₦200/GB. \nHurry while it last!',
+      text: 'Welcome to BotSub, Get data offers for as low as  ₦300/GB. \nHurry while it last!',
     });
     // adding new botuser
     const newBotUser = new BotUsers({

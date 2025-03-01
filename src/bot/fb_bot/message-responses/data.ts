@@ -53,15 +53,19 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
     // Get details of user selected network
     const networkDetails: networkDetailsType = dataDetails[index];
     const { network, networkID } = networkDetails['1'];
-    let check = await checkDataStatus(network); // check if network available for purchase
 
+    //let check = await checkDataStatus(network); // check if network available for purchase
     // // check if network aavilable if not return to select network for data purchase
     // if (!check) {
     //   await handleDataNetworkNotAvailable(senderId, network);
     //   return handleBuyData(event);
-    // }
+    // } if (index === 4)
 
     const response = await formDataOffers(networkDetails, transactNum);
+
+    await sendMessage(senderId, {
+      text: 'For all 7 days offers, ensure the line been recharged has no outstanding debt.\nThank you.',
+    });
     await sendMessage(senderId, { text: response });
 
     // Update bot user info

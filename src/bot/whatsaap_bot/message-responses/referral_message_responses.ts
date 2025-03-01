@@ -52,7 +52,7 @@ async function sendReferralCodeRecieved(messageObj: any) {
     if (referralCode === 0) {
       await sendMessageW(
         senderId,
-        'Welcome to BotSub, Get data offers for as low as $200/GB. \nHurry while it last!'
+        'Welcome to BotSub, Get data offers for as low as  ₦300/GB. \nHurry while it last!'
       );
       // await sendMessageW(senderId, {
       //   text: 'You will also be credited with free data bonuses for your all your first purchase of the month',
@@ -75,7 +75,7 @@ async function sendReferralCodeRecieved(messageObj: any) {
     } else {
       await sendMessageW(
         senderId,
-        'Welcome to BotSub, Get data offers for as low as $200/GB. \nHurry while it last!'
+        'Welcome to BotSub, Get data offers for as low as ₦300/GB. \nHurry while it last!'
       );
       // await sendMessageW(senderId, {
       //   text: 'You will also be credited with free data bonuses for your all your first purchase of the month',

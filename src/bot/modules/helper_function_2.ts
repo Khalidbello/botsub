@@ -11,11 +11,11 @@ import axios from 'axios';
 const computeDiscount = (transactNum: number): number => {
   switch (transactNum) {
     case 0:
-      return 70; // First transaction: 70 Naira discount
+      return 50; // First transaction: 70 Naira discount
     case 1:
-      return 60; // Second transaction: 60 Naira discount
+      return 40; // Second transaction: 60 Naira discount
     case 2:
-      return 40; // Third transaction: 40 Naira discount
+      return 30; // Third transaction: 40 Naira discount
     case 3:
       return 10; // Fourth transaction: 10 Naira discount
     default:
@@ -188,6 +188,12 @@ const mapAlpaheToNum = (alphabet: string) => {
     return 10;
   } else if (alphabet === 'k') {
     return 11;
+  } else if (alphabet === 'l') {
+    return 12;
+  } else if (alphabet === 'm') {
+    return 13;
+  } else if (alphabet === 'n') {
+    return 14;
   }
   return 0;
 };

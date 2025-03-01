@@ -55,6 +55,11 @@ const handleDataNetWorkSelectedW = async (messageObj: any, transactNum: number) 
     const { network, networkID } = networkDetails['1'];
     const response = await formDataOffers(networkDetails, transactNum);
 
+    if (index === 4)
+      await sendMessageW(
+        senderId,
+        'For all 7 days offers, ensure the line been recharged has no outstanding debt.\nThank you.'
+      );
     await sendMessageW(senderId, response);
 
     // Update bot user info
@@ -91,7 +96,9 @@ const handleOfferSelectedW = async (messageObj: any, transactNum: number) => {
     const networkDetails: networkDetailsType = dataDetails[networkID]; // details of user selected network
     const dataOffer = networkDetails[mapAlpaheToNum(message)]; // the offer user selected
 
-    if (!dataOffer) return handleDataNetWorkSelectedW(messageObj, transactNum);
+    if (!dataOffer) {
+      return handleDataNetWorkSelectedW(messageObj, transactNum);
+    }
 
     sendMessageW(senderId, `Enter phone number for ${network} data purchase`);
 

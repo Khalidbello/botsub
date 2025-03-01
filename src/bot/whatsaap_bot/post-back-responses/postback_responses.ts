@@ -19,7 +19,7 @@ async function sendNewConversationResponseW(messageObj: any) {
   if (!user) {
     await sendMessageW(
       senderId,
-      'Welcome to BotSub, Get data offers for as low as ₦200/GB. \nHurry while it last!'
+      'Welcome to BotSub, Get data offers for as low as ₦300/GB. \nHurry while it last!'
     );
     // adding new botuser
     const newBotUser = new WhatsaapBotUsers({

@@ -10,7 +10,7 @@ const formDataOffers = async (networkInfo: networkDetailsType, transactNum: numb
   const lenght = Object.keys(networkInfo).length;
   let text = `Select ${networkInfo['1'].network} data offer \n`;
   const discount = computeDiscount(transactNum);
-  const alphaMap = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
+  const alphaMap = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'O', 'P', 'Q'];
   console.log('inb form data ofer trnsactNum, ', transactNum, discount);
 
   for (let i = 1; i < lenght + 1; i++) {
