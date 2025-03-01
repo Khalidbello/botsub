@@ -154,19 +154,22 @@ const fetchTransactionLists = async (req: Request, res: Response) => {
     if (!status) return res.status(400).json({ message: 'bad request, status not set' });
     if (!pageNum) return res.status(400).json({ message: 'pageNum not provided.' });
 
+    const data1: any = {
+      seckey: process.env.FLW_SCRT_KEY,
+      from: from,
+      to: to,
+      currency: 'NGN',
+      status: status,
+      page: parseInt(pageNum),
+    };
+
+    if (email) data1.customer_email = email;
+
     const options = {
       method: 'POST',
       url: 'https://api.ravepay.co/v2/gpx/transactions/query',
       headers: { accept: 'application/json', 'Content-Type': 'application/json' },
-      data: {
-        seckey: process.env.FLW_SCRT_KEY,
-        from: from,
-        to: to,
-        currency: 'NGN',
-        status: status,
-        customer_email: email === 'null' ? '' : email,
-        page: parseInt(pageNum),
-      },
+      data: data1,
     };
 
     const response = await axios.request(options);
