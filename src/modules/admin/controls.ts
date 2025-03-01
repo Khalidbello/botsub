@@ -163,7 +163,7 @@ const fetchTransactionLists = async (req: Request, res: Response) => {
       page: parseInt(pageNum),
     };
 
-    if (email) data1.customer_email = email;
+    if (email && email !== 'null') data1.customer_email = email;
 
     const options = {
       method: 'POST',
