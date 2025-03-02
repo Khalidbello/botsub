@@ -20,7 +20,7 @@ import fbBotRouter from '../../../routes/fb-bot-webhook';
 // text to contain bot functionalities
 const defaultText =
   'Hi what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
-  '\n E. Refer a friend \n F. Active referals \n G. Report issue';
+  '\n E. Refer a friend \n F. Active referals \n G. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328 ';
 
 // function to respond to messages with out next action
 async function defaultMessageHandler(event: any, isMessage: any, transactNum: number) {
