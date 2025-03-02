@@ -31,6 +31,7 @@ const Schema = new mongoose.Schema({
   referrer: Number,
   referrals: [{ id: Number }],
   claimedReferrals: [{ id: Number }],
+  createdAt: Date,
 });
 
 const BotUsers = mongoose.model('botUsers', Schema);

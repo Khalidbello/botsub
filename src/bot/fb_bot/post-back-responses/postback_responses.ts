@@ -68,6 +68,7 @@ async function sendNewConversationResponse(event: any) {
       referrer: 0,
       firstPurchase: true,
       lastMessage: date,
+      createdAt: date,
     });
     newBotUser.save();
   }
