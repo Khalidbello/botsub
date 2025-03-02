@@ -20,7 +20,13 @@ const handleSelectPaymentMethod = async (event: any, transactNum: any) => {
     }
 
     if (message === 'a') {
-      await generateAccountNumber(event, transactNum);
+      sendMessage(senderId, {
+        text: ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.',
+      });
+      await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
+      return;
+
+      //await generateAccountNumber(event, transactNum);
       // await sendMessage(senderId, {
       //   text: 'Creation of one-time account is currently not available. \n\nKindly create a permanent account to proceed with transaction.',
       // });

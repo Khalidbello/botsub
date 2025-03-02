@@ -20,7 +20,14 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
     }
 
     if (message === 'a') {
-      await generateAccountNumberW(messageObj, transactNum);
+      sendMessageW(
+        senderId,
+        ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.'
+      );
+      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
+      return;
+
+      //await generateAccountNumberW(messageObj, transactNum);
       // await sendMessageW(senderId, {
       //   text: 'Creation of one-time account is currently not available. \n\nKindly create a permanent account to proceed with transaction.',
       // });
