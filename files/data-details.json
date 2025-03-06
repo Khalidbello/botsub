@@ -228,113 +228,84 @@
   "4": {
     "1": {
       "networkID": 4,
-      "planID": 331,
-      "size": "500MB",
-      "price": 200,
-      "aPrice": 160,
+      "planID": 309,
+      "size": "3GB",
+      "price": 1150,
+      "aPrice": 1070,
       "validity": "7 days",
       "index": "1",
       "network": "Airtel"
     },
     "2": {
       "networkID": 4,
-      "planID": 333,
-      "size": "1GB",
-      "price": 350,
-      "aPrice": 300,
-      "validity": "7 days",
-      "index": "2",
-      "network": "Airtel"
-    },
-    "3": {
-      "networkID": 4,
-      "planID": 317,
-      "size": "1.5GB",
-      "price": 450,
-      "aPrice": 400,
-      "validity": "7 days",
-      "index": "3",
-      "network": "Airtel"
-    },
-    "4": {
-      "networkID": 4,
-      "planID": 309,
-      "size": "3GB",
-      "price": 1150,
-      "aPrice": 1070,
-      "validity": "7 days",
-      "index": "4",
-      "network": "Airtel"
-    },
-    "5": {
-      "networkID": 4,
       "planID": 310,
       "size": "7GB",
       "price": 2300,
       "aPrice": 2200,
       "validity": "7 days\n",
-      "index": "5",
+      "index": "2",
       "network": "Airtel"
     },
-    "6": {
+    "3": {
       "networkID": 4,
       "planID": 217,
       "size": "500MB",
       "price": 350,
       "aPrice": 328,
       "validity": "one month",
-      "index": "6",
+      "index": "3",
       "network": "Airtel"
     },
-    "7": {
+    "4": {
       "networkID": 4,
       "planID": 218,
       "size": "1GB",
       "price": 690,
       "aPrice": 658,
       "validity": "one month",
-      "index": "7",
+      "index": "4",
       "network": "Airtel"
     },
-    "8": {
+    "5": {
       "networkID": 4,
       "planID": 219,
       "size": "2GB",
       "price": 1380,
       "aPrice": 1316,
       "validity": "one month",
-      "index": "8",
+      "index": "5",
       "network": "Airtel"
     },
-    "9": {
+    "6": {
       "networkID": 4,
       "planID": 220,
       "size": "5GB",
       "price": 3380,
       "aPrice": 3290,
       "validity": "one month",
-      "index": "9",
+      "index": "6",
       "network": "Airtel"
     },
-    "10": {
+    "7": {
       "networkID": 4,
       "planID": 249,
       "size": "10GB",
       "price": 6800,
       "aPrice": 6580,
       "validity": "one month",
-      "index": "10",
+      "index": "7",
       "network": "Airtel"
     },
-    "11": {
+    "8": {
       "networkID": 4,
       "planID": 227,
       "size": "20GB",
       "price": 14100,
       "aPrice": 13800,
       "validity": "one month",
-      "index": "11",
+      "index": "8",
       "network": "Airtel"
     }
   }
 }
+

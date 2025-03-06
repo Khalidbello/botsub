@@ -1,0 +1,33 @@
+
+{
+    "1": {
+      "networkID": 4,
+      "planID": 331,
+      "size": "500MB",
+      "price": 200,
+      "aPrice": 160,
+      "validity": "7 days",
+      "index": "1",
+      "network": "Airtel"
+    },
+    "2": {
+      "networkID": 4,
+      "planID": 333,
+      "size": "1GB",
+      "price": 350,
+      "aPrice": 300,
+      "validity": "7 days",
+      "index": "2",
+      "network": "Airtel"
+    },
+    "3": {
+      "networkID": 4,
+      "planID": 317,
+      "size": "1.5GB",
+      "price": 450,
+      "aPrice": 400,
+      "validity": "7 days",
+      "index": "3",
+      "network": "Airtel"
+    }
+}

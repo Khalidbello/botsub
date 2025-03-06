@@ -10,7 +10,10 @@ import {
 import WhatsaapBotUsers from '../models/whatsaap_bot_users';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
 import { isConversationOpenW } from '../bot/whatsaap_bot/helper_functions';
-import { getRobustUserStatistics } from '../modules/admin/robust-users-statistics';
+import {
+  getRobustUserStatistics,
+  handleFetchWhatsappUsers,
+} from '../modules/admin/robust-users-statistics';
 import { fundWallet } from '../modules/helper_functions';
 
 const adminRouter2 = Router();
@@ -90,6 +93,9 @@ adminRouter2.get('/robust-users-statistics/:startDate/:endDate', (req, res) =>
   getRobustUserStatistics(req, res)
 );
 
+adminRouter2.get('/list-whatsapp-users/:startDate/:endDate/:limit/:margin', (req, res) =>
+  handleFetchWhatsappUsers(req, res)
+);
 // route to get accoun name and return
 adminRouter2.get('/transfer-account-info', (req: Request, res: Response) =>
   dataAccontDetails(req, res)
