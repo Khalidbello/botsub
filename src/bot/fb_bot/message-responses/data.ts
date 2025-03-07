@@ -49,6 +49,7 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
       await sendMessage(senderId, { text: 'Invalid resposne entred.' });
       return sendMessage(senderId, { text: buyDataText });
     }
+
     // Get details of user selected network
     const networkDetails: networkDetailsType = dataDetails[index];
     const { network, networkID } = networkDetails['1'];
@@ -62,9 +63,12 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
 
     const response = await formDataOffers(networkDetails, transactNum);
 
-    await sendMessage(senderId, {
-      text: 'For all 7 days offers, ensure the line been recharged has no outstanding debt.\nThank you.',
-    });
+    if (index === 4) {
+      await sendMessage(senderId, {
+        text: 'For all 7 days offers, ensure the line been recharged has no outstanding debt.\nThank you.',
+      });
+    }
+
     await sendMessage(senderId, { text: response });
 
     // Update bot user info
