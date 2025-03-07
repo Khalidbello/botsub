@@ -19,7 +19,7 @@ const   calculateNetworkDataProfit = async ()=> {
   
         // Log the network and profit
         console.log(
-          `Network: ${network}, Plan: ${planData.size}, Price: ${price}, Profit: ${profit.toFixed(2)}`
+          `Network: ${network}, Plan ID: ${planData.planID}, Plan: ${planData.size}, Price: ${price}, Profit: ${profit.toFixed(2)}`
         );
       }
     }
