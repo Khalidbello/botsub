@@ -108,7 +108,7 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
     const dataOffer = networkDetails[mapAlpaheToNum(message)]; // the offer user selected
 
     if (!dataOffer) {
-      BotUsers.updateOne(
+      await BotUsers.updateOne(
         { id: senderId },
         {
           $set: {
@@ -116,6 +116,7 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
           },
         }
       );
+
       return handleDataNetWorkSelected(event, transactNum);
     }
 
