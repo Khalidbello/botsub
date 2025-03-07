@@ -1,7 +1,6 @@
 import BotUsers from '../../../models/fb_bot_users';
 import { networkDetailsType } from '../../../types/bot/module-buy-data-types';
 import { confirmDataPurchaseResponse, formDataOffers } from '../../modules/buy-data';
-import { checkDataStatus, handleDataNetworkNotAvailable } from '../../modules/data-network-checker';
 import { computeDiscount, mapAlpaheToNum } from '../../modules/helper_function_2';
 import { validateNumber } from '../../modules/helper_functions';
 import { sendMessage } from '../../modules/send_message';
@@ -104,7 +103,17 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
     const networkDetails: networkDetailsType = dataDetails[networkID]; // details of user selected network
     const dataOffer = networkDetails[mapAlpaheToNum(message)]; // the offer user selected
 
-    if (!dataOffer) return handleDataNetWorkSelected(event, transactNum);
+    if (!dataOffer) {
+      BotUsers.updateOne(
+        { id: senderId },
+        {
+          $set: {
+            nextAction: 'selectDataNetwork',
+          },
+        }
+      );
+      return handleDataNetWorkSelected(event, transactNum);
+    }
 
     sendMessage(senderId, { text: `Enter phone number for ${network} data purchase` });
 

@@ -97,6 +97,14 @@ const handleOfferSelectedW = async (messageObj: any, transactNum: number) => {
     const dataOffer = networkDetails[mapAlpaheToNum(message)]; // the offer user selected
 
     if (!dataOffer) {
+      WhatsaapBotUsers.updateOne(
+        { id: senderId },
+        {
+          $set: {
+            nextAction: 'selectDataNetwork',
+          },
+        }
+      );
       return handleDataNetWorkSelectedW(messageObj, transactNum);
     }
 
