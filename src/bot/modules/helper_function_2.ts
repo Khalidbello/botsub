@@ -9,17 +9,28 @@ import axios from 'axios';
 
 // fucntion to comput
 const computeDiscount = (transactNum: number): number => {
+  return 0;
   switch (transactNum) {
     case 0:
-      return 50; // First transaction: 70 Naira discount
+      return 30;
     case 1:
-      return 40; // Second transaction: 60 Naira discount
+      return 30;
     case 2:
-      return 30; // Third transaction: 40 Naira discount
+      return 30;
     case 3:
-      return 10; // Fourth transaction: 10 Naira discount
+      return 20;
+    case 4:
+      return 20;
+    case 5:
+      return 20;
+    case 6:
+      return 10;
+    case 7:
+      return 10;
+    case 8:
+      return 10;
     default:
-      return 0; // Fifth and beyond: no discount
+      return 0;
   }
 };
 

@@ -24,7 +24,11 @@ async function addDataProfit(
       );
       const plan = dataDetails[networkID][index];
 
-      profit = amountPaid - amountPaid * 0.014 - plan.aPrice;
+      const flutterCharges = amountPaid * 0.014;
+      const vat = flutterCharges * 0.07;
+
+      // Calculate profit
+      profit = amountPaid - flutterCharges - vat - plan.aPrice;
     }
 
     const newProfit = new Profits({
