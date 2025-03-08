@@ -7,6 +7,7 @@ async function addDataProfit(
   senderId: string,
   transactionId: string,
   amountPaid: number,
+  planAmount: number,
   transactionType: string,
   paymentAccountType: 'oneTime' | 'virtual',
   networkID: number,
@@ -28,7 +29,9 @@ async function addDataProfit(
       const vat = flutterCharges * 0.07;
 
       // Calculate profit
-      profit = amountPaid - flutterCharges - vat - plan.aPrice;
+      profit = amountPaid - flutterCharges - vat - (planAmount || plan.aPrice);
+
+      console.log('Plan amount in add to profit and aPrice: ', planAmount, plan.aPrice);
     }
 
     const newProfit = new Profits({

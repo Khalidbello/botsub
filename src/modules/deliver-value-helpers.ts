@@ -70,6 +70,7 @@ const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data
       response.data.meta.senderId,
       response.data.id,
       response.data.amount,
+      0,
       response.data.meta.type,
       'oneTime',
       response.data.meta.networkID,

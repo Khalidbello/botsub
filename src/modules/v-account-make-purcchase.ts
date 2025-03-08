@@ -109,7 +109,13 @@ async function makePurchaseRequest(
           resp?.data?.api_response ? resp?.data?.api_response : 'Network data delivery working fine'
         ); // set network availablity to true
       }
-      return helpSuccesfulDelivery(purchasePayload, resp.data.balance_after, senderId, bot);
+      return helpSuccesfulDelivery(
+        purchasePayload,
+        resp.data.balance_after,
+        senderId,
+        bot,
+        parseInt(resp?.data?.plan_amount || 0)
+      );
     }
 
     if (purchasePayload.transactionType === 'data')
@@ -163,7 +169,7 @@ async function simulateMakePurchaseRequest(
   senderId: string
 ) {
   try {
-    if (options) return helpSuccesfulDelivery(purchasePayload, 6000, senderId, bot);
+    if (options) return helpSuccesfulDelivery(purchasePayload, 6000, senderId, bot, 0);
     throw 'product purchas request not successful';
   } catch (error) {
     console.log('make purchase request simulation failed in cacth error block:', error);
@@ -184,7 +190,8 @@ async function helpSuccesfulDelivery(
   purchasePayload: any,
   balance: number,
   senderId: string,
-  bot: string
+  bot: string,
+  planAmount: number
 ) {
   let id;
   const date = new Date(); //new Date(response.data.customer.created_at);
@@ -210,7 +217,7 @@ async function helpSuccesfulDelivery(
   );
   console.log('account balance::::::::::', accBalance);
 
-  addToDelivered(id, purchasePayload, senderId, bot); // fuction to add trnasction to sucesful purchase
+  addToDelivered(id, purchasePayload, senderId, bot, planAmount); // fuction to add trnasction to sucesful purchase
   //sendSuccessfulResponse(purchasePayload); // functio to send succsful delivery response
 
   if (bot === 'facebook') {
@@ -244,7 +251,13 @@ async function helpSuccesfulDelivery(
 } // end of helpSuccesfulDelivery
 
 // function to add transaction to delivered transaction
-async function addToDelivered(id: string, purchasePayload: any, senderId: string, bot: string) {
+async function addToDelivered(
+  id: string,
+  purchasePayload: any,
+  senderId: string,
+  bot: string,
+  planAmount: number
+) {
   try {
     let product, newTransaction, response2;
 
@@ -270,6 +283,7 @@ async function addToDelivered(id: string, purchasePayload: any, senderId: string
       senderId,
       id,
       purchasePayload.price,
+      planAmount,
       purchasePayload.transactionType,
       'virtual',
       purchasePayload.networkID,
