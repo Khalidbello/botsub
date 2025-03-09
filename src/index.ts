@@ -17,6 +17,7 @@ import paymentGateWayRouter from './routes/payment-gateway';
 import frontEndApiRouter from './routes/frontend-api';
 import adminRouter from './routes/admin';
 import whatsaapRouter from './routes/whatsaap-bot-hook';
+import morgan from 'morgan';
 
 // setting  configurations for different environment
 if (process.env.NODE_ENV === 'development') {
@@ -82,6 +83,8 @@ if (process.env.NODE_ENV === 'development') {
 
 // initialising app
 const app = express();
+
+app.use(morgan('combined'));
 
 // configuring handlebars as app templating engine
 app.engine(
