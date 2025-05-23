@@ -32,14 +32,6 @@ async function processMessage(event: any, res: Response) {
   // check user previousky stored action to determine how to respond to user messages
   const senderId = event?.sender?.id;
 
-  if (process.env.MAINTENANCE === 'true') {
-    updateLastMesageDate(senderId); // update user last messgae
-
-    return sendMessage(event.sender.id, {
-      text: 'BotSub is currently under maintenance. \nCheck back later.',
-    }); // emergency response incase of bug fixes
-  }
-
   const user = await BotUsers.findOne({ id: senderId }).select(
     '_id lastMessage purchasePayload nextAction transactNum botResponse'
   );
@@ -88,6 +80,18 @@ async function processMessage(event: any, res: Response) {
   updateLastMesageDate(event.sender.id);
 
   const nextAction = user?.nextAction;
+
+  // kick in if botsub s under maintenance
+  if (process.env.MAINTENANCE === 'true') {
+    updateLastMesageDate(senderId); // update user last messgae
+
+    return sendMessage(event.sender.id, {
+      text: `
+      Our bot is temporarily undergoing maintenance to resolve a compliance-related issue (CAC). 
+      Rest assured, your wallet balances and funds remain 100% secure. We will notify you as soon as services are fully restored. 
+      Thank you for your patience—please don’t hesitate to contact us (https://wa.me/09166871328) if you have any questions in the meantime.`,
+    }); // emergency response incase of bug fixes
+  }
 
   // fuctionalities for data purchase
   if (nextAction === 'selectDataNetwork')

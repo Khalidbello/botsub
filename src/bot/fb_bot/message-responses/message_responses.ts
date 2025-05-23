@@ -20,7 +20,7 @@ import { handleBuyAirtime } from './airtime';
 import { CancellationToken } from 'mongodb';
 
 const defaaultMessage =
-  'Hi what can i do for you today. \n\n 1. Buy data. \n 2. Buy Airtime. \n 3. My amount. \n 4. Refer a friend. \n 5. Report an issue.';
+  'Hi what can i do for you today. \n\n 1. Buy data. \n 2. Buy Airtime. \n 3. My amount. \n 4. Refer a friend. \n 5. Report an issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
 
 // function to respond to unexpected message
 async function defaultMessageHandler(event: any, message: any) {

@@ -31,7 +31,13 @@ async function processMessageW(messageObj: any) {
 
   if (process.env.MAINTENANCE === 'true') {
     updateLastMesageDateW(senderId); // update user last message date
-    return sendMessageW(senderId, 'BotSub is currently under maintenance. \nCheck back later.'); // emergency response incase of bug fixes
+    return sendMessageW(
+      senderId,
+      ` 
+      Our bot is temporarily undergoing maintenance to resolve a compliance-related issue (CAC). 
+      Rest assured, your wallet balances and funds remain 100% secure. We will notify you as soon as services are fully restored. 
+      Thank you for your patience—please don’t hesitate to contact us (https://wa.me/09166871328) if you have any questions in the meantime.`
+    ); // emergency response incase of bug fixes
   }
 
   const user = await WhatsaapBotUsers.findOne({ id: senderId }).select(
