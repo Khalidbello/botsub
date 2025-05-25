@@ -1,4 +1,4 @@
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import { confirmDataPurchaseResponseW } from '../helper_functions';
 import sendMessageW from '../send_message_w';
 import { cancelTransactionW } from './generic';
@@ -12,11 +12,11 @@ async function handleEnterEmailToProcedWithPurchase(messageObj: any) {
   try {
     if (email.toLowerCase() === 'X') return cancelTransactionW(senderId, false);
 
-    const user = await WhatsaapBotUsers.findOne({ id: senderId });
+    const user = await WhatsappBotUsers.findOne({ id: senderId });
 
     if (emailValidator.validate(email)) {
       await sendMessageW(senderId, 'Email saved \nYou can change email when ever you want');
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: {

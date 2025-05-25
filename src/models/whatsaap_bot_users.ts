@@ -34,6 +34,6 @@ const Schema = new mongoose.Schema({
   createdAt: Date,
 });
 
-const WhatsaapBotUsers = mongoose.model('whatsaapBotUsers', Schema);
+const WhatsappBotUsers = mongoose.model('WhatsaapBotUsers', Schema);
 
-export default WhatsaapBotUsers;
+export default WhatsappBotUsers;

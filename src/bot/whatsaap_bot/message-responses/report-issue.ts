@@ -1,4 +1,4 @@
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import ReportedIssues from '../../../models/reported-issues';
 import { generateRandomString } from '../../../modules/helper_functions';
 import sendMessageW from '../send_message_w';
@@ -12,7 +12,7 @@ const handleReportIssueW = async (messaageObj: any) => {
       senderId,
       'Please enter a detailed description of your issue. \n\nEnter X to cancel.'
     );
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: { nextAction: 'enterIssue' },
@@ -58,7 +58,7 @@ const handleReportIssueResponseW = async (messaageObj: any) => {
       \nWe apologize for any inconvenience caused. 
       \n\nyou will receive a response within the next 5 minutes.`
     );
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: { nextAction: null },

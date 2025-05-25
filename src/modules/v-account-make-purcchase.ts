@@ -17,7 +17,7 @@ import { sendMessage } from '../bot/modules/send_message';
 import { updateNetworkStatus } from '../bot/modules/data-network-checker';
 import { addDataProfit } from './save-profit';
 import { updateTransactNum } from '../bot/modules/helper_function_2';
-import WhatsaapBotUsers from '../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../models/whatsaap_bot_users';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
 import {
   confirmDataPurchaseResponseW,
@@ -154,7 +154,7 @@ async function makePurchaseRequest(
       return confirmDataPurchaseResponse(senderId, user, null);
     } else if (bot === 'whatsapp') {
       await sendMessageW(senderId, 'Transaction failed please try again.');
-      const user = await WhatsaapBotUsers.findOne({ id: senderId });
+      const user = await WhatsappBotUsers.findOne({ id: senderId });
       return confirmDataPurchaseResponseW(senderId, user, null);
     }
   }
@@ -179,7 +179,7 @@ async function simulateMakePurchaseRequest(
       return confirmDataPurchaseResponse(senderId, user, null);
     } else if (bot === 'whatsapp') {
       await sendMessageW(senderId, 'Transaction failed please try again');
-      const user = await WhatsaapBotUsers.findOne({ id: senderId });
+      const user = await WhatsappBotUsers.findOne({ id: senderId });
       return confirmDataPurchaseResponseW(senderId, user, null);
     }
   }

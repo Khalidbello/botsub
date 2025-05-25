@@ -25,7 +25,7 @@ import handleFirstMonthBonus from '../../../modules/monthly_bonuses';
 import { defaaultMessage } from '../message-responses/message_responses';
 import { defaultText } from '../message-responses/generic';
 import sendMessageW from '../../whatsaap_bot/send_message_w';
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 
 // function to response to newConversations
 async function sendNewConversationResponse(event: any) {
@@ -428,7 +428,7 @@ const reset = async (senderId: string) => {
 
 // helper to help in resetting
 const resetW = async (senderId: string) => {
-  await WhatsaapBotUsers.updateOne(
+  await WhatsappBotUsers.updateOne(
     { id: senderId },
     {
       $set: {

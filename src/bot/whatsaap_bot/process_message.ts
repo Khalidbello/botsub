@@ -1,5 +1,5 @@
 import sendMessageW from './send_message_w';
-import WhatsaapBotUsers from '../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../models/whatsaap_bot_users';
 
 import { sendNewConversationResponseW } from './post-back-responses/postback_responses';
 import {
@@ -40,7 +40,7 @@ async function processMessageW(messageObj: any) {
     ); // emergency response incase of bug fixes
   }
 
-  const user = await WhatsaapBotUsers.findOne({ id: senderId }).select(
+  const user = await WhatsappBotUsers.findOne({ id: senderId }).select(
     'purchasePayload lastMessage nextAction transactNum botResponse'
   );
 
@@ -66,7 +66,7 @@ async function processMessageW(messageObj: any) {
         senderId,
         'Bot auto-response has been reactivated. You will now receive automatic replies.'
       );
-      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } });
+      await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } });
     }
   }
 

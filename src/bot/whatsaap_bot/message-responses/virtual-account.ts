@@ -1,4 +1,4 @@
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import sendMessageW from '../send_message_w';
 import emailValidator from 'email-validator';
 import PaymentAccounts from '../../../models/payment-accounts';
@@ -12,14 +12,14 @@ async function showAccountDetailsW(messageObj: any) {
   let account = await PaymentAccounts.findOne({ refrence: senderId });
 
   if (!account) {
-    const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('email');
+    const user = await WhatsappBotUsers.findOne({ id: senderId }).select('email');
     if (!user?.email) {
       await sendMessageW(senderId, 'You do not have a permanent account number yet.');
       await sendMessageW(
         senderId,
         'Kindly enter your email to create your permanent acount number. \nEnter X to quit'
       );
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         { $set: { nextAction: 'enterMailForAccount' } }
       );
@@ -31,7 +31,7 @@ async function showAccountDetailsW(messageObj: any) {
       senderId,
       ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.'
     );
-    await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
+    await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
     return;
   }
 
@@ -59,13 +59,13 @@ async function enteredEmailForAccountW(messageObj: any) {
       await sendMessageW(senderId, defaultTextW);
 
       // updaet user colletion
-      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
 
       return;
     }
 
     if (emailValidator.validate(email.toLowerCase())) {
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: {
@@ -103,11 +103,11 @@ const handleBvnEntredW = async (messageObj: any) => {
   try {
     let bvn = messageObj?.text?.body;
     let parsedBvn;
-    const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload email');
+    const user = await WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload email');
 
     // check if bvn was requested when user was carrying out a transaction
     if (bvn.toLowerCase() === 'x' && user?.purchasePayload?.price) {
-      const user = await WhatsaapBotUsers.findOneAndUpdate(
+      const user = await WhatsappBotUsers.findOneAndUpdate(
         { id: senderId },
         { $set: { nextAction: 'confirmProductPurchase' } }
       );
@@ -121,7 +121,7 @@ const handleBvnEntredW = async (messageObj: any) => {
       await sendMessageW(senderId, 'Creation of dedicated virtiual account cancled.');
       await sendMessageW(senderId, defaultTextW);
       // updaet user colletion
-      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
       return;
     }
 

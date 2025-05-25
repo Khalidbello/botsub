@@ -1,4 +1,4 @@
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import { confirmDataPurchaseResponseW } from '../helper_functions';
 import sendMessageW from '../send_message_w';
 import { generateAccountNumberW } from './generic';
@@ -10,7 +10,7 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
     const message = messageObj?.text?.body.trim().toLowerCase();
 
     if (message === 'x') {
-      const user = await WhatsaapBotUsers.findOneAndUpdate(
+      const user = await WhatsappBotUsers.findOneAndUpdate(
         { id: senderId },
         { $set: { nextAction: 'confirmProductPurchase' } }
       );
@@ -24,7 +24,7 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
         senderId,
         ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.'
       );
-      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
+      await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
       return;
 
       //await generateAccountNumberW(messageObj, transactNum);
@@ -44,7 +44,7 @@ const handleSelectPaymentMethodW = async (messageObj: any, transactNum: any) => 
         senderId,
         ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.'
       );
-      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
+      await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
       return;
     }
 

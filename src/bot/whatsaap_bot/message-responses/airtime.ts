@@ -1,4 +1,4 @@
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import { airtimeNetworkType } from '../../../types/bot/module-airtime-types';
 import { validateAmount } from '../../modules/helper_functions';
 import sendMessageW from '../send_message_w';
@@ -13,7 +13,7 @@ const handleBuyAirtimeW = async (messageObj: any) => {
       senderId,
       'Select network for Airtime purchase. \n\n A. MTN. \n B. GLO. \n C. Airtel. \n D. 9mobile. \n\n X. cancel.'
     );
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       { $set: { nextAction: 'selectAritimeNetwork' } }
     );
@@ -60,7 +60,7 @@ const handleAirtimeNetworkSelectedW = async (messageObj: any) => {
     }
 
     await sendMessageW(senderId, 'Enter airtime amount. \n\nEnter X to cancel.');
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: {
@@ -92,14 +92,14 @@ const handleEnterAirtimeAmountW = async (messageObj: any) => {
         'Invalid amount entered.\nAir amount should be      at least 100. \n\nEnter X to cancel.'
       );
 
-    const user = await WhatsaapBotUsers.findOne({ id: senderId });
+    const user = await WhatsappBotUsers.findOne({ id: senderId });
 
     await sendMessageW(
       senderId,
       `Enter phone number for ${user?.purchasePayload?.network} airtime purchase.  \n\nEnter X to cancel.`
     );
 
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: {

@@ -1,4 +1,4 @@
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import { defaultTextW } from '../message-responses/generic';
 import PaymentAccounts from '../../../models/payment-accounts';
 import { remindToFundWalletW } from '../helper_functions';
@@ -14,7 +14,7 @@ async function sendNewConversationResponseW(messageObj: any) {
   await sendMessageW(senderId, 'Hi. \nI am BotSub virtual assitance.');
 
   const date = new Date();
-  const user = await WhatsaapBotUsers.findOne({ id: senderId });
+  const user = await WhatsappBotUsers.findOne({ id: senderId });
 
   if (!user) {
     await sendMessageW(
@@ -22,7 +22,7 @@ async function sendNewConversationResponseW(messageObj: any) {
       'Welcome to BotSub, Get data offers for as low as ₦300/GB. \nHurry while it last!'
     );
     // adding new botuser
-    const newBotUser = new WhatsaapBotUsers({
+    const newBotUser = new WhatsappBotUsers({
       id: senderId,
       transactNum: 0,
       botResponse: true,
@@ -40,7 +40,7 @@ async function sendNewConversationResponseW(messageObj: any) {
 
 // functin to initiate tranacion for users with virtual account
 async function initMakePurchaseW(senderId: any) {
-  const userDet = WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
+  const userDet = WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
   const userAcount = PaymentAccounts.findOne({ refrence: senderId });
   const promises = [userDet, userAcount];
   const data = await Promise.all(promises);
@@ -52,7 +52,7 @@ async function initMakePurchaseW(senderId: any) {
     await sendMessageW(senderId, 'No transaction found');
     await sendMessageW(senderId, 'Please intiate a new transaction.');
     await sendMessageW(senderId, defaaultMessageW);
-    await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+    await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
     return;
   }
 

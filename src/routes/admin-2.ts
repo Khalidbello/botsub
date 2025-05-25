@@ -7,7 +7,7 @@ import {
   doCustomFlwWebhook,
   fetchTransactionLists,
 } from '../modules/admin/controls';
-import WhatsaapBotUsers from '../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../models/whatsaap_bot_users';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
 import { isConversationOpenW } from '../bot/whatsaap_bot/helper_functions';
 import {
@@ -15,6 +15,7 @@ import {
   handleFetchWhatsappUsers,
 } from '../modules/admin/robust-users-statistics';
 import { fundWallet } from '../modules/helper_functions';
+import { listWhatsappUsers } from '../modules/admin/whatsapp_user_listing';
 
 const adminRouter2 = Router();
 
@@ -26,7 +27,7 @@ adminRouter2.get('/get-bot-response/:senderId/:platform', async (req: Request, r
     if (req.params.platform === 'facebook') {
       data = await BotUsers.findOne({ id: req.params.senderId }).select('botResponse');
     } else if (req.params.platform === 'whatsapp') {
-      data = await WhatsaapBotUsers.findOne({ id: req.params.senderId }).select('botResponse');
+      data = await WhatsappBotUsers.findOne({ id: req.params.senderId }).select('botResponse');
     }
 
     res.json({ botResponse: data?.botResponse });
@@ -55,7 +56,7 @@ adminRouter2.post('/set-bot-response/:senderId', async (req: Request, res: Respo
         sendMessage(req.params.senderId, { text: 'Auto bot response has been enabled.' });
       }
     } else if (platform === 'whatsapp') {
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: req.params.senderId },
         { $set: { botResponse: setTo } }
       );
@@ -93,9 +94,9 @@ adminRouter2.get('/robust-users-statistics/:startDate/:endDate', (req, res) =>
   getRobustUserStatistics(req, res)
 );
 
-adminRouter2.get('/list-whatsapp-users/:startDate/:endDate/:limit/:margin', (req, res) =>
-  handleFetchWhatsappUsers(req, res)
-);
+// route to list whatsapp users based on the last time they mssageed
+adminRouter2.post('/list-whatsapp-users', listWhatsappUsers);
+
 // route to get accoun name and return
 adminRouter2.get('/transfer-account-info', (req: Request, res: Response) =>
   dataAccontDetails(req, res)

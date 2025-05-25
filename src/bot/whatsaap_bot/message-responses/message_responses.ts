@@ -2,7 +2,7 @@
 import emailValidator from 'email-validator';
 import { handleBuyDataW } from './data';
 import sendMessageW from '../send_message_w';
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import { validateAmount, validateNumber } from '../../modules/helper_functions';
 import { createVAccount } from '../../../modules/gateway';
 import { generateRandomString } from '../../../modules/helper_functions';
@@ -55,7 +55,7 @@ async function sendEmailEnteredResponseW(messageObj: any) {
   if (email.toLowerCase() === 'x') return cancelTransactionW(senderId, false);
   if (emailValidator.validate(email)) {
     await sendMessageW(senderId, 'email saved \nYou can change email when ever you want');
-    const saveEmail = await WhatsaapBotUsers.updateOne(
+    const saveEmail = await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: {
@@ -66,7 +66,7 @@ async function sendEmailEnteredResponseW(messageObj: any) {
       { upsert: true }
     );
     //console.log('in save enail', saveEmail);
-    const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload');
+    const user = await WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload');
     await confirmDataPurchaseResponseW(senderId, user, null);
   } else {
     await sendMessageW(
@@ -89,7 +89,7 @@ async function bvnEntredW(messageObj: any) {
       await sendMessageW(senderId, defaaultMessageW);
 
       // updaet user colletion
-      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
       return;
     }
 
@@ -98,10 +98,10 @@ async function bvnEntredW(messageObj: any) {
 
     // Check if the parsed number is an integer and has exactly 11 digits
     if (!isNaN(parsedBvn) && Number.isInteger(parsedBvn) && bvn.length === 11) {
-      const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('email');
+      const user = await WhatsappBotUsers.findOne({ id: senderId }).select('email');
 
       // upate user database
-      WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
 
       await createVAccount(user?.email, senderId, bvn, 'facebook', 0);
     } else {
@@ -123,7 +123,7 @@ async function bvnEntredW(messageObj: any) {
 async function sendAirtimeAmountReceivedW(messageObj: any) {
   const senderId = messageObj.from;
   const amount = messageObj.text ? messageObj.text.body : '';
-  const userData = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload');
+  const userData = await WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload');
 
   if (amount.toLowerCase() === 'x') return cancelTransactionW(senderId, false);
   if (await validateAmount(amount)) {
@@ -133,7 +133,7 @@ async function sendAirtimeAmountReceivedW(messageObj: any) {
       ` Enter ${userData?.purchasePayload?.network} phone number for airtime purchase. \nEnter Q to cancel`
     );
 
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: {
@@ -162,9 +162,9 @@ async function sendPhoneNumberEnteredResponsesW(messageObj: any) {
   if (phoneNumber.toLowerCase() === 'x') return cancelTransactionW(senderId, false);
   if (validatedNum) {
     await sendMessageW(senderId, 'phone  number recieved');
-    user = await WhatsaapBotUsers.findOne({ id: senderId });
+    user = await WhatsappBotUsers.findOne({ id: senderId });
     if (user?.email) {
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: {
@@ -182,7 +182,7 @@ async function sendPhoneNumberEnteredResponsesW(messageObj: any) {
       'Please enter your email. \nReciept would be sent to the provided email'
     );
 
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: {
@@ -206,7 +206,7 @@ async function newEmailBeforeTransactResponseW(
 ) {
   const senderId = messageObj.from;
   const email = messageObj?.text?.body;
-  const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload email');
+  const user = await WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload email');
 
   try {
     if (email.toLowerCase() === 'x') {
@@ -215,7 +215,7 @@ async function newEmailBeforeTransactResponseW(
     }
 
     if (emailValidator.validate(email)) {
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: {
@@ -246,14 +246,14 @@ async function newPhoneNumberBeforeTransactResponseW(
   const senderId = messageObj.from;
   const phoneNumber = messageObj?.text?.body;
   const validatedNum = validateNumber(phoneNumber);
-  const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload email');
+  const user = await WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload email');
   if (phoneNumber.toLowerCase() === 'x') {
     await sendMessageW(senderId, 'Change phone number cancled');
     return confirmDataPurchaseResponseW(senderId, user, null);
   }
 
   if (validatedNum) {
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: {
@@ -304,7 +304,7 @@ async function reportIssueW(messageObj: any) {
         'Your issue have beign directed to BotSub support team. \nSorry for any inconveniences caused.'
       );
 
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: {

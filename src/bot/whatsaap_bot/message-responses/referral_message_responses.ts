@@ -1,4 +1,4 @@
-import WhatsaapBotUsers from '../../../models/fb_bot_users';
+import WhatsappBotUsers from '../../../models/fb_bot_users';
 import { validateNumber } from '../../modules/helper_functions';
 import sendMessageW from '../send_message_w';
 import sendTemplates from '../../modules/send_templates';
@@ -59,14 +59,14 @@ async function sendReferralCodeRecieved(messageObj: any) {
       // });
       await sendMessageW(senderId, defaultTextW);
 
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         { $set: { nextAction: null, referrer: 0, firstPurchase: true } }
       );
       return;
     }
 
-    const referrer = await WhatsaapBotUsers.findOne({ id: referralCode });
+    const referrer = await WhatsappBotUsers.findOne({ id: referralCode });
     console.log('new conversation referer', referrer);
 
     if (!referrer) {
@@ -83,7 +83,7 @@ async function sendReferralCodeRecieved(messageObj: any) {
 
       await sendMessageW(senderId, defaultTextW);
 
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: { nextAction: null, referrer: Number(referralCode), firstPurchase: true },
@@ -109,7 +109,7 @@ async function referralBonusPhoneNumberRecieved(messageObj: any) {
       'Phone number entred not valid. \nplease enter a valid phone number. \nEnter X to cancel'
     );
   await sendMessageW(senderId, 'Number to deliver referral bonus to recieved.');
-  await WhatsaapBotUsers.updateOne(
+  await WhatsappBotUsers.updateOne(
     { id: senderId },
     {
       $set: {
@@ -124,7 +124,7 @@ async function referralBonusPhoneNumberRecieved(messageObj: any) {
 // function to confirm claim referral
 async function confirmClaimReferralBonus(messageObj: any) {
   const senderId = messageObj.from;
-  const response = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload');
+  const response = await WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload');
   // @ts-expect-error
   const { network, size, phoneNumber } = response.purchasePayload;
 
@@ -145,7 +145,7 @@ async function changeReferralBonusPhoneNumber(messageObj: any) {
     console.log('in q cancel');
     sendMessageW(senderId, 'Change of Phone number cancled');
     confirmClaimReferralBonus(messageObj);
-    await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+    await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
     return;
   }
 
@@ -157,7 +157,7 @@ async function changeReferralBonusPhoneNumber(messageObj: any) {
 
   await sendMessageW(senderId, 'Phone number changed');
   confirmClaimReferralBonus(messageObj);
-  await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+  await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
 } // end of changeReferralBonusPhoneNumber
 
 export {

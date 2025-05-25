@@ -1,4 +1,4 @@
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import { networkDetailsType } from '../../../types/bot/module-buy-data-types';
 import { formDataOffers } from '../../modules/buy-data';
 import { computeDiscount, mapAlpaheToNum } from '../../modules/helper_function_2';
@@ -16,7 +16,7 @@ async function handleBuyDataW(messageObj: any) {
   const senderId = messageObj.from;
 
   sendMessageW(senderId, buyDataTextW);
-  await WhatsaapBotUsers.updateOne(
+  await WhatsappBotUsers.updateOne(
     { id: senderId },
     {
       $set: { nextAction: 'selectDataNetwork' },
@@ -63,7 +63,7 @@ const handleDataNetWorkSelectedW = async (messageObj: any, transactNum: number) 
     await sendMessageW(senderId, response);
 
     // Update bot user info
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: {
@@ -88,7 +88,7 @@ const handleOfferSelectedW = async (messageObj: any, transactNum: number) => {
 
   try {
     if (message.toLocaleLowerCase() === 'x') return cancelTransactionW(senderId, false);
-    const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload');
+    const user = await WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload');
     const network: any = user?.purchasePayload?.network; // a string
     const networkID: any = user?.purchasePayload?.networkID; // a number
     let dataDetails: any = await fs.promises.readFile('files/data-details.json'); // get data details
@@ -97,7 +97,7 @@ const handleOfferSelectedW = async (messageObj: any, transactNum: number) => {
     const dataOffer = networkDetails[mapAlpaheToNum(message)]; // the offer user selected
 
     if (!dataOffer) {
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: {
@@ -112,7 +112,7 @@ const handleOfferSelectedW = async (messageObj: any, transactNum: number) => {
     sendMessageW(senderId, `Enter phone number for ${network} data purchase`);
 
     // update user document
-    await WhatsaapBotUsers.updateOne(
+    await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: {
@@ -141,11 +141,11 @@ const handlePhoneNumberEntredW = async (messageObj: any) => {
     if (message.toLowerCase() === 'x') return cancelTransactionW(senderId, false);
 
     const validatedNum = validateNumber(message);
-    const user = await WhatsaapBotUsers.findOne({ id: senderId });
+    const user = await WhatsappBotUsers.findOne({ id: senderId });
 
     // to run if number valid and user has provided email
     if (validatedNum && user?.email) {
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: {
@@ -166,7 +166,7 @@ const handlePhoneNumberEntredW = async (messageObj: any) => {
         'Please enter your email. \nReciept would be sent to the provided email'
       );
 
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: {

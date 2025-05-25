@@ -12,7 +12,7 @@ import {
   totalProfitCount,
   transactionCount,
 } from './helper-functions';
-import WhatsaapBotUsers from '../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../models/whatsaap_bot_users';
 
 // handler for robust user specific statistics
 const getRobustUserStatistics = async (req: Request, res: Response) => {
@@ -89,7 +89,7 @@ const handleFetchWhatsappUsers = async (req: Request, res: Response) => {
     startDate.setUTCHours(0, 0, 0, 0);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    const users = await WhatsaapBotUsers.find({
+    const users = await WhatsappBotUsers.find({
       lastMessage: {
         $gte: startDate,
         $lte: endDate,

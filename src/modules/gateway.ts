@@ -11,7 +11,7 @@ import { checkPaymentValidity } from '../bot/modules/helper_function_2';
 import { deliverValue } from './deliver-value';
 import WalletFundings from '../models/wallet-funding';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
-import WhatsaapBotUsers from '../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../models/whatsaap_bot_users';
 import { initMakePurchaseW } from '../bot/whatsaap_bot/message-responses/generic';
 import { isConversationOpenW } from '../bot/whatsaap_bot/helper_functions';
 
@@ -130,7 +130,7 @@ async function createVAccountW(
   }
 
   // first check to confirm no account with specific referance occurs
-  const user = await WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload');
+  const user = await WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload');
   const existing = await PaymentAccounts.findOne({ refrence: senderId });
 
   if (existing) return sendMessageW(senderId, 'You already have a virtual account.');
@@ -171,7 +171,7 @@ async function createVAccountW(
     if (user?.purchasePayload?.price) {
       await sendMessageW(senderId, 'Creation of permanent account number was succesful.');
       initMakePurchaseW(senderId);
-      const resonse = await WhatsaapBotUsers.updateOne(
+      const resonse = await WhatsappBotUsers.updateOne(
         { id: senderId },
         { $set: { nextAction: 'confirmProductPurchase' } }
       );
@@ -189,7 +189,7 @@ async function createVAccountW(
     await sendMessageW(senderId, `Account Balance: ₦${account.balance.toFixed(2)}`);
     await sendMessageW(senderId, 'Fund permanent account and make purchases with ease.');
 
-    const response = await WhatsaapBotUsers.updateOne(
+    const response = await WhatsappBotUsers.updateOne(
       { id: senderId },
       { $set: { nextAction: null } }
     );
@@ -292,7 +292,7 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
         );
 
         // check if user has an outsanding transaction and automatic initiate if any
-        const resp = await WhatsaapBotUsers.findOne({ id: response.data.tx_ref }).select(
+        const resp = await WhatsappBotUsers.findOne({ id: response.data.tx_ref }).select(
           'purchasePayload'
         );
         const purchasePayload = resp?.purchasePayload;

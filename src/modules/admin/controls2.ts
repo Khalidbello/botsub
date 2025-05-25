@@ -3,7 +3,7 @@ import { Response } from 'express';
 import { sendMessage } from '../../bot/modules/send_message';
 import sendMessageW from '../../bot/whatsaap_bot/send_message_w';
 import BotUsers from '../../models/fb_bot_users';
-import WhatsaapBotUsers from '../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../models/whatsaap_bot_users';
 
 // function to send messages to users
 const sendWhatsappUsersMessage = async (message: string, res: Response) => {
@@ -16,7 +16,7 @@ const sendWhatsappUsersMessage = async (message: string, res: Response) => {
 
     while (true) {
       // Fetch a batch of users
-      let users = await WhatsaapBotUsers.find().skip(skip).limit(batchSize); //.toArray();
+      let users = await WhatsappBotUsers.find().skip(skip).limit(batchSize); //.toArray();
 
       console.log('users length: ', users.length);
       console.log('skip: ', skip);

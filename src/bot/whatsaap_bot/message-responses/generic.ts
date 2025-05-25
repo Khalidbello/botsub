@@ -1,7 +1,7 @@
 // file to contain generic functionality for
 
 import emailValidator from 'email-validator';
-import WhatsaapBotUsers from '../../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import PaymentAccounts from '../../../models/payment-accounts';
 import { checkDataStatus } from '../../modules/data-network-checker';
 import sendMessageW from '../send_message_w';
@@ -63,7 +63,7 @@ async function cancelTransactionW(senderId: string, end: boolean) {
 
 // helper to help in resetting
 const reset = async (senderId: string) => {
-  await WhatsaapBotUsers.updateOne(
+  await WhatsappBotUsers.updateOne(
     { id: senderId },
     {
       $set: {
@@ -87,7 +87,7 @@ async function selectPurchaseMethodW(messageObj: any, transactNum: number) {
     'Select Payment Method: \n\nA. One-time account number (for this transaction only).' +
       ' \n\nB. Permanent account number (use for all future transactions, NIN required). \n\nChoose B for faster, hassle-free payments in the future! Enter X to cancel.'
   );
-  await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAccount' } });
+  await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'selectAccount' } });
   //await generateAccountNumberW(messageObj, transactNum);
 } // end of selectPurchaseMehod
 
@@ -106,7 +106,7 @@ async function generateAccountNumberW(messageObj: any, transactNum: number) {
   //let us
 
   try {
-    whatsaapBotUser = await WhatsaapBotUsers.findOne({ id: senderId }).select(
+    whatsaapBotUser = await WhatsappBotUsers.findOne({ id: senderId }).select(
       'email purchasePayload referrer firstPurchase'
     );
     console.log('generateAccountNumberW in whatsaap bot : ', whatsaapBotUser);
@@ -172,7 +172,7 @@ async function generateAccountNumberW(messageObj: any, transactNum: number) {
 // functin to initiate tranacion for users with virtual account
 async function initMakePurchaseW(senderId: any) {
   try {
-    const userDet = WhatsaapBotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
+    const userDet = WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
     const userAcount = PaymentAccounts.findOne({ refrence: senderId });
     const promises = [userDet, userAcount];
     const data = await Promise.all(promises);
@@ -211,13 +211,13 @@ async function handleChangeNumberBeforeTransactionW(messageObj: any) {
   const phoneNumber = messageObj?.text?.body.trim();
 
   try {
-    const user = await WhatsaapBotUsers.findOne({ id: senderId });
+    const user = await WhatsappBotUsers.findOne({ id: senderId });
     const validatedNum = validateNumber(phoneNumber);
 
     if (phoneNumber.toLowerCase() === 'x') {
       await sendMessageW(senderId, 'Change phone number canceled');
       await confirmDataPurchaseResponseW(senderId, user, null);
-      return WhatsaapBotUsers.updateOne(
+      return WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: { nextAction: 'confirmProductPurchase' },
@@ -228,7 +228,7 @@ async function handleChangeNumberBeforeTransactionW(messageObj: any) {
     if (validatedNum) {
       await sendMessageW(senderId, 'phone  number recieved');
       if (user?.email) {
-        await WhatsaapBotUsers.updateOne(
+        await WhatsappBotUsers.updateOne(
           { id: senderId },
           {
             $set: {
@@ -246,7 +246,7 @@ async function handleChangeNumberBeforeTransactionW(messageObj: any) {
         'Please enter your email. \nReciept would be sent to the provided email'
       );
 
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: {
@@ -270,12 +270,12 @@ async function handleNewEmailBeforeTransasctionEntredW(messageObj: any) {
   const email = messageObj?.text?.body.trim();
 
   try {
-    const user = await WhatsaapBotUsers.findOne({ id: senderId });
+    const user = await WhatsappBotUsers.findOne({ id: senderId });
 
     if (email.toLowerCase() === 'x') {
       await sendMessageW(senderId, 'Change email canceled');
       await confirmDataPurchaseResponseW(senderId, user, null);
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: { nextAction: 'confirmProductPurchase' },
@@ -286,7 +286,7 @@ async function handleNewEmailBeforeTransasctionEntredW(messageObj: any) {
 
     if (emailValidator.validate(email)) {
       await sendMessageW(senderId, 'Email changed successfully.');
-      await WhatsaapBotUsers.updateOne(
+      await WhatsappBotUsers.updateOne(
         { id: senderId },
         {
           $set: { email: email },

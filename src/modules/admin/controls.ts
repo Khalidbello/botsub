@@ -12,7 +12,7 @@ const Flutterwave = require('flutterwave-node-v3');
 import axios from 'axios';
 import sendMessageW from '../../bot/whatsaap_bot/send_message_w';
 import { isConversationOpenW } from '../../bot/whatsaap_bot/helper_functions';
-import WhatsaapBotUsers from '../../models/whatsaap_bot_users';
+import WhatsappBotUsers from '../../models/whatsaap_bot_users';
 
 async function getNetworkStatus(req: Request, res: Response) {
   // Read the file content
@@ -76,7 +76,7 @@ async function closeIssue(req: Request, res: Response) {
     }
     if (platform === 'whatsapp') {
       const sendable = await isConversationOpenW(senderId);
-      await WhatsaapBotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } }); // activate bot auto response
+      await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { botResponse: true } }); // activate bot auto response
 
       if (sendable) {
         sendMessageW(
