@@ -8,6 +8,7 @@ const schema = new mongoose.Schema({
   },
   email: String,
   senderId: String,
+  platform: String,
   txRef: String,
   status: String, // 'delivered', 'refunded'
   product: String,
@@ -15,6 +16,8 @@ const schema = new mongoose.Schema({
   beneficiary: String,
   accountType: String,
   transactionType: String,
+  profit: Number,
+  price: Number,
   info: String, // this will hold info as to the error encountered when the transaction failed or succes message
   date: Date,
 });

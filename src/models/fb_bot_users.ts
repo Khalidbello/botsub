@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 const purchasePayload = new mongoose.Schema({
   product: String,
   network: String,
@@ -12,6 +13,10 @@ const purchasePayload = new mongoose.Schema({
   refereeId: Number,
   outStanding: Boolean,
   platform: String,
+  free3GBNetwork: String,
+  free3GBPhoneNumber: String,
+  free3GBNetworkId: Number,
+  free3GBPlanId: Number,
 });
 
 const Schema = new mongoose.Schema({
@@ -28,12 +33,19 @@ const Schema = new mongoose.Schema({
   nextAction: String,
   purchasePayload: purchasePayload,
   firstTransactOfMonth: Date,
+  // grand slam offer related info
+  lastOfferReminder: Date,
+  lastLostOfferReminder: Date,
+  win: Date,
+  claimed: Date,
+  monthOfTransaction: Date, // holda the current month the user is transacting for
+  numberOfTransactionForMonth: Number, // holds the number of transaction the user has carried out for that month;
   referrer: Number,
   referrals: [{ id: Number }],
   claimedReferrals: [{ id: Number }],
   createdAt: Date,
 });
 
-const BotUsers = mongoose.model('botUsers', Schema);
+const FBBotUsers = mongoose.model('botUsers', Schema);
 
-export default BotUsers;
+export default FBBotUsers;

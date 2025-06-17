@@ -156,9 +156,6 @@ app.get('/set-cookie', (req, res) => {
   res.send('Cookie has been set!');
 });
 
-// connecting db
-connectDB();
-
 //app.use('/', storeRequest)
 //locking in middlewares for route handling
 app.use('/', viewsRouter);
@@ -175,4 +172,5 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log('running on port ' + port));
+//  connecting db
+connectDB(app, port as number);

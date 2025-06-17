@@ -19,14 +19,17 @@ import {
   handleDataNetworkNotAvailableW,
   remindToFundWalletW,
 } from '../helper_functions';
+import { free3gbParticipationReminderW } from '../../grand_slam_offer/whatsapp/daily_participation_reminder_w';
+import { claimFree3GB } from '../../grand_slam_offer/whatsapp/offer_claiming_w';
+import { withdrawFromAccountBalanceW } from './withdrawal';
 
 // text to contain bot functionalities
 const defaultTextW =
-  'Hi what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
-  '\n E. Refer a friend \n F. Active referals \n G. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
+  'Hi what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
+  '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
 
 // function to respond to messages with out next action
-async function defaultMessageHandlerW(messageObj: any, isMessage: any, transactNum: number) {
+async function defaultMessageHandlerW(messageObj: any, isMessage: any, user: any) {
   const senderId = messageObj.from;
 
   try {
@@ -39,12 +42,14 @@ async function defaultMessageHandlerW(messageObj: any, isMessage: any, transactN
 
     if (text.toLowerCase() === 'a') return handleBuyDataW(messageObj);
     if (text.toLowerCase() === 'b') return handleBuyAirtimeW(messageObj);
-    if (text.toLowerCase() === 'c') return showAccountDetailsW(messageObj);
-    if (text.toLowerCase() === 'd') return showDataPricesW(messageObj, transactNum);
-    if (text.toLowerCase() === 'e') return showReferralCode(messageObj);
-    if (text.toLowerCase() === 'f') return showActiveReferalls(messageObj);
-    if (text.toLowerCase() === 'g') return handleReportIssueW(messageObj);
+    if (text.toLowerCase() === 'c') return claimFree3GB(messageObj, user);
+    if (text.toLowerCase() === 'd') return showAccountDetailsW(messageObj, user);
+    if (text.toLowerCase() === 'e') return withdrawFromAccountBalanceW(messageObj, user);
+    if (text.toLowerCase() === 'f') return showDataPricesW(messageObj, user.transactNum);
+    if (text.toLowerCase() === 'g') return showReferralCode(messageObj);
+    if (text.toLowerCase() === 'h') return handleReportIssueW(messageObj);
 
+    await free3gbParticipationReminderW(user);
     sendMessageW(senderId, defaultTextW);
   } catch (err) {
     console.error('error in default text ', err);
@@ -69,6 +74,7 @@ const reset = async (senderId: string) => {
       $set: {
         nextAction: null,
         purchasePayload: {},
+        withdrawalData: {},
       },
     }
   );
@@ -172,7 +178,7 @@ async function generateAccountNumberW(messageObj: any, transactNum: number) {
 // functin to initiate tranacion for users with virtual account
 async function initMakePurchaseW(senderId: any) {
   try {
-    const userDet = WhatsappBotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
+    const userDet = WhatsappBotUsers.findOne({ id: senderId }); // requesting user transacion details
     const userAcount = PaymentAccounts.findOne({ refrence: senderId });
     const promises = [userDet, userAcount];
     const data = await Promise.all(promises);
@@ -199,7 +205,7 @@ async function initMakePurchaseW(senderId: any) {
         data[1]
       ); // returning function to remind user to fund wallet
 
-    makePurchase(purchasePayload, 'whatsapp', senderId); // calling function to make function
+    makePurchase(data[0], 'whatsapp', senderId); // calling function to make function
   } catch (err) {
     console.error('an error occured in initMakePurchaseW', err);
   }

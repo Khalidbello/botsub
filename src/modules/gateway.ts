@@ -69,7 +69,6 @@ async function createVAccount(
       accountNumber: accountDetails.data.account_number,
       botType: botType,
       bankName: accountDetails.data.bank_name,
-      bvn: bvn,
     };
     const vAccount = new PaymentAccounts(account);
 
@@ -161,7 +160,6 @@ async function createVAccountW(
       accountNumber: accountDetails.data.account_number,
       botType: botType,
       bankName: accountDetails.data.bank_name,
-      bvn: bvn,
     };
     const vAccount = new PaymentAccounts(account);
 

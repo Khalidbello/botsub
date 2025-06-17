@@ -1,11 +1,11 @@
 import { Response } from 'express';
+import fs from 'fs';
 
 // file to initiate make purhase
 const handlebars = require('handlebars');
 
 import Transactions from '../models/transactions';
 import PaymentAccounts from '../models/payment-accounts';
-import * as fs from 'fs';
 import axios from 'axios';
 import {
   cancelTransaction,
@@ -24,19 +24,20 @@ import {
   updateTransactNumW,
 } from '../bot/whatsaap_bot/helper_functions';
 import { dateFormatter, generateRandomString } from './helper_functions';
+import { TransactionEndGrandSlamOfferReminderW } from '../bot/grand_slam_offer/whatsapp/concluded_transaction_propmpter_w';
+import { TransactionEndGrandSlamOfferReminderFB } from '../bot/grand_slam_offer/facebook/concluded_transaction_propmpter_fb';
 
 // function to carryout purchase
-async function makePurchase(purchasePayload: any, bot: string, senderId: string) {
-  if (purchasePayload.transactionType === 'data')
-    return deliverData(purchasePayload, bot, senderId);
-  if (purchasePayload.transactionType === 'airtime')
-    return deliverAirtime(purchasePayload, bot, senderId);
+async function makePurchase(user: any, bot: string, senderId: string) {
+  if (user.purchasePayload.transactionType === 'data') return deliverData(user, bot, senderId);
+  if (user.purchasePayload.transactionType === 'airtime')
+    return deliverAirtime(user, bot, senderId);
 
   console.log('no matched transaction type::::::::::::::::::::::::   ');
 } // end of function to make purchase
 
 // function to make data purchase request
-async function deliverData(purchasePayload: any, bot: string, senderId: string) {
+async function deliverData(user: any, bot: string, senderId: string) {
   console.log('in v account deliver dassssssssssssssssssssssssssssssssssssss');
 
   let options = {
@@ -46,19 +47,19 @@ async function deliverData(purchasePayload: any, bot: string, senderId: string) 
       'Content-Type': 'application/json',
     },
     payload: {
-      network: Number(purchasePayload.networkID),
-      mobile_number: purchasePayload.phoneNumber,
-      plan: Number(purchasePayload.planID),
+      network: Number(user.purchasePayload.networkID),
+      mobile_number: user.purchasePayload.phoneNumber,
+      plan: Number(user.purchasePayload.planID),
       Ported_number: true,
     },
   };
 
   if (process.env.NODE_ENV === 'production')
-    return makePurchaseRequest(purchasePayload, options, bot, 'data', senderId);
+    return makePurchaseRequest(user, options, bot, 'data', senderId);
   if (process.env.NODE_ENV === 'staging')
-    return simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
+    return simulateMakePurchaseRequest(user, true, bot, 'data', senderId);
   if (process.env.NODE_ENV === 'development')
-    return simulateMakePurchaseRequest(purchasePayload, true, bot, 'data', senderId);
+    return simulateMakePurchaseRequest(user, true, bot, 'data', senderId);
 } // end of deliver value function
 
 // function to make airtime purchase request
@@ -88,7 +89,7 @@ function deliverAirtime(purchasePayload: any, bot: string, senderId: string) {
 
 // function to make product purchase request
 async function makePurchaseRequest(
-  purchasePayload: any,
+  user: any,
   options: any,
   bot: string,
   transactionType: 'airtime' | 'data',
@@ -100,17 +101,17 @@ async function makePurchaseRequest(
     console.log('see bot type in v account deliver value', bot);
 
     if (resp.data.Status === 'successful') {
-      if (purchasePayload.transactionType === 'data') {
+      if (user.purchasePayload.transactionType === 'data') {
         if (bot === 'facebook') updateTransactNum(senderId);
         if (bot === 'whatsapp') updateTransactNumW(senderId);
         updateNetworkStatus(
-          purchasePayload?.network,
+          user.purchasePayload?.network,
           true,
           resp?.data?.api_response ? resp?.data?.api_response : 'Network data delivery working fine'
         ); // set network availablity to true
       }
       return helpSuccesfulDelivery(
-        purchasePayload,
+        user,
         resp.data.balance_after,
         senderId,
         bot,
@@ -118,9 +119,9 @@ async function makePurchaseRequest(
       );
     }
 
-    if (purchasePayload.transactionType === 'data')
+    if (user.purchasePayload.transactionType === 'data')
       updateNetworkStatus(
-        purchasePayload?.network,
+        user.purchasePayload?.network,
         false,
         resp?.data?.api_response
           ? resp?.data?.api_response
@@ -162,14 +163,14 @@ async function makePurchaseRequest(
 
 // function to make product purchase request simulation
 async function simulateMakePurchaseRequest(
-  purchasePayload: any,
+  user: any,
   options: any,
   bot: string,
   data: any,
   senderId: string
 ) {
   try {
-    if (options) return helpSuccesfulDelivery(purchasePayload, 6000, senderId, bot, 0);
+    if (options) return helpSuccesfulDelivery(user, 6000, senderId, bot, 0);
     throw 'product purchas request not successful';
   } catch (error) {
     console.log('make purchase request simulation failed in cacth error block:', error);
@@ -187,7 +188,7 @@ async function simulateMakePurchaseRequest(
 
 // helper function for succesfull response
 async function helpSuccesfulDelivery(
-  purchasePayload: any,
+  user: any,
   balance: number,
   senderId: string,
   bot: string,
@@ -196,7 +197,7 @@ async function helpSuccesfulDelivery(
   let id;
   const date = new Date(); //new Date(response.data.customer.created_at);
   const nigeriaTimeString = dateFormatter(date);
-  const product = formProduct(purchasePayload);
+  const product = formProduct(user.purchasePayload);
 
   // first run while loop to generate a random id
   while (true) {
@@ -212,39 +213,42 @@ async function helpSuccesfulDelivery(
   // updating user deducting user balance
   const accBalance = await PaymentAccounts.findOneAndUpdate(
     { refrence: senderId },
-    { $inc: { balance: -Number(purchasePayload.price) } },
+    { $inc: { balance: -Number(user.purchasePayload.price) } },
     { new: true }
   );
   console.log('account balance::::::::::', accBalance);
 
-  addToDelivered(id, purchasePayload, senderId, bot, planAmount); // fuction to add trnasction to sucesful purchase
+  addToDelivered(id, user, senderId, bot, planAmount); // fuction to add trnasction to sucesful purchase
   //sendSuccessfulResponse(purchasePayload); // functio to send succsful delivery response
 
   if (bot === 'facebook') {
-    //await sendMessage(senderId, { text: `Transaction Succesful \nProduct: ${product}\nTransaction ID: ${id} \nDate: ${nigeriaTimeString}` });
     await sendMessage(senderId, {
-      text: `Your current account balance is:   ₦${accBalance?.balance?.toFixed(2)}`,
+      text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${
+        user.purchasePayload.phoneNumber
+      } \nPrice:  ₦${
+        user.purchasePayload.price
+      } \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}
+       \n\nYour current account balance is:   ₦${accBalance?.balance?.toFixed(2)}
+       \nThanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. 
+       \n\n〜BotSub`,
     });
-    await sendMessage(senderId, {
-      text: `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ₦${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`,
-    });
-    await sendMessage(senderId, {
-      text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub',
-    });
+
+    TransactionEndGrandSlamOfferReminderFB(user);
   } else if (bot === 'whatsapp') {
-    //await sendMessage(senderId, { text: `Transaction Succesful \nProduct: ${product}\nTransaction ID: ${id} \nDate: ${nigeriaTimeString}` });
     await sendMessageW(
       senderId,
-      `Your current account balance is:   ₦${accBalance?.balance?.toFixed(2)}`
+      `Transaction Succesful \nProduct: ${product} \nRecipient: ${
+        user.purchasePayload.phoneNumber
+      } \nPrice:  ₦${
+        user.purchasePayload.price
+      } \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}
+       \n\nYour current account balance is:   ₦${accBalance?.balance?.toFixed(2)}
+       \nThanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. 
+       \n\n〜BotSub
+      `
     );
-    await sendMessageW(
-      senderId,
-      `Transaction Succesful \nProduct: ${product} \nRecipient: ${purchasePayload.phoneNumber} \nPrice:  ₦${purchasePayload.price} \nTransaction ID: ${id} \nDate: ${nigeriaTimeString}`
-    );
-    await sendMessageW(
-      senderId,
-      'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub'
-    );
+
+    await TransactionEndGrandSlamOfferReminderW(user);
   }
 
   //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
@@ -253,22 +257,38 @@ async function helpSuccesfulDelivery(
 // function to add transaction to delivered transaction
 async function addToDelivered(
   id: string,
-  purchasePayload: any,
+  user: any,
   senderId: string,
   bot: string,
   planAmount: number
 ) {
   try {
     let product, newTransaction, response2;
+    let profit = 0;
+    const purchasePayload = user.purchasePayload;
 
     if (bot === 'facebook') cancelTransaction(senderId, true); // to reset user next action and purchse payload for fb bot
     if (bot === 'whatsapp') cancelTransactionW(senderId, true); // to reset user next action and purchse payload for whatsapp bot
 
     product = formProduct(purchasePayload);
 
+    // if purchase is data calculate profit get data price an calcualte profit
+    if (purchasePayload.transactionType === 'data') {
+      const dataDetails = JSON.parse(
+        await fs.promises.readFile('files/data-details.json', 'utf-8')
+      );
+      const plan = dataDetails[purchasePayload.networkID][purchasePayload.index];
+
+      const flutterCharges = purchasePayload.price * 0.014;
+      const vat = flutterCharges * 0.07;
+
+      // Calculate profit
+      profit = purchasePayload.price - flutterCharges - vat - (planAmount || plan.aPrice);
+    }
+
     newTransaction = new Transactions({
       id: id,
-      email: purchasePayload.email,
+      email: user.email,
       status: 'delivered',
       date: Date(),
       product: product,
@@ -276,20 +296,23 @@ async function addToDelivered(
       accountType: 'virtual',
       info: 'delivery successful in virtual account',
       transactionType: purchasePayload.transactionType,
+      platform: bot,
+      profit: profit,
+      price: purchasePayload.price,
     });
     await newTransaction.save();
 
-    await addDataProfit(
-      senderId,
-      id,
-      purchasePayload.price,
-      planAmount,
-      purchasePayload.transactionType,
-      'virtual',
-      purchasePayload.networkID,
-      purchasePayload.index,
-      Date()
-    );
+    // await addDataProfit(
+    //   senderId,
+    //   id,
+    //   purchasePayload.price,
+    //   planAmount,
+    //   purchasePayload.transactionType,
+    //   'virtual',
+    //   purchasePayload.networkID,
+    //   purchasePayload.index,
+    //   Date()
+    // );
 
     // if (Number(purchasePayload.firstPurchase) === 1 && purchasePayload.transactionType === 'data')
     //   await creditReferrer(senderId);

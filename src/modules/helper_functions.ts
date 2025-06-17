@@ -285,6 +285,15 @@ async function fundWallet(bankCode: string, accNum: string, amount: number) {
   }
 } // end of fund wallet
 
+function validateNigerianAccountNumber(accountNumber: any) {
+  // Ensure account number is a string and contains only digits
+  if (!/^\d{10}$/.test(accountNumber)) {
+    return { valid: false, message: 'Invalid account number. It must be exactly 10 digits.' };
+  }
+
+  return { valid: true, message: 'Valid Nigerian account number.' };
+}
+
 export {
   checkIfPreviouslyDelivered,
   returnPreviouslyDelivered,
@@ -295,4 +304,5 @@ export {
   retryFailedHelper,
   dateFormatter,
   fundWallet,
+  validateNigerianAccountNumber,
 };

@@ -2,50 +2,48 @@ import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import sendMessageW from '../send_message_w';
 import emailValidator from 'email-validator';
 import PaymentAccounts from '../../../models/payment-accounts';
-import { createVAccount, createVAccountW } from '../../../modules/gateway';
+import { createVAccountW } from '../../../modules/gateway';
 import { defaultTextW } from './generic';
 import { confirmDataPurchaseResponseW } from '../helper_functions';
+import { BotUserType } from '../../grand_slam_offer/daily_participation_reminder';
 
-// function to show user account details
-async function showAccountDetailsW(messageObj: any) {
-  const senderId = messageObj.from;
-  let account = await PaymentAccounts.findOne({ refrence: senderId });
-
-  if (!account) {
-    const user = await WhatsappBotUsers.findOne({ id: senderId }).select('email');
-    if (!user?.email) {
-      await sendMessageW(senderId, 'You do not have a permanent account number yet.');
-      await sendMessageW(
-        senderId,
-        'Kindly enter your email to create your permanent acount number. \nEnter X to quit'
-      );
-      await WhatsappBotUsers.updateOne(
-        { id: senderId },
-        { $set: { nextAction: 'enterMailForAccount' } }
-      );
-      return;
-    }
-
-    await sendMessageW(senderId, 'You do not have a permanent account number yet.');
-    sendMessageW(
-      senderId,
-      ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.'
+// hekper fucntion to check process wether user has a virtual acount already or not
+const handleUserHasNoVirtualAcountW = async (user: BotUserType) => {
+  if (!user?.email) {
+    await sendMessageW(user.id, 'You do not have a permanent account number yet.');
+    await sendMessageW(
+      user.id,
+      'Kindly enter your email to create your permanent acount number. \nEnter X to quit'
     );
-    await WhatsappBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
+    await WhatsappBotUsers.updateOne(
+      { id: user.id },
+      { $set: { nextAction: 'enterMailForAccount' } }
+    );
     return;
   }
 
-  await sendMessageW(senderId, 'Your dedicated virtual account details: ');
-  await sendMessageW(senderId, `Bank Name: ${account.bankName}`);
-  await sendMessageW(senderId, `Account Name: ${account.accountName}`);
-  await sendMessageW(senderId, 'Acccount Number: ');
-  // @ts-expect-error
-  await sendMessageW(senderId, account.accountNumber);
-  await sendMessageW(senderId, `Account Balance: ₦${account.balance}`);
+  await sendMessageW(user.id, 'You do not have a permanent account number yet.');
   sendMessageW(
-    senderId,
-    'Fund your dedicated virtual account once and make mutltiple purchases seamlessly'
+    user.id,
+    ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.'
   );
+  await WhatsappBotUsers.updateOne({ id: user.id }, { $set: { nextAction: 'enterBvn' } });
+};
+
+// function to show user account details
+async function showAccountDetailsW(messageObj: any, user: BotUserType) {
+  const senderId = messageObj.from;
+  let account = await PaymentAccounts.findOne({ refrence: senderId });
+
+  if (!account) return handleUserHasNoVirtualAcountW(user);
+
+  await sendMessageW(
+    senderId,
+    `Your dedicated virtual account details: \n\nBank Name: ${account.bankName} \nAccount Name: ${account.accountName} \nAccount Balance: ₦${account.balance}`
+  );
+  await sendMessageW(senderId, 'Acccount Number: ');
+  await sendMessageW(senderId, account.accountNumber as string);
+  sendMessageW(senderId, 'Fund your dedicated virtual account and enjoy smooth purchases.');
 } // end of showAccountDetailsW
 
 // function to respod to emal entred, this function also calls create virtual acount function
@@ -143,4 +141,9 @@ const handleBvnEntredW = async (messageObj: any) => {
   }
 }; // end of bvnEntred
 
-export { showAccountDetailsW, enteredEmailForAccountW, handleBvnEntredW };
+export {
+  showAccountDetailsW,
+  enteredEmailForAccountW,
+  handleBvnEntredW,
+  handleUserHasNoVirtualAcountW,
+};

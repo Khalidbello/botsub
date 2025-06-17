@@ -15,7 +15,6 @@ import { showDataPrices } from './data-prices';
 import { showActiveReferalls, showReferralCode } from './referral_message_responses';
 import { handleReportIssue } from './report-issue';
 import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../../modules/helper_function_2';
-import fbBotRouter from '../../../routes/fb-bot-webhook';
 
 // text to contain bot functionalities
 const defaultText =
@@ -162,7 +161,7 @@ async function generateAccountNumber(event: any, transactNum: number) {
 // functin to initiate tranacion for users with virtual account
 async function initMakePurchase(senderId: any) {
   try {
-    const userDet = BotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
+    const userDet = BotUsers.findOne({ id: senderId }); // requesting user transacion details
     const userAcount = PaymentAccounts.findOne({ refrence: senderId });
     const promises = [userDet, userAcount];
     const data = await Promise.all(promises);
@@ -189,7 +188,7 @@ async function initMakePurchase(senderId: any) {
         data[1]
       ); // returning function to remind user to fund wallet
 
-    makePurchase(purchasePayload, 'facebook', senderId); // calling function to make function
+    makePurchase(data[0], 'facebook', senderId); // calling function to make function
   } catch (err) {
     console.error('an error occured in initMakePurchase', err);
   }

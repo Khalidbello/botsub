@@ -24,6 +24,22 @@ import { handleSelectPaymentMethodW } from './message-responses/message-response
 import { enteredEmailForAccountW, handleBvnEntredW } from './message-responses/virtual-account';
 import { handleReportIssueResponseW } from './message-responses/report-issue';
 import { isDateGreaterThan10Minutes, updateLastMesageDateW } from './helper_functions';
+import {
+  BotUserType,
+  free3gbParticipationReminderW,
+} from '../grand_slam_offer/whatsapp/daily_participation_reminder_w';
+import {
+  deliverFree3GB,
+  phoneNumberToClaimFree3GBEntered,
+  selectFree3GBClaimNetworkSelected,
+} from '../grand_slam_offer/whatsapp/offer_claiming_w';
+import {
+  handelConfirmTransferW,
+  handelSelectBankW,
+  handleEnterAccountNumberForWithdrawalW,
+  handleEnterBankNameFirst3AlphaW,
+  handleEnterWithdrawalAmountW,
+} from './message-responses/withdrawal';
 
 async function processMessageW(messageObj: any) {
   const senderId = messageObj.from; // Sender's phone number
@@ -40,9 +56,7 @@ async function processMessageW(messageObj: any) {
     ); // emergency response incase of bug fixes
   }
 
-  const user = await WhatsappBotUsers.findOne({ id: senderId }).select(
-    'purchasePayload lastMessage nextAction transactNum botResponse'
-  );
+  const user: any = await WhatsappBotUsers.findOne({ id: senderId });
 
   console.log('user mongo db payload process message in whatsaap bot:   ', senderId, user, text);
 
@@ -78,6 +92,9 @@ async function processMessageW(messageObj: any) {
   // console.log('time diffe in whatapp bot:::::::::::: ', isLastMessgeGreaterThan10mins);
   if (isLastMessgeGreaterThan10mins) {
     cancelTransactionW(senderId, true);
+    // add fre 3gb offer reminder here
+
+    await free3gbParticipationReminderW(user);
     sendMessageW(senderId, defaultTextW);
 
     return updateLastMesageDateW(senderId); // update user last message date
@@ -116,13 +133,29 @@ async function processMessageW(messageObj: any) {
   // controls related to issue report
   if (nextAction === 'enterIssue') return handleReportIssueResponseW(messageObj);
 
+  // grand slam offer related
+  if (nextAction === 'selectFree3GBClaimNetwork')
+    return selectFree3GBClaimNetworkSelected(messageObj, user);
+  if (nextAction === 'enterPhoneNumberToClaimFree3GB')
+    return phoneNumberToClaimFree3GBEntered(messageObj, user);
+  if (nextAction === 'deliverFree3GB') return deliverFree3GB(messageObj, user);
+
+  // related to withrawing
+  if (nextAction === 'enterAccountNumberForWithdrawal')
+    return handleEnterAccountNumberForWithdrawalW(messageObj, user);
+  if (nextAction === 'enterBankNameFirst3AlphaW')
+    return handleEnterBankNameFirst3AlphaW(messageObj, user);
+  if (nextAction === 'selectBank') return handelSelectBankW(messageObj, user);
+  if (nextAction === 'enterWithdrawalAmount') return handleEnterWithdrawalAmountW(messageObj, user);
+  if (nextAction === 'confirmTransfer') return handelConfirmTransferW(messageObj, user);
+
   // rferral related switch
   // if (nextAction === 'referralCode') return sendReferralCodeRecieved(messageObj);
   // if (nextAction === 'referralBonusPhoneNumber') return referralBonusPhoneNumberRecieved(messageObj);
   // if (nextAction === 'changeReferralBonusPhoneNumber') return changeReferralBonusPhoneNumber(messageObj);
 
   // default message handler
-  defaultMessageHandlerW(messageObj, true, user?.transactNum || 4);
+  defaultMessageHandlerW(messageObj, true, user);
 } // end of process message switch
 
 export default processMessageW;

@@ -31,15 +31,14 @@ async function showAccountDetails(event: any) {
     return;
   }
 
-  await sendMessage(senderId, { text: 'Your dedicated virtual account details: ' });
-  await sendMessage(senderId, { text: `Bank Name: ${account.bankName}` });
-  await sendMessage(senderId, { text: `Account Name: ${account.accountName}` });
+  await sendMessage(senderId, {
+    text: `Your dedicated virtual account details: \n\nBank Name: ${account.bankName} \nAccount Name: ${account.accountName} \nAccount Balance: ₦${account.balance}`,
+  });
   await sendMessage(senderId, { text: 'Acccount Number: ' });
-  // @ts-expect-error
-  await sendMessage(senderId, { text: account.accountNumber });
+  await sendMessage(senderId, { text: account.accountNumber as string });
   await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
   sendMessage(senderId, {
-    text: 'Fund your dedicated virtual account once and make mutltiple purchases seamlessly',
+    text: 'Fund your dedicated virtual account and enjoy smooth purchases.',
   });
 } // end of showAccountDetails
 
