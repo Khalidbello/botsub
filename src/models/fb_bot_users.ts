@@ -21,7 +21,7 @@ const purchasePayload = new mongoose.Schema({
 
 const Schema = new mongoose.Schema({
   id: {
-    type: Number,
+    type: String,
     unique: true,
   },
   botResponse: Boolean,

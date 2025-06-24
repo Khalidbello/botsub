@@ -67,11 +67,19 @@ const claimFree3GB = async (event: any, user: BotUserType): Promise<void> => {
         );
       }
     } else {
-      const message =
-        currentNumberOfWinners < totalAcceptableWinners
-          ? 'You do not yet qualify for the free 3GB'
-          : "Sorry you are not among this month's winners. You get another chance next month.";
-      await sendMessage(senderId, { text: message });
+      if (currentNumberOfWinners < totalAcceptableWinners) {
+        const transactionsToMake =
+          3 - (user?.numberOfTransactionForMonth ? user.numberOfTransactionForMonth : 0);
+
+        await sendMessage(senderId, {
+          text: `You have not qualified for the free 3Gb data.\n\nMake additional ${transactionsToMake} data purchases to qualify!. \n\nA. Buy data`,
+        });
+      } else {
+        await sendMessage(senderId, {
+          text: "Sorry you are not among this month's winners. You get another chance next month.",
+        });
+        sendMessage(senderId, { text: defaultText });
+      }
     }
   } catch (err) {
     console.error('Error in claimFree3GB:', err);

@@ -1,17 +1,15 @@
-import axios from 'axios';
 import PaymentAccounts from '../../../models/payment-accounts';
 import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
-import { validateNigerianAccountNumber } from '../../../modules/helper_functions';
 import { BotUserType } from '../../grand_slam_offer/daily_participation_reminder';
-import sendMessageW from '../send_message_w';
-import { defaaultMessageW } from './message_responses';
-import { handleUserHasNoVirtualAcountW } from './virtual-account';
-import { cancelTransactionW } from './generic';
 import {
   fetchBankCodes,
   initiateUserAccountTransfer,
   validateBankAccount,
-} from '../helper_fucntions_2';
+} from '../../whatsaap_bot/helper_fucntions_2';
+import sendMessageW from '../send_message_w';
+import { cancelTransactionW } from './generic';
+import { defaaultMessageW } from './message_responses';
+import { handleUserHasNoVirtualAcountW } from './virtual-account';
 
 // bank listing alpah mapping
 const alphaMapping = {
@@ -39,8 +37,8 @@ const alphaMapping = {
   v: 21,
   w: 22,
   x: 23,
-  y: 23,
-  z: 23,
+  y: 24,
+  z: 25,
 };
 
 const withdrawFromAccountBalanceW = async (messageObj: any, user: BotUserType) => {
@@ -55,14 +53,11 @@ const withdrawFromAccountBalanceW = async (messageObj: any, user: BotUserType) =
       senderId,
       `Your account balance is ₦${account.balance}. \n\nMinimum withdrawal is ₦100 \n\nAll withdrawl are charged at ₦30.`
     );
-    await sendMessageW(
-      senderId,
-      `Enter account number you wish to withdraw to: \n\nEnter X to cancel.`
-    );
+    await sendMessageW(senderId, `Enter amount you wish to withdraw: \n\nEnter X to cancel.`);
 
     await WhatsappBotUsers.updateOne(
       { id: senderId },
-      { $set: { nextAction: 'enterAccountNumberForWithdrawal' } }
+      { $set: { nextAction: 'enterWithdrawalAmount' } }
     );
   } catch (err) {
     console.error('An error occured in withdrawFromAccountBalance: ', err);
@@ -71,27 +66,49 @@ const withdrawFromAccountBalanceW = async (messageObj: any, user: BotUserType) =
   }
 };
 
-// function to handle account number entered
-const handleEnterAccountNumberForWithdrawalW = async (messageObj: any, user: BotUserType) => {
+const handleEnterWithdrawalAmountW = async (messageObj: any, user: BotUserType) => {
   const senderId = messageObj.from;
-  const accountNumber = messageObj?.text ? messageObj.text.body.toLowerCase() : '';
+  const amount = messageObj.text ? messageObj.text.body.toLowerCase() : '';
 
   try {
-    if (accountNumber === 'x') return cancelTransactionW(senderId, false);
+    if (amount === 'x') return cancelTransactionW(senderId, false);
 
-    const isAccountNumberValid = validateNigerianAccountNumber(accountNumber);
+    const numbAmount = parseInt(amount);
 
-    if (!isAccountNumberValid) {
+    if (!numbAmount) {
       await sendMessageW(
         senderId,
-        'The account number you entred is not valid. \n\nPlease enter a valid account number: \n\nEnter X to cancel'
+        'Please enter valid amount to withdraw: \n\nEnter  X to cancel.'
       );
+      //await miniMesseger();
       return;
     }
 
-    sendMessageW(
+    if (numbAmount < 100) {
+      await sendMessageW(
+        senderId,
+        'Minimum withdrawal is ₦100. \nPlease enter an amount greater than ₦100 to withdraw: \n\nEnter X to cancel.'
+      );
+
+      return;
+    }
+
+    let account = await PaymentAccounts.findOne({ refrence: senderId });
+
+    if ((account?.balance ? account.balance : 0) < numbAmount + 30) {
+      await sendMessageW(
+        senderId,
+        `You can not withdraw ₦${numbAmount} as your account balance is ₦${account?.balance}. \n\n₦30 charges apply to all withdrawals.`
+      );
+
+      await cancelTransactionW(messageObj.from, true);
+
+      return;
+    }
+
+    await sendMessageW(
       senderId,
-      'Enter the first three letters of your bank name. \n\nEnter X to cancel.'
+      'Enter first 3 letters of bank you wish to withdraw to: \n\nEnter X to cancel.'
     );
 
     await WhatsappBotUsers.updateOne(
@@ -99,14 +116,14 @@ const handleEnterAccountNumberForWithdrawalW = async (messageObj: any, user: Bot
       {
         $set: {
           nextAction: 'enterBankNameFirst3AlphaW',
-          'withdrawalData.accountNumber': accountNumber,
+          'withdrawalData.amount': numbAmount,
         },
       }
     );
   } catch (err) {
-    console.error('An error occured in handleEnterAccountNumberForWithdrawal: ', err);
+    console.error('An error occured in handelSelectBank: ', err);
     await sendMessageW(senderId, 'An error occured.');
-    await sendMessageW(senderId, 'Please enter withdrawal account number: ');
+    await sendMessageW(senderId, 'Please enter withdrawal amount: \n\nEnter  X to cancel.');
   }
 };
 
@@ -169,36 +186,36 @@ const handelSelectBankW = async (messageObj: any, user: BotUserType) => {
 
     // @ts-expect-error jsut shhh
     const bank = user.withdrawalData.bankListing[alphaMapping[bankName]];
+    console.log('Bank Name in handelSelectBankW: ', bank);
 
-    const isAccountDetailsValid = await validateBankAccount(
-      user.withdrawalData.accountNumber,
-      bank.code
-    );
+    if (!bank) {
+      let message = 'Please select your bank\n';
 
-    //console.log('Acconunt details: ', isAccountDetailsValid);
+      await sendMessageW(senderId, 'In valid response recieved.');
 
-    if (!isAccountDetailsValid.valid) {
-      sendMessageW(
-        senderId,
-        'The account details you provided is not valid. please start over again.\n\nEnter X to cancel.'
-      );
-      return cancelTransactionW(senderId, true);
+      user.withdrawalData.bankListing.forEach((bank: any, index: number) => {
+        if (index < alphabet.length) {
+          message += `\n ${alphabet[index]}. ${bank.name}`;
+        }
+      });
+      message += '\n\nEnter X to cancel';
+
+      await sendMessageW(senderId, message);
+
+      return;
     }
 
-    sendMessageW(
+    await sendMessageW(
       senderId,
-      `If account details is not correct kindly cancel transfer. 
-      \n\nAccount Name: ${isAccountDetailsValid.data.account_name} \nAccount number: ${isAccountDetailsValid.data.account_number} \nBank name: ${bank.name}
-      \n\nEnter transfer amount: \n\nEnter X to cancel.`
+      `Enter ${bank.name} account number for withdrawal: \n\nEnter X to cancel.`
     );
 
     await WhatsappBotUsers.updateOne(
       { id: senderId },
       {
         $set: {
-          nextAction: 'enterWithdrawalAmount',
-          'withdrawalData.bankName': bank.name,
-          'withdrawalData.accountName': isAccountDetailsValid.data.account_name,
+          nextAction: 'enterWithdrawalAccount',
+          'withdrawalData.bank': { ...bank },
           'withdrawalData.bankListing': [],
         },
       }
@@ -220,52 +237,35 @@ const handelSelectBankW = async (messageObj: any, user: BotUserType) => {
   }
 };
 
-const handleEnterWithdrawalAmountW = async (messageObj: any, user: BotUserType) => {
+// function to handle account number entered
+const handleEnterAccountNumberForWithdrawalW = async (messageObj: any, user: BotUserType) => {
   const senderId = messageObj.from;
-  const amount = messageObj.text ? messageObj.text.body.toLowerCase() : '';
-  const miniMesseger = async () => {
-    await sendMessageW(
-      senderId,
-      `If account details is not correct kindly cancel transfer. 
-    \n\nAccount Name: ${user.withdrawalData.accountName} \nAccount number: ${user.withdrawalData.accountNumber} \nBank name: ${user.withdrawalData.bankName}
-    \n\nEnter transfer amount: \n\nEnter X to cancel.`
-    );
-  };
+  const accountNumber = messageObj?.text ? messageObj.text.body.toLowerCase() : '';
 
   try {
-    if (amount === 'x') return cancelTransactionW(senderId, false);
+    if (accountNumber === 'x') return cancelTransactionW(senderId, false);
 
-    const numbAmount = parseInt(amount);
+    const isAccountDetailsValid = await validateBankAccount(
+      accountNumber,
+      user.withdrawalData.bank.code
+    );
 
-    if (!numbAmount) {
-      await sendMessageW(senderId, 'Please enter valid amount to withdraw');
-      await miniMesseger();
-      return;
-    }
+    console.log(' (account number) Acconunt details: ', isAccountDetailsValid);
 
-    if (numbAmount < 100) {
-      await sendMessageW(senderId, 'Minimum withdrawal is 100.');
-      await miniMesseger();
-      return;
-    }
-
-    let account = await PaymentAccounts.findOne({ refrence: senderId });
-
-    if ((account?.balance ? account.balance : 0) < numbAmount + 30) {
-      await sendMessageW(
+    if (!isAccountDetailsValid.valid) {
+      sendMessageW(
         senderId,
-        `You can not withdraw ${numbAmount} as your account balance is ${account?.balance}`
+        `The ${user.withdrawalData.bank.name} account number you provided is not valid. \n\nPlease enter a valid account number: \n\nEnter X to cancel.`
       );
 
-      await miniMesseger();
       return;
     }
 
     // confirm withdrawal
-    sendMessageW(
+    await sendMessageW(
       senderId,
-      `If account details is not correct kindly cancel transfer. 
-    \n\nAccount Name: ${user.withdrawalData.accountName} \nAccount number: ${user.withdrawalData.accountNumber} \nBank name: ${user.withdrawalData.bankName} \nAmount: ${numbAmount}
+      `If account details is not correct kindly cancel transfer.
+    \n\nAccount Name: ${isAccountDetailsValid.data.account_name} \nAccount number: ${isAccountDetailsValid.data.account_number} \nBank name: ${user.withdrawalData.bank.name} \nAmount: ₦${user.withdrawalData.amount}
     \n\nA. Make transfer \n\nEnter X to cancel.`
     );
 
@@ -273,26 +273,30 @@ const handleEnterWithdrawalAmountW = async (messageObj: any, user: BotUserType) 
       { id: senderId },
       {
         $set: {
-          nextAction: 'confirmTransfer',
-          'withdrawalData.amount': numbAmount,
+          nextAction: 'confirmWithdrawal',
+          'withdrawalData.accountNumber': accountNumber,
+          'withdrawalData.accountName': isAccountDetailsValid.data.account_name,
         },
       }
     );
   } catch (err) {
-    console.error('An error occured in handelSelectBank: ', err);
+    console.error('An error occured in handleEnterAccountNumberForWithdrawal: ', err);
     await sendMessageW(senderId, 'An error occured.');
-    await miniMesseger();
+    await sendMessageW(
+      senderId,
+      `Please enter  ${user.withdrawalData.bank.name} account number for withdrawal : \n\nEnter X to cancel.`
+    );
   }
 };
 
-const handelConfirmTransferW = async (messageObj: any, user: BotUserType) => {
+const handleConfirmWithdrawalW = async (messageObj: any, user: BotUserType) => {
   const senderId = messageObj.from;
   const message = messageObj.text ? messageObj.text.body.toLowerCase() : '';
   const miniMesseger = async () => {
     sendMessageW(
       senderId,
       `Confirm transfer, if account details is not correct kindly cancel transfer. 
-    \n\nAccount Name: ${user.withdrawalData.accountName} \nAccount number: ${user.withdrawalData.accountNumber} \nBank name: ${user.withdrawalData.bankName} \nAmount: ${user.withdrawalData.amount}
+    \n\nAccount Name: ${user.withdrawalData.accountName} \nAccount number: ${user.withdrawalData.accountNumber} \nBank name: ${user.withdrawalData.bank.name} \nAmount: ₦${user.withdrawalData.amount}
     \n\nA. Make transfer \n\nEnter X to cancel.`
     );
   };
@@ -308,22 +312,23 @@ const handelConfirmTransferW = async (messageObj: any, user: BotUserType) => {
 
     await PaymentAccounts.updateOne(
       { id: user.id },
-      { $dec: { balance: -(user.withdrawalData.amount + 50) } }
+      { $dec: { balance: user.withdrawalData.amount + 50 } }
     );
 
-    const initiated = await initiateUserAccountTransfer(user); // initiate transfer
+    const initiated = await initiateUserAccountTransfer(user, 'whatsapp'); // initiate transfer
 
     if (!initiated) {
       await PaymentAccounts.updateOne(
         { id: user.id },
-        { $dec: { balance: user.withdrawalData.amount + 50 } }
+
+        { $inc: { balance: user.withdrawalData.amount + 50 } }
       );
       throw 'Transfer quing failed';
     }
 
     sendMessageW(
       senderId,
-      'Transfer successfully initiated, you will recieve a notificaion on tranfer status in 1 minutess....'
+      'Transfer successfully initiated, you will recieve a notificaion on tranfer status in 2 minutes....'
     );
   } catch (err) {
     console.error('An error occured in handelConfirmTransferW: ', err);
@@ -334,9 +339,9 @@ const handelConfirmTransferW = async (messageObj: any, user: BotUserType) => {
 
 export {
   withdrawFromAccountBalanceW,
-  handleEnterAccountNumberForWithdrawalW,
+  handleEnterWithdrawalAmountW,
   handleEnterBankNameFirst3AlphaW,
   handelSelectBankW,
-  handleEnterWithdrawalAmountW,
-  handelConfirmTransferW,
+  handleEnterAccountNumberForWithdrawalW,
+  handleConfirmWithdrawalW,
 };

@@ -6,28 +6,16 @@ import { cancelTransactionW, defaultTextW } from '../../whatsaap_bot/message-res
 import sendMessageW from '../../whatsaap_bot/send_message_w';
 import {
   getCurrentMonthId,
-  getCurrentNumberOfWinners,
-  totalAcceptableWinners,
+  getCurrentNumberOfWinnersW,
+  totalAcceptableWinnersW,
 } from './number_of_winners_logic_w';
 import Whatsapp3GBWinners from '../../../models/whatsapp_3gb_winners';
-
+import { BotUserType } from '../daily_participation_reminder';
 // Type definitions
 interface MessageObj {
   from: string;
   text?: {
     body: string;
-  };
-}
-
-interface User {
-  id: number;
-  win?: Date;
-  claimed?: Date;
-  purchasePayload?: {
-    free3GBNetwork?: string;
-    free3GBNetworkId?: number;
-    free3GBPlanId?: number;
-    free3GBPhoneNumber?: string;
   };
 }
 
@@ -45,7 +33,7 @@ const NETWORKS: Record<'a' | 'b' | 'c' | 'd', NetworkOption> = {
 };
 
 // Helper function to check if user is among winners
-const checkIfUserIsAmongWinners = async (userId: number): Promise<boolean> => {
+const checkIfUserIsAmongWinners = async (userId: string): Promise<boolean> => {
   const currentMonthId = getCurrentMonthId(new Date());
   const doc = await Whatsapp3GBWinners.findOne({
     id: currentMonthId,
@@ -58,12 +46,12 @@ const checkIfUserIsAmongWinners = async (userId: number): Promise<boolean> => {
 };
 
 // Main claim function
-const claimFree3GB = async (messageObj: MessageObj, user: User): Promise<void> => {
+const claimFree3GBW = async (messageObj: MessageObj, user: BotUserType): Promise<void> => {
   const senderId = messageObj.from;
   const currentDate = new Date();
 
   try {
-    const currentNumberOfWinners = getCurrentNumberOfWinners();
+    const currentNumberOfWinners = getCurrentNumberOfWinnersW();
     const winDate = user.win ? new Date(user.win) : null;
     const claimedDate = user.claimed ? new Date(user.claimed) : null;
 
@@ -75,7 +63,7 @@ const claimFree3GB = async (messageObj: MessageObj, user: User): Promise<void> =
       if (free3GBClaimed) {
         await sendMessageW(
           senderId,
-          'You have already claimed your free 3GB for this month. \nBrace for another win next month'
+          'You have already claimed your free 3GB for this month. \nBrace up for another win next month!'
         );
       } else {
         await sendMessageW(
@@ -88,23 +76,33 @@ const claimFree3GB = async (messageObj: MessageObj, user: User): Promise<void> =
         );
       }
     } else {
-      const message =
-        currentNumberOfWinners < totalAcceptableWinners
-          ? 'You do not yet qualify for the free 3GB'
-          : "Sorry you are not among this month's winners. You get another chance next month.";
-      await sendMessageW(senderId, message);
+      if (currentNumberOfWinners < totalAcceptableWinnersW) {
+        const transactionsToMake =
+          3 - (user?.numberOfTransactionForMonth ? user.numberOfTransactionForMonth : 0);
+
+        await sendMessageW(
+          senderId,
+          `You have not qualified for the free 3Gb data.\n\nMake additional ${transactionsToMake} data purchases to qualify!. \n\nA. Buy data`
+        );
+      } else {
+        await sendMessageW(
+          senderId,
+          "Sorry you are not among this month's winners. You get another chance next month."
+        );
+        sendMessageW(senderId, defaultTextW);
+      }
     }
   } catch (err) {
-    console.error('Error in claimFree3GB:', err);
+    console.error('Error in claimFree3GBW:', err);
     await sendMessageW(senderId, 'An error occurred. Please try again');
     await sendMessageW(senderId, defaultTextW);
   }
 };
 
 // Network selection handler
-const selectFree3GBClaimNetworkSelected = async (
+const selectFree3GBClaimNetworkSelectedW = async (
   messageObj: MessageObj,
-  user: User
+  user: BotUserType
 ): Promise<void> => {
   const senderId = messageObj.from;
   const networkInput = messageObj?.text?.body.trim().toLowerCase();
@@ -144,7 +142,7 @@ const selectFree3GBClaimNetworkSelected = async (
       `Please enter ${selectedNetwork.network} phone number to claim ${selectedNetwork.network} free 3GB.`
     );
   } catch (err) {
-    console.error('Error in selectFree3GBClaimNetworkSelected:', err);
+    console.error('Error in selectFree3GBClaimNetworkSelectedW:', err);
     await sendMessageW(senderId, 'An error occurred. Please try again.');
     await sendMessageW(
       senderId,
@@ -154,9 +152,9 @@ const selectFree3GBClaimNetworkSelected = async (
 };
 
 // Phone number entry handler
-const phoneNumberToClaimFree3GBEntered = async (
+const phoneNumberToClaimFree3GBEnteredW = async (
   messageObj: MessageObj,
-  user: User
+  user: BotUserType
 ): Promise<void> => {
   const senderId = messageObj.from;
   const phoneNumber = messageObj?.text?.body.trim();
@@ -180,7 +178,7 @@ const phoneNumberToClaimFree3GBEntered = async (
       { id: user.id },
       {
         $set: {
-          nextAction: 'deliverFree3GB',
+          nextAction: 'deliverFree3GBW',
           'purchasePayload.free3GBPhoneNumber': validatedPhoneNumber,
         },
       }
@@ -192,13 +190,13 @@ const phoneNumberToClaimFree3GBEntered = async (
       `Free 3GB offer claiming. \nNetwork: ${user.purchasePayload?.free3GBNetwork} \nSize: 3GB \nPhone number: ${validatedPhoneNumber} \n\nA. Claim offer. \nX. Cancel`
     );
   } catch (err) {
-    console.error('Error in phoneNumberToClaimFree3GBEntered:', err);
+    console.error('Error in phoneNumberToClaimFree3GBEnteredW:', err);
     await sendMessageW(senderId, 'An error occurred. \n\nPlease enter phone number again.');
   }
 };
 
 // Delivery handler
-const deliverFree3GB = async (messageObj: MessageObj, user: User): Promise<void> => {
+const deliverFree3GBW = async (messageObj: MessageObj, user: BotUserType): Promise<void> => {
   const senderId = messageObj.from;
   const message = messageObj?.text?.body.trim();
 
@@ -241,7 +239,7 @@ const deliverFree3GB = async (messageObj: MessageObj, user: User): Promise<void>
       }
     );
   } catch (err) {
-    console.error('Error in deliverFree3GB:', err);
+    console.error('Error in deliverFree3GBW:', err);
     await sendMessageW(senderId, 'An error occurred, please try again.');
     await sendMessageW(
       senderId,
@@ -251,8 +249,8 @@ const deliverFree3GB = async (messageObj: MessageObj, user: User): Promise<void>
 };
 
 export {
-  claimFree3GB,
-  selectFree3GBClaimNetworkSelected,
-  phoneNumberToClaimFree3GBEntered,
-  deliverFree3GB,
+  claimFree3GBW,
+  selectFree3GBClaimNetworkSelectedW,
+  phoneNumberToClaimFree3GBEnteredW,
+  deliverFree3GBW,
 };

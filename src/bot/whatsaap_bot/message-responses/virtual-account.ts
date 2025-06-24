@@ -77,7 +77,7 @@ async function enteredEmailForAccountW(messageObj: any) {
       await sendMessageW(senderId, 'Please enter your NIN.');
       return sendMessageW(
         senderId,
-        'In accordeance with CBN regulations, your NIN is required to create a virtual account. \nEnter Q to  cancel'
+        'In accordeance with CBN regulations, your NIN is required to create a virtual account. \n\nEnter X to  cancel'
       );
     } else {
       sendMessageW(

@@ -15,33 +15,38 @@ import { showDataPrices } from './data-prices';
 import { showActiveReferalls, showReferralCode } from './referral_message_responses';
 import { handleReportIssue } from './report-issue';
 import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../../modules/helper_function_2';
+import { claimFree3GB } from '../../grand_slam_offer/facebook/offer_claiming_fb';
+import { BotUserType } from '../../grand_slam_offer/daily_participation_reminder';
+import { withdrawFromAccountBalance } from './withdrawal';
+import { defaaultMessage } from './message_responses';
 
 // text to contain bot functionalities
 const defaultText =
-  'Hi what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
-  '\n E. Refer a friend \n F. Active referals \n G. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328 ';
+  'What do you want to do next. \n\nA. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
+  '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
 
 // function to respond to messages with out next action
-async function defaultMessageHandler(event: any, isMessage: any, transactNum: number) {
+async function defaultMessageHandler(event: any, isMessage: any, user: BotUserType) {
   const senderId = event.sender.id;
 
   try {
     let text;
     //const userName = await getUserName(senderId);
 
-    if (!isMessage) return sendMessage(senderId, { text: defaultText });
+    if (!isMessage) return sendMessage(senderId, { text: defaaultMessage });
 
     text = event.message.text.trim();
 
     if (text.toLowerCase() === 'a') return handleBuyData(event);
     if (text.toLowerCase() === 'b') return handleBuyAirtime(event);
-    if (text.toLowerCase() === 'c') return showAccountDetails(event);
-    if (text.toLowerCase() === 'd') return showDataPrices(event, transactNum);
-    if (text.toLowerCase() === 'e') return showReferralCode(event);
-    if (text.toLowerCase() === 'f') return showActiveReferalls(event);
-    if (text.toLowerCase() === 'g') return handleReportIssue(event);
+    if (text.toLowerCase() === 'c') return claimFree3GB(event, user);
+    if (text.toLowerCase() === 'd') return showAccountDetails(event, user);
+    if (text.toLowerCase() === 'e') return withdrawFromAccountBalance(event, user);
+    if (text.toLowerCase() === 'f') return showDataPrices(event, user.transactNum);
+    if (text.toLowerCase() === 'g') return showReferralCode(event);
+    if (text.toLowerCase() === 'h') return handleReportIssue(event);
 
-    sendMessage(senderId, { text: defaultText });
+    sendMessage(senderId, { text: defaaultMessage });
   } catch (err) {
     console.error('error in default text ', err);
     await sendMessage(senderId, { text: 'Something went wrong' });

@@ -21,7 +21,7 @@ const purchasePayload = new mongoose.Schema({
 const withdrawalData = new mongoose.Schema({
   accountNumber: String,
   accountName: String,
-  bankName: String,
+  bank: { id: Number, code: String, name: String },
   bankCode: String,
   amount: Number,
   bankListing: [{ id: Number, code: String, name: String }],
@@ -29,7 +29,7 @@ const withdrawalData = new mongoose.Schema({
 
 const Schema = new mongoose.Schema({
   id: {
-    type: Number,
+    type: String,
     unique: true,
   },
   botResponse: Boolean,

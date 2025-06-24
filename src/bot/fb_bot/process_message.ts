@@ -27,16 +27,26 @@ import { enteredEmailForAccount, handleBvnEntred } from './message-responses/vir
 import { handleReportIssueResponse } from './message-responses/report-issue';
 import { updateLastMesageDate } from '../modules/helper_function_2';
 import { isDateGreaterThan10Minutes } from '../whatsaap_bot/helper_functions';
+import {
+  handelSelectBank,
+  handleConfirmWithdrawal,
+  handleEnterAccountNumberForWithdrawal,
+  handleEnterBankNameFirst3Alpha,
+  handleEnterWithdrawalAmount,
+} from './message-responses/withdrawal';
+import {
+  deliverFree3GB,
+  phoneNumberToClaimFree3GBEntered,
+  selectFree3GBClaimNetworkSelected,
+} from '../grand_slam_offer/facebook/offer_claiming_fb';
 
 async function processMessage(event: any, res: Response) {
   // check user previousky stored action to determine how to respond to user messages
   const senderId = event?.sender?.id;
 
-  const user = await BotUsers.findOne({ id: senderId }).select(
-    '_id lastMessage purchasePayload nextAction transactNum botResponse'
-  );
+  const user: any = await BotUsers.findOne({ id: senderId });
 
-  console.log('user mongo db payload process message', senderId, user);
+  console.log('user mongo db payload process message', event, senderId, user);
 
   if (!user) return sendNewConversationResponse(event);
 
@@ -121,13 +131,28 @@ async function processMessage(event: any, res: Response) {
   // controls related to issue report
   if (nextAction === 'enterIssue') return handleReportIssueResponse(event);
 
+  // grand slam offer related
+  if (nextAction === 'selectFree3GBClaimNetwork')
+    return selectFree3GBClaimNetworkSelected(event, user);
+  if (nextAction === 'enterPhoneNumberToClaimFree3GB')
+    return phoneNumberToClaimFree3GBEntered(event, user);
+  if (nextAction === 'deliverFree3GB') return deliverFree3GB(event, user);
+
+  // related to withrawing
+  if (nextAction === 'enterWithdrawalAmount') return handleEnterWithdrawalAmount(event, user);
+  if (nextAction === 'enterBankNameFirst3Alpha') return handleEnterBankNameFirst3Alpha(event, user);
+  if (nextAction === 'selectBank') return handelSelectBank(event, user);
+  if (nextAction === 'enterWithdrawalAccount')
+    return handleEnterAccountNumberForWithdrawal(event, user);
+  if (nextAction === 'confirmWithdrawal') return handleConfirmWithdrawal(event, user);
+
   // rferral related switch
   // if (nextAction === 'referralCode') return sendReferralCodeRecieved(event);
   // if (nextAction === 'referralBonusPhoneNumber') return referralBonusPhoneNumberRecieved(event);
   // if (nextAction === 'changeReferralBonusPhoneNumber') return changeReferralBonusPhoneNumber(event);
 
   // default message handler
-  defaultMessageHandler(event, true, user?.transactNum || 4);
+  defaultMessageHandler(event, true, user);
 } // end of process message switch
 
 export default processMessage;

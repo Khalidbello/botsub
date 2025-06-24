@@ -24,22 +24,20 @@ import { handleSelectPaymentMethodW } from './message-responses/message-response
 import { enteredEmailForAccountW, handleBvnEntredW } from './message-responses/virtual-account';
 import { handleReportIssueResponseW } from './message-responses/report-issue';
 import { isDateGreaterThan10Minutes, updateLastMesageDateW } from './helper_functions';
+import { free3gbParticipationReminderW } from '../grand_slam_offer/whatsapp/daily_participation_reminder_w';
+
 import {
-  BotUserType,
-  free3gbParticipationReminderW,
-} from '../grand_slam_offer/whatsapp/daily_participation_reminder_w';
-import {
-  deliverFree3GB,
-  phoneNumberToClaimFree3GBEntered,
-  selectFree3GBClaimNetworkSelected,
-} from '../grand_slam_offer/whatsapp/offer_claiming_w';
-import {
-  handelConfirmTransferW,
   handelSelectBankW,
+  handleConfirmWithdrawalW,
   handleEnterAccountNumberForWithdrawalW,
   handleEnterBankNameFirst3AlphaW,
   handleEnterWithdrawalAmountW,
 } from './message-responses/withdrawal';
+import {
+  deliverFree3GBW,
+  phoneNumberToClaimFree3GBEnteredW,
+  selectFree3GBClaimNetworkSelectedW,
+} from '../grand_slam_offer/whatsapp/offer_claiming_w';
 
 async function processMessageW(messageObj: any) {
   const senderId = messageObj.from; // Sender's phone number
@@ -58,7 +56,12 @@ async function processMessageW(messageObj: any) {
 
   const user: any = await WhatsappBotUsers.findOne({ id: senderId });
 
-  console.log('user mongo db payload process message in whatsaap bot:   ', senderId, user, text);
+  console.log(
+    'user mongo db payload process message in whatsaap bot:   ',
+    messageObj,
+    senderId,
+    user
+  );
 
   if (!user) return sendNewConversationResponseW(messageObj);
 
@@ -135,19 +138,19 @@ async function processMessageW(messageObj: any) {
 
   // grand slam offer related
   if (nextAction === 'selectFree3GBClaimNetwork')
-    return selectFree3GBClaimNetworkSelected(messageObj, user);
+    return selectFree3GBClaimNetworkSelectedW(messageObj, user);
   if (nextAction === 'enterPhoneNumberToClaimFree3GB')
-    return phoneNumberToClaimFree3GBEntered(messageObj, user);
-  if (nextAction === 'deliverFree3GB') return deliverFree3GB(messageObj, user);
+    return phoneNumberToClaimFree3GBEnteredW(messageObj, user);
+  if (nextAction === 'deliverFree3GB') return deliverFree3GBW(messageObj, user);
 
   // related to withrawing
-  if (nextAction === 'enterAccountNumberForWithdrawal')
-    return handleEnterAccountNumberForWithdrawalW(messageObj, user);
+  if (nextAction === 'enterWithdrawalAmount') return handleEnterWithdrawalAmountW(messageObj, user);
   if (nextAction === 'enterBankNameFirst3AlphaW')
     return handleEnterBankNameFirst3AlphaW(messageObj, user);
   if (nextAction === 'selectBank') return handelSelectBankW(messageObj, user);
-  if (nextAction === 'enterWithdrawalAmount') return handleEnterWithdrawalAmountW(messageObj, user);
-  if (nextAction === 'confirmTransfer') return handelConfirmTransferW(messageObj, user);
+  if (nextAction === 'enterWithdrawalAccount')
+    return handleEnterAccountNumberForWithdrawalW(messageObj, user);
+  if (nextAction === 'confirmWithdrawal') return handleConfirmWithdrawalW(messageObj, user);
 
   // rferral related switch
   // if (nextAction === 'referralCode') return sendReferralCodeRecieved(messageObj);

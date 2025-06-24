@@ -85,7 +85,10 @@ async function validateBankAccount(
  * @param user The user to initiate transfer for
  * @returns Promise containing transfer response
  */
-const initiateUserAccountTransfer = async (user: BotUserType): Promise<boolean> => {
+const initiateUserAccountTransfer = async (
+  user: BotUserType,
+  platform: string
+): Promise<boolean> => {
   try {
     const transferReference = `TX-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
@@ -125,6 +128,7 @@ const initiateUserAccountTransfer = async (user: BotUserType): Promise<boolean> 
       status: 'pending',
       amount: user.withdrawalData.amount,
       createdAt: new Date(),
+      platform: platform,
     });
 
     if (response.data.status) await newWithdrawal.save();

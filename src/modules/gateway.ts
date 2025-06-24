@@ -25,7 +25,7 @@ async function createVAccount(
   botType: string,
   currentCount: number
 ) {
-  console.log('viertual account current count is: ', currentCount);
+  console.log('virtual account current count is: ', currentCount);
 
   if (currentCount > 5) {
     await sendMessage(senderId, {
@@ -44,7 +44,6 @@ async function createVAccount(
   if (existing) return sendMessage(senderId, { text: 'You already have a virtual account.' });
 
   const num = await PaymentAccounts.countDocuments({});
-  const flw = new Flutterwave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
   const details = {
     email: email,
     is_permanent: true,
@@ -56,9 +55,19 @@ async function createVAccount(
   };
 
   try {
-    const accountDetails = await flw.VirtualAcct.create(details);
-    console.log('create virtual account deatails::::::::: ', accountDetails);
-    if (accountDetails.status !== 'success')
+    const response = await axios.post(
+      'https://api.flutterwave.com/v3/virtual-account-numbers',
+      details,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.FLW_SCRT_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('create virtual account deatails::::::::: ', response);
+    if (response.data.status !== 'success')
       return createVAccount(email, senderId, bvn, botType, currentCount + 1);
 
     // save user account in vrtual accounts db
@@ -66,9 +75,9 @@ async function createVAccount(
       refrence: senderId,
       balance: 0,
       accountName: details.narration,
-      accountNumber: accountDetails.data.account_number,
+      accountNumber: response.data.data.account_number,
       botType: botType,
-      bankName: accountDetails.data.bank_name,
+      bankName: response.data.data.bank_name,
     };
     const vAccount = new PaymentAccounts(account);
 
@@ -87,19 +96,20 @@ async function createVAccount(
       return;
     }
 
-    await sendMessage(senderId, { text: 'Creation of permanent account number was succesful.' });
-    await sendMessage(senderId, { text: 'Your permanent account details: ' });
-    await sendMessage(senderId, { text: `Bank Name: ${account.bankName}` });
-    await sendMessage(senderId, { text: `Account Name: ${account.accountName}` });
-    await sendMessage(senderId, { text: 'Acccount Number: ' });
+    await sendMessage(senderId, {
+      text: `Creation of permanent account number was succesful.\nYour permanent account details: \n\nBank Name: ${
+        account.bankName
+      } \nAccount Name: ${account.accountName} \nAccount Balance: ₦${account.balance.toFixed(
+        2
+      )} \n\nAcccount Number: `,
+    });
     await sendMessage(senderId, { text: account.accountNumber });
-    await sendMessage(senderId, { text: `Account Balance: ₦${account.balance.toFixed(2)}` });
     await sendMessage(senderId, {
       text: 'Fund permanent account and make purchases with ease.',
     });
 
-    const response = await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
-    console.log('updated next action to null in createVaccount: ', response);
+    const response2 = await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+    console.log('updated next action to null in createVaccount: ', response2);
   } catch (error) {
     console.log('in virtual account catch error:::', currentCount, error);
     return createVAccount(email, senderId, bvn, botType, currentCount + 1);
@@ -147,9 +157,18 @@ async function createVAccountW(
   };
 
   try {
-    const accountDetails = await flw.VirtualAcct.create(details);
-    console.log('create virtual account deatails::::::::: ', accountDetails);
-    if (accountDetails.status !== 'success')
+    const response = await axios.post(
+      'https://api.flutterwave.com/v3/virtual-account-numbers',
+      details,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.FLW_SCRT_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('create virtual account deatails::::::::: ', response);
+    if (response.data.status !== 'success')
       return createVAccountW(email, senderId, bvn, botType, currentCount + 1);
 
     // save user account in vrtual accounts db
@@ -157,9 +176,9 @@ async function createVAccountW(
       refrence: senderId,
       balance: 0,
       accountName: details.narration,
-      accountNumber: accountDetails.data.account_number,
+      accountNumber: response.data.data.account_number,
       botType: botType,
-      bankName: accountDetails.data.bank_name,
+      bankName: response.data.data.bank_name,
     };
     const vAccount = new PaymentAccounts(account);
 
@@ -178,20 +197,22 @@ async function createVAccountW(
       return;
     }
 
-    await sendMessageW(senderId, 'Creation of permanent account number was succesful.');
-    await sendMessageW(senderId, 'Your permanent account details: ');
-    await sendMessageW(senderId, `Bank Name: ${account.bankName}`);
-    await sendMessageW(senderId, `Account Name: ${account.accountName}`);
-    await sendMessageW(senderId, 'Acccount Number: ');
+    await sendMessageW(
+      senderId,
+      `Creation of permanent account number was succesful.\nYour permanent account details: \n\nBank Name: ${
+        account.bankName
+      } \nAccount Name: ${account.accountName} \nAccount Balance: ₦${account.balance.toFixed(
+        2
+      )} \n\nAcccount Number: `
+    );
     await sendMessageW(senderId, account.accountNumber);
-    await sendMessageW(senderId, `Account Balance: ₦${account.balance.toFixed(2)}`);
     await sendMessageW(senderId, 'Fund permanent account and make purchases with ease.');
 
-    const response = await WhatsappBotUsers.updateOne(
+    const response2 = await WhatsappBotUsers.updateOne(
       { id: senderId },
       { $set: { nextAction: null } }
     );
-    console.log('updated next action to null in createVaccount: ', response);
+    console.log('updated next action to null in createVaccount: ', response2);
   } catch (error) {
     console.log('in virtual account catch error:::', currentCount, error);
     return createVAccountW(email, senderId, bvn, botType, currentCount + 1);

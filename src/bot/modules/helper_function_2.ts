@@ -76,59 +76,69 @@ const saveOneTimeAccount = async (
 // helper function to generate one time account number
 const generateOneTimeAccountHelper = async (datas: any): Promise<any> => {
   console.log('in generateOneTimeAccount', datas);
+
   try {
-    let payload;
-    if (datas.transactionType == 'data') {
+    let payload: Record<string, any>;
+
+    if (datas.transactionType === 'data') {
       payload = {
         network: datas.network,
         planID: datas.planID,
         networkID: datas.networkID,
         phoneNumber: datas.phoneNumber,
         index: datas.index,
-        type: datas.transactionType,
+        type: 'data',
         size: datas.size,
         bot: datas.bot,
         senderId: datas.senderId,
         firstPurchase: datas.firstPurchase,
         platform: datas.platform,
       };
-    } else if (datas.transactionType == 'airtime') {
+    } else if (datas.transactionType === 'airtime') {
       payload = {
         network: datas.network,
         networkID: datas.networkID,
         amount: datas.price,
-        type: datas.transactionType,
+        type: 'airtime',
         phoneNumber: datas.phoneNumber,
         bot: datas.bot,
         senderId: datas.senderId,
         firstPurchase: datas.firstPurchase,
         platform: datas.platform,
       };
+    } else {
+      throw new Error('Invalid transaction type');
     }
 
-    // @ts-expect-error id is not in type
-    // storing this as meta data so it will be used when to find transaction once payment is made
-    if (payload) payload.id = generateRandomString(30);
+    // Add internal tracking ID
+    const tx_ref = generateRandomString(30);
+    payload.id = tx_ref;
 
-    console.log('bot purchase payload', payload);
-
-    const details = {
+    const requestBody = {
       amount: datas.price,
       email: datas.email,
-      // @ts-expect-error id is not part of payload added it forcefully
-      tx_ref: payload?.id,
+      tx_ref,
       fullname: datas.email,
       currency: 'NGN',
       meta: payload,
     };
 
-    const flw = new FlutterWave(process.env.FLW_PB_KEY, process.env.FLW_SCRT_KEY);
-    const response = await flw.Charge.bank_transfer(details);
-    console.log('one time account generation response', response);
-    // @ts-expect-error error
-    return [response, payload?.id];
-  } catch (err) {
-    console.error('An error occurd in helper generate one time account', err);
+    const response = await axios.post(
+      'https://api.flutterwave.com/v3/charges?type=bank_transfer',
+      requestBody,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.FLW_SCRT_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('one time account generation response', response.data);
+
+    return true;
+  } catch (err: any) {
+    console.error('Error in generateOneTimeAccountHelper:', err.response?.data || err.message);
     return false;
   }
 };

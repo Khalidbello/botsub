@@ -118,7 +118,7 @@ const handlePoolAvailableNotification = async (user: BotUserType, transactionCou
       totalAcceptableWinners - getCurrentNumberOfWinners()
     } spots left! Make additonal ${
       3 - transactionCount
-    } transactions to be among the first 200 users to make 3 transactiosn and win free 3GB.`,
+    } data purchases to be among the first 200 users to make 3 transactiosn and win free 3GB.`,
   });
   await updateLastPrompt(user.id);
 };

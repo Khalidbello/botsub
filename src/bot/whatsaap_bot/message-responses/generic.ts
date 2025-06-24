@@ -11,7 +11,7 @@ import { makePurchase } from '../../../modules/v-account-make-purcchase';
 import { validateNumber } from '../../modules/helper_functions';
 import { showAccountDetailsW } from './virtual-account';
 import { showDataPricesW } from './data-prices';
-import { showActiveReferalls, showReferralCode } from './referral_message_responses';
+import { showReferralCode } from './referral_message_responses';
 import { handleReportIssueW } from './report-issue';
 import { generateOneTimeAccountHelper, saveOneTimeAccount } from '../../modules/helper_function_2';
 import {
@@ -20,12 +20,13 @@ import {
   remindToFundWalletW,
 } from '../helper_functions';
 import { free3gbParticipationReminderW } from '../../grand_slam_offer/whatsapp/daily_participation_reminder_w';
-import { claimFree3GB } from '../../grand_slam_offer/whatsapp/offer_claiming_w';
+import { claimFree3GBW } from '../../grand_slam_offer/whatsapp/offer_claiming_w';
 import { withdrawFromAccountBalanceW } from './withdrawal';
+import { defaaultMessageW } from './message_responses';
 
 // text to contain bot functionalities
 const defaultTextW =
-  'Hi what can i do for you today.  \n\n A. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
+  'What do you want to do next. \n\nA. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
   '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
 
 // function to respond to messages with out next action
@@ -36,13 +37,13 @@ async function defaultMessageHandlerW(messageObj: any, isMessage: any, user: any
     let text;
     //const userName = await getUserName(senderId);
 
-    if (!isMessage) return sendMessageW(senderId, defaultTextW);
+    if (!isMessage) return sendMessageW(senderId, defaaultMessageW);
 
     text = messageObj.text ? messageObj.text.body : '';
 
     if (text.toLowerCase() === 'a') return handleBuyDataW(messageObj);
     if (text.toLowerCase() === 'b') return handleBuyAirtimeW(messageObj);
-    if (text.toLowerCase() === 'c') return claimFree3GB(messageObj, user);
+    if (text.toLowerCase() === 'c') return claimFree3GBW(messageObj, user);
     if (text.toLowerCase() === 'd') return showAccountDetailsW(messageObj, user);
     if (text.toLowerCase() === 'e') return withdrawFromAccountBalanceW(messageObj, user);
     if (text.toLowerCase() === 'f') return showDataPricesW(messageObj, user.transactNum);
@@ -50,7 +51,7 @@ async function defaultMessageHandlerW(messageObj: any, isMessage: any, user: any
     if (text.toLowerCase() === 'h') return handleReportIssueW(messageObj);
 
     await free3gbParticipationReminderW(user);
-    sendMessageW(senderId, defaultTextW);
+    sendMessageW(senderId, defaaultMessageW);
   } catch (err) {
     console.error('error in default text ', err);
     await sendMessageW(senderId, 'Something went wrong');
@@ -136,11 +137,7 @@ async function generateAccountNumberW(messageObj: any, transactNum: number) {
 
     await sendMessageW(
       senderId,
-      'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now.'
-    );
-    await sendMessageW(
-      senderId,
-      'Value would automatically delivered by our system once payment is made'
+      'Make transfer to the account details below. \nPlease note that the account details below is valid only for this transaction and expires 1Hour from now. \n\nValue would automatically delivered by our system once payment is made'
     );
 
     const response = await generateOneTimeAccountHelper(payload);
@@ -158,11 +155,12 @@ async function generateAccountNumberW(messageObj: any, transactNum: number) {
 
       if (!isSaved) throw 'An error occurede saving new transfer account';
 
-      await sendMessageW(senderId, 'Bank Name: ' + data.transfer_bank);
-      await sendMessageW(senderId, 'Account Name: BotSub FLW');
-      await sendMessageW(senderId, 'Account Number: 👇');
+      await sendMessageW(
+        senderId,
+        `Bank Name:  + ${data.transfer_bank} \nAccount Name: BotSub FLW \nAmount: ₦ + $data.transfer_amount} \nAccount Number: 👇`
+      );
       await sendMessageW(senderId, data.transfer_account);
-      await sendMessageW(senderId, 'Amount: ₦' + data.transfer_amount);
+
       // removing purchasePayload
       cancelTransactionW(senderId, true);
       return;

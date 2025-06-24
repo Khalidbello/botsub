@@ -1,4 +1,4 @@
-import BotUsers from '../../../models/fb_bot_users';
+import FBBotUsers from '../../../models/fb_bot_users';
 import { sendMessage } from '../../modules/send_message';
 import emailValidator from 'email-validator';
 import { defaaultMessage } from './message_responses';
@@ -6,20 +6,39 @@ import PaymentAccounts from '../../../models/payment-accounts';
 import { createVAccount } from '../../../modules/gateway';
 import { defaultText } from './generic';
 import { confirmDataPurchaseResponse } from '../../modules/buy-data';
+import { BotUserType } from '../../grand_slam_offer/daily_participation_reminder';
+
+// hekper fucntion to check process wether user has a virtual acount already or not
+const handleUserHasNoVirtualAcount = async (user: BotUserType) => {
+  if (!user?.email) {
+    await sendMessage(user.id, { text: 'You do not have a permanent account number yet.' });
+    await sendMessage(user.id, {
+      text: 'Kindly enter your email to create your permanent acount number. \nEnter X to quit',
+    });
+    await FBBotUsers.updateOne({ id: user.id }, { $set: { nextAction: 'enterMailForAccount' } });
+    return;
+  }
+
+  await sendMessage(user.id, { text: 'You do not have a permanent account number yet.' });
+  sendMessage(user.id, {
+    text: ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.',
+  });
+  await FBBotUsers.updateOne({ id: user.id }, { $set: { nextAction: 'enterBvn' } });
+};
 
 // function to show user account details
-async function showAccountDetails(event: any) {
+async function showAccountDetails(event: any, user: BotUserType) {
   const senderId = event.sender.id;
   let account = await PaymentAccounts.findOne({ refrence: senderId });
 
   if (!account) {
-    const user = await BotUsers.findOne({ id: senderId }).select('email');
+    const user = await FBBotUsers.findOne({ id: senderId }).select('email');
     if (!user?.email) {
       await sendMessage(senderId, { text: 'You do not have a permanent account number yet.' });
       await sendMessage(senderId, {
         text: 'Kindly enter your email to create your permanent acount number. \nEnter X to quit',
       });
-      await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterMailForAccount' } });
+      await FBBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterMailForAccount' } });
       return;
     }
 
@@ -27,7 +46,7 @@ async function showAccountDetails(event: any) {
     sendMessage(senderId, {
       text: ' Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.',
     });
-    await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
+    await FBBotUsers.updateOne({ id: senderId }, { $set: { nextAction: 'enterBvn' } });
     return;
   }
 
@@ -53,13 +72,13 @@ async function enteredEmailForAccount(event: any) {
       await sendMessage(senderId, { text: defaultText });
 
       // updaet user colletion
-      await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      await FBBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
 
       return;
     }
 
     if (emailValidator.validate(email.toLowerCase())) {
-      await BotUsers.updateOne(
+      await FBBotUsers.updateOne(
         { id: senderId },
         {
           $set: {
@@ -72,7 +91,7 @@ async function enteredEmailForAccount(event: any) {
 
       await sendMessage(senderId, { text: 'Please enter your NIN.' });
       return sendMessage(senderId, {
-        text: 'In accordeance with CBN regulations, your NIN is required to create a virtual account. \nEnter Q to  cancel',
+        text: 'In accordeance with CBN regulations, your NIN is required to create a virtual account. \n\nEnter X to  cancel',
       });
     } else {
       sendMessage(senderId, {
@@ -94,11 +113,11 @@ const handleBvnEntred = async (event: any) => {
   try {
     let bvn = event.message.text.trim();
     let parsedBvn;
-    const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload email');
+    const user = await FBBotUsers.findOne({ id: senderId }).select('purchasePayload email');
 
     // check if bvn was requested when user was carrying out a transaction
     if (bvn.toLowerCase() === 'x' && user?.purchasePayload?.price) {
-      const user = await BotUsers.findOneAndUpdate(
+      const user = await FBBotUsers.findOneAndUpdate(
         { id: senderId },
         { $set: { nextAction: 'confirmProductPurchase' } }
       );
@@ -112,7 +131,7 @@ const handleBvnEntred = async (event: any) => {
       await sendMessage(senderId, { text: 'Creation of dedicated virtiual account cancled.' });
       await sendMessage(senderId, { text: defaultText });
       // updaet user colletion
-      await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
+      await FBBotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
       return;
     }
 
@@ -133,4 +152,9 @@ const handleBvnEntred = async (event: any) => {
   }
 }; // end of bvnEntred
 
-export { showAccountDetails, enteredEmailForAccount, handleBvnEntred };
+export {
+  handleUserHasNoVirtualAcount,
+  showAccountDetails,
+  enteredEmailForAccount,
+  handleBvnEntred,
+};

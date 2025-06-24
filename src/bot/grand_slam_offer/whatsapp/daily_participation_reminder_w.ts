@@ -1,24 +1,13 @@
 import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import sendMessageW from '../../whatsaap_bot/send_message_w';
-import { validateUserTransactionMonth } from './concluded_transaction_propmpter_w';
-import { getCurrentNumberOfWinners, totalAcceptableWinners } from './number_of_winners_logic_w';
-import { isSameMonth, subMonths, startOfMonth } from 'date-fns';
+import { BotUserType } from '../daily_participation_reminder';
+import { validateUserTransactionMonthW } from './concluded_transaction_propmpter_w';
+import { getCurrentNumberOfWinnersW, totalAcceptableWinnersW } from './number_of_winners_logic_w';
+import { isSameMonth, subMonths } from 'date-fns';
 
 function isPreviousMonth(date: Date, currentDate: Date): boolean {
   const previousMonth = subMonths(currentDate, 1);
   return isSameMonth(date, previousMonth);
-}
-
-// Type definitions for better type safety
-interface BotUserType {
-  id: string;
-  lastOfferReminder: Date;
-  lastMessage: Date;
-  win?: Date;
-  claimed?: Date;
-  monthOfTransaction: Date;
-  lastLostOfferReminder: Date;
-  numberOfTransactionForMonth?: number;
 }
 
 // Sends appropriate reminder messages to users about free 3GB offers
@@ -27,12 +16,12 @@ interface BotUserType {
 const free3gbParticipationReminderW = async (user: BotUserType) => {
   try {
     const currentDate = new Date();
-    const isThisMOnthTransCount = await validateUserTransactionMonth(
+    const isThisMOnthTransCount = await validateUserTransactionMonthW(
       user.monthOfTransaction,
       user.id
     );
     const transactionCount = isThisMOnthTransCount ? user.numberOfTransactionForMonth : 0;
-    const numberOfWinners = getCurrentNumberOfWinners();
+    const numberOfWinners = getCurrentNumberOfWinnersW();
     const hasWonLastMonth = isPreviousMonth(new Date(user.win || 0), currentDate);
     const hasMessagedThisMonth = isSameMonth(new Date(user.lastMessage), currentDate);
 
@@ -49,7 +38,10 @@ const free3gbParticipationReminderW = async (user: BotUserType) => {
     }
 
     // Handle pool availability notifications
-    if (numberOfWinners < totalAcceptableWinners && (transactionCount ? transactionCount : 0) < 3) {
+    if (
+      numberOfWinners < totalAcceptableWinnersW &&
+      (transactionCount ? transactionCount : 0) < 3
+    ) {
       await handlePoolAvailableNotification(user, transactionCount as number);
       return;
     }
@@ -71,10 +63,10 @@ const handleNewMonthNotification = async (
   currentWinners: number
 ) => {
   const message = wonLastMonth
-    ? currentWinners < totalAcceptableWinners
+    ? currentWinners < totalAcceptableWinnersW
       ? 'You won free 3GB last month! You won because you took action. \n\nMake three data transactions this month for another chance to win!'
-      : `You won last month but missed this month. ${totalAcceptableWinners} users already qualified. Try next month!`
-    : currentWinners < totalAcceptableWinners
+      : `You won last month but missed this month. ${totalAcceptableWinnersW} users already qualified. Try next month!`
+    : currentWinners < totalAcceptableWinnersW
     ? 'Make three data transactions this month for a chance to win free 3GB!'
     : 'You have missed this month free 3GB for first 200 users to make 3 purchases.';
 
@@ -97,9 +89,9 @@ const handleWinnerReminder = async (user: BotUserType, currentDate: Date) => {
 const handlePoolAvailableNotification = async (user: BotUserType, transactionCount: number) => {
   await sendMessageW(
     user.id,
-    `Only ${totalAcceptableWinners - getCurrentNumberOfWinners()} spots left! Make additonal ${
+    `Only ${totalAcceptableWinnersW - getCurrentNumberOfWinnersW()} spots left! Make additonal ${
       3 - transactionCount
-    } transactions to be among the first 200 users to make 3 transactiosn and win free 3GB.`
+    } data purchases to be among the first 200 users to make 3 transactiosn and win free 3GB.`
   );
   await updateLastPrompt(user.id);
 };
@@ -150,4 +142,4 @@ const hasMissedOpportunity = (user: BotUserType, date: Date) => {
   return !sameMonth;
 };
 
-export { free3gbParticipationReminderW, BotUserType };
+export { free3gbParticipationReminderW };

@@ -1,10 +1,10 @@
 import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 import sendMessageW from '../../whatsaap_bot/send_message_w';
-import { BotUserType } from './daily_participation_reminder_w';
+import { BotUserType } from '../daily_participation_reminder';
 import {
-  addNew3GBWinner,
-  getCurrentNumberOfWinners,
-  totalAcceptableWinners,
+  addNew3GBWinnerW,
+  getCurrentNumberOfWinnersW,
+  totalAcceptableWinnersW,
 } from './number_of_winners_logic_w';
 import { isSameMonth } from 'date-fns';
 
@@ -16,9 +16,9 @@ interface User {
 
 const TransactionEndGrandSlamOfferReminderW = async (user: BotUserType) => {
   try {
-    const currentNumberOfWinners = getCurrentNumberOfWinners();
-    const slotsAvailable = currentNumberOfWinners < totalAcceptableWinners;
-    const userMonthValid = await validateUserTransactionMonth(user.monthOfTransaction, user.id);
+    const currentNumberOfWinners = getCurrentNumberOfWinnersW();
+    const slotsAvailable = currentNumberOfWinners < totalAcceptableWinnersW;
+    const userMonthValid = await validateUserTransactionMonthW(user.monthOfTransaction, user.id);
     const transactionCount =
       userMonthValid && user.numberOfTransactionForMonth ? user.numberOfTransactionForMonth + 1 : 1;
 
@@ -44,18 +44,18 @@ const TransactionEndGrandSlamOfferReminderW = async (user: BotUserType) => {
 
 /**
  * Checks if user's transaction month is current month, updates if not
- * @param validateUserTransactionMonth User's current transaction month
+ * @param validateUserTransactionMonthW User's current transaction month
  * @param userId User ID for database update
  * @returns Promise<boolean> True if month is current, false if updated
  */
-async function validateUserTransactionMonth(
+async function validateUserTransactionMonthW(
   monthOfTransaction: Date,
   userId: string
 ): Promise<boolean> {
   const currentDate = new Date();
   const isCurrentMonth = isSameMonth(new Date(monthOfTransaction), currentDate);
   console.log(
-    'Is currnt monrht in validateUserTransactionMonth: ',
+    'Is currnt monrht in validateUserTransactionMonthW: ',
     isCurrentMonth,
     new Date(monthOfTransaction),
     monthOfTransaction,
@@ -72,7 +72,7 @@ async function validateUserTransactionMonth(
         },
       }
     );
-    console.log('result in validateUserTransactionMonth: ', result);
+    console.log('result in validateUserTransactionMonthW: ', result);
   }
 
   return isCurrentMonth;
@@ -82,10 +82,10 @@ async function validateUserTransactionMonth(
  * Handles users who qualified for the bonus
  */
 async function handleQualifiedWinner(user: BotUserType, currentWinners: number) {
-  await addNew3GBWinner(user);
+  await addNew3GBWinnerW(user);
   await sendMessageW(
     user.id,
-    `Congratulations!!! \n\nYou're among the first ${totalAcceptableWinners} ` +
+    `Congratulations!!! \n\nYou're among the first ${totalAcceptableWinnersW} ` +
       `to make 3 data purchases this month. You've been granted Free 3GB. ` +
       `\n\nEnter C to claim your free 3GB.`
   );
@@ -100,7 +100,7 @@ async function handlePotentialWinner(
   currentWinners: number
 ) {
   const remainingTransactions = 3 - transactionCount;
-  const remainingSlots = totalAcceptableWinners - currentWinners;
+  const remainingSlots = totalAcceptableWinnersW - currentWinners;
 
   await sendMessageW(
     user.id,
@@ -118,9 +118,9 @@ async function handleLateQualifier(user: BotUserType, currentWinners: number) {
   await sendMessageW(
     user.id,
     `You made 3 data purchases this month, but ${currentWinners} users ` +
-      `already qualified. Be among the first ${totalAcceptableWinners} next ` +
+      `already qualified. Be among the first ${totalAcceptableWinnersW} next ` +
       `month to get free 3GB.`
   );
 }
 
-export { TransactionEndGrandSlamOfferReminderW, validateUserTransactionMonth }; // Only export the main function
+export { TransactionEndGrandSlamOfferReminderW, validateUserTransactionMonthW }; // Only export the main function

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const dbName = 'development'; //process.env.DB_NAME; //process.env.NODE_ENV === 'production' || 'stage' ? 'botsub' : 'development';
 import express from 'express';
-import { refreshWinnerCounts } from '../bot/grand_slam_offer/whatsapp/number_of_winners_logic_w';
+import { refreshWinnerCountsW } from '../bot/grand_slam_offer/whatsapp/number_of_winners_logic_w';
 
 const connectDB = async (app: express.Application, port: number) => {
   const dbURI = process.env.DB_CONNECTION_STR;
@@ -25,7 +25,7 @@ const connectDB = async (app: express.Application, port: number) => {
         console.log(`Server running on port ${port}`);
       });
 
-      refreshWinnerCounts();
+      refreshWinnerCountsW();
       // Handle disconnection and auto-reconnect
       mongoose.connection.on('disconnected', () => {
         console.warn('MongoDB disconnected! Attempting to reconnect...');

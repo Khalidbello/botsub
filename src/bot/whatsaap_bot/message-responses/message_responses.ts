@@ -12,40 +12,8 @@ import { cancelTransactionW } from './generic';
 import { confirmDataPurchaseResponseW } from '../helper_functions';
 
 const defaaultMessageW =
-  'Hi what can i do for you today. \n\n 1. Buy data. \n 2. Buy Airtime. \n 3. My amount. \n 4. Refer a friend. \n 5. Report an issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
-
-// function to respond to unexpected message
-async function defaultMessageHandlerW(messageObj: any, message: any) {
-  try {
-    //writeMessageToJson('in default message handler')
-    const senderId = messageObj.from;
-    let text;
-    //const userName = await getUserName(senderId);
-
-    if (message) {
-      text = messageObj.message.text.trim();
-      if (text.toLowerCase() === 'x') {
-        await cancelTransactionW(senderId, false);
-        return;
-      }
-
-      if (text.toLowerCase() === '1') return handleBuyDataW(messageObj);
-      if (text.toLowerCase() === '2') return handleBuyAirtimeW(messageObj);
-      if (text.toLowerCase() === '3') return;
-      if (text.toLowerCase() === '4') return;
-      if (text.toLowerCase() === '5') return;
-    }
-
-    await sendMessageW(senderId, defaaultMessageW);
-    // await sendMessageW(senderId, { text: `Hi ${userName || ''} what can i do for you` });
-    // await sendTemplate(senderId, responseServices);
-    // await sendTemplate(senderId, responseServices2);
-    // sendTemplate(senderId, responseServices3);
-    //writeMessageToJson('end of default message handler');
-  } catch (err) {
-    console.error('error in default error ', err);
-  }
-} // end of defaultMessenger
+  'Hi what can i do for you today. \n\nA. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
+  '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
 
 // function to handle first email for users  that havent provided their emails
 async function sendEmailEnteredResponseW(messageObj: any) {
@@ -321,7 +289,6 @@ async function reportIssueW(messageObj: any) {
 
 export {
   defaaultMessageW,
-  defaultMessageHandlerW,
   sendEmailEnteredResponseW,
   sendAirtimeAmountReceivedW,
   sendPhoneNumberEnteredResponsesW,

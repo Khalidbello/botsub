@@ -1,6 +1,6 @@
 import Whatsapp3GBWinners from '../../../models/whatsapp_3gb_winners';
 import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
-import { BotUserType } from './daily_participation_reminder_w';
+import { BotUserType } from '../daily_participation_reminder';
 
 // Type definitions
 interface User {
@@ -27,10 +27,10 @@ const getCurrentMonthId = (date: Date) => {
 };
 
 // Gets the current number of winners
-const getCurrentNumberOfWinners = (): number => numberOfWinners;
+const getCurrentNumberOfWinnersW = (): number => numberOfWinners;
 
 // Adds a new 3GB winner and updates counts
-const addNew3GBWinner = async (user: BotUserType): Promise<void> => {
+const addNew3GBWinnerW = async (user: BotUserType): Promise<void> => {
   try {
     const currentDate = new Date();
     const monthId = getCurrentMonthId(currentDate);
@@ -49,7 +49,7 @@ const addNew3GBWinner = async (user: BotUserType): Promise<void> => {
     ]);
 
     // Refresh counts
-    await refreshWinnerCounts();
+    await refreshWinnerCountsW();
   } catch (error) {
     console.error('Failed to add new winner:', error);
     //sthrow new Error('Failed to process winner addition');
@@ -58,7 +58,7 @@ const addNew3GBWinner = async (user: BotUserType): Promise<void> => {
 
 // Refreshes winner counts from database
 
-const refreshWinnerCounts = async (): Promise<void> => {
+const refreshWinnerCountsW = async (): Promise<void> => {
   try {
     const currentMonthId = getCurrentMonthId(new Date());
 
@@ -85,12 +85,12 @@ const refreshWinnerCounts = async (): Promise<void> => {
   }
 };
 
-const totalAcceptableWinners = MAX_WINNERS;
+const totalAcceptableWinnersW = MAX_WINNERS;
 
 export {
   getCurrentMonthId,
-  addNew3GBWinner,
-  getCurrentNumberOfWinners,
-  totalAcceptableWinners,
-  refreshWinnerCounts,
+  addNew3GBWinnerW,
+  getCurrentNumberOfWinnersW,
+  totalAcceptableWinnersW,
+  refreshWinnerCountsW,
 };

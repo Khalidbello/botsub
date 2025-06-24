@@ -22,7 +22,6 @@ import {
 import PaymentAccounts from '../../../models/payment-accounts';
 import { makePurchase } from '../../../modules/v-account-make-purcchase';
 import handleFirstMonthBonus from '../../../modules/monthly_bonuses';
-import { defaaultMessage } from '../message-responses/message_responses';
 import { defaultText } from '../message-responses/generic';
 import sendMessageW from '../../whatsaap_bot/send_message_w';
 import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
@@ -317,7 +316,7 @@ async function initMakePurchase(senderId: any) {
   if (!purchasePayload?.transactionType) {
     await sendMessage(senderId, { text: 'No transaction found' });
     await sendMessage(senderId, { text: 'Please intiate a new transaction.' });
-    await sendMessage(senderId, { text: defaaultMessage });
+    await sendMessage(senderId, { text: defaultText });
     // await sendTemplates(senderId, responseServices);
     // await sendTemplates(senderId, responseServices2);
     // await sendTemplates(senderId, responseServices3);

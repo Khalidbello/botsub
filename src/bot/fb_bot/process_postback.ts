@@ -45,7 +45,7 @@ const processPostback = async (event: any, res: Response): Promise<void> => {
 
   const payloadTitle = payload.title;
   console.log('postback payload title', payloadTitle);
-  defaultMessageHandler(event, true, 0);
+  //defaultMessageHandler(event, true, 0);
   return;
 }; // end of processPostback
 

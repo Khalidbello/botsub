@@ -113,6 +113,15 @@ async function fetchBankCodes(
 // const matchedBanks = await fetchBankCodes('NG', 'YOUR_FLW_SECRET_KEY', 'gtb');
 // console.log(matchedBanks); // Returns all banks starting with "gtb"
 // Usage example:
- banks =   fetchBankCodes('NG', 'FLWSECK-7f22111f57ae63ee3cbed6305979cfa3-190cfda5185vt-X', 'uni');
-console.log(banks);
+ //banks =   fetchBankCodes('NG', 'FLWSECK-7f22111f57ae63ee3cbed6305979cfa3-190cfda5185vt-X', 'uni');
+//console.log(banks);
 //calculateNetworkDataProfit();
+
+const toNumber =()=> {
+  const data = '1239876543234';
+  const numData = Number(data);
+
+  console.log(data, numData);
+}
+
+toNumber();
