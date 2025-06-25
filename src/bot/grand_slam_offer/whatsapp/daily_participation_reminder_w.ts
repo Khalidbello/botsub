@@ -87,12 +87,26 @@ const handleWinnerReminder = async (user: BotUserType, currentDate: Date) => {
 
 // Handles notifications when pool is still available
 const handlePoolAvailableNotification = async (user: BotUserType, transactionCount: number) => {
-  await sendMessageW(
-    user.id,
-    `Only ${totalAcceptableWinnersW - getCurrentNumberOfWinnersW()} spots left! Make additonal ${
-      3 - transactionCount
-    } data purchases to be among the first 200 users to make 3 transactiosn and win free 3GB.`
-  );
+  let message = 'holder';
+  if (transactionCount === 0) {
+    message = `Only ${
+      totalAcceptableWinnersW - getCurrentNumberOfWinnersW()
+    } spots left! Make 3 data purcahses to be among the first 200 users to make 3 purcahses and win free 3GB.`;
+  } else if (transactionCount === 1) {
+    message = `Only ${
+      totalAcceptableWinnersW - getCurrentNumberOfWinnersW()
+    } spots left! Make additonal ${3 - transactionCount} data purchase${
+      3 - transactionCount > 1 ? 's' : ''
+    } to be among the first 200 users to make 3 transactiosn and win free 3GB.`;
+  } else if (transactionCount === 2) {
+    message = `Only ${
+      totalAcceptableWinnersW - getCurrentNumberOfWinnersW()
+    } spots left! Make additonal ${3 - transactionCount} data purchase${
+      3 - transactionCount > 1 ? 's' : ''
+    } to be among the first 200 users to make 3 transactiosn and win free 3GB.`;
+  }
+
+  await sendMessageW(user.id, message);
   await updateLastPrompt(user.id);
 };
 

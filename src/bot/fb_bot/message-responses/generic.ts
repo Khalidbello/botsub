@@ -19,6 +19,7 @@ import { claimFree3GB } from '../../grand_slam_offer/facebook/offer_claiming_fb'
 import { BotUserType } from '../../grand_slam_offer/daily_participation_reminder';
 import { withdrawFromAccountBalance } from './withdrawal';
 import { defaaultMessage } from './message_responses';
+import { free3gbParticipationReminderFB } from '../../grand_slam_offer/facebook/daily_participation_reminder_fb';
 
 // text to contain bot functionalities
 const defaultText =
@@ -46,6 +47,7 @@ async function defaultMessageHandler(event: any, isMessage: any, user: BotUserTy
     if (text.toLowerCase() === 'g') return showReferralCode(event);
     if (text.toLowerCase() === 'h') return handleReportIssue(event);
 
+    await free3gbParticipationReminderFB(user);
     sendMessage(senderId, { text: defaaultMessage });
   } catch (err) {
     console.error('error in default text ', err);

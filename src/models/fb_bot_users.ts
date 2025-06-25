@@ -19,6 +19,15 @@ const purchasePayload = new mongoose.Schema({
   free3GBPlanId: Number,
 });
 
+const withdrawalData = new mongoose.Schema({
+  accountNumber: String,
+  accountName: String,
+  bank: { id: Number, code: String, name: String },
+  bankCode: String,
+  amount: Number,
+  bankListing: [{ id: Number, code: String, name: String }],
+});
+
 const Schema = new mongoose.Schema({
   id: {
     type: String,
@@ -32,6 +41,7 @@ const Schema = new mongoose.Schema({
   email: String,
   nextAction: String,
   purchasePayload: purchasePayload,
+  withdrawalData: withdrawalData,
   firstTransactOfMonth: Date,
   // grand slam offer related info
   lastOfferReminder: Date,

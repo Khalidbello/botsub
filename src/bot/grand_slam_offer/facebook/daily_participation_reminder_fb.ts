@@ -116,9 +116,9 @@ const handlePoolAvailableNotification = async (user: BotUserType, transactionCou
   await sendMessage(user.id, {
     text: `Only ${
       totalAcceptableWinners - getCurrentNumberOfWinners()
-    } spots left! Make additonal ${
-      3 - transactionCount
-    } data purchases to be among the first 200 users to make 3 transactiosn and win free 3GB.`,
+    } spots left! Make additonal ${3 - transactionCount} data purchase${
+      3 - transactionCount > 1 ? 's' : ''
+    } to be among the first 200 users to make 3 transactiosn and win free 3GB.`,
   });
   await updateLastPrompt(user.id);
 };

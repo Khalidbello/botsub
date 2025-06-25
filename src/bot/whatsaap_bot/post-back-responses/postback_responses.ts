@@ -9,18 +9,23 @@ import sendMessageW from '../send_message_w';
 // function to response to newConversations
 async function sendNewConversationResponseW(messageObj: any) {
   const senderId = messageObj.from;
-
-  // run with out requesting referral code
-  await sendMessageW(senderId, 'Hi. \nI am BotSub virtual assitance.');
-
   const date = new Date();
   const user = await WhatsappBotUsers.findOne({ id: senderId });
 
   if (!user) {
     await sendMessageW(
       senderId,
-      'Welcome to BotSub, Get data offers for as low as ₦300/GB. \nHurry while it last!'
+      '🌟 *Welcome to BotSub!* 🌟\n\n' +
+        '🎁 *Limited-Time Offer:*\n' +
+        'Be among the first 200 users to complete *3 data purchases* this month and get *3GB FREE*!\n\n' +
+        '⏳ Hurry - bonuses are claimed fast! 🚀'
     );
+
+    await sendMessageW(
+      senderId,
+      'Save this number as *BotSub* in your contacts\n\nReply *DONE* to continue'
+    );
+
     // adding new botuser
     const newBotUser = new WhatsappBotUsers({
       id: senderId,
@@ -32,10 +37,9 @@ async function sendNewConversationResponseW(messageObj: any) {
       lastMessage: date,
       createdAt: date,
     });
+
     newBotUser.save();
   }
-
-  await sendMessageW(senderId, defaultTextW);
 } // end of newConversationResponse
 
 // functin to initiate tranacion for users with virtual account

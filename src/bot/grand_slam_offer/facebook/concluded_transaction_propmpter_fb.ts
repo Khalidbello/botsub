@@ -55,7 +55,7 @@ async function validateUserTransactionMonth(
   const currentDate = new Date();
   const isCurrentMonth = isSameMonth(new Date(monthOfTransaction), currentDate);
   console.log(
-    'Is currnt monrht in validateUserTransactionMonth: ',
+    'Is currnt month in validateUserTransactionMonth: ',
     isCurrentMonth,
     new Date(monthOfTransaction),
     monthOfTransaction,
@@ -107,7 +107,7 @@ async function handlePotentialWinner(
       `Make ${remainingTransactions} more data purchase${remainingTransactions > 1 ? 's' : ''} ` +
       `to get free 3GB. \n\n${currentWinners} people have been gifted - only ` +
       `${remainingSlots} spot${remainingSlots > 1 ? 's' : ''} remaining. ` +
-      `Take action and be rewarded.`,
+      `\n\nYou snoope, you loose.`,
   });
 }
 

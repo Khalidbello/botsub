@@ -43,7 +43,7 @@ const addNew3GBWinnerFB = async (user: BotUserType): Promise<void> => {
       // Add to winners collection
       FB3GBWinners.updateOne(
         { id: monthId },
-        { $push: { winners: { id: user.id, time: currentDate } } },
+        { $push: { winners: { id: user.id, time: currentDate, claimed: false } } },
         { upsert: true } // Create document if it doesn't exist
       ),
     ]);

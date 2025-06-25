@@ -15,7 +15,6 @@ import BotUsers from '../models/fb_bot_users';
 import { confirmDataPurchaseResponse } from '../bot/modules/buy-data';
 import { sendMessage } from '../bot/modules/send_message';
 import { updateNetworkStatus } from '../bot/modules/data-network-checker';
-import { addDataProfit } from './save-profit';
 import { updateTransactNum } from '../bot/modules/helper_function_2';
 import WhatsappBotUsers from '../models/whatsaap_bot_users';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
@@ -97,19 +96,19 @@ async function makePurchaseRequest(
 ) {
   try {
     const resp = await axios.post(options.url, options.payload, { headers: options.headers });
-    console.log('response for virtual acount make purchase: ', resp.data);
-    console.log('see bot type in v account deliver value', bot);
+    console.log('response for virtual acount make purchase: ', bot, resp.data);
 
     if (resp.data.Status === 'successful') {
       if (user.purchasePayload.transactionType === 'data') {
-        if (bot === 'facebook') updateTransactNum(senderId);
-        if (bot === 'whatsapp') updateTransactNumW(senderId);
+        if (bot === 'facebook') updateTransactNum(user.id);
+        if (bot === 'whatsapp') updateTransactNumW(user.id);
         updateNetworkStatus(
           user.purchasePayload?.network,
           true,
           resp?.data?.api_response ? resp?.data?.api_response : 'Network data delivery working fine'
         ); // set network availablity to true
       }
+
       return helpSuccesfulDelivery(
         user,
         resp.data.balance_after,
@@ -170,7 +169,13 @@ async function simulateMakePurchaseRequest(
   senderId: string
 ) {
   try {
-    if (options) return helpSuccesfulDelivery(user, 6000, senderId, bot, 0);
+    if (options) {
+      if (bot === 'facebook') updateTransactNum(user.id);
+      if (bot === 'whatsapp') updateTransactNumW(user.id);
+
+      return helpSuccesfulDelivery(user, 6000, senderId, bot, 0);
+    }
+
     throw 'product purchas request not successful';
   } catch (error) {
     console.log('make purchase request simulation failed in cacth error block:', error);
@@ -213,7 +218,7 @@ async function helpSuccesfulDelivery(
   // updating user deducting user balance
   const accBalance = await PaymentAccounts.findOneAndUpdate(
     { refrence: senderId },
-    { $inc: { balance: -Number(user.purchasePayload.price) } },
+    { $dec: { balance: -Number(user.purchasePayload.price) } },
     { new: true }
   );
   console.log('account balance::::::::::', accBalance);
@@ -300,25 +305,8 @@ async function addToDelivered(
       profit: profit,
       price: purchasePayload.price,
     });
+
     await newTransaction.save();
-
-    // await addDataProfit(
-    //   senderId,
-    //   id,
-    //   purchasePayload.price,
-    //   planAmount,
-    //   purchasePayload.transactionType,
-    //   'virtual',
-    //   purchasePayload.networkID,
-    //   purchasePayload.index,
-    //   Date()
-    // );
-
-    // if (Number(purchasePayload.firstPurchase) === 1 && purchasePayload.transactionType === 'data')
-    //   await creditReferrer(senderId);
-    // if (purchasePayload.transactionType === 'data')
-    //   await handleFirstMonthBonus(id, purchasePayload, senderId, false);
-    return;
   } catch (err) {
     console.error('An error occured in addToDelivered for virtual account', err);
   }

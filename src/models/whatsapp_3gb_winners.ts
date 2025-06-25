@@ -5,7 +5,7 @@ const Schema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  winners: [{ id: Number, time: Date }],
+  winners: [{ id: String, time: Date, claimed: Boolean }],
   createdAt: Date,
 });
 

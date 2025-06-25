@@ -141,7 +141,7 @@ async function processMessageW(messageObj: any) {
     return selectFree3GBClaimNetworkSelectedW(messageObj, user);
   if (nextAction === 'enterPhoneNumberToClaimFree3GB')
     return phoneNumberToClaimFree3GBEnteredW(messageObj, user);
-  if (nextAction === 'deliverFree3GB') return deliverFree3GBW(messageObj, user);
+  if (nextAction === 'deliverFree3GBW') return deliverFree3GBW(messageObj, user);
 
   // related to withrawing
   if (nextAction === 'enterWithdrawalAmount') return handleEnterWithdrawalAmountW(messageObj, user);

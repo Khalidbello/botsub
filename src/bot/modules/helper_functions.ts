@@ -189,19 +189,18 @@ async function remindToFundWallet(
   balance: number,
   accountDetails: any
 ) {
-  await sendMessage(senderId, { text: 'Sorry your account balance is currently low.' });
-  await sendMessage(senderId, { text: `Your current account balance is: ₦${balance}` });
   await sendMessage(senderId, {
-    text: `Kindly fund your permanent account with a minimum amount of ₦${Math.abs(amount)}`,
+    text: `Sorry your account balance is currently low. \n\nYour current account balance is: ₦${balance} \n\nKindly fund your permanent account with a minimum amount of ₦${Math.abs(
+      amount
+    )} \n\nBank Name: ${accountDetails.bankName} \nAccount Name: ${
+      accountDetails.accountName
+    } \nAccount Number:`,
   });
-  await sendMessage(senderId, { text: `Bank Name: ${accountDetails.bankName}` });
-  await sendMessage(senderId, { text: `Account Name: ${accountDetails.accountName}` });
-  await sendMessage(senderId, { text: 'Account Number:' });
+
   await sendMessage(senderId, { text: `${accountDetails.accountNumber}` });
   await sendMessage(senderId, {
-    text: 'purchase would be automatically made once account is funded.',
+    text: 'purchase would be automatically made once account is funded. \n\nEnter X to cancel auto delivering on wallet funding.',
   });
-  await sendMessage(senderId, { text: 'Enter X to cancel auto delivering on wallet funding.' });
   await BotUsers.updateOne({ id: senderId }, { $set: { 'purchasePayload.outStanding': true } });
 } // end of remind to fund wallet
 

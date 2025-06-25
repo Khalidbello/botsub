@@ -34,18 +34,19 @@ async function remindToFundWalletW(
   balance: number,
   accountDetails: any
 ) {
-  await sendMessageW(senderId, 'Sorry your account balance is currently low.');
-  await sendMessageW(senderId, `Your current account balance is: ₦${balance}`);
   await sendMessageW(
     senderId,
-    `Kindly fund your permanent account with a minimum amount of ₦${Math.abs(amount)}`
+    `Sorry your account balance is currently low. \n\nYour current account balance is: ₦${balance} \n\nKindly fund your permanent account with a minimum amount of ₦${Math.abs(
+      amount
+    )} \n\nBank Name: ${accountDetails.bankName} \nAccount Name: ${
+      accountDetails.accountName
+    } \nAccount Number:`
   );
-  await sendMessageW(senderId, `Bank Name: ${accountDetails.bankName}`);
-  await sendMessageW(senderId, `Account Name: ${accountDetails.accountName}`);
-  await sendMessageW(senderId, 'Account Number:');
   await sendMessageW(senderId, `${accountDetails.accountNumber}`);
-  await sendMessageW(senderId, 'purchase would be automatically made once account is funded.');
-  await sendMessageW(senderId, 'Enter X to cancel auto delivering on wallet funding.');
+  await sendMessageW(
+    senderId,
+    'purchase would be automatically made once account is funded. \n\nEnter X to cancel auto delivering on wallet funding.'
+  );
   await WhatsappBotUsers.updateOne(
     { id: senderId },
     { $set: { 'purchasePayload.outStanding': true, 'purchasePayload.platform': 'whatsapp' } }

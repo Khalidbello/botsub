@@ -29,34 +29,24 @@ import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 // function to response to newConversations
 async function sendNewConversationResponse(event: any) {
   const senderId = event.sender.id;
-  const userName = await getUserName(senderId);
-
-  // await sendMessage(senderId, {
-  //   text: `Hi ${userName ? userName : ''} i am BotSub virtual assitance.`,
-  // });
-  // await sendMessage(senderId, {
-  //   text: `Kindly enter referral code below \nIf no referral code enter 0`,
-  // });
-
-  // // adding new botuser
-  // const newBotUser = new BotUsers({
-  //   id: senderId,
-  //   transactNum: 0,
-  //   botResponse: true,
-  //   nextAction: 'referralCode',
-  // });
-
-  // run with out requesting referral code
-  await sendMessage(senderId, {
-    text: `Hi ${userName ? userName : ''} i am BotSub virtual assitance.`,
-  });
+  //const userName = await getUserName(senderId);
 
   const date = new Date();
   const user = await BotUsers.findOne({ id: senderId });
 
   if (!user) {
     await sendMessage(senderId, {
-      text: 'Welcome to BotSub, Get data offers for as low as  ₦300/GB. \nHurry while it last!',
+      text:
+        '🌟 *Welcome to BotSub!* 🌟\n\n' +
+        '🎁 *Limited-Time Offer:*\n' +
+        'Be among the first 200 users to complete *3 data purchases* this month and get *3GB FREE*!\n\n' +
+        '⏳ Hurry - bonuses are claimed fast! 🚀',
+    });
+
+    await sendMessage(senderId, {
+      text:
+        'Below is a list of things i can do: \n\n A. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
+        '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328',
     });
     // adding new botuser
     const newBotUser = new BotUsers({
@@ -72,7 +62,11 @@ async function sendNewConversationResponse(event: any) {
     newBotUser.save();
   }
 
-  await sendMessage(senderId, { text: defaultText });
+  await sendMessage(senderId, {
+    text:
+      'Below is a list of things i can do: \n\n A. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
+      '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328',
+  });
 } // end of newConversationResponse
 
 // function to respond when buy data button is clicked
