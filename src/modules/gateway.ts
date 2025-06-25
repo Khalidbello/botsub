@@ -151,9 +151,9 @@ async function createVAccountW(
     is_permanent: true,
     bvn: bvn, // BVN is required here
     tx_ref: senderId,
-    narration: `Botsub FLW00${num + 1}`,
+    narration: `Botsub FL00${num + 1}`,
     firstname: 'Botsub',
-    lastname: 'FLW00' + `${num + 1}`,
+    lastname: 'FL00' + `${num + 1}`,
   };
 
   try {
