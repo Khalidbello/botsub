@@ -49,9 +49,9 @@ async function createVAccount(
     is_permanent: true,
     bvn: bvn, // BVN is required here
     tx_ref: senderId,
-    narration: `Botsub FLW00${num + 1}`,
+    narration: `Botsub ${encodeNumber(num + 1)}`,
     firstname: 'Botsub',
-    lastname: 'FLW00' + `${num + 1}`,
+    lastname: encodeNumber(num + 1),
   };
 
   try {
@@ -151,9 +151,9 @@ async function createVAccountW(
     is_permanent: true,
     bvn: bvn, // BVN is required here
     tx_ref: senderId,
-    narration: `Botsub FL00${num + 1}`,
+    narration: `Botsub ${encodeNumber(num + 1)}`,
     firstname: 'Botsub',
-    lastname: 'FL00' + `${num + 1}`,
+    lastname: encodeNumber(num + 1),
   };
 
   try {
@@ -357,5 +357,30 @@ const carryOutNonVAccount = async (
     return result;
   } catch (err) {}
 }; // end of carryOutVAccount
+
+// helper fucntion to encode number to alphabet
+function encodeNumber(num: number): string {
+  const digitToLetter: { [key: string]: string } = {
+    '0': 'J',
+    '1': 'A',
+    '2': 'B',
+    '3': 'C',
+    '4': 'D',
+    '5': 'E',
+    '6': 'F',
+    '7': 'G',
+    '8': 'H',
+    '9': 'I',
+  };
+
+  // Convert number to string and split into digits
+  const digits: string[] = String(num).split('');
+
+  // Map each digit to its corresponding letter
+  const encoded: string[] = digits.map((digit: string) => digitToLetter[digit]);
+
+  // Join the letters into a single string
+  return encoded.join('');
+}
 
 export { respondToWebhook, createVAccount, carryOutNonVAccount, createVAccountW };
