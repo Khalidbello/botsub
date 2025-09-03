@@ -176,9 +176,10 @@ const handleEnterBankNameFirst3Alpha = async (event: any, user: BotUserType) => 
 const handelSelectBank = async (event: any, user: BotUserType) => {
   const senderId = event.sender.id;
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const bankName = event.message ? event.message.text.trim().toLowerCase() : '';
 
   try {
+    const bankName = event.message ? event.message.text.trim().toLowerCase() : '';
+
     if (bankName === 'x') return cancelTransaction(senderId, false);
 
     // @ts-expect-error jsut shhh

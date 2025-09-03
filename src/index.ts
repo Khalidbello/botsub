@@ -11,7 +11,6 @@ import session from 'express-session';
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
 import connectDB from './models/connectdb';
-import viewsRouter from './routes/views';
 import fbBotRouter from './routes/fb-bot-webhook';
 import paymentGateWayRouter from './routes/payment-gateway';
 import frontEndApiRouter from './routes/frontend-api';
@@ -158,7 +157,6 @@ app.get('/set-cookie', (req, res) => {
 
 //app.use('/', storeRequest)
 //locking in middlewares for route handling
-app.use('/', viewsRouter);
 app.use('/', fbBotRouter);
 app.use('/whatsapp', whatsaapRouter);
 app.use('/gateway', paymentGateWayRouter);
@@ -170,7 +168,7 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
   res.status(404).render('not-found');
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 
 //  connecting db
 connectDB(app, port as number);

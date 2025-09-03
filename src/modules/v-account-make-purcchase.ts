@@ -136,13 +136,13 @@ async function makePurchaseRequest(
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      console.log(
+      console.error(
         'errror while makig purchase request in v-acounnt::: Server responded with status:',
         error.response.status
       );
     } else if (error.request) {
       // The request was made but no response was received
-      console.log('No response received. Request:', error.request);
+      console.error('No response received. Request:', error.request);
     } else {
       // Something happened in setting up the request that triggered an Error
       console.error('Error:', error.message);
@@ -178,7 +178,7 @@ async function simulateMakePurchaseRequest(
 
     throw 'product purchas request not successful';
   } catch (error) {
-    console.log('make purchase request simulation failed in cacth error block:', error);
+    console.error('make purchase request simulation failed in cacth error block:', error);
     if (bot === 'facebook') {
       await sendMessage(senderId, { text: 'Transaction failed please try again' });
       const user = await BotUsers.findOne({ id: senderId });
@@ -218,12 +218,12 @@ async function helpSuccesfulDelivery(
   // updating user deducting user balance
   const accBalance = await PaymentAccounts.findOneAndUpdate(
     { refrence: senderId },
-    { $dec: { balance: -Number(user.purchasePayload.price) } },
+    { $dec: { balance: Number(user.purchasePayload.price) } },
     { new: true }
   );
   console.log('account balance::::::::::', accBalance);
 
-  addToDelivered(id, user, senderId, bot, planAmount); // fuction to add trnasction to sucesful purchase
+  addToDelivered(id, user, senderId, bot, planAmount); // function to add trnasction to sucesful purchase
   //sendSuccessfulResponse(purchasePayload); // functio to send succsful delivery response
 
   if (bot === 'facebook') {
