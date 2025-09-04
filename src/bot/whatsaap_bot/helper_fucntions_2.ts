@@ -87,7 +87,8 @@ async function validateBankAccount(
  */
 const initiateUserAccountTransfer = async (
   user: BotUserType,
-  platform: string
+  platform: string,
+  balance: number
 ): Promise<boolean> => {
   try {
     const transferReference = `TX-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -99,9 +100,9 @@ const initiateUserAccountTransfer = async (
       amount: user.withdrawalData.amount,
       narration: `Withdrawal for ${user.email} userId: ${user.id}, bank name: ${user.withdrawalData.bankName}`,
       currency: 'NGN',
+      balance: balance,
       reference: transferReference,
       debit_currency: 'NGN',
-      callback_url: 'https://webhook.site/5f9a659a-11a2-4925-89cf-8a59ea6a019a',
     };
 
     const options = {

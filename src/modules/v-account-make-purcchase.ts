@@ -37,7 +37,7 @@ async function makePurchase(user: any, bot: string, senderId: string) {
 
 // function to make data purchase request
 async function deliverData(user: any, bot: string, senderId: string) {
-  console.log('in v account deliver dassssssssssssssssssssssssssssssssssssss');
+  console.log('in v account deliver data');
 
   let options = {
     url: 'https://opendatasub.com/api/data/',
@@ -207,7 +207,7 @@ async function helpSuccesfulDelivery(
   // first run while loop to generate a random id
   while (true) {
     id = generateRandomString(15);
-    let existing = await Transactions.findOne({ id: id });
+    let existing = await Transactions.exists({ id: id });
     if (existing) {
       console.log('id exists: in help successfull delivery for vritual account');
     } else {
@@ -218,10 +218,15 @@ async function helpSuccesfulDelivery(
   // updating user deducting user balance
   const accBalance = await PaymentAccounts.findOneAndUpdate(
     { refrence: senderId },
-    { $dec: { balance: Number(user.purchasePayload.price) } },
+    { $inc: { balance: -Number(user.purchasePayload.price) } },
     { new: true }
   );
-  console.log('account balance::::::::::', accBalance);
+  console.log(
+    'account balance::::::::::',
+    accBalance,
+    'to deducT: ',
+    Number(user.purchasePayload.price)
+  );
 
   addToDelivered(id, user, senderId, bot, planAmount); // function to add trnasction to sucesful purchase
   //sendSuccessfulResponse(purchasePayload); // functio to send succsful delivery response

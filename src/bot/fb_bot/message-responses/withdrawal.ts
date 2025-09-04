@@ -303,12 +303,16 @@ const handleConfirmWithdrawal = async (event: any, user: BotUserType) => {
       return;
     }
 
-    await PaymentAccounts.updateOne(
+    const balance = await PaymentAccounts.findOneAndUpdate(
       { id: user.id },
       { $dec: { balance: user.withdrawalData.amount + 50 } }
     );
 
-    const initiated = await initiateUserAccountTransfer(user, 'facebook'); // initiate transfer
+    const initiated = await initiateUserAccountTransfer(
+      user,
+      'facebook',
+      balance?.balance as number
+    ); // initiate transfer
 
     if (!initiated) {
       await PaymentAccounts.updateOne(

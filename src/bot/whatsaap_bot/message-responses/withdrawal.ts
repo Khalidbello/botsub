@@ -310,12 +310,17 @@ const handleConfirmWithdrawalW = async (messageObj: any, user: BotUserType) => {
       return;
     }
 
-    await PaymentAccounts.updateOne(
+    const accBalance = await PaymentAccounts.findOneAndUpdate(
       { id: user.id },
-      { $dec: { balance: user.withdrawalData.amount + 50 } }
+      { $inc: { balance: -(user.withdrawalData.amount + 50) } },
+      { new: true }
     );
 
-    const initiated = await initiateUserAccountTransfer(user, 'whatsapp'); // initiate transfer
+    const initiated = await initiateUserAccountTransfer(
+      user,
+      'whatsapp',
+      accBalance?.balance as number
+    ); // initiate transfer
 
     if (!initiated) {
       await PaymentAccounts.updateOne(

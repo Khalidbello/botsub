@@ -55,7 +55,7 @@ async function showAccountDetails(event: any, user: BotUserType) {
   });
   await sendMessage(senderId, { text: 'Acccount Number: ' });
   await sendMessage(senderId, { text: account.accountNumber as string });
-  await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
+  //await sendMessage(senderId, { text: `Account Balance: ₦${account.balance}` });
   sendMessage(senderId, {
     text: 'Fund your dedicated virtual account and enjoy smooth purchases.',
   });

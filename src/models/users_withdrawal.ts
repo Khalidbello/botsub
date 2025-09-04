@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { balances } from '../modules/admin/statistics';
 
 const Schema = new mongoose.Schema({
   id: {
@@ -14,6 +15,7 @@ const Schema = new mongoose.Schema({
   createdAt: Date,
   updatedAt: Date,
   platform: String,
+  balance: Number,
 });
 
 const UsersWithdrawals = mongoose.model('usersWithdrawals', Schema);

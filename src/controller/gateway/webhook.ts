@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { respondToWebhook } from '../../modules/gateway';
+import handleTransferWebhook from '../../modules/transfer_webhook_handler';
 
 const webhook = async (req: Request, res: Response) => {
   const payload = req.body;
@@ -17,7 +18,13 @@ const webhook = async (req: Request, res: Response) => {
 
     console.log('btw hook body', payload);
 
-    respondToWebhook(payload?.data?.id || payload.id, res, false);
+    // check webhook type to detrermine how to process it.
+    if (payload.event === 'transfer.completed') {
+      // run functionality to complete  user transfer
+      handleTransferWebhook(payload.data);
+    } else {
+      respondToWebhook(payload?.data?.id || payload.id, res, false);
+    }
   } catch (err: any) {
     res.status(300).send('an error occured');
     console.error('error in webhook::::::::::::::::::::::::::    value of flag:::::::::   ', flag);
