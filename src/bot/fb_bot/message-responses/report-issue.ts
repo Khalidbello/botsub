@@ -28,11 +28,12 @@ const handleReportIssue = async (event: any) => {
 // function to handle issue reporting
 const handleReportIssueResponse = async (event: any) => {
   const senderId = event.sender.id;
-  const message = event.message.text.trim();
+
   const date = new Date();
   const id = generateRandomString(10);
 
   try {
+    const message = event.message.text.trim();
     if (!message)
       return await sendMessage(senderId, { text: 'Sorry issue report can not be empty.' });
 

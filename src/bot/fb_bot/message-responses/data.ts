@@ -26,10 +26,11 @@ async function handleBuyData(event: any) {
 // functiion to data network selected
 const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
   const senderId = event.sender.id;
-  const message: string = event.message.text.trim().toLowerCase();
   let index: number = 0;
 
   try {
+    const message: string = event.message.text.trim().toLowerCase();
+
     if (message === 'x') return cancelTransaction(senderId, false);
 
     // Read data-details.json file
@@ -94,10 +95,11 @@ const handleDataNetWorkSelected = async (event: any, transactNum: number) => {
 // funciton to handle network data offer selected
 const handleOfferSelected = async (event: any, transactNum: number) => {
   const senderId = event.sender.id;
-  const message: string = event.message.text.trim().toLowerCase();
   const discount = computeDiscount(transactNum);
 
   try {
+    const message: string = event.message.text.trim().toLowerCase();
+
     if (message.toLocaleLowerCase() === 'x') return cancelTransaction(senderId, false);
     const user = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
     const network: any = user?.purchasePayload?.network; // a string
@@ -148,9 +150,10 @@ const handleOfferSelected = async (event: any, transactNum: number) => {
 // functiion to respond to phone number entred
 const handlePhoneNumberEntred = async (event: any) => {
   const senderId = event.sender.id;
-  const message: string = event.message.text.trim();
 
   try {
+    const message: string = event.message.text.trim();
+
     if (message.toLowerCase() === 'x') return cancelTransaction(senderId, false);
 
     const validatedNum = validateNumber(message);

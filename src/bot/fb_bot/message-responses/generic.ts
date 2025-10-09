@@ -204,9 +204,9 @@ async function initMakePurchase(senderId: any) {
 // function to handle phone number entred
 async function handleChangeNumberBeforeTransaction(event: any) {
   const senderId = event.sender.id;
-  const phoneNumber = event.message.text.trim();
 
   try {
+    const phoneNumber = event.message.text.trim();
     const user = await BotUsers.findOne({ id: senderId });
     const validatedNum = validateNumber(phoneNumber);
 
@@ -261,9 +261,9 @@ async function handleChangeNumberBeforeTransaction(event: any) {
 // function to handle change of email before transaction
 async function handleNewEmailBeforeTransasctionEntred(event: any) {
   const senderId = event.sender.id;
-  const email = event.message.text.trim();
 
   try {
+    const email = event.message.text.trim();
     const user = await BotUsers.findOne({ id: senderId });
 
     if (email.toLowerCase() === 'x') {

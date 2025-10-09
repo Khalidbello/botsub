@@ -9,9 +9,10 @@ import { cancelTransaction, selectPurchaseMethod } from './generic';
 
 const handleConfirmProductPurchase = async (event: any, transactNum: number) => {
   const senderId = event.sender.id;
-  const message: string = event.message.text.trim().toLowerCase();
 
   try {
+    const message: string = event.message.text.trim().toLowerCase();
+
     if (message === 'x') return cancelTransaction(senderId, false);
 
     const user = await BotUsers.findOne({ id: senderId });

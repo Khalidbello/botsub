@@ -45,8 +45,9 @@ const showActiveReferalls = async (event: any) => {
 async function sendReferralCodeRecieved(event: any) {
   console.log('in referral code::::::');
   const senderId = event.sender.id;
-  const message = event.message.text.trim();
+
   try {
+    const message = event.message.text.trim();
     const referralCode = Number(message);
 
     if (referralCode === 0) {

@@ -7,9 +7,10 @@ import emailValidator from 'email-validator';
 // function to handle first email for users  that havent provided their emails
 async function handleEnterEmailToProcedWithPurchase(event: any) {
   const senderId = event.sender.id;
-  const email = event.message.text.trim();
 
   try {
+    const email = event.message.text.trim();
+
     if (email.toLowerCase() === 'X') return cancelTransaction(senderId, false);
 
     const user = await BotUsers.findOne({ id: senderId });

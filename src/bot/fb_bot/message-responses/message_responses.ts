@@ -59,28 +59,38 @@ async function defaultMessageHandler(event: any, message: any) {
 // function to handle first email for users  that havent provided their emails
 async function sendEmailEnteredResponse(event: any) {
   const senderId = event.sender.id;
-  const email = event.message.text.trim();
 
-  if (email.toLowerCase() === 'x') return cancelTransaction(senderId, false);
-  if (emailValidator.validate(email)) {
-    await sendMessage(senderId, { text: 'email saved \nYou can change email when ever you want' });
-    const saveEmail = await BotUsers.updateOne(
-      { id: senderId },
-      {
-        $set: {
-          email: email,
-          nextAction: null,
+  try {
+    const email = event.message.text.trim();
+
+    if (email.toLowerCase() === 'x') return cancelTransaction(senderId, false);
+    if (emailValidator.validate(email)) {
+      await sendMessage(senderId, {
+        text: 'email saved \nYou can change email when ever you want',
+      });
+      const saveEmail = await BotUsers.updateOne(
+        { id: senderId },
+        {
+          $set: {
+            email: email,
+            nextAction: null,
+          },
         },
-      },
-      { upsert: true }
-    );
-    console.log('in save enail', saveEmail);
-    await confirmDataPurchaseResponse(senderId);
-  } else {
-    const response = {
-      text: 'the email format you entered is invalid \nPlease enter a valid email.',
-    };
-    await sendMessage(senderId, response);
+        { upsert: true }
+      );
+      console.log('in save enail', saveEmail);
+      await confirmDataPurchaseResponse(senderId);
+    } else {
+      const response = {
+        text: 'the email format you entered is invalid \nPlease enter a valid email.',
+      };
+      await sendMessage(senderId, response);
+    }
+  } catch (err) {
+    await sendMessage(senderId, {
+      text: 'An error  occured please try again.',
+    });
+    console.error('An error ocured in sendEmailEnteredResponse: ', err);
   }
 } // end of sendEmailEnteredResponse
 
@@ -132,86 +142,99 @@ async function bvnEntred(event: any) {
 // function to handle airtime amount entred
 async function sendAirtimeAmountReceived(event: any) {
   const senderId = event.sender.id;
-  const amount = event.message.text.trim();
-  const userData = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
 
-  if (amount.toLowerCase() === 'x') return cancelTransaction(senderId, false);
-  if (await validateAmount(amount)) {
-    await sendMessage(senderId, { text: 'Amount recieved' });
+  try {
+    const amount = event.message.text.trim();
+    const userData = await BotUsers.findOne({ id: senderId }).select('purchasePayload');
+
+    if (amount.toLowerCase() === 'x') return cancelTransaction(senderId, false);
+    if (await validateAmount(amount)) {
+      await sendMessage(senderId, { text: 'Amount recieved' });
+      await sendMessage(senderId, {
+        // @ts-expect-error
+        text: ` Enter ${userData?.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancel`,
+      });
+
+      await BotUsers.updateOne(
+        { id: senderId },
+        {
+          $set: {
+            nextAction: 'phoneNumber',
+            'purchasePayload.price': parseInt(amount),
+            'purchasePayload.product': `₦${amount} Airtime`,
+            'purchasePayload.transactionType': 'airtime',
+          },
+        }
+      );
+      return null;
+    }
     await sendMessage(senderId, {
-      // @ts-expect-error
-      text: ` Enter ${userData?.purchasePayload.network} phone number for airtime purchase. \nEnter Q to cancel`,
+      text: 'Invalid amount entered \nPlease enter a valid amount. \nEnter Q to cancel',
     });
-
-    await BotUsers.updateOne(
-      { id: senderId },
-      {
-        $set: {
-          nextAction: 'phoneNumber',
-          'purchasePayload.price': parseInt(amount),
-          'purchasePayload.product': `₦${amount} Airtime`,
-          'purchasePayload.transactionType': 'airtime',
-        },
-      }
-    );
-    return null;
+  } catch (error) {
+    sendMessage(senderId, { text: 'An error occured. \n\nPlease enter airtime  amount.' });
+    console.error('AN error occured in sendAirtimeAmountReceived: ', error);
   }
-  await sendMessage(senderId, {
-    text: 'Invalid amount entered \nPlease enter a valid amount. \nEnter Q to cancel',
-  });
 } // end of sendAirtimeAmountReceived
 
 // function to handle phone number entred
 async function sendPhoneNumberEnteredResponses(event: any) {
   const senderId = event.sender.id;
-  const phoneNumber = event.message.text.trim();
-  const validatedNum = validateNumber(phoneNumber);
-  let user;
 
-  if (phoneNumber.toLowerCase() === 'x') return cancelTransaction(senderId, false);
-  if (validatedNum) {
-    await sendMessage(senderId, { text: 'phone  number recieved' });
-    user = await BotUsers.findOne({ id: senderId });
-    if (user?.email) {
+  try {
+    const phoneNumber = event.message.text.trim();
+    const validatedNum = validateNumber(phoneNumber);
+    let user;
+
+    if (phoneNumber.toLowerCase() === 'x') return cancelTransaction(senderId, false);
+    if (validatedNum) {
+      await sendMessage(senderId, { text: 'phone  number recieved' });
+      user = await BotUsers.findOne({ id: senderId });
+      if (user?.email) {
+        await BotUsers.updateOne(
+          { id: senderId },
+          {
+            $set: {
+              nextAction: null,
+              'purchasePayload.phoneNumber': validatedNum,
+            },
+          }
+        );
+        await confirmDataPurchaseResponse(senderId);
+        return;
+      }
+
+      await sendMessage(senderId, {
+        text: 'Please enter your email. \nReciept would be sent to the provided email',
+      });
+
       await BotUsers.updateOne(
         { id: senderId },
         {
           $set: {
-            nextAction: null,
-            'purchasePayload.phoneNumber': validatedNum,
+            nextAction: 'enterEmailFirst',
+            'purchasePayload.phoneNumber': phoneNumber,
           },
         }
       );
-      await confirmDataPurchaseResponse(senderId);
       return;
     }
-
     await sendMessage(senderId, {
-      text: 'Please enter your email. \nReciept would be sent to the provided email',
+      text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
     });
-
-    await BotUsers.updateOne(
-      { id: senderId },
-      {
-        $set: {
-          nextAction: 'enterEmailFirst',
-          'purchasePayload.phoneNumber': phoneNumber,
-        },
-      }
-    );
-    return;
+  } catch (error) {
+    sendMessage(senderId, { text: 'An error occured. \n\nPlease enter phone number' });
+    console.error('AN error occured in sendPhoneNumberEnteredResponses: ', error);
   }
-  await sendMessage(senderId, {
-    text: 'Phone number not valid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
-  });
 } // end of sendPhoneNumberEnteredResponses
 
 // function to handle change of email before transaction
 async function newEmailBeforeTransactResponse(event: any, transactionType: 'data' | 'airtime') {
   const senderId = event.sender.id;
-  const email = event.message.text.trim();
 
   try {
+    const email = event.message.text.trim();
+
     if (email.toLowerCase() === 'x') {
       await sendMessage(senderId, { text: 'Change email cancled' });
       return await helperConfirmPurchase(transactionType, senderId);
@@ -249,82 +272,94 @@ async function newPhoneNumberBeforeTransactResponse(
   transactionType: 'data' | 'airtime'
 ) {
   const senderId = event.sender.id;
-  const phoneNumber = event.message.text.trim();
-  const validatedNum = validateNumber(phoneNumber);
 
-  if (phoneNumber.toLowerCase() === 'x') {
-    await sendMessage(senderId, { text: 'Change phone number cancled' });
-    return await helperConfirmPurchase(transactionType, senderId);
-  }
+  try {
+    const phoneNumber = event.message.text.trim();
+    const validatedNum = validateNumber(phoneNumber);
 
-  if (validatedNum) {
-    await BotUsers.updateOne(
-      { id: senderId },
-      {
-        $set: {
-          nextAction: null,
-          'purchasePayload.phoneNumber': validatedNum,
-        },
-      }
-    );
-    await sendMessage(senderId, { text: 'Phone number changed successfully' });
-    console.log('transactionType', transactionType);
-    helperConfirmPurchase(transactionType, senderId);
-  } else {
-    const response = {
-      text: 'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
-    };
-    await sendMessage(senderId, response);
+    if (phoneNumber.toLowerCase() === 'x') {
+      await sendMessage(senderId, { text: 'Change phone number cancled' });
+      return await helperConfirmPurchase(transactionType, senderId);
+    }
+
+    if (validatedNum) {
+      await BotUsers.updateOne(
+        { id: senderId },
+        {
+          $set: {
+            nextAction: null,
+            'purchasePayload.phoneNumber': validatedNum,
+          },
+        }
+      );
+      await sendMessage(senderId, { text: 'Phone number changed successfully' });
+      console.log('transactionType', transactionType);
+      helperConfirmPurchase(transactionType, senderId);
+    } else {
+      const response = {
+        text: 'The phone number you entered is invalid. \nPlease enter a valid phone number. \nEnter Q to cancel.',
+      };
+      await sendMessage(senderId, response);
+    }
+  } catch (error) {
+    sendMessage(senderId, { text: 'An error occure, . \n\nPlease enter phone number.' });
+    console.error('An error occured in newPhoneNumberBeforeTransactResponse: ', error);
   }
 } // end of newPhoneNumberBeforeTransactResponse
 
 // function to handle issue reporting
 async function reportIssue(event: any) {
   const senderId = event.sender.id;
-  const message = event.message.text.trim().toLowerCase();
-  const date = new Date();
-  const id = generateRandomString(10);
+  try {
+    const message = event.message.text.trim().toLowerCase();
+    const date = new Date();
+    const id = generateRandomString(10);
 
-  if (!message) {
-    await sendMessage(senderId, {
-      text: 'Sorry issue report can not be empty.',
+    if (!message) {
+      await sendMessage(senderId, {
+        text: 'Sorry issue report can not be empty.',
+      });
+      return;
+    }
+
+    if (message === 'x') return cancelTransaction(senderId, false);
+
+    const issue = new ReportedIssues({
+      id,
+      description: message,
+      date,
+      reporterId: senderId,
+      platform: 'facebook',
+      status: true,
     });
-    return;
+
+    await issue
+      .save()
+      .then(async (data: any) => {
+        sendMessage(senderId, {
+          text: 'Your issue have beign directed to BotSub support team. \nSorry for any inconveniences caused.',
+        });
+
+        await BotUsers.updateOne(
+          { id: senderId },
+          {
+            $set: {
+              nextAction: null,
+            },
+          }
+        );
+      })
+      .catch((err: Error) => {
+        console.error('error occured in report issue fucntion', err);
+        sendMessage(senderId, {
+          text: 'Sorry somrthing went wrong. \nPlease enter issue again',
+        });
+      });
+  } catch (error) {
+    sendMessage(senderId, {
+      text: 'An error occured. \n\nPlease enter issue you will like to report.',
+    });
   }
-
-  if (message === 'x') return cancelTransaction(senderId, false);
-
-  const issue = new ReportedIssues({
-    id,
-    description: message,
-    date,
-    reporterId: senderId,
-    platform: 'facebook',
-    status: true,
-  });
-
-  await issue
-    .save()
-    .then(async (data: any) => {
-      sendMessage(senderId, {
-        text: 'Your issue have beign directed to BotSub support team. \nSorry for any inconveniences caused.',
-      });
-
-      await BotUsers.updateOne(
-        { id: senderId },
-        {
-          $set: {
-            nextAction: null,
-          },
-        }
-      );
-    })
-    .catch((err: Error) => {
-      console.error('error occured in report issue fucntion', err);
-      sendMessage(senderId, {
-        text: 'Sorry somrthing went wrong. \nPlease enter issue again',
-      });
-    });
 } // end of report issue function
 
 export {

@@ -42,7 +42,6 @@ const alphaMapping = {
 
 const withdrawFromAccountBalance = async (event: any, user: BotUserType) => {
   const senderId = event.sender.id;
-  //const message = event.message.text.trim();
 
   try {
     console.log('user in withdrawFromAccountBalance:::::::::;; ', senderId, user.id);
@@ -67,9 +66,10 @@ const withdrawFromAccountBalance = async (event: any, user: BotUserType) => {
 
 const handleEnterWithdrawalAmount = async (event: any, user: BotUserType) => {
   const senderId = event.sender.id;
-  const amount = event.message ? event.message.text.trim().toLowerCase() : '';
 
   try {
+    const amount = event.message ? event.message.text.trim().toLowerCase() : '';
+
     if (amount === 'x') return cancelTransaction(senderId, false);
 
     const numbAmount = parseInt(amount);
@@ -126,10 +126,12 @@ const handleEnterWithdrawalAmount = async (event: any, user: BotUserType) => {
 
 const handleEnterBankNameFirst3Alpha = async (event: any, user: BotUserType) => {
   const senderId = event.sender.id;
-  const bankName = event.message ? event.message.text.trim().toLowerCase() : '';
+
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   try {
+    const bankName = event.message ? event.message.text.trim().toLowerCase() : '';
+
     if (bankName === 'x') return cancelTransaction(senderId, false);
 
     if (!bankName || bankName.length !== 3)
@@ -237,9 +239,10 @@ const handelSelectBank = async (event: any, user: BotUserType) => {
 // function to handle account number entered
 const handleEnterAccountNumberForWithdrawal = async (event: any, user: BotUserType) => {
   const senderId = event.sender.id;
-  const accountNumber = event?.message ? event.message.text.trim().toLowerCase() : '';
 
   try {
+    const accountNumber = event?.message ? event.message.text.trim().toLowerCase() : '';
+
     if (accountNumber === 'x') return cancelTransaction(senderId, false);
 
     const isAccountDetailsValid = await validateBankAccount(

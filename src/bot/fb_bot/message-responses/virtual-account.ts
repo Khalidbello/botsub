@@ -64,9 +64,9 @@ async function showAccountDetails(event: any, user: BotUserType) {
 // function to respod to emal entred, this function also calls create virtual acount function
 async function enteredEmailForAccount(event: any) {
   const senderId = event.sender.id;
-  const email = event.message.text.trim();
 
   try {
+    const email = event.message.text.trim();
     if (email.toLowerCase() === 'x') {
       await sendMessage(senderId, { text: 'Creation of dedicatd virtiual account cancled.' });
       await sendMessage(senderId, { text: defaultText });

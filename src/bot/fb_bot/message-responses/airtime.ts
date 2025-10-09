@@ -80,9 +80,10 @@ const handleAirtimeNetworkSelected = async (event: any) => {
 // function to handle enter airtime amount
 const handleEnterAirtimeAmount = async (event: any) => {
   const senderId = event.sender.id;
-  const message: string = event.message.text.trim();
 
   try {
+    const message: string = event.message.text.trim();
+
     if (message.toLowerCase() === 'x') return cancelTransaction(senderId, false);
     const amountValid = await validateAmount(message);
     console.log('Amont validdddddddddddddddd', amountValid);
