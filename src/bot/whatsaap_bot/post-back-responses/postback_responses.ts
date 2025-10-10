@@ -13,14 +13,21 @@ async function sendNewConversationResponseW(messageObj: any) {
   const user = await WhatsappBotUsers.findOne({ id: senderId });
 
   if (!user) {
+    // await sendMessageW(
+    //   senderId,
+    //   '🌟 *Welcome to BotSub!* 🌟\n\n' +
+    //     '🎁 *Limited-Time Offer:*\n' +
+    //     'Be among the first 200 users to complete *3 data purchases* this month and get *3GB FREE*!\n\n' +
+    //     '⏳ Hurry - bonuses are claimed fast! 🚀'
+    // );
+
     await sendMessageW(
       senderId,
       '🌟 *Welcome to BotSub!* 🌟\n\n' +
-        '🎁 *Limited-Time Offer:*\n' +
-        'Be among the first 200 users to complete *3 data purchases* this month and get *3GB FREE*!\n\n' +
-        '⏳ Hurry - bonuses are claimed fast! 🚀'
+        'Now you can buy data and airtime right here in WhatsApp! 📱\n\n' +
+        'No app to download • No hassle • Pure convenience\n\n' +
+        'Ready to get started? 🚀'
     );
-
     await sendMessageW(
       senderId,
       'Save this number as *BotSub* in your contacts\n\nReply *DONE* to continue'

@@ -35,12 +35,22 @@ async function sendNewConversationResponse(event: any) {
   const user = await BotUsers.findOne({ id: senderId });
 
   if (!user) {
+    // await sendMessage(senderId, {
+    //   text:
+    //     '🌟 *Welcome to BotSub!* 🌟\n\n' +
+    //     '🎁 *Limited-Time Offer:*\n' +
+    //     'Be among the first 200 users to complete *3 data purchases* this month and get *3GB FREE*!\n\n' +
+    //     '⏳ Hurry - bonuses are claimed fast! 🚀',
+    // });
+
     await sendMessage(senderId, {
       text:
-        '🌟 *Welcome to BotSub!* 🌟\n\n' +
-        '🎁 *Limited-Time Offer:*\n' +
-        'Be among the first 200 users to complete *3 data purchases* this month and get *3GB FREE*!\n\n' +
-        '⏳ Hurry - bonuses are claimed fast! 🚀',
+        '📱 *Welcome to BotSub!*\n\n' +
+        'Get data & airtime directly in Facebook!\n\n' +
+        '✨ Works even on free mode\n' +
+        '✨ No app download\n' +
+        '✨ Zero hassles\n\n' +
+        'Make your first purchase today! 🚀',
     });
 
     await sendMessage(senderId, {
