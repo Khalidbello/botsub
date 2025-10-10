@@ -97,7 +97,7 @@ async function processMessageW(messageObj: any) {
     cancelTransactionW(senderId, true);
     // add fre 3gb offer reminder here
 
-    await free3gbParticipationReminderW(user);
+    //await free3gbParticipationReminderW(user);
     sendMessageW(senderId, defaultTextW);
 
     return updateLastMesageDateW(senderId); // update user last message date
