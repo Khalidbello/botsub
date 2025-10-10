@@ -55,8 +55,8 @@ async function sendNewConversationResponse(event: any) {
 
     await sendMessage(senderId, {
       text:
-        'Below is a list of things i can do: \n\n A. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
-        '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328',
+        'Below is a list of things i can do: \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
+        '\n E. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328',
     });
     // adding new botuser
     const newBotUser = new BotUsers({
@@ -71,12 +71,6 @@ async function sendNewConversationResponse(event: any) {
     });
     newBotUser.save();
   }
-
-  await sendMessage(senderId, {
-    text:
-      'Below is a list of things i can do: \n\n A. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
-      '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328',
-  });
 } // end of newConversationResponse
 
 // function to respond when buy data button is clicked
