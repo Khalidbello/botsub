@@ -243,7 +243,7 @@ async function helpSuccesfulDelivery(
        \n\n〜BotSub`,
     });
 
-    TransactionEndGrandSlamOfferReminderFB(user);
+    // await TransactionEndGrandSlamOfferReminderFB(user);
   } else if (bot === 'whatsapp') {
     await sendMessageW(
       senderId,
@@ -258,7 +258,7 @@ async function helpSuccesfulDelivery(
       `
     );
 
-    await TransactionEndGrandSlamOfferReminderW(user);
+    //await TransactionEndGrandSlamOfferReminderW(user);
   }
 
   //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));

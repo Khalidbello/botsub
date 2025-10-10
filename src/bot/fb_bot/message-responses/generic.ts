@@ -23,8 +23,8 @@ import { free3gbParticipationReminderFB } from '../../grand_slam_offer/facebook/
 
 // text to contain bot functionalities
 const defaultText =
-  'What do you want to do next. \n\nA. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
-  '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
+  'What do you want to do next. \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
+  '\n E. Report isssue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
 
 // function to respond to messages with out next action
 async function defaultMessageHandler(event: any, isMessage: any, user: BotUserType) {
@@ -40,14 +40,14 @@ async function defaultMessageHandler(event: any, isMessage: any, user: BotUserTy
 
     if (text.toLowerCase() === 'a') return handleBuyData(event);
     if (text.toLowerCase() === 'b') return handleBuyAirtime(event);
-    if (text.toLowerCase() === 'c') return claimFree3GB(event, user);
-    if (text.toLowerCase() === 'd') return showAccountDetails(event, user);
-    if (text.toLowerCase() === 'e') return withdrawFromAccountBalance(event, user);
-    if (text.toLowerCase() === 'f') return showDataPrices(event, user.transactNum);
-    if (text.toLowerCase() === 'g') return showReferralCode(event);
-    if (text.toLowerCase() === 'h') return handleReportIssue(event);
+    //if (text.toLowerCase() === 'c') return claimFree3GB(event, user);
+    if (text.toLowerCase() === 'c') return showAccountDetails(event, user);
+    //if (text.toLowerCase() === 'e') return withdrawFromAccountBalance(event, user);
+    if (text.toLowerCase() === 'd') return showDataPrices(event, user.transactNum);
+    //if (text.toLowerCase() === 'g') return showReferralCode(event);
+    if (text.toLowerCase() === 'e') return handleReportIssue(event);
 
-    await free3gbParticipationReminderFB(user);
+    //await free3gbParticipationReminderFB(user);
     sendMessage(senderId, { text: defaaultMessage });
   } catch (err) {
     console.error('error in default text ', err);

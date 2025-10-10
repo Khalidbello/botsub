@@ -26,8 +26,8 @@ import { defaaultMessageW } from './message_responses';
 
 // text to contain bot functionalities
 const defaultTextW =
-  'What do you want to do next. \n\nA. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
-  '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
+  'What do you want to do next. \n\n A. Buy data \n B. Buy airtime.  \n C. My account. \n D. Show data prices' +
+  '\n E. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
 
 // function to respond to messages with out next action
 async function defaultMessageHandlerW(messageObj: any, isMessage: any, user: any) {
@@ -43,14 +43,14 @@ async function defaultMessageHandlerW(messageObj: any, isMessage: any, user: any
 
     if (text.toLowerCase() === 'a') return handleBuyDataW(messageObj);
     if (text.toLowerCase() === 'b') return handleBuyAirtimeW(messageObj);
-    if (text.toLowerCase() === 'c') return claimFree3GBW(messageObj, user);
-    if (text.toLowerCase() === 'd') return showAccountDetailsW(messageObj, user);
-    if (text.toLowerCase() === 'e') return withdrawFromAccountBalanceW(messageObj, user);
-    if (text.toLowerCase() === 'f') return showDataPricesW(messageObj, user.transactNum);
-    if (text.toLowerCase() === 'g') return showReferralCode(messageObj);
-    if (text.toLowerCase() === 'h') return handleReportIssueW(messageObj);
+    //if (text.toLowerCase() === 'c') return claimFree3GBW(messageObj, user);
+    if (text.toLowerCase() === 'c') return showAccountDetailsW(messageObj, user);
+    //if (text.toLowerCase() === 'e') return withdrawFromAccountBalanceW(messageObj, user);
+    if (text.toLowerCase() === 'd') return showDataPricesW(messageObj, user.transactNum);
+    //if (text.toLowerCase() === 'g') return showReferralCode(messageObj);
+    if (text.toLowerCase() === 'e') return handleReportIssueW(messageObj);
 
-    await free3gbParticipationReminderW(user);
+    //await free3gbParticipationReminderW(user);
     sendMessageW(senderId, defaaultMessageW);
   } catch (err) {
     console.error('error in default text ', err);
