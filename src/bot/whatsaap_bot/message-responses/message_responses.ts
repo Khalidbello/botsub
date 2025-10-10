@@ -12,8 +12,8 @@ import { cancelTransactionW } from './generic';
 import { confirmDataPurchaseResponseW } from '../helper_functions';
 
 const defaaultMessageW =
-  'Hi what can i do for you today. \n\nA. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
-  '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
+  'Hi what can i do for you today. \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
+  '\n E. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
 
 // function to handle first email for users  that havent provided their emails
 async function sendEmailEnteredResponseW(messageObj: any) {

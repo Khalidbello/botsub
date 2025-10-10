@@ -20,8 +20,8 @@ import { handleBuyAirtime } from './airtime';
 import { CancellationToken } from 'mongodb';
 
 const defaaultMessage =
-  'Hi what can i do for you today. \n\nA. Buy data \n B. Buy airtime. \n C. Claim free 3GB. \n D. My account. \n E. Withdraw from accont balance \n F. Show data prices' +
-  '\n G. Refer a friend \n H. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
+  'Hi what can i do for you today. \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
+  '\n E. Report issue. \n\nContact BotSub Customer Support: https://wa.me/09166871328';
 
 // function to respond to unexpected message
 async function defaultMessageHandler(event: any, message: any) {
@@ -310,6 +310,7 @@ async function newPhoneNumberBeforeTransactResponse(
 // function to handle issue reporting
 async function reportIssue(event: any) {
   const senderId = event.sender.id;
+
   try {
     const message = event.message.text.trim().toLowerCase();
     const date = new Date();
