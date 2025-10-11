@@ -38,6 +38,7 @@ import {
   phoneNumberToClaimFree3GBEnteredW,
   selectFree3GBClaimNetworkSelectedW,
 } from '../grand_slam_offer/whatsapp/offer_claiming_w';
+import { defaaultMessageW } from './message-responses/message_responses';
 
 async function processMessageW(messageObj: any) {
   const senderId = messageObj.from; // Sender's phone number
@@ -98,7 +99,7 @@ async function processMessageW(messageObj: any) {
     // add fre 3gb offer reminder here
 
     //await free3gbParticipationReminderW(user);
-    sendMessageW(senderId, defaultTextW);
+    sendMessageW(senderId, defaaultMessageW);
 
     return updateLastMesageDateW(senderId); // update user last message date
   }
