@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import {
   average,
   pendingCount,
-  profitCount,
+  profitSum,
   successfulCount,
   transactionCount,
 } from './helper-functions';
@@ -25,7 +25,7 @@ async function todaysStatistic(req: Request, res: Response) {
     transactionCount(startDate, endDate),
     successfulCount(startDate, endDate),
     pendingCount(startDate, endDate),
-    profitCount(startDate, endDate),
+    profitSum(startDate, endDate),
   ]);
 
   res.status(200).json({
@@ -50,7 +50,7 @@ async function statistics(req: Request, res: Response) {
     transactionCount(startDate, endDate),
     successfulCount(startDate, endDate),
     pendingCount(startDate, endDate),
-    profitCount(startDate, endDate),
+    profitSum(startDate, endDate),
     average(startDate, endDate),
   ]);
 
@@ -84,7 +84,7 @@ async function trendData(req: Request, res: Response) {
 
     const [count, profit] = await Promise.all([
       transactionCount(startDate, endDate),
-      profitCount(startDate, endDate),
+      profitSum(startDate, endDate),
     ]);
 
     dates.unshift(dateStringWithoutT);

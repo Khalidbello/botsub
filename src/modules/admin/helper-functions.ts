@@ -45,7 +45,7 @@ async function successfulCount(startDate: Date, endDate: Date) {
 } // end of successfulCount
 
 //  function to count profits
-async function profitCount(startDate: Date, endDate: Date) {
+async function profitSum(startDate: Date, endDate: Date) {
   const profit = await Transactions.aggregate([
     { $match: { date: { $gte: startDate, $lte: endDate } } },
     {
@@ -296,7 +296,7 @@ export {
   transactionCount,
   pendingCount,
   successfulCount,
-  profitCount,
+  profitSum,
   average,
   countUsersWithPurchase,
   getMaxProfitPerUser,
