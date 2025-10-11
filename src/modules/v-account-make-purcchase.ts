@@ -94,6 +94,7 @@ async function makePurchaseRequest(
   transactionType: 'airtime' | 'data',
   senderId: string
 ) {
+  let errroMesage = '';
   try {
     const resp = await axios.post(options.url, options.payload, { headers: options.headers });
     console.log('response for virtual acount make purchase: ', bot, resp.data);
@@ -102,6 +103,7 @@ async function makePurchaseRequest(
       if (user.purchasePayload.transactionType === 'data') {
         if (bot === 'facebook') updateTransactNum(user.id);
         if (bot === 'whatsapp') updateTransactNumW(user.id);
+
         updateNetworkStatus(
           user.purchasePayload?.network,
           true,
@@ -118,15 +120,15 @@ async function makePurchaseRequest(
       );
     }
 
-    if (user.purchasePayload.transactionType === 'data')
+    if (user.purchasePayload.transactionType === 'data') {
+      errroMesage = resp?.data?.api_response;
       updateNetworkStatus(
         user.purchasePayload?.network,
         false,
-        resp?.data?.api_response
-          ? resp?.data?.api_response
-          : 'Network data delvery failed in virtual account make purchase. and api response was empty'
+        errroMesage ||
+          'Network data delvery failed in virtual account make purchase. and api response was empty'
       ); // set network availability to false
-
+    }
     throw {
       message: resp?.data?.api_response
         ? resp?.data?.api_response
@@ -138,7 +140,7 @@ async function makePurchaseRequest(
       // that falls out of the range of 2xx
       console.error(
         'errror while makig purchase request in v-acounnt::: Server responded with status:',
-        error.response.status
+        error.response
       );
     } else if (error.request) {
       // The request was made but no response was received
@@ -149,11 +151,16 @@ async function makePurchaseRequest(
     }
 
     if (bot === 'facebook') {
-      await sendMessage(senderId, { text: 'Transaction failed please try again.' });
+      await sendMessage(senderId, {
+        text: `Transaction failed please try again. \n\nError: ${errroMesage}`,
+      });
       const user = await BotUsers.findOne({ id: senderId });
       return confirmDataPurchaseResponse(senderId, user, null);
     } else if (bot === 'whatsapp') {
-      await sendMessageW(senderId, 'Transaction failed please try again.');
+      await sendMessageW(
+        senderId,
+        `Transaction failed please try again. \n\nError: ${errroMesage}`
+      );
       const user = await WhatsappBotUsers.findOne({ id: senderId });
       return confirmDataPurchaseResponseW(senderId, user, null);
     }
