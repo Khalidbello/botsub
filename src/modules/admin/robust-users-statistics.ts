@@ -9,7 +9,6 @@ import {
   getMinProfitPerUser,
   getMinTransactionPerUser,
   profitCount,
-  totalProfitCount,
   transactionCount,
 } from './helper-functions';
 import WhatsappBotUsers from '../../models/whatsaap_bot_users';
@@ -35,7 +34,7 @@ const getRobustUserStatistics = async (req: Request, res: Response) => {
       averageTransactionPerUser,
     ] = await Promise.all([
       profitCount(startDate, endDate),
-      totalProfitCount(startDate, endDate),
+      transactionCount(startDate, endDate),
       countUsersWithPurchase(startDate, endDate),
       getMaxProfitPerUser(startDate, endDate),
       getMinProfitPerUser(startDate, endDate),

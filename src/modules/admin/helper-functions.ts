@@ -46,12 +46,12 @@ async function successfulCount(startDate: Date, endDate: Date) {
 
 //  function to count profits
 async function profitCount(startDate: Date, endDate: Date) {
-  const profit = await Profits.aggregate([
+  const profit = await Transactions.aggregate([
     { $match: { date: { $gte: startDate, $lte: endDate } } },
     {
       $group: {
         _id: startDate,
-        totalProfit: { $sum: '$amount' },
+        totalProfit: { $sum: '$profit' },
       },
     },
   ]);
@@ -108,7 +108,7 @@ const countUsersWithPurchase = async (startDate: Date, endDate: Date) => {
 const getMaxProfitPerUser = async (startDate: Date, endDate: Date) => {
   // query to return top five with highest amount of profit for specific time frame
   try {
-    const result = await Profits.aggregate([
+    const result = await Transactions.aggregate([
       // stage one
       {
         $match: {
@@ -122,7 +122,7 @@ const getMaxProfitPerUser = async (startDate: Date, endDate: Date) => {
       {
         $group: {
           _id: '$senderId',
-          totalProfit: { $sum: '$amount' },
+          totalProfit: { $sum: '$profit' },
         },
       },
       // stage three
@@ -155,7 +155,7 @@ const getMaxProfitPerUser = async (startDate: Date, endDate: Date) => {
 const getMinProfitPerUser = async (startDate: Date, endDate: Date) => {
   // query to return top five with highest amount of profit for specific time frame
   try {
-    const result = await Profits.aggregate([
+    const result = await Transactions.aggregate([
       // stage one
       {
         $match: {
@@ -169,7 +169,7 @@ const getMinProfitPerUser = async (startDate: Date, endDate: Date) => {
       {
         $group: {
           _id: '$senderId',
-          totalProfit: { $sum: '$amount' },
+          totalProfit: { $sum: '$profit' },
         },
       },
       // stage three
@@ -202,7 +202,7 @@ const getMinProfitPerUser = async (startDate: Date, endDate: Date) => {
 const getMaxTransactionPerUser = async (startDate: Date, endDate: Date) => {
   // query to return top five with highest amount of profit for specific time frame
   try {
-    const result = await Profits.aggregate([
+    const result = await Transactions.aggregate([
       // stage one
       {
         $match: {
@@ -249,7 +249,7 @@ const getMaxTransactionPerUser = async (startDate: Date, endDate: Date) => {
 const getMinTransactionPerUser = async (startDate: Date, endDate: Date) => {
   // query to return top five with highest amount of profit for specific time frame
   try {
-    const result = await Profits.aggregate([
+    const result = await Transactions.aggregate([
       // stage one
       {
         $match: {
@@ -292,17 +292,6 @@ const getMinTransactionPerUser = async (startDate: Date, endDate: Date) => {
   }
 };
 
-// function to count all profit count
-async function totalProfitCount(startDate: Date, endDate: Date) {
-  const count = await Profits.aggregate([
-    { $match: { date: { $gte: startDate, $lte: endDate } } },
-    {
-      $count: 'totalCount',
-    },
-  ]);
-
-  return count[0]?.totalCount || 0;
-} // end of transactionCount
 export {
   transactionCount,
   pendingCount,
@@ -314,7 +303,6 @@ export {
   getMinProfitPerUser,
   getMaxTransactionPerUser,
   getMinTransactionPerUser,
-  totalProfitCount,
   getAveProfitPerUser,
   getAveProfPerTrans,
   getAveTransPerUser,

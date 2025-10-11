@@ -7,7 +7,6 @@ import {
   transactionCount,
 } from './helper-functions';
 import PaymentAccounts from '../../models/payment-accounts';
-import axios from 'axios';
 import {
   getDataWalletBalance,
   getFlutterWaveBalance,

@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import mongoose from 'mongoose';
 import WhatsappBotUsers from '../../models/whatsaap_bot_users';
 
 interface PaginationOptions {
