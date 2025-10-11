@@ -7,7 +7,7 @@ const schema = new mongoose.Schema({
     required: true,
   },
   email: String,
-  senderId: String,
+  userId: String,
   platform: String,
   txRef: String,
   status: String, // 'delivered', 'refunded'

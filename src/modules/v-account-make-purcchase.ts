@@ -300,6 +300,7 @@ async function addToDelivered(
       id: id,
       email: user.email,
       status: 'delivered',
+      userId: user.id,
       date: Date(),
       product: product,
       beneficiary: parseInt(purchasePayload.phoneNumber),
