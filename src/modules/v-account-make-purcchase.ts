@@ -62,7 +62,7 @@ async function deliverData(user: any, bot: string, senderId: string) {
 } // end of deliver value function
 
 // function to make airtime purchase request
-function deliverAirtime(purchasePayload: any, bot: string, senderId: string) {
+function deliverAirtime(user: any, bot: string, senderId: string) {
   let options = {
     url: 'https://opendatasub.com/api/topup/',
     headers: {
@@ -70,20 +70,20 @@ function deliverAirtime(purchasePayload: any, bot: string, senderId: string) {
       'Content-Type': 'application/json',
     },
     payload: {
-      network: Number(purchasePayload.networkID),
-      amount: Number(purchasePayload.price),
-      mobile_number: purchasePayload.phoneNumber,
+      network: Number(user.purchasePayload.networkID),
+      amount: Number(user.purchasePayload.price),
+      mobile_number: user.purchasePayload.phoneNumber,
       Ported_number: true,
       airtime_type: 'VTU',
     },
   };
 
   if (process.env.NODE_ENV === 'production')
-    makePurchaseRequest(purchasePayload, options, bot, 'airtime', senderId);
+    makePurchaseRequest(user, options, bot, 'airtime', senderId);
   if (process.env.NODE_ENV === 'staging')
-    simulateMakePurchaseRequest(purchasePayload, true, bot, 'airtime', senderId);
+    simulateMakePurchaseRequest(user, true, bot, 'airtime', senderId);
   if (process.env.NODE_ENV === 'development')
-    simulateMakePurchaseRequest(purchasePayload, true, bot, 'airtime', senderId);
+    simulateMakePurchaseRequest(user, true, bot, 'airtime', senderId);
 } // end of deliverAirtime
 
 // function to make product purchase request
