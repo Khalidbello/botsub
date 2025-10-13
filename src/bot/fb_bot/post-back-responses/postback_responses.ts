@@ -22,7 +22,7 @@ import {
 import PaymentAccounts from '../../../models/payment-accounts';
 import { makePurchase } from '../../../modules/v-account-make-purcchase';
 import handleFirstMonthBonus from '../../../modules/monthly_bonuses';
-import { defaultText } from '../message-responses/generic';
+import { defaultText, initMakePurchase } from '../message-responses/generic';
 import sendMessageW from '../../whatsaap_bot/send_message_w';
 import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 
@@ -301,41 +301,6 @@ async function selectPurchaseMethod(event: any) {
   await generateAccountNumber(event);
 } // end of selectPurchaseMehod
 
-// functin to initiate tranacion for users with virtual account
-async function initMakePurchase(senderId: any) {
-  const userDet = BotUsers.findOne({ id: senderId }).select('purchasePayload email'); // requesting user transacion details
-  const userAcount = PaymentAccounts.findOne({ refrence: senderId });
-  const promises = [userDet, userAcount];
-  const data = await Promise.all(promises);
-  // @ts-expect-error
-  const purchasePayload = data[0].purchasePayload;
-  console.log('purchase ayload in initmakePurchase', purchasePayload);
-
-  if (!purchasePayload?.transactionType) {
-    await sendMessage(senderId, { text: 'No transaction found' });
-    await sendMessage(senderId, { text: 'Please intiate a new transaction.' });
-    await sendMessage(senderId, { text: defaultText });
-    // await sendTemplates(senderId, responseServices);
-    // await sendTemplates(senderId, responseServices2);
-    // await sendTemplates(senderId, responseServices3);
-    await BotUsers.updateOne({ id: senderId }, { $set: { nextAction: null } });
-    return;
-  }
-
-  // @ts-expect-error
-  if (purchasePayload.price > data[1].balance)
-    return remindToFundWallet(
-      senderId,
-      // @ts-expect-error object might be null
-      data[1].balance - purchasePayload.price,
-      // @ts-expect-error object might be null
-      data[1].balance,
-      data[1]
-    ); // returning function to remind user to fund wallet
-
-  makePurchase(purchasePayload, 'facebook', senderId); // calling function to make function
-} // end of function to initialise function
-
 // function to chanege email b4 transaction
 async function changeMailBeforeTransact(event: any) {
   const senderId = event.sender.id;
@@ -550,5 +515,4 @@ export {
   retryFailed,
   // handleRetryFailedMonthlyDelivery,
   showAccountDetails,
-  initMakePurchase,
 };

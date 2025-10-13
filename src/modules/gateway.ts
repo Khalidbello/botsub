@@ -4,16 +4,15 @@ import { Response } from 'express';
 import { sendMessage } from '../bot/modules/send_message';
 import PaymentAccounts from '../models/payment-accounts';
 import BotUsers from '../models/fb_bot_users';
-import { initMakePurchase } from '../bot/fb_bot/post-back-responses/postback_responses';
 import axios from 'axios';
-import { defaultText } from '../bot/fb_bot/message-responses/generic';
+import { defaultText, initMakePurchase } from '../bot/fb_bot/message-responses/generic';
 import { checkPaymentValidity } from '../bot/modules/helper_function_2';
 import { deliverValue } from './deliver-value';
 import WalletFundings from '../models/wallet-funding';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
 import WhatsappBotUsers from '../models/whatsaap_bot_users';
-import { initMakePurchaseW } from '../bot/whatsaap_bot/message-responses/generic';
 import { isConversationOpenW } from '../bot/whatsaap_bot/helper_functions';
+import { initMakePurchaseW } from '../bot/whatsaap_bot/message-responses/generic';
 
 const Flutterwave = require('flutterwave-node-v3');
 

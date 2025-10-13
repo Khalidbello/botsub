@@ -115,13 +115,13 @@ async function fetchBankCodes(
 // Usage example:
  //banks =   fetchBankCodes('NG', 'FLWSECK-7f22111f57ae63ee3cbed6305979cfa3-190cfda5185vt-X', 'uni');
 //console.log(banks);
-calculateNetworkDataProfit();
+//calculateNetworkDataProfit();
 
 const toNumber =()=> {
-  const data = '1239876543234';
+  const data = '6614743418604628';
   const numData = Number(data);
 
   console.log(data, numData);
 }
 
-//toNumber();
+toNumber();
