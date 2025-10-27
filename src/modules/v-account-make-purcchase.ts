@@ -296,7 +296,7 @@ async function addToDelivered(
       );
       const plan = dataDetails[purchasePayload.networkID][purchasePayload.index];
 
-      const flutterCharges = purchasePayload.price * 0.014;
+      const flutterCharges = purchasePayload.price * 0.02;
       const vat = flutterCharges * 0.07;
 
       // Calculate profit
