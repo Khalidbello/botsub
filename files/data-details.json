@@ -8,7 +8,7 @@
       "aPrice": 300,
       "size": "500MB",
       "sizeN": 0.5,
-      "validity": "7 days",
+      "validity": "7 days\n",
       "index": "1",
       "network": "MTN"
     },
@@ -20,7 +20,7 @@
       "aPrice": 400,
       "size": "1GB",
       "sizeN": 1,
-      "validity": "7 days",
+      "validity": "7 Days",
       "index": "2",
       "network": "MTN"
     },
@@ -32,7 +32,7 @@
       "aPrice": 500,
       "size": "1GB",
       "sizeN": 1,
-      "validity": "30 Days",
+      "validity": "30 Days\n",
       "index": "3",
       "network": "MTN"
     },
@@ -44,7 +44,7 @@
       "aPrice": 930,
       "size": "2GB",
       "sizeN": 2,
-      "validity": "30 Days",
+      "validity": "30 Days\n",
       "index": "4",
       "network": "MTN"
     },
@@ -56,7 +56,7 @@
       "aPrice": 1300,
       "size": "3GB",
       "sizeN": 3,
-      "validity": "30 Days",
+      "validity": "30 Days\n",
       "index": "5",
       "network": "MTN"
     },
@@ -68,7 +68,7 @@
       "aPrice": 1700,
       "size": "5GB",
       "sizeN": 5,
-      "validity": "30 Days",
+      "validity": "30 Days\n",
       "index": "6",
       "network": "MTN"
     },
@@ -80,7 +80,7 @@
       "aPrice": 3378,
       "size": "7GB",
       "sizeN": 7,
-      "validity": "30 Days",
+      "validity": "30 Days\n",
       "index": "7",
       "network": "MTN"
     },
@@ -92,7 +92,7 @@
       "aPrice": 4343,
       "size": "10GB",
       "sizeN": 10,
-      "validity": "30 Days",
+      "validity": "30 Days\n",
       "index": "8",
       "network": "MTN"
     },
@@ -104,7 +104,7 @@
       "aPrice": 7238,
       "size": "20GB",
       "sizeN": 20,
-      "validity": "30 Days",
+      "validity": "30 Days\n",
       "index": "9",
       "network": "MTN"
     }
