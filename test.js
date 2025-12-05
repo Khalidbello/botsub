@@ -15,7 +15,7 @@ const   calculateNetworkDataProfit = async ()=> {
         const network = planData.network;
         const price = planData.price;
         const aPrice = planData.aPrice;
-        const flutterCharges = price * 0.014;
+        const flutterCharges = price * 0.02;
         const vat = flutterCharges * 0.07;
 
         // Calculate profit
@@ -115,7 +115,8 @@ async function fetchBankCodes(
 // Usage example:
  //banks =   fetchBankCodes('NG', 'FLWSECK-7f22111f57ae63ee3cbed6305979cfa3-190cfda5185vt-X', 'uni');
 //console.log(banks);
-//calculateNetworkDataProfit();
+
+calculateNetworkDataProfit();
 
 const toNumber =()=> {
   const data = '6614743418604628';
@@ -124,4 +125,4 @@ const toNumber =()=> {
   console.log(data, numData);
 }
 
-toNumber();
+//toNumber();

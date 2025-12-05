@@ -34,6 +34,7 @@ if (process.env.NODE_ENV === 'development') {
   env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_TEST;
   env.FBM_TOKEN = env.FBM_TOKEN_TEST;
   env.OPENSUB_KEY = env.OPENSUB_KEY_TEST;
+  env.ASBDATA_KEY = env.ASBDATA_KEY_TEST;
   env.WHATSAAP_VERIF_TOKEN = env.WHATSAAP_VERIF_TOKEN_TEST;
   env.WHATSAPP_NUM_ID = env.WHATSAPP_NUM_ID_TEST;
   env.WHATSAPP_ACCESS_TOK = env.WHATSAPP_ACCESS_TOK_TEST;
@@ -52,6 +53,7 @@ if (process.env.NODE_ENV === 'development') {
   env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_STAGING;
   env.FBM_TOKEN = env.FBM_TOKEN_STAGING;
   env.OPENSUB_KEY = env.OPENSUB_KEY_STAGING;
+  env.ASBDATA_KEY = env.ASBDATA_KEY_STAGING;
   //origin = 'https:admin.botsub.com.ng';
 } else if (process.env.NODE_ENV === 'production') {
   console.log('in production mode');
@@ -68,6 +70,7 @@ if (process.env.NODE_ENV === 'development') {
   env.FB_VERIFICATION_KEY = env.FB_VERIFICATION_KEY_PRODUCTION;
   env.FBM_TOKEN = env.FBM_TOKEN_PRODUCTION;
   env.OPENSUB_KEY = env.OPENSUB_KEY_PRODUCTION;
+  env.ASBDATA_KEY = env.ASBDATA_KEY_PRODUCTION;
   env.WHATSAAP_VERIF_TOKEN = env.WHATSAAP_VERIF_TOKEN_PRODUCTION;
   env.WHATSAPP_NUM_ID = env.WHATSAPP_NUM_ID_PRODUCTION;
   env.WHATSAPP_ACCESS_TOK = env.WHATSAPP_ACCESS_TOK_PRODUCTION;

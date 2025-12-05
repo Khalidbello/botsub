@@ -40,9 +40,16 @@ async function deliverData(user: any, bot: string, senderId: string) {
   console.log('in v account deliver data');
 
   let options = {
-    url: 'https://opendatasub.com/api/data/',
+    url:
+      user.purchasePayload.networkID === 4
+        ? 'https://opendatasub.com/api/data/'
+        : 'https://asbdata.com/api/data/',
     headers: {
-      Authorization: 'Token ' + process.env.OPENSUB_KEY,
+      Authorization:
+        'Token ' +
+        `${
+          user.purchasePayload.networkID === 4 ? process.env.OPENSUB_KEY : process.env.ASBDATA_KEY
+        }`,
       'Content-Type': 'application/json',
     },
     payload: {

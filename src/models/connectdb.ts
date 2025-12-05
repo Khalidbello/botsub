@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
-const dbName = 'development'; //process.env.DB_NAME; //process.env.NODE_ENV === 'production' || 'stage' ? 'botsub' : 'development';
 import express from 'express';
 import { refreshWinnerCountsW } from '../bot/grand_slam_offer/whatsapp/number_of_winners_logic_w';
+
+let server: any; // store the server instance
 
 const connectDB = async (app: express.Application, port: number) => {
   const dbURI = process.env.DB_CONNECTION_STR;
@@ -14,18 +15,26 @@ const connectDB = async (app: express.Application, port: number) => {
 
   const connect = async () => {
     try {
-      const conn = await mongoose.connect(dbURI, {
-        dbName,
-        autoIndex: true,
-      });
-      console.log(`MongoDB Connected: ${conn.connection.host}`);
+      // Check if already connected
+      if (mongoose.connection.readyState === 1 || mongoose.connection.readyState === 2) {
+        console.log('MongoDB is already connected or is connecting.');
+      } else {
+        const conn = await mongoose.connect(dbURI, {
+          dbName,
+          autoIndex: true,
+        });
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+      }
 
-      // Start Express app only after DB is connected
-      app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
-      });
+      // Start Express app only if not already listening
+      if (!server || !server.listening) {
+        server = app.listen(port, () => {
+          console.log(`Server running on port ${port}`);
+        });
+      }
 
-      refreshWinnerCountsW();
+      //refreshWinnerCountsW();
+
       // Handle disconnection and auto-reconnect
       mongoose.connection.on('disconnected', () => {
         console.warn('MongoDB disconnected! Attempting to reconnect...');
