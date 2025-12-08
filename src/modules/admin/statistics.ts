@@ -8,7 +8,7 @@ import {
 } from './helper-functions';
 import PaymentAccounts from '../../models/payment-accounts';
 import {
-  getDataWalletBalance,
+  getDataWalletBalances,
   getFlutterWaveBalance,
   getVirtualAccountBalances,
 } from './helper-function2';
@@ -124,7 +124,7 @@ async function balances(req: Request, res: Response) {
 const getBalances = async (req: Request, res: Response) => {
   try {
     const [dataWalletBalance, flutterWaveBalances, virtualAccountBalance] = await Promise.all([
-      getDataWalletBalance(),
+      getDataWalletBalances(),
       getFlutterWaveBalance(),
       getVirtualAccountBalances(),
     ]);

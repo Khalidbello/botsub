@@ -71,9 +71,9 @@ async function deliverData(user: any, bot: string, senderId: string) {
 // function to make airtime purchase request
 function deliverAirtime(user: any, bot: string, senderId: string) {
   let options = {
-    url: 'https://opendatasub.com/api/topup/',
+    url: 'https://asbdata.com/api/topup/',
     headers: {
-      Authorization: 'Token ' + process.env.OPENSUB_KEY,
+      Authorization: 'Token ' + process.env.ASBDATA_KEY,
       'Content-Type': 'application/json',
     },
     payload: {

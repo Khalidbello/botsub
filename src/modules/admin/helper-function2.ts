@@ -107,7 +107,7 @@ const getAveTransPerUser = async (startDate: Date, endDate: Date) => {
 };
 
 // helper function to get data wallet balance
-const getDataWalletBalance = async () => {
+const getDataWalletBalances = async () => {
   try {
     const options = {
       method: 'GET',
@@ -118,8 +118,18 @@ const getDataWalletBalance = async () => {
       },
     };
 
+    const options2 = {
+      method: 'GET',
+      url: 'https://opendatasub.com/api/user/',
+      headers: {
+        Authorization: `Token ${process.env.ASBDATA_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
     const response = await axios.request(options);
-    console.log('orpendat user rsposne: ', response.data.user);
+    const response2 = await axios.request(options);
+    console.log('orpendat user rsponses: ', response.data.user, response2.data.user);
 
     return response?.data?.user?.wallet_balance;
   } catch (err) {
@@ -173,7 +183,7 @@ export {
   getAveTransPerUser,
   getAveProfitPerUser,
   getAveProfPerTrans,
-  getDataWalletBalance,
+  getDataWalletBalances,
   getFlutterWaveBalance,
   getVirtualAccountBalances,
 };

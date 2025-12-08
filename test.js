@@ -116,7 +116,22 @@ async function fetchBankCodes(
  //banks =   fetchBankCodes('NG', 'FLWSECK-7f22111f57ae63ee3cbed6305979cfa3-190cfda5185vt-X', 'uni');
 //console.log(banks);
 
-calculateNetworkDataProfit();
+
+const getWhatsAppNumberKId = async ()=> {
+const url = 'https://graph.facebook.com/v23.0/132338906093008/phone_numbers';
+const options = {
+  method: 'GET',
+  headers: {Authorization: 'Bearer EAAIhj9VGbMkBQGFghWgQy77wQmtsN3abUqP6oRUgZBK02e0B5cA4obRBPZAXAc9r2An5NPutYZBaNVIw9lKiQo1dKaKDqjHxsaY8lN681Mq45voDUEqihU8ePYYMssnLdyE5vlYa9ZBgrN9lUohZAAKhRsAljkoS9cW4PUAkE7fcYwiTkisnL9ArkeId1k35j7wZDZD'},
+};
+
+try {
+  const response = await fetch(url, options);
+  const data = await response.json();
+  console.log(data);
+} catch (error) {
+  console.error(error);
+}
+}
 
 const toNumber =()=> {
   const data = '6614743418604628';
@@ -125,4 +140,7 @@ const toNumber =()=> {
   console.log(data, numData);
 }
 
+
+calculateNetworkDataProfit();
+//getWhatsAppNumberKId();
 //toNumber();
