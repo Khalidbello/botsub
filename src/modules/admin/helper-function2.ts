@@ -120,18 +120,25 @@ const getDataWalletBalances = async () => {
 
     const options2 = {
       method: 'GET',
-      url: 'https://opendatasub.com/api/user/',
+      url: 'https://asbdata.com/api/user/',
       headers: {
         Authorization: `Token ${process.env.ASBDATA_KEY}`,
         'Content-Type': 'application/json',
       },
     };
 
-    const response = await axios.request(options);
-    const response2 = await axios.request(options);
-    console.log('orpendat user rsponses: ', response.data.user, response2.data.user);
+    // Run both requests at the same time
+    const [response, response2] = await Promise.all([
+      axios.request(options),
+      axios.request(options2),
+    ]);
 
-    return response?.data?.user?.wallet_balance;
+    console.log('opendata user responses:', response.data.user, response2.data.user);
+
+    return {
+      asbData: response2?.data?.user?.wallet_balance,
+      openData: response?.data?.user?.wallet_balance,
+    };
   } catch (err) {
     console.error('An error occured in getDataWalletBalance : ', err);
   }

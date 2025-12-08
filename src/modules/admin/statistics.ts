@@ -123,7 +123,7 @@ async function balances(req: Request, res: Response) {
 // handler to handle wallet balance request and data platform balance request
 const getBalances = async (req: Request, res: Response) => {
   try {
-    const [dataWalletBalance, flutterWaveBalances, virtualAccountBalance] = await Promise.all([
+    const [dataWalletBalances, flutterWaveBalances, virtualAccountBalance] = await Promise.all([
       getDataWalletBalances(),
       getFlutterWaveBalance(),
       getVirtualAccountBalances(),
@@ -131,12 +131,13 @@ const getBalances = async (req: Request, res: Response) => {
 
     console.log(
       'balances in getBalances: ',
-      dataWalletBalance,
+      dataWalletBalances,
       flutterWaveBalances,
       virtualAccountBalance
     );
     res.json({
-      dataWalletBalance,
+      asbData: dataWalletBalances?.asbData,
+      openData: dataWalletBalances?.openData,
       transferableBalance: flutterWaveBalances ? flutterWaveBalances[0] : 0,
       ledgerBalance: flutterWaveBalances ? flutterWaveBalances[1] : 0,
       virtualAccountBalance,
