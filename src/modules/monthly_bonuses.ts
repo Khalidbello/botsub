@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { sendMessage } from '../bot/modules/send_message';
+import { sendMessage } from '../bot/fb_bot/modules/send_message';
 import BotUsers from '../models/fb_bot_users';
 import Users from '../models/users';
 

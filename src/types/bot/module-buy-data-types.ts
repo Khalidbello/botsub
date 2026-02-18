@@ -1,22 +1,17 @@
 type networkDetailsType = {
-    [keys: string]: dataOfferType;
+  [keys: string]: dataOfferType;
 };
 
 type dataOfferType = {
-    networkID: number;
-    planID: number;
-    size: string;
-    price: number;
-    aPrice: number;
-    validity: string;
-    index: string;
-    network: string;
+  networkID: number;
+  planID: number;
+  size: string;
+  sizeN: number;
+  price: number;
+  aPrice: number;
+  validity: string;
+  index: string;
+  network: string;
 };
 
-
-
-
-export type {
-    networkDetailsType,
-    dataOfferType,
-};
+export type { networkDetailsType, dataOfferType };

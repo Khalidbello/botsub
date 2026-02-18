@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import express from 'express';
-import { refreshWinnerCountsW } from '../bot/grand_slam_offer/whatsapp/number_of_winners_logic_w';
 
 let server: any; // store the server instance
 

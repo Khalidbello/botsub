@@ -3,16 +3,16 @@ import { Request, Response } from 'express';
 import fs from 'fs';
 import ReportedIssues from '../../models/reported-issues';
 import Transactions from '../../models/transactions';
-import { sendMessage } from '../../bot/modules/send_message';
-import { updateNetworkStatus } from '../../bot/modules/data-network-checker';
+import { sendMessage } from '../../bot/fb_bot/modules/send_message';
+import { updateNetworkStatus } from '../../bot/unified/data-network-checker';
 import BotUsers from '../../models/fb_bot_users';
 import { dateFormatter } from '../helper_functions';
 import { carryOutNonVAccount, respondToWebhook } from '../gateway';
 const Flutterwave = require('flutterwave-node-v3');
 import axios from 'axios';
 import sendMessageW from '../../bot/whatsaap_bot/send_message_w';
-import { isConversationOpenW } from '../../bot/whatsaap_bot/helper_functions';
 import WhatsappBotUsers from '../../models/whatsaap_bot_users';
+import { isConversationOpenW } from '../../bot/unified/utils_5';
 
 async function getNetworkStatus(req: Request, res: Response) {
   // Read the file content

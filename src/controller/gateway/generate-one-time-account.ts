@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { generateRandomString } from '../../modules/helper_functions';
-import { generateOneTimeAccountHelper } from '../../bot/modules/helper_function_2';
+import { generateOneTimeAccountHelper } from '../../bot/fb_bot/modules/helper_function_2';
 
 const generateOneTimeAccount = async (req: Request, res: Response) => {
   const datas = req.body;

@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import UsersWithdrawals from '../models/users_withdrawal';
 import PaymentAccounts from '../models/payment-accounts';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
-import { sendMessage } from '../bot/modules/send_message';
+import { sendMessage } from '../bot/fb_bot/modules/send_message';
 import { dateFormatter } from './helper_functions';
 
 // fucntin to handle trsnsfer webhook

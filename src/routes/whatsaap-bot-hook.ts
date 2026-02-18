@@ -1,7 +1,7 @@
 // file to handle whatsaap bot webhook
 
 import { Request, Response, Router } from 'express';
-import processMessageW from '../bot/whatsaap_bot/process_message';
+import processMessage from '../bot/unified/process_message';
 
 const whatsaapRouter = Router();
 
@@ -36,18 +36,7 @@ whatsaapRouter.post('/webhook', (req: Request, res: Response) => {
         if (messageData) {
           // Handle incoming messages
           messageData.forEach(async (message: any) => {
-            processMessageW(message);
-            // console.log('Message:::: ', message);
-            // const from = message.from; // Sender's phone number
-            // const text = message.text ? message.text.body : ''; // Message text
-            // const user = await getUserName(from);
-            // console.log(`Message from ${from}: ${text}`);
-
-            // // Example: Reply to the user
-            // sendMessage(
-            //   from,
-            //   `Hi ${user}. \n\n I am *BotSub* whatsapp virtual assistant. \n\nWill be available on whatsaap soon.`
-            // );
+            processMessage('WA', event, res);
           });
         }
       });

@@ -7,6 +7,7 @@ const purchasePayload = new mongoose.Schema({
   phoneNumber: String,
   transactionType: String,
   size: String,
+  sizeN: Number,
   index: String,
   planID: Number,
   networkID: Number,

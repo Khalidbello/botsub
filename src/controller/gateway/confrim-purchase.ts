@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { checkcheckRequirement, refundPayment } from '../../modules/helper_functions';
 import { deliverValue } from '../../modules/deliver-value';
-import { sendMessage } from '../../bot/modules/send_message';
+import { sendMessage } from '../../bot/fb_bot/modules/send_message';
 const FlutterWave = require('flutterwave-node-v3');
 
 const confirmTransaction = async (req: Request, res: Response) => {

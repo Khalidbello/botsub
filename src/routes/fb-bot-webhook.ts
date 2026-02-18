@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { processPostback } from '../bot/fb_bot/process_postback';
-import processMessage from '../bot/fb_bot/process_message';
+import processMessage from '../bot/unified/process_message';
 import axios from 'axios';
 const fbBotRouter = Router();
 
@@ -32,7 +32,7 @@ fbBotRouter.post('/fb-hook', async function (req: Request, res: Response) {
           processPostback(event, res);
         } else if (event.message) {
           //writeMessageToJson(`passed to process message`);
-          processMessage(event, res);
+          processMessage('FB', event, res);
         }
       });
     });

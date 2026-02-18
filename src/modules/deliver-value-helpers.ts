@@ -1,305 +1,199 @@
-const fs = require('fs');
+import fs from 'fs';
 import Handlebars from 'handlebars';
-import { sendMessage } from '../bot/modules/send_message';
+import { sendMessage } from '../bot/fb_bot/modules/send_message';
 import Transactions from '../models/transactions';
-import { dateFormatter, fundWallet } from './helper_functions';
-import { addDataProfit } from './save-profit';
+import { dateFormatter } from './helper_functions';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
+import { TransactionEndGrandSlamOfferReminder } from '../bot/grand_slam_offer/unified/concluded_transaction_prompter';
+import FBBotUsers from '../models/fb_bot_users';
+import WhatsappBotUsers from '../models/whatsaap_bot_users';
+import { totalAcceptableWinners } from '../bot/grand_slam_offer/unified/number_of_winners_logic';
 
-// helper function for succesfull response
-const helpSuccesfulDelivery = async (response: any, balance: number, type: 'data' | 'airtime') => {
-  console.log('response in helpSuccesfulDekvery', response);
+// --- Platform Config Resolver ---
+const getPlatformConfig = (platform: 'FB' | 'WA') => ({
+  model: platform === 'FB' ? FBBotUsers : WhatsappBotUsers,
+  send: (id: string, text: string) =>
+    platform === 'FB' ? sendMessage(id, { text }) : sendMessageW(id, text),
+});
+
+/**
+ * Interface for consistent messaging across platforms
+ */
+const broadcastMessage = async (meta: any, messages: string[]) => {
+  for (const text of messages) {
+    if (meta.platform === 'facebook') {
+      await sendMessage(meta.senderId, { text });
+    } else if (meta.platform === 'whatsapp') {
+      await sendMessageW(meta.senderId, text);
+    }
+  }
+};
+
+/**
+ * Centralized Product string generator
+ */
+const getProductString = (meta: any) => {
+  return meta.type === 'airtime'
+    ? `₦${meta.amount} ${meta.network} airtime`
+    : `${meta.size} ${meta.network} data`;
+};
+
+/**
+ * DATABASE: ADD TO DELIVERED
+ */
+const addToDelivered = async (response: any, type: string) => {
+  let profit = 0;
+  const { data } = response;
+
+  // Try to update existing first (Atomic update)
+  const existing = await Transactions.findOneAndUpdate(
+    { id: data.id },
+    { $set: { status: 'delivered', info: 'Value successfully delivered' } },
+    { new: true }
+  );
+
+  if (existing) return existing;
+
+  if (data.meta.transactionType === 'data') {
+    const dataDetails = JSON.parse(await fs.promises.readFile('files/data-details.json', 'utf-8'));
+    const plan = dataDetails[data.meta.networkID][data.meta.index];
+
+    const charges = data.meta.price * 0.02; // 2% gateway
+    const vat = charges * 0.07; // 7% VAT on charges
+    profit = data.meta.price - (charges + vat + plan.aPrice);
+  }
+
+  await new Transactions({
+    id: data.id,
+    email: data.customer.email,
+    status: 'delivered',
+    userId: data.meta.senderId,
+    date: new Date(),
+    product: getProductString(data.meta),
+    beneficiary: parseInt(data.meta.phoneNumber),
+    accountType: 'virtual',
+    info: 'Delivery successful via one time account',
+    transactionType: data.meta.transactionType,
+    platform: data.meta.platform,
+    profit,
+    price: data.meta.price,
+  }).save();
+};
+
+/**
+ * SUCCESS HELPER
+ */
+export const helpSuccesfulDelivery = async (
+  response: any,
+  balance: number,
+  type: 'data' | 'airtime'
+) => {
+  const { data } = response;
+  const { meta, id, amount } = data;
+  const platform = meta.platform === 'facebook' ? 'FB' : 'WA';
+  const config = getPlatformConfig(platform);
+
   await addToDelivered(response, type);
 
-  // calling function to send mail and json response object
-  //await sendSuccessfulResponse(response);
+  if (meta.bot) {
+    const date = new Date();
+    const dateString = dateFormatter(date);
+    const product = getProductString(meta);
 
-  if (response.data.meta.bot) {
-    const date = new Date(); //new Date(response.data.customer.created_at);
-    const nigeriaTimeString = dateFormatter(date);
+    const successMessages = [
+      `Transaction Successful \nProduct: ${product} \nRecipient: ${meta.phoneNumber}\nPrice: ₦${amount} \nTransaction ID: ${id} \nDate: ${dateString}`,
+    ];
 
     try {
-      if (response.data.meta.platform === 'facebook') {
-        await sendMessage(response.data.meta.senderId, {
-          text: `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${
-            response.data.meta.phoneNumber
-          }\nPrice: ₦${response.data.amount} \nTransaction ID: ${
-            response.data.id
-          } \nDate: ${nigeriaTimeString}`,
-        });
+      await broadcastMessage(meta, successMessages);
+      const user = await config.model.findOne({ id: meta.senderId });
 
-        await sendMessage(response.data.meta.senderId, {
-          text: 'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub',
-        });
-
-        await sendMessage(response.data.meta.senderId, {
-          text:
-            '\nTired of making tranfers to different account for every transaction...?' +
-            '\nGet a permanet account number and experience faster and safer transactions. \n\nC. Create a virtual account',
-        });
-      } else if (response.data.meta.platform === 'whatsapp') {
-        await sendMessageW(
-          response.data.meta.senderId,
-          `Transaction Succesful \nProduct: ${product(response)} \nRecipient: ${
-            response.data.meta.phoneNumber
-          }\nPrice: ₦${response.data.amount} \nTransaction ID: ${
-            response.data.id
-          } \nDate: ${nigeriaTimeString}`
-        );
-
-        await sendMessageW(
-          response.data.meta.senderId,
-          'Thanks for your patronage. \nEagerly awaiting the opportunity to serve you once more. \n\n〜BotSub'
-        );
-
-        await sendMessageW(
-          response.data.meta.senderId,
-          '\nTired of making tranfers to different account for every transaction...?' +
-            '\nGet a permanet account number and experience faster and safer transactions. \n\nC. Create a virtual account'
-        );
+      if (meta.transactionType === 'data' && meta.sizeN >= 1) {
+        // @ts-ignore type error on bot user
+        if (user) await TransactionEndGrandSlamOfferReminder(user, platform);
+        return;
+      } else {
+        if (user?.numberOfTransactionForMonth && user.numberOfTransactionForMonth < 3) {
+          config.send(
+            meta.senderId,
+            `Get free 3GB!!. \n\nWhen you fall among first ${totalAcceptableWinners} make 3 data purchases this month.`
+          );
+        }
       }
     } catch (err) {
       console.error(
-        'An error ocured trying to sending succesfll transaction response in helpSuccesfulDelivery',
+        'Error sending success messages in help helpSuccesfulDelivery >>>>>>>>>>>>>>> ',
         err
       );
     }
-
-    // add trnasaction to profit
-    await addDataProfit(
-      response.data.meta.senderId,
-      response.data.id,
-      response.data.amount,
-      0,
-      response.data.meta.type,
-      'oneTime',
-      response.data.meta.networkID,
-      response.data.meta.index,
-      date
-    );
-
-    //await sendTemplates(response.data.meta.senderId, getVirtualAccountTemp);
   }
-  //if (parseInt(balance) <= 5000) fundWallet('035', process.env.WALLET_ACC_NUMBER, parseInt(process.env.WALLET_TOPUP_AMOUNT));
-}; // end of helpSuccesfulDelivery
+};
 
-// helper function  for failed delivery
-const helpFailedDelivery = async (response: any, info: string) => {
+/**
+ * FAILED/PENDING HELPER
+ */
+export const helpFailedDelivery = async (response: any, info: string) => {
+  const { data } = response;
+  const { meta, id } = data;
+
   await addFailed(response, info);
 
-  if (response.data.meta.bot) {
-    const date = new Date(); //new Date(response.data.customer.created_at);
-    const nigeriaTimeString = dateFormatter(date);
+  if (meta.bot) {
+    const dateString = dateFormatter(new Date());
+    const product = getProductString(meta);
 
-    console.log('bot feed back');
-    if (response.data.meta.platform === 'facebook') {
-      await sendMessage(response.data.meta.senderId, {
-        text: `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${
-          response.data.meta.phoneNumber
-        } \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`,
-      });
+    const failMessages = [
+      `Sorry your transaction is pending \nProduct: ${product} \nRecipient: ${meta.phoneNumber} \nTransaction ID: ${id} \nDate: ${dateString}`,
+      `Auto retry has been initiated. If value is not delivered after 2 minutes, please kindly Contact custoemr support Or report an issue.`,
+    ];
 
-      await sendMessage(response.data.meta.senderId, {
-        text: `Auto retry has been initiated for your transaction. If value is not delivered after 2 minutes, please kindly report an issue.`,
-      });
-    } else if (response.data.meta.platform === 'whatsapp') {
-      await sendMessageW(
-        response.data.meta.senderId,
-        `Sorry your transaction is pending \nProduct: ${product(response)} \nRecipient: ${
-          response.data.meta.phoneNumber
-        } \nTransaction ID: ${response.data.id} \nDate: ${nigeriaTimeString}`
-      );
-
-      await sendMessageW(
-        response.data.meta.senderId,
-        `Auto retry has been initiated for your transaction. If value is not delivered after 2 minutes, please kindly report an issue.`
-      );
+    try {
+      await broadcastMessage(meta, failMessages);
+    } catch (err) {
+      console.error('Error sending failure messages:', err);
     }
   }
-}; // end of failed delivery helper
+};
 
-// function to add transaction to delivered transaction
-const addToDelivered = async (response: any, type: 'data' | 'airtime') => {
-  const transaction = await Transactions.findOne({ id: response.data.id });
-  if (transaction) {
-    if (transaction.status === 'delvered') return;
-    const response = transaction.updateOne({
-      status: 'delivered',
-      info: 'value succesfully delivered',
-    });
-    return response;
-  }
-
-  let prod = product(response);
-
-  const newTransaction = new Transactions({
-    id: response.data.id,
-    email: response.data.customer.email,
-    txRef: response.data.tx_ref,
-    status: 'delivered',
-    date: Date(),
-    product: prod,
-    senderId: response.data.meta.senderId,
-    transactionType: response.data.meta.transactionType,
-    accountType: 'oneTime',
-    beneficiary: parseInt(response.data.meta.phoneNumber),
-    info: 'Value succesfully delvered',
-  });
-
-  const response2 = await newTransaction.save();
-  console.log('add to delivered response', response2);
-  return;
-}; // end of addToDelivered
-
-// function to add transaction to failed to deliver
+/**
+ * DATABASE: ADD FAILED/REFUNDED
+ */
 const addFailed = async (response: any, info: string) => {
+  const { data } = response;
+  let profit = 0;
+
   try {
-    let transaction = await Transactions.findOne({ id: response.data.id });
-    if (transaction) {
-      await Transactions.updateOne({ id: response.data.id }, { $set: { info: info } });
-      return console.log('Refuned transaction succesfully udated info', info);
+    const existing = await Transactions.findOneAndUpdate({ id: data.id }, { $set: { info: info } });
+
+    if (existing) return;
+
+    if (data.meta.transactionType === 'data') {
+      const dataDetails = JSON.parse(
+        await fs.promises.readFile('files/data-details.json', 'utf-8')
+      );
+      const plan = dataDetails[data.meta.networkID][data.meta.index];
+
+      const charges = data.meta.price * 0.02; // 2% gateway
+      const vat = charges * 0.07; // 7% VAT on charges
+      profit = data.meta.price - (charges + vat + plan.aPrice);
     }
 
-    let prod = product(response);
-    const newTransaction = new Transactions({
-      id: response.data.id,
-      email: response.data.customer.email,
-      txRef: response.data.tx_ref,
-      status: 'failed',
-      date: Date(),
-      product: prod + ' ' + response.data.meta.network,
-      amount: response.data.meta.price,
-      senderId: response.data.meta.senderId,
-      transactionType: response.data.meta.transactionType,
-      accountType: 'oneTime',
-      beneficiary: parseInt(response.data.meta.phoneNumber),
-      info: info || 'Transaction delivery failed.',
-    });
-    const response2 = await newTransaction.save();
-    console.log('add to refunded delivery response', response2);
-    return;
+    await new Transactions({
+      id: data.id,
+      email: data.customer.email,
+      status: 'delivered',
+      userId: data.meta.senderId,
+      date: new Date(),
+      product: getProductString(data.meta),
+      beneficiary: parseInt(data.meta.phoneNumber),
+      accountType: 'virtual',
+      info: 'Delivery failed via one time account',
+      transactionType: data.meta.transactionType,
+      platform: data.meta.platform,
+      profit,
+      price: data.meta.price,
+    }).save();
   } catch (err) {
-    console.error('error occured while adding refunded trnasaction to databasae', err);
+    console.error('Error in addFailed DB operation:', err);
   }
-}; // end if add to failed to deliver
-
-// helper function to form product
-const product = (response: any) => {
-  let product = `${response.data.meta.size}  ${response.data.meta.network} data`;
-
-  if (response.data.meta.type === 'airtime') {
-    product = `₦${response.data.meta.amount} ${response.data.meta.network} airtime`;
-  }
-  return product;
-}; // end of procuct
-
-// function to send data purchase mail and response
-const sendSuccessfulResponse = async (response: any) => {
-  try {
-    const successfulMailTemplate = await fs.promises.readFile(
-      'modules/email-templates/successful-delivery.html',
-      'utf8'
-    );
-    const compiledSuccessfulMailTemplate = Handlebars.compile(successfulMailTemplate);
-    let details = formResponse(response);
-    // @ts-ignore
-    details.product = product(response);
-    const mailParams = {
-      // @ts-ignores
-      product: details.product,
-      network: details.network,
-      date: details.date,
-      id: response.data.id,
-      txRef: response.data.tx_ref,
-      status: 'Successfull',
-      price: response.data.amount,
-      recipientNumber: details.number,
-      chatBotUrl: process.env.CHATBOT_URL,
-      host: process.env.HOST,
-    };
-
-    const mailOptions = {
-      from: process.env.ADMIN_MAIL,
-      to: response.data.customer.email,
-      subject: 'BotSub Receipt',
-      html: compiledSuccessfulMailTemplate(mailParams),
-    };
-
-    //const resp = await transporter.sendMail(mailOptions);
-
-    //console.log('successful delivery function', resp);
-    console.log('in sucess');
-    return { message: 'Successful resposne' };
-  } catch (err) {
-    console.log('send successful vtu response error', err);
-    return { error: 'An error occured sending delivered success response' };
-  }
-}; // end of sendAirtimeResponse function
-
-// function to form response on failed to deliver
-const sendFailedToDeliverResponse = async (response: any, res: Response) => {
-  try {
-    const pendingMailTemplate = await fs.promises.readFile(
-      'modules/email-templates/failed-delivery.html',
-      'utf8'
-    );
-    const compiledPendingMailTemplate = Handlebars.compile(pendingMailTemplate);
-    let details = formResponse(response);
-    // @ts-ignore
-    details.product = `${response.data.meta.size} data`;
-
-    if (response.data.meta.type === 'airtime') {
-      // @ts-ignore
-      details.product = `₦${response.data.meta.amount} airtime`;
-    }
-
-    const mailParams = {
-      // @ts-ignore
-      product: details.product,
-      network: details.network,
-      date: details.date,
-      id: response.data.id,
-      txRef: response.data.tx_ref,
-      status: 'Pending',
-      price: response.data.amount,
-      recipientNumber: details.number,
-      chatBotUrl: process.env.CHATBOT_URL,
-      host: process.env.HOST,
-    };
-    const mailOptions = {
-      from: process.env.ADMIN_MAIL,
-      to: response.data.customer.email,
-      subject: 'BotSub Pending Transaction',
-      html: compiledPendingMailTemplate(mailParams),
-    };
-
-    //const resp = await transporter.sendMail(mailOptions);
-
-    //sconsole.log('in failed to deliver function', resp);
-    // @ts-expect-error eror
-    return res.json({ status: 'pending', data: details });
-  } catch (err) {
-    console.error('send successful vtu response error', err);
-    // @ts-expect-error error
-    return res.json({ status: 'error', message: 'send failed response error air', data: err });
-    //return res.json({ status: 'failedDelivery', message: 'failed to deliver purchased product' });
-  }
-}; // end of sendFailedToDeliverResponse
-
-//function to form response for request
-const formResponse = (response: any) => {
-  const meta = response.data.meta;
-  // create a Date object with the UTC time
-  const date = new Date(response.data.customer.created_at);
-  const nigeriaTimeString = dateFormatter(date);
-
-  const details = {
-    network: meta.network,
-    number: meta.number,
-    email: response.data.customer.email,
-    date: nigeriaTimeString,
-  };
-  return details;
-}; // end of formResponse
-
-export { helpSuccesfulDelivery, helpFailedDelivery };
+};

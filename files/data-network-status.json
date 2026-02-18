@@ -1,11 +1,11 @@
 {
   "MTN": {
     "status": true,
-    "info": "In simulation data network working fine."
+    "info": "Simulation Success"
   },
   "Glo": {
     "status": true,
-    "info": "Activated by admin"
+    "info": "Simulation Success"
   },
   "9mobile": {
     "status": true,
@@ -13,6 +13,6 @@
   },
   "Airtel": {
     "status": true,
-    "info": "Activated by admin"
+    "info": "Simulation Success"
   }
 }

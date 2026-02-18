@@ -17,6 +17,7 @@ import frontEndApiRouter from './routes/frontend-api';
 import adminRouter from './routes/admin';
 import whatsaapRouter from './routes/whatsaap-bot-hook';
 import morgan from 'morgan';
+import timekeeper from 'timekeeper';
 
 // setting  configurations for different environment
 if (process.env.NODE_ENV === 'development') {
@@ -158,7 +159,23 @@ app.get('/set-cookie', (req, res) => {
   res.send('Cookie has been set!');
 });
 
-//app.use('/', storeRequest)
+if (process.env.NODE_ENV === 'development') {
+  app.get('/admin/set-time/:date', (req, res) => {
+    const newDate = new Date(req.params.date);
+    if (isNaN(newDate.getTime())) {
+      return res.status(400).send('Invalid Date format. Use YYYY-MM-DD');
+    }
+
+    timekeeper.travel(newDate);
+    res.send(`Server has traveled to ${new Date().toLocaleString()}`);
+  });
+
+  app.get('/admin/reset-time', (req, res) => {
+    timekeeper.reset();
+    res.send(`Server returned to real time: ${new Date().toLocaleString()}`);
+  });
+}
+
 //locking in middlewares for route handling
 app.use('/', fbBotRouter);
 app.use('/whatsapp', whatsaapRouter);

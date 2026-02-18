@@ -8,6 +8,7 @@ const schema = new mongoose.Schema({
   amount_to_be_paid: Number,
   currency: String,
   date: Date,
+  platform: String,
 });
 
 const GeneratedOAccounts = mongoose.model('GeneratedOAccounts', schema);

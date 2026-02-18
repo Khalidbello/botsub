@@ -1,25 +1,6 @@
-import {
-  airtimePurchase,
-  cancelTransaction,
-  changeMailBeforeTransact,
-  changePhoneNumber,
-  //handleRetryFailedMonthlyDelivery,
-  issueReport,
-  retryFailed,
-  selectPurchaseMethod,
-  sendAirtelOffers,
-  sendGloOffers,
-  sendMtnOffers,
-  sendNewConversationResponse,
-  sendNineMobileOffers,
-  sendPurchaseAirtimeResponse,
-  sendPurchaseDataReponse,
-  showAccountDetails,
-  showDataPrices,
-} from './post-back-responses/postback_responses';
-import { defaultMessageHandler } from './message-responses/generic';
-import { sendMessage } from '../modules/send_message';
+import { sendMessage } from './modules/send_message';
 import { Response } from 'express';
+import { sendNewConversationResponse } from '../unified/send_new_user_message';
 
 const processPostback = async (event: any, res: Response): Promise<void> => {
   // first set nextAction to null
@@ -31,8 +12,7 @@ const processPostback = async (event: any, res: Response): Promise<void> => {
   }
 
   if (event.postback.payload == 'newConversation') {
-    sendNewConversationResponse(event);
-    return;
+    return await sendNewConversationResponse(event.sender.id, 'FB');
   }
 
   let payload = event.postback.payload;

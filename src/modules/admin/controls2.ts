@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-import { sendMessage } from '../../bot/modules/send_message';
+import { sendMessage } from '../../bot/fb_bot/modules/send_message';
 import sendMessageW from '../../bot/whatsaap_bot/send_message_w';
 import BotUsers from '../../models/fb_bot_users';
 import WhatsappBotUsers from '../../models/whatsaap_bot_users';

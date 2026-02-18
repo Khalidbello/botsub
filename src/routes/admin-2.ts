@@ -1,7 +1,7 @@
 import { Response, Request, response } from 'express';
 import { Router } from 'express';
 import BotUsers from '../models/fb_bot_users';
-import { sendMessage } from '../bot/modules/send_message';
+import { sendMessage } from '../bot/fb_bot/modules/send_message';
 import {
   dataAccontDetails,
   doCustomFlwWebhook,
@@ -9,13 +9,13 @@ import {
 } from '../modules/admin/controls';
 import WhatsappBotUsers from '../models/whatsaap_bot_users';
 import sendMessageW from '../bot/whatsaap_bot/send_message_w';
-import { isConversationOpenW } from '../bot/whatsaap_bot/helper_functions';
 import {
   getRobustUserStatistics,
   handleFetchWhatsappUsers,
 } from '../modules/admin/robust-users-statistics';
 import { fundWallet } from '../modules/helper_functions';
 import { listWhatsappUsers } from '../modules/admin/whatsapp_user_listing';
+import { isConversationOpenW } from '../bot/unified/utils_5';
 
 const adminRouter2 = Router();
 
