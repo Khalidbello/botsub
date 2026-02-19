@@ -1,7 +1,7 @@
-import { defaultMessageHandlerW } from './message-responses/generic';
-import sendMessageW from './send_message_w';
 import { Response } from 'express';
-import { sendNewConversationResponseW } from './post-back-responses/postback_responses';
+import { sendNewConversationResponse } from '../unified/send_new_user_message';
+import sendMessageW from './send_message_w';
+import { handleDefaultMessage } from '../unified/send_message_generic';
 
 const processPostback = async (messageObj: any, res: Response): Promise<void> => {
   // first set nextAction to null
@@ -14,7 +14,7 @@ const processPostback = async (messageObj: any, res: Response): Promise<void> =>
   }
 
   if (messageObj.postback.payload == 'newConversation') {
-    sendNewConversationResponseW(messageObj);
+    sendNewConversationResponse(messageObj.from, 'WA');
     return;
   }
 
@@ -28,7 +28,7 @@ const processPostback = async (messageObj: any, res: Response): Promise<void> =>
 
   const payloadTitle = payload.title;
   console.log('postback payload title', payloadTitle);
-  defaultMessageHandlerW(messageObj, true, 0);
+  // handleDefaultMessage(messageObj.from, 'eeee', 'WA', );
 }; // end of processPostback
 
 export { processPostback };
