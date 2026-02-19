@@ -13,7 +13,7 @@ import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
    ============================================================ */
 const MAX_WINNERS = 200;
 const MAX_REAL_WINNERS = 10;
-const UPDATE_INTERVAL_MS = 6000; // Fast sync like the FB version
+const UPDATE_INTERVAL_MS = 60000; // Fast sync like the FB version
 
 type Platform = 'FB' | 'WA';
 
@@ -154,9 +154,9 @@ const updateDisplayedWinners = (platform: Platform) => {
   data.state.lastUpdate = Date.now();
   saveState(platform, data.state);
 
-  console.log(
-    `[Sync] Month: ${data.state.lastMonth} | Platfrom: ${platform} | Real: ${data.realWinners} | Displayed: ${data.state.lastTotal}`
-  );
+  // console.log(
+  //   `[Sync] Month: ${data.state.lastMonth} | Platfrom: ${platform} | Real: ${data.realWinners} | Displayed: ${data.state.lastTotal}`
+  // );
 };
 
 /* ============================================================

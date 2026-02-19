@@ -66,7 +66,7 @@ async function processMessage(platform: 'FB' | 'WA', event: any, res: Response) 
     // 2. Fetch User from appropriate Collection
     const user: any = await config.model.findOne({ id: senderId });
 
-    console.log('User in processs message >>>>>>>>>>>> ', platform, user);
+    //console.log('User in processs message >>>>>>>>>>>> ', platform, user);
     if (!user) return sendNewConversationResponse(senderId, platform);
 
     // 3. Bot Response Toggle Logic
