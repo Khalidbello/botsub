@@ -2,6 +2,7 @@ import FBBotUsers from '../../models/fb_bot_users';
 import WhatsappBotUsers from '../../models/whatsaap_bot_users';
 import { sendMessage } from '../fb_bot/modules/send_message';
 import sendMessageW from '../whatsaap_bot/send_message_w';
+import { DEFAULT_MESSAGE } from './send_message_generic';
 
 /**
  * Centralized Platform Configuration
@@ -28,28 +29,21 @@ export async function sendNewConversationResponse(senderId: string, platform: 'F
       if (config.isFB) {
         await config.send(
           senderId,
-          '📱 *Welcome to BotSub!*\n\n' +
-            'Get data & airtime directly in Facebook!\n\n' +
-            '✨ Works even on free mode\n' +
-            '✨ No app download\n\n' +
-            'Make your first purchase today! 🚀'
+          '📱 Welcome to BotSub! Get data & airtime directly in Facebook!' +
+            '\n\n✨ Works even on free mode' +
+            '\n\n✨ No app download' +
+            '\n\nGet free 3GB when you make 3 data purchases.'
         );
-        await config.send(
-          senderId,
-          'Below is a list of things i can do: \n\n A. Buy data \n B. Buy airtime. \n C. My account. \n D. Show data prices' +
-            '\n E. Report issue. \n\nSupport: https://wa.me/09166871328'
-        );
+
+        await config.send(senderId, 'Send Hi to get started.');
       } else {
         await config.send(
           senderId,
           '🌟 *Welcome to BotSub!* 🌟\n\n' +
             'Now you can buy data and airtime right here in WhatsApp! 📱\n\n' +
-            'No app to download • No hassle • Pure convenience\n\n' +
-            'Ready to get started? 🚀'
-        );
-        await config.send(
-          senderId,
-          'Save this number as *BotSub* in your contacts\n\nReply *DONE* to continue'
+            '🎁 *Exclusive:* Get 3GB FREE when you make 3 data purchases!\n\n' +
+            '📌 Save this number as *BotSub*\n\n' +
+            'Once saved, reply done to get started......🚀'
         );
       }
 

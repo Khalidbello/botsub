@@ -36,7 +36,7 @@ const showDataPrices = async (senderId: string, platform: 'FB' | 'WA', transactN
         const plan = plans[index];
         const finalPrice = plan.price;
 
-        text += `\n ${index}. ${plan.size} ₦${finalPrice} (${plan.validity})`;
+        text += `\n ${index}. ${plan.size} ₦${finalPrice} Validity - ${plan.validity}`;
       }
 
       // Send the formatted list for this network

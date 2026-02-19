@@ -2,8 +2,10 @@ import FBBotUsers from '../../models/fb_bot_users';
 import WhatsappBotUsers from '../../models/whatsaap_bot_users';
 import { airtimeNetworkType } from '../../types/bot/module-airtime-types';
 import { sendMessage } from '../fb_bot/modules/send_message';
+import { BotUserType } from '../grand_slam_offer/daily_participation_reminder';
 import sendMessageW from '../whatsaap_bot/send_message_w';
-import { validateAmount } from './utility_1';
+import { getNetworkAndLocalNumber } from './phone_number_checker';
+import { confirmProductPurchaseResponse, validateAmount } from './utility_1';
 import { cancelTransaction } from './utility_2';
 
 /**
@@ -25,10 +27,10 @@ const handleBuyAirtime = async (senderId: string, platform: 'FB' | 'WA') => {
   const config = getPlatformConfig(platform);
 
   try {
-    await config.send(senderId, airtimeNetworkMenu);
+    await config.send(senderId, 'Enter phone number for airtime purchase: \n\nEnter X to cancel.');
     await config.model.updateOne(
       { id: senderId },
-      { $set: { nextAction: 'selectAritimeNetwork' } }
+      { $set: { nextAction: 'enterAirtimePhoneNumber' } }
     );
   } catch (err) {
     console.error(`Error in handleBuyAirtime [${platform}]:`, err);
@@ -84,18 +86,76 @@ const handleAirtimeNetworkSelected = async (
 };
 
 /**
- * Handle amount entry
+ * Handle airtime purchase phone number entry
  */
-const handleEnterAirtimeAmount = async (
+
+const handleEnterAirtimePhoneNumber = async (
   senderId: string,
   message: string,
   platform: 'FB' | 'WA'
 ) => {
   const config = getPlatformConfig(platform);
-  const input = message.trim();
 
   try {
-    if (input.toLowerCase() === 'x') {
+    const input = message.trim().toLowerCase();
+    let index: number = 0;
+
+    if (input === 'x') {
+      await config.send(senderId, 'Transaction canceld.');
+      return await cancelTransaction(senderId, platform, true);
+    }
+    const numberResult = await getNetworkAndLocalNumber(input);
+    // Airtel 9mobile MTN Glo
+
+    const selectionMap: Record<string, number> = { MTN: 1, Glo: 2, '9mobile': 3, Airtel: 4 };
+
+    if (!selectionMap[numberResult.network]) {
+      await config.send(senderId, 'Invalid phone number.');
+      return await config.send(
+        senderId,
+        'Enter phone number for airtime purcahse: \n\nEnter X to cancel.'
+      );
+    }
+
+    await config.send(
+      senderId,
+      `Enter ${numberResult.network} airtime amount:  \n\nEnter X to cancel.`
+    );
+
+    await config.model.updateOne(
+      { id: senderId },
+      {
+        $set: {
+          nextAction: 'enterAirtimeAmount',
+          'purchasePayload.phoneNumber': numberResult.number,
+          'purchasePayload.transactionType': 'airtime',
+          'purchasePayload.network': numberResult.network,
+          'purchasePayload.networkID': selectionMap[numberResult.network],
+        },
+      }
+    );
+  } catch (err) {
+    console.error('An error occured in >>>>>>>>>>>>>>>>>>>>>.handleEnterAirtimePhoneNumber ', err);
+    await config.send(senderId, 'Something went wrong.');
+    config.send(senderId, 'Enter phone number for Airtime purcahse: \n\nEnter X to cancel.');
+  }
+};
+
+/**
+ * Handle amount entry
+ */
+const handleEnterAirtimeAmount = async (
+  senderId: string,
+  message: string,
+  platform: 'FB' | 'WA',
+  user: BotUserType
+) => {
+  const config = getPlatformConfig(platform);
+
+  try {
+    const input = message.trim().toLowerCase();
+
+    if (input === 'x') {
       await config.send(senderId, 'Tranction canceled.');
       return cancelTransaction(senderId, platform, true);
     }
@@ -104,32 +164,33 @@ const handleEnterAirtimeAmount = async (
     if (!amountValid) {
       return config.send(
         senderId,
-        'Invalid amount entered.\nAir amount should be at least 100. \n\nEnter X to cancel.'
+        'Invalid amount entered.\nAirtime amount should be at least ₦100. \n\nEnter X to cancel.'
       );
     }
-
-    const user = await config.model.findOne({ id: senderId });
-
-    await config.send(
-      senderId,
-      `Enter phone number for ${user?.purchasePayload?.network} airtime purchase. \n\nEnter X to cancel.`
-    );
 
     await config.model.updateOne(
       { id: senderId },
       {
         $set: {
-          nextAction: 'enterPhoneNumber',
+          nextAction: 'confirmProductPurchase',
           'purchasePayload.price': parseFloat(input),
-          'purchasePayload.product': `${input} ${user?.purchasePayload?.network} airtime.`,
-          'purchasePayload.transactionType': 'airtime',
+          'purchasePayload.product': `₦${input} ${user?.purchasePayload?.network} airtime.`,
         },
       }
     );
+    await confirmProductPurchaseResponse(senderId, platform);
   } catch (err) {
     console.error(`Error in handleEnterAirtimeAmount [${platform}]:`, err);
-    await config.send(senderId, 'An error occurred, please try again. \n\nOr enter X to cancel');
+    await config.send(
+      senderId,
+      'An error occurred. \n\nAirtime amount should be at least ₦100. \n\nEnter X to cancel.please try again.'
+    );
   }
 };
 
-export { handleBuyAirtime, handleAirtimeNetworkSelected, handleEnterAirtimeAmount };
+export {
+  handleBuyAirtime,
+  handleAirtimeNetworkSelected,
+  handleEnterAirtimeAmount,
+  handleEnterAirtimePhoneNumber,
+};

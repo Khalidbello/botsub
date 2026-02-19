@@ -2,8 +2,8 @@ import emailValidator from 'email-validator';
 
 import FBBotUsers from '../../models/fb_bot_users';
 import { sendMessage } from '../fb_bot/modules/send_message';
-import { handleBuyAirtime } from './send_messages_airtime';
-import { handleBuyData } from './send_messages_data';
+import { handleBuyAirtime, handleEnterAirtimePhoneNumber } from './send_messages_airtime';
+import { handleBuyData, handleEnterPhoneNumberForData } from './send_messages_data';
 import { confirmProductPurchaseResponse, validateNumber } from './utility_1';
 import { cancelTransaction } from './utility_2';
 import WhatsappBotUsers from '../../models/whatsaap_bot_users';
@@ -16,6 +16,7 @@ import { showDataPrices } from './data_prices';
 import { handleReportIssue } from './send_message_report_issue';
 import { free3gbParticipationReminder } from '../grand_slam_offer/unified/daily_participation_reminder';
 import { selectPaymentMethodPrompt } from './utility_4';
+import { getNetworkAndLocalNumber } from './phone_number_checker';
 
 // --- Constants ---
 
@@ -75,77 +76,80 @@ const handleEmailEntered = async (
   edit = false
 ) => {
   const config = getPlatformConfig(platform);
-  const email = message.trim();
+  try {
+    const email = message.trim();
 
-  if (email.toLowerCase() === 'x') {
-    if (edit) {
-      await config.send(senderId, 'Change of eamil canceled.');
-      return confirmProductPurchaseResponse(senderId, platform);
+    if (email.toLowerCase() === 'x') {
+      if (edit) {
+        await config.send(senderId, 'Change of email canceled.');
+        return confirmProductPurchaseResponse(senderId, platform);
+      }
+      return cancelTransaction(senderId, platform, true);
     }
-    return cancelTransaction(senderId, platform, false);
-  }
 
-  if (emailValidator.validate(email)) {
-    await config.model.updateOne(
-      { id: senderId },
-      {
-        $set: {
-          email,
-          nextAction: 'confirmProductPurchase',
+    if (emailValidator.validate(email)) {
+      await config.model.updateOne(
+        { id: senderId },
+        {
+          $set: {
+            email,
+            nextAction: 'confirmProductPurchase',
+          },
         },
-      },
-      { upsert: true }
-    );
-    await config.send(senderId, 'Email saved successfully.');
-    return confirmProductPurchaseResponse(senderId, platform);
-  } else {
-    await config.send(
-      senderId,
-      'The email format you entered is invalid. Please enter a valid email.'
-    );
+        { upsert: true }
+      );
+      await config.send(senderId, 'Email saved.');
+      return confirmProductPurchaseResponse(senderId, platform);
+    } else {
+      await config.send(
+        senderId,
+        'The email format you entered is invalid. \n\nEnter a valid email: \n\nEnter X to cancel.'
+      );
+    }
+  } catch (err) {
+    console.error('An error occured in handleEmailEntered >>>>>>>>>>>>>>>>> ', err);
+    await config.send(senderId, 'Something went wrong.');
+    await config.send(senderId, 'Enter a valid email: \n\nEnter X to cancel.');
   }
 };
 
 /**
- * Shared Phone Number Handler
+ * Shared change of phone number handler
  */
 const handlePhoneNumberEntered = async (
   senderId: string,
   message: string,
   platform: 'FB' | 'WA',
-  edit = false
+  user: BotUserType
 ) => {
   const config = getPlatformConfig(platform);
-  const validatedNum = validateNumber(message.trim());
+  try {
+    if (message.toLowerCase() === 'x') {
+      await config.send(senderId, 'Change of phone number canceled.');
 
-  if (message.toLowerCase() === 'x') {
-    await config.send(senderId, 'Change of phone number canceled');
-
-    if (edit) {
       return confirmProductPurchaseResponse(senderId, platform);
     }
-    return cancelTransaction(senderId, platform, true);
-  }
 
-  if (validatedNum) {
-    const user = await config.model.findOne({ id: senderId });
-    await config.model.updateOne(
-      { id: senderId },
-      { $set: { 'purchasePayload.phoneNumber': validatedNum } }
-    );
+    const numberResult = await getNetworkAndLocalNumber(message);
 
-    if (user?.email) {
-      await config.model.updateOne({ id: senderId }, { $set: { nextAction: null } });
-      return confirmProductPurchaseResponse(senderId, platform);
-    } else {
-      await config.send(senderId, 'Please enter your email, to recieve reciepts.');
-      await config.model.updateOne({ id: senderId }, { $set: { nextAction: 'enterEmailFirst' } });
-    }
-  } else {
-    await config.send(
-      senderId,
-      'Phone number not valid. Please enter a valid phone number. \n\nEnter X to cancel.'
-    );
+    if (numberResult.network === 'unknown') throw 'Phone number not valid';
+
+    if (user?.purchasePayload.transactionType === 'data')
+      return handleEnterPhoneNumberForData(
+        senderId,
+        numberResult.number,
+        platform,
+        user?.transactNum
+      );
+    if (user?.purchasePayload.transactionType === 'airtime')
+      return handleEnterAirtimePhoneNumber(senderId, numberResult.number, platform);
+
+    await config.send(senderId, 'Something went wrong.');
+    cancelTransaction(senderId, platform, true);
+  } catch (err) {
+    console.error('An error occured in handlePhoneNumberEntered >>>>>>>>>>>>>>>. ', err);
+    await config.send(senderId, 'Something went wrong.');
+    await config.send(senderId, 'Enter a valid phone number. \n\nEnter X to cancel.');
   }
 };
 

@@ -18,6 +18,7 @@ import adminRouter from './routes/admin';
 import whatsaapRouter from './routes/whatsaap-bot-hook';
 import morgan from 'morgan';
 import timekeeper from 'timekeeper';
+import { getNetworkAndLocalNumber } from './bot/unified/phone_number_checker';
 
 // setting  configurations for different environment
 if (process.env.NODE_ENV === 'development') {
@@ -157,6 +158,21 @@ app.get('/set-cookie', (req, res) => {
   req.session.exampleData = 'This is session data';
 
   res.send('Cookie has been set!');
+});
+
+app.get('/lookup/:phone', async (req: Request, res: Response) => {
+  const { phone } = req.params;
+
+  if (!phone) {
+    return res.status(400).json({ error: 'Phone number is required in the request body.' });
+  }
+
+  try {
+    const result = await getNetworkAndLocalNumber(phone);
+    return res.send(result);
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
 });
 
 if (process.env.NODE_ENV === 'development') {

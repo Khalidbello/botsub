@@ -68,17 +68,19 @@ export const claimFree3GB = async (senderId: string, user: BotUserType, platform
 
     if (hasWonThisMonth && isWinner) {
       if (currentDate.getDate() < 20) {
-        return await config.send(
+        await config.send(
           senderId,
           'Claiming of free 3GB commences on 20th of this month. \n\nCongratulations once again.'
         );
+        return await config.send(senderId, DEFAULT_MESSAGE);
       }
 
       if (hasClaimedThisMonth) {
-        return await config.send(
+        await config.send(
           senderId,
           'You have already claimed your free 3GB for this month. \nBrace up for another win next month!'
         );
+        return await config.send(senderId, DEFAULT_MESSAGE);
       }
 
       await config.send(

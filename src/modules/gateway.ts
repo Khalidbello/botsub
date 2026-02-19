@@ -100,7 +100,7 @@ async function createVAccount(
         { $set: { nextAction: 'confirmProductPurchase' } }
       );
     } else {
-      const balanceMsg = `Your account details: \n\nBank: ${accountData.bankName} \nName: ${accountData.accountName} \nBalance: ₦0.00 \n\nNumber: `;
+      const balanceMsg = `Your account details: \n\nBank: ${accountData.bankName} \nName: ${accountData.accountName} \nBalance: ₦0.00 \n\nAccount Number: `;
       await config.send(senderId, balanceMsg);
       await config.send(senderId, accountData.accountNumber);
       await config.send(senderId, 'Fund account to make purchases with ease.');

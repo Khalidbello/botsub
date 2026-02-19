@@ -7,6 +7,8 @@ import sendMessageW from '../whatsaap_bot/send_message_w';
 import { sendMessage } from '../fb_bot/modules/send_message';
 import { networkDetailsType } from '../../types/bot/module-buy-data-types';
 import { formDataOffers } from './utility_3';
+import { getNetworkAndLocalNumber } from './phone_number_checker';
+import { BotUserType } from '../grand_slam_offer/daily_participation_reminder';
 
 /**
  * Resolves platform-specific dependencies dynamically
@@ -28,8 +30,8 @@ const buyDataText = `Select network for data Purchase \n\n A. MTN \n B. Glo \n C
 async function handleBuyData(senderId: string, platform: 'FB' | 'WA') {
   const config = getPlatformConfig(platform);
 
-  await config.send(senderId, buyDataText);
-  await config.model.updateOne({ id: senderId }, { $set: { nextAction: 'selectDataNetwork' } });
+  await config.send(senderId, 'Enter phone number for Data purchase: \n\nEnter X to cancel.');
+  await config.model.updateOne({ id: senderId }, { $set: { nextAction: 'enterDataPhoneNumber' } });
 }
 
 /**
@@ -93,13 +95,78 @@ const handleDataNetWorkSelected = async (
 };
 
 /**
+ * UNIFIED: enter phone numner for data purchase
+ */
+const handleEnterPhoneNumberForData = async (
+  senderId: string,
+  message: string,
+  platform: 'FB' | 'WA',
+  transactNum: number
+) => {
+  const config = getPlatformConfig(platform);
+
+  try {
+    const input = message.trim().toLowerCase();
+    let index: number = 0;
+
+    if (input === 'x') {
+      await config.send(senderId, 'Transaction canceld.');
+      return await cancelTransaction(senderId, platform, true);
+    }
+    const numberResult = await getNetworkAndLocalNumber(input);
+    // Airtel 9mobile MTN Glo
+
+    let dataDetails = JSON.parse(await fs.promises.readFile('files/data-details.json', 'utf-8'));
+
+    const selectionMap: Record<string, number> = { MTN: 1, Glo: 2, '9mobile': 3, Airtel: 4 };
+    index = selectionMap[numberResult.network];
+
+    if (!index) {
+      await config.send(senderId, 'Phone number not valid.');
+      return config.send(senderId, 'Enter phone number for Data purchase: \n\nEnter X to cancel.');
+    }
+
+    const networkDetails: networkDetailsType = dataDetails[index];
+    const { network, networkID } = networkDetails['1'];
+    const response = await formDataOffers(networkDetails, transactNum);
+
+    if (index === 4) {
+      await config.send(
+        senderId,
+        'For all 7 days offers, ensure the line being recharged has no debt.'
+      );
+    }
+
+    await config.send(senderId, response);
+
+    await config.model.updateOne(
+      { id: senderId },
+      {
+        $set: {
+          nextAction: 'selectDataOffer',
+          'purchasePayload.network': network,
+          'purchasePayload.networkID': networkID,
+          'purchasePayload.transactionType': 'data',
+          'purchasePayload.phoneNumber': numberResult.number,
+        },
+      }
+    );
+  } catch (err) {
+    console.error('An error occured in handleEnterPhoneNumberForData >>>>>>>>>>>>>>>>> ', err);
+    config.send(senderId, 'Something went wrong.');
+    config.send(senderId, 'Enter phone number for Data purchase: \n\nEnter X to cancel.');
+  }
+};
+
+/**
  * UNIFIED: Handle Offer Selection
  */
 const handleOfferSelected = async (
   senderId: string,
   message: string,
   platform: 'FB' | 'WA',
-  transactNum: number
+  transactNum: number,
+  user: BotUserType
 ) => {
   const config = getPlatformConfig(platform);
 
@@ -111,7 +178,6 @@ const handleOfferSelected = async (
       return cancelTransaction(senderId, platform, true);
     }
 
-    const user = await config.model.findOne({ id: senderId }).select('purchasePayload');
     const networkID: any = user?.purchasePayload?.networkID;
 
     let dataDetails = JSON.parse(await fs.promises.readFile('files/data-details.json', 'utf-8'));
@@ -119,20 +185,18 @@ const handleOfferSelected = async (
     const dataOffer = networkDetails[mapAlphaToNum(input)];
 
     if (!dataOffer) {
-      await config.model.updateOne({ id: senderId }, { $set: { nextAction: 'selectDataNetwork' } });
-      return handleDataNetWorkSelected(senderId, message, platform, transactNum);
+      return handleEnterPhoneNumberForData(
+        senderId,
+        user?.purchasePayload?.phoneNumber as string,
+        platform,
+        transactNum
+      );
     }
-
-    await config.send(
-      senderId,
-      `Enter phone number for ${user?.purchasePayload?.network} data purchase`
-    );
 
     await config.model.updateOne(
       { id: senderId },
       {
         $set: {
-          nextAction: 'enterPhoneNumber',
           'purchasePayload.price': dataOffer.price,
           'purchasePayload.size': dataOffer.size,
           'purchasePayload.sizeN': dataOffer.sizeN,
@@ -143,8 +207,21 @@ const handleOfferSelected = async (
         },
       }
     );
+    if (user?.email) {
+      return await confirmProductPurchaseResponse(senderId, platform);
+    } else {
+      await config.send(senderId, 'Please enter your email, to recieve reciepts.');
+      await config.model.updateOne({ id: senderId }, { $set: { nextAction: 'enterEmailFirst' } });
+    }
   } catch (err) {
-    await config.send(senderId, 'An error occurred. Please enter response again.');
+    console.error('An error occured in >>>>>>>>>>>>>>>>... ', err);
+    await config.send(senderId, 'Something went wrong.');
+    await handleEnterPhoneNumberForData(
+      senderId,
+      user?.purchasePayload?.phoneNumber as string,
+      platform,
+      transactNum
+    );
   }
 };
 
@@ -199,4 +276,10 @@ const handlePhoneNumberEntered = async (
   }
 };
 
-export { handleBuyData, handleDataNetWorkSelected, handleOfferSelected, handlePhoneNumberEntered };
+export {
+  handleBuyData,
+  handleDataNetWorkSelected,
+  handleOfferSelected,
+  handlePhoneNumberEntered,
+  handleEnterPhoneNumberForData,
+};

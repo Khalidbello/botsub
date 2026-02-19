@@ -146,7 +146,11 @@ async function helpSuccesfulDelivery(
 
   await broadcastMessage(bot, senderId, receipt);
 
-  if (user.purchasePayload.transactionType === 'airtime' || user.purchasePayload.sizeN < 1) {
+  if (
+    user.purchasePayload.transactionType !== 'airtime' &&
+    user.numberOfTransactionForMonth < 3 &&
+    user.purchasePayload.sizeN < 1
+  ) {
     await broadcastMessage(bot, senderId, 'Make 3 data purchases of 1GB+ to get Free 3GB!');
   } else if (user.purchasePayload.sizeN >= 1) {
     await TransactionEndGrandSlamOfferReminder(user, bot === 'facebook' ? 'FB' : 'WA');
@@ -167,7 +171,7 @@ async function addToDelivered(
     const { purchasePayload } = user;
     let profit = 0;
 
-    await cancelTransaction(senderId, bot === 'facebook' ? 'FB' : 'WA', true); // Shared logic
+    await cancelTransaction(senderId, bot === 'facebook' ? 'FB' : 'WA', false); // Shared logic
 
     if (purchasePayload.transactionType === 'data') {
       const dataDetails = JSON.parse(

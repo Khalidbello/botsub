@@ -29,8 +29,16 @@ import {
 } from './send_message_withdrawal';
 import { handleReportIssueResponse } from './send_message_report_issue';
 import { enteredEmailForAccount } from './send_message_v_account';
-import { handleDataNetWorkSelected, handleOfferSelected } from './send_messages_data';
-import { handleAirtimeNetworkSelected, handleEnterAirtimeAmount } from './send_messages_airtime';
+import {
+  handleDataNetWorkSelected,
+  handleEnterPhoneNumberForData,
+  handleOfferSelected,
+} from './send_messages_data';
+import {
+  handleAirtimeNetworkSelected,
+  handleEnterAirtimeAmount,
+  handleEnterAirtimePhoneNumber,
+} from './send_messages_airtime';
 import { sendNewConversationResponse } from './send_new_user_message';
 import sendMessageW from '../whatsaap_bot/send_message_w';
 import { handleConfirmProductPurchase, handleSelectPaymentMethod } from './send_message_generic_2';
@@ -105,24 +113,33 @@ async function processMessage(platform: 'FB' | 'WA', event: any, res: Response) 
      */
 
     // Data Purchase
-    if (nextAction === 'selectDataNetwork')
-      return handleDataNetWorkSelected(senderId, message, platform, transactNum);
+    // if (nextAction === 'selectDataNetwork')
+    //   return handleDataNetWorkSelected(senderId, message, platform, transactNum);
+
+    // phone number for data purchase
+    if (nextAction === 'enterDataPhoneNumber')
+      return handleEnterPhoneNumberForData(senderId, message, platform, transactNum);
     if (nextAction === 'selectDataOffer')
-      return handleOfferSelected(senderId, message, platform, transactNum);
+      return handleOfferSelected(senderId, message, platform, transactNum, user);
 
     // Airtime
-    if (nextAction === 'selectAritimeNetwork')
-      return handleAirtimeNetworkSelected(senderId, message, platform);
+    // if (nextAction === 'selectAritimeNetwork')
+    //   return handleAirtimeNetworkSelected(senderId, message, platform);
+
+    if (nextAction === 'enterAirtimePhoneNumber')
+      return handleEnterAirtimePhoneNumber(senderId, message, platform);
+
     if (nextAction === 'enterAirtimeAmount')
-      return handleEnterAirtimeAmount(senderId, message, platform);
+      return handleEnterAirtimeAmount(senderId, message, platform, user);
 
     // Generic Flows
-    if (nextAction === 'enterPhoneNumber')
-      return handlePhoneNumberEntered(senderId, message, platform);
+    // if (nextAction === 'enterPhoneNumber')
+    //   return handlePhoneNumberEntered(senderId, message, platform);
+
     if (nextAction === 'confirmProductPurchase')
       return handleConfirmProductPurchase(senderId, message, platform, transactNum);
     if (nextAction === 'changePhoneNumberBeforeTransact')
-      return handlePhoneNumberEntered(senderId, message, platform, true);
+      return handlePhoneNumberEntered(senderId, message, platform, user);
     if (nextAction === 'changeEmailBeforeTransact')
       return handleEmailEntered(senderId, message, platform, true);
     if (nextAction === 'enterEmailFirst') return handleEmailEntered(senderId, message, platform);
