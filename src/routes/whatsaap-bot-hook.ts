@@ -36,7 +36,7 @@ whatsaapRouter.post('/webhook', (req: Request, res: Response) => {
         if (messageData) {
           // Handle incoming messages
           messageData.forEach(async (message: any) => {
-            processMessage('WA', event, res);
+            processMessage('WA', message, res);
           });
         }
       });
