@@ -154,9 +154,9 @@ const updateDisplayedWinners = (platform: Platform) => {
   data.state.lastUpdate = Date.now();
   saveState(platform, data.state);
 
-  // console.log(
-  //   `[Sync] Month: ${data.state.lastMonth} | Platfrom: ${platform} | Real: ${data.realWinners} | Displayed: ${data.state.lastTotal}`
-  // );
+  console.log(
+    `[Sync] Month: ${data.state.lastMonth} | Platfrom: ${platform} | Real: ${data.realWinners} | Displayed: ${data.state.lastTotal}`
+  );
 };
 
 /* ============================================================
