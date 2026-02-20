@@ -65,6 +65,8 @@ async function generateOneTimeAccountNumber(
       )
     );
 
+    consol.log('in genrate one time account data>>>>>>>>>>>>>>>>>>>> ', payload, rawPayload);
+
     // 3. Shared Network Status Check
     //console.log('In <<<<<<<<<<<<<<<<<<<<<<<<  ', payload);
     if (payload.transactionType === 'data') {
