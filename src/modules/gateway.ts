@@ -177,6 +177,8 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
         );
 
         const user = await config.model.findOne({ id: account.refrence }).select('purchasePayload');
+        console.log('User in v-account wallect funding >>>>>>>>>>>>>>> ', user);
+
         if (user?.purchasePayload?.outStanding) {
           await initMakePurchase(config.label as 'FB' | 'WA', response.data.meta.senderId);
         }
