@@ -20,7 +20,7 @@ const getPlatformConfig = (platform: 'FB' | 'WA') => ({
  * Consolidates the logic for checking balance and starting the transaction
  */
 async function initMakePurchase(platform: 'FB' | 'WA', senderId: string) {
-  console.log('IN initMakePurchase >>>>>>>>>>>>>>>> ', platform, senderId);
+  //console.log('IN initMakePurchase >>>>>>>>>>>>>>>> ', platform, senderId);
   const config = getPlatformConfig(platform);
 
   try {
