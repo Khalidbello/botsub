@@ -179,7 +179,7 @@ async function addToDelivered(
       );
       const plan = dataDetails[purchasePayload.networkID][purchasePayload.index];
 
-      console.log('ddata in ad to dn: ', dataDetails, purchasePayload, plan);
+      //console.log('ddata in ad to db: ', dataDetails, purchasePayload, plan);
       const charges = purchasePayload.price * 0.02;
       const vat = charges * 0.07;
       profit = purchasePayload.price - (charges + vat + (planAmount || plan.aPrice));

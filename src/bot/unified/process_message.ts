@@ -106,7 +106,7 @@ async function processMessage(platform: 'FB' | 'WA', event: any, res: Response) 
     const nextAction = user?.nextAction;
     const transactNum = user?.transactNum || 0;
 
-    //console.log('user data in process message: ', user);
+    console.log('user data in process message: ', user);
     /**
      * 6. ROUTING LOGIC
      * All parameters passed to functions remain exactly as defined in your original code.
