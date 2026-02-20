@@ -38,7 +38,7 @@ const handleUserHasNoVirtualAcount = async (user: BotUserType, platform: 'FB' | 
   await config.send(user.id, 'You do not have a permanent account number yet.');
   await config.send(
     user.id,
-    'Kindly enter your NIN to create a permanent account number. \n\nYour NIN is required in compliance with CBN regulation. \n\nEnter X to quit.'
+    'Kindly enter your NIN/BVN to create a permanent account number. \n\nYour NIN/BVN is required in compliance with CBN regulation. \n\nEnter X to quit.'
   );
   await config.model.updateOne({ id: user.id }, { $set: { nextAction: 'enterBvn' } });
 };

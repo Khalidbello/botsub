@@ -40,7 +40,7 @@ async function generateOneTimeAccountNumber(
     }
 
     // 2. Build Unified API Payload
-    const payload = {
+    const rawPayload = {
       network: botUser.purchasePayload.network,
       networkID: botUser.purchasePayload.networkID,
       transactionType: botUser.purchasePayload.transactionType,
@@ -57,6 +57,13 @@ async function generateOneTimeAccountNumber(
       senderId: senderId,
       platform: platform === 'FB' ? 'facebook' : 'whatsapp',
     };
+
+    // Filter out null, undefined, or empty strings
+    const payload = Object.fromEntries(
+      Object.entries(rawPayload).filter(
+        ([_, value]) => value !== null && value !== undefined && value !== ''
+      )
+    );
 
     // 3. Shared Network Status Check
     //console.log('In <<<<<<<<<<<<<<<<<<<<<<<<  ', payload);

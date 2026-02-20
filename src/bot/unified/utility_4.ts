@@ -110,10 +110,19 @@ const handleMakePurchase = async (senderId: string, platform: 'FB' | 'WA') => {
 
 const isConversationOpen = async (senderId: string, platform: 'FB' | 'WA') => {
   const config = getPlatformConfig(platform);
-  const user = config.model.findOne({ id: senderId }).select('lastMessage');
 
-  // @ts-expect-error last message xists
-  return isDateGreaterThan10Minutes(user?.lastMessage);
+  // 1. Added await so 'user' isn't a pending promise
+  const user = await config.model.findOne({ id: senderId }).select('lastMessage');
+
+  if (!user || !user.lastMessage) return false;
+
+  // 2. Define the 24-hour window in milliseconds
+  const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+  const lastMessageTime = new Date(user.lastMessage).getTime();
+  const currentTime = new Date().getTime();
+
+  // 3. Return true if the difference is less than 24 hours
+  return currentTime - lastMessageTime < TWENTY_FOUR_HOURS;
 };
 
 export {
