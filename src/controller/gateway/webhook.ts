@@ -21,9 +21,9 @@ const webhook = async (req: Request, res: Response) => {
     // check webhook type to detrermine how to process it.
     if (payload.event === 'transfer.completed') {
       // run functionality to complete  user transfer
-      handleTransferWebhook(payload.data);
-    } else {
       respondToWebhook(payload?.data?.id || payload.id, res, false);
+    } else {
+      handleTransferWebhook(payload.data);
     }
   } catch (err: any) {
     res.status(300).send('an error occured');

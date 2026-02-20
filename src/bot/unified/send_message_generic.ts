@@ -174,7 +174,7 @@ const handleBvnEntered = async (
         { $set: { nextAction: 'selectAccount' } }
       );
     }
-    return await config.send(senderId, DEFAULT_MESSAGE);
+    return await cancelTransaction(senderId, platform, true);
   }
 
   const parsedBvn = parseInt(bvn);
