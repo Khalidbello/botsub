@@ -176,7 +176,9 @@ async function respondToWebhook(id: any, res: Response, custom: boolean) {
           `New balance: ₦${(account?.balance || 0).toFixed(2)}`
         );
 
-        const user = await config.model.findOne({ id: account.refrence }).select('purchasePayload');
+        const user = await config.model
+          .findOne({ id: account.refrence })
+          .select('purchasePayload id');
         console.log('User in v-account wallect funding >>>>>>>>>>>>>>> ', user);
 
         if (user?.purchasePayload?.outStanding) {
