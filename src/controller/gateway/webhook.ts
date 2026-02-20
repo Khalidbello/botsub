@@ -19,7 +19,7 @@ const webhook = async (req: Request, res: Response) => {
     console.log('btw hook body', payload);
 
     // check webhook type to detrermine how to process it.
-    if (payload.event === 'transfer.completed') {
+    if (payload.event === 'transfer.completed' || payload.event === 'charge.completed') {
       // run functionality to complete  user transfer
       respondToWebhook(payload?.data?.id || payload.id, res, false);
     } else {
