@@ -203,9 +203,10 @@ const resetUserPayload = async (platform: 'FB' | 'WA', senderId: string) => {
 };
 
 function isDateGreaterThan10Minutes(date: Date): boolean {
+  const time = new Date(date);
   const currentDate = new Date();
   const tenMinutesInMilliseconds = 10 * 60 * 1000;
-  const difference = Math.abs(currentDate.getTime() - date.getTime());
+  const difference = Math.abs(currentDate.getTime() - time.getTime());
 
   //console.log('in time checker', currentDate, difference, tenMinutesInMilliseconds);
 
