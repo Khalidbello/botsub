@@ -6,8 +6,6 @@ import { makePurchase } from '../../modules/v-account-make-purcchase';
 import { sendMessage } from '../fb_bot/modules/send_message';
 import sendMessageW from '../whatsaap_bot/send_message_w';
 import { confirmProductPurchaseResponse, remindToFundWallet } from './utility_1';
-import { isDateGreaterThan10Minutes } from './utility_2';
-
 /**
  * Platform Configuration Resolver
  */
@@ -22,6 +20,7 @@ const getPlatformConfig = (platform: 'FB' | 'WA') => ({
  * Consolidates the logic for checking balance and starting the transaction
  */
 async function initMakePurchase(platform: 'FB' | 'WA', senderId: string) {
+  console.log('IN initMakePurchase >>>>>>>>>>>>>>>> ', platform, senderId);
   const config = getPlatformConfig(platform);
 
   try {
