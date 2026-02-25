@@ -218,6 +218,7 @@ export const deliverFree3GB = async (event: any, user: BotUserType, platform: Pl
 
     // Note: Re-enable axios call in production
     const resp = await axios.post(options.url, options.payload, { headers: options.headers });
+    console.log('Free 3gb delivery response >>>>>>>>>>>>>>>', resp);
     if (resp.data.Status === 'successful') {
       await config.send(
         senderId,
