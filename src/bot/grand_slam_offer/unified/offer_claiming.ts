@@ -217,24 +217,26 @@ export const deliverFree3GB = async (event: any, user: BotUserType, platform: Pl
     };
 
     // Note: Re-enable axios call in production
-    // await axios.post(options.url, options.payload, { headers: options.headers });
+    const resp = await axios.post(options.url, options.payload, { headers: options.headers });
+    if (resp.data.Status === 'successful') {
+      await config.send(
+        senderId,
+        `Your free 3GB has been successfully delivered to ${user.purchasePayload?.free3GBNetwork} line ${user.purchasePayload?.free3GBPhoneNumber}`
+      );
 
-    await config.send(
-      senderId,
-      `Your free 3GB has been successfully delivered to ${user.purchasePayload?.free3GBNetwork} line ${user.purchasePayload?.free3GBPhoneNumber}`
-    );
+      // Update User
+      await config.usersModel.updateOne(
+        { id: user.id },
+        { $set: { nextAction: null, claimed: new Date(), win: new Date() } }
+      );
 
-    // Update User
-    await config.usersModel.updateOne(
-      { id: user.id },
-      { $set: { nextAction: null, claimed: new Date(), win: new Date() } }
-    );
-
-    // Update Winners Log
-    await config.winnersModel.updateOne(
-      { id: getCurrentMonthId(), 'winners.id': user.id },
-      { $set: { 'winners.$.claimed': true } }
-    );
+      // Update Winners Log
+      await config.winnersModel.updateOne(
+        { id: getCurrentMonthId(), 'winners.id': user.id },
+        { $set: { 'winners.$.claimed': true } }
+      );
+    }
+    throw 'Data free 3GB delivery failed';
   } catch (err) {
     console.error(`Delivery Error (${platform}):`, err);
     await config.send(senderId, 'An error occurred, please try again.');
