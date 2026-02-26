@@ -7,27 +7,39 @@ async function checkDataStatus(network: string) {
 }
 
 // function to update network status basedd on most recent transaction carried out on the specific network provider
-async function updateNetworkStatus(network: string, status: boolean, info: string) {
+async function updateNetworkStatus(network: string, status: boolean, info: any) {
   try {
-    // Read the file content
-    const fileContent = await fs.promises.readFile('files/data-network-status.json', 'utf-8');
+    let processedInfo = '';
 
-    // Parse the JSON content into a JavaScript object
+    if (Array.isArray(info)) {
+      // 1. If it's a list, join elements with a comma
+      processedInfo = info.join(', ');
+    } else if (typeof info === 'object' && info !== null) {
+      // 2. If it's an object, extract the values (e.g., {error: 'Timeout'} becomes 'Timeout')
+      // You can also use Object.entries(info).map(([k, v]) => `${k}: ${v}`).join(', ')
+      // if you want the keys included.
+      processedInfo = Object.values(info).join(' - ');
+    } else {
+      // 3. If it's already a string or number, just convert to String
+      processedInfo = info ? String(info) : 'Network working fine';
+    }
+
+    // Read and Parse
+    const fileContent = await fs.promises.readFile('files/data-network-status.json', 'utf-8');
     let data = JSON.parse(fileContent);
 
-    // Modify the object as needed
-    data[network] = { status: status, info: info || 'Network working fine' };
+    // Update with the clean string
+    data[network] = {
+      status: status,
+      info: processedInfo,
+    };
 
-    // Convert the modified object back to JSON
     const updatedContent = JSON.stringify(data, null, 2);
-
-    // Write the JSON content back to the file
     await fs.promises.writeFile('files/data-network-status.json', updatedContent);
 
     console.log('File updated successfully.');
   } catch (error) {
-    console.error('Error updating file for network status:', error);
-    //throw error;
+    console.error('Error updating file:', error);
   }
 }
 

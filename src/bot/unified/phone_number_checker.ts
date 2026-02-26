@@ -10,6 +10,8 @@ interface PhoneInfo {
  * Uses Google's internal metadata to identify the network.
  * Handles inputs like +234, 234, or 0.
  */
+
+// Airtel 9mobile MTN Glo
 export async function getNetworkAndLocalNumber(input: string): Promise<PhoneInfo> {
   let processedInput = input.trim();
 
@@ -22,16 +24,22 @@ export async function getNetworkAndLocalNumber(input: string): Promise<PhoneInfo
   const phoneNumber = parsePhoneNumberFromString(processedInput, 'NG');
 
   if (!phoneNumber || !phoneNumber.isValid()) {
-    return { number: input, network: 'unknown' };
+    // Also truncate the fallback input just in case
+    return { number: input.slice(0, 11), network: 'unknown' };
   }
 
   try {
     // 2. Use Google's carrier metadata to look up the network name
-    // The 'en' specifies the return language
     const networkName = await carrier(phoneNumber, 'en');
 
     // 3. Format to local "0" format (e.g., 0803...)
-    const localNumber = phoneNumber.formatNational().replace(/\s+/g, '');
+    // .replace(/\D/g, '') ensures we only have digits before slicing
+    let localNumber = phoneNumber.formatNational().replace(/\D/g, '');
+
+    // 4. Ensure the number is not above 11 digits
+    if (localNumber.length > 11) {
+      localNumber = localNumber.slice(0, 11);
+    }
 
     return {
       number: localNumber,
@@ -39,8 +47,6 @@ export async function getNetworkAndLocalNumber(input: string): Promise<PhoneInfo
     };
   } catch (err) {
     console.error('An error occured in >>>>>>>>>>>>>>>>>>>>>>>>', err);
-    return { number: input, network: 'unknown' };
+    return { number: input.slice(0, 11), network: 'unknown' };
   }
 }
-
-// Airtel 9mobile MTN Glo
