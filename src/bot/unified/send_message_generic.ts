@@ -61,7 +61,7 @@ const handleDefaultMessage = async (
     await config.send(senderId, DEFAULT_MESSAGE);
   } catch (err) {
     console.error('An error occured in handleDefaultMessage: ', err);
-    await config.send(senderId, 'An error occurd.');
+    await config.send(senderId, 'An error occured.');
     await config.send(senderId, DEFAULT_MESSAGE);
   }
 };

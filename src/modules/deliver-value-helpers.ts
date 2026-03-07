@@ -181,7 +181,7 @@ const addFailed = async (response: any, info: string) => {
     await new Transactions({
       id: data.id,
       email: data.customer.email,
-      status: 'delivered',
+      status: 'failed',
       userId: data.meta.senderId,
       date: new Date(),
       product: getProductString(data.meta),

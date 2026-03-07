@@ -11,8 +11,8 @@ import WhatsappBotUsers from '../../../models/whatsaap_bot_users';
 /* ============================================================
    Configuration & Constants
    ============================================================ */
-const MAX_WINNERS = 200;
-const MAX_REAL_WINNERS = 10;
+const MAX_WINNERS = 100;
+const MAX_REAL_WINNERS = 5;
 const UPDATE_INTERVAL_MS = 60000; // Fast sync like the FB version
 
 type Platform = 'FB' | 'WA';
