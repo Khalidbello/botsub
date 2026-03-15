@@ -64,6 +64,7 @@ export const listWhatsappUsers = async (req: Request, res: Response) => {
       lastTransaction: user.lastTransact,
       transactionCount: user.transactNum,
       firstPurchase: user.firstPurchase,
+      nextAction: user.nextAction,
       createdAt: user.createdAt,
     }));
 
