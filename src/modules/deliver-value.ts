@@ -83,7 +83,7 @@ const deliverData = (response: any) => {
     },
   };
 
-  console.log('Before excuting work flow:  ', options, payload);
+  console.log('Before excuting work flow:  ', options);
   return executeWorkflow(response, options, 'data');
 };
 
