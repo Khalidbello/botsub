@@ -160,10 +160,14 @@ export const helpFailedDelivery = async (response: any, info: string) => {
  */
 const addFailed = async (response: any, info: string) => {
   const { data } = response;
+  const stringInfo = convertToString(info);
   let profit = 0;
 
   try {
-    const existing = await Transactions.findOneAndUpdate({ id: data.id }, { $set: { info: info } });
+    const existing = await Transactions.findOneAndUpdate(
+      { id: data.id },
+      { $set: { info: stringInfo } }
+    );
 
     if (existing) return;
 
@@ -187,7 +191,7 @@ const addFailed = async (response: any, info: string) => {
       product: getProductString(data.meta),
       beneficiary: parseInt(data.meta.phoneNumber),
       accountType: 'virtual',
-      info: 'Delivery failed via one time account',
+      info: stringInfo,
       transactionType: data.meta.transactionType,
       platform: data.meta.platform,
       profit,
@@ -196,4 +200,24 @@ const addFailed = async (response: any, info: string) => {
   } catch (err) {
     console.error('Error in addFailed DB operation:', err);
   }
+};
+
+// fucntion to convert inputs to string
+const convertToString = (info: any): String => {
+  let processedInfo = '';
+
+  if (Array.isArray(info)) {
+    // 1. If it's a list, join elements with a comma
+    processedInfo = info.join(', ');
+  } else if (typeof info === 'object' && info !== null) {
+    // 2. If it's an object, extract the values (e.g., {error: 'Timeout'} becomes 'Timeout')
+    // You can also use Object.entries(info).map(([k, v]) => `${k}: ${v}`).join(', ')
+    // if you want the keys included.
+    processedInfo = Object.values(info).join(' - ');
+  } else {
+    // 3. If it's already a string or number, just convert to String
+    processedInfo = info ? String(info) : 'Network working fine';
+  }
+
+  return processedInfo;
 };

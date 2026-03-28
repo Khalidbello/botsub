@@ -141,6 +141,32 @@ const toNumber =()=> {
 }
 
 
-calculateNetworkDataProfit();
+
+
+// fucntion to convert inputs to string
+const convertToString = (info) => {
+  let processedInfo = '';
+
+  if (Array.isArray(info)) {
+    // 1. If it's a list, join elements with a comma
+    processedInfo = info.join(', ');
+  } else if (typeof info === 'object' && info !== null) {
+    // 2. If it's an object, extract the values (e.g., {error: 'Timeout'} becomes 'Timeout')
+    // You can also use Object.entries(info).map(([k, v]) => `${k}: ${v}`).join(', ')
+    // if you want the keys included.
+    processedInfo = Object.values(info).join(' - ');
+  } else {
+    // 3. If it's already a string or number, just convert to String
+    processedInfo = info ? String(info) : 'Network working fine';
+  }
+
+  return processedInfo;
+};
+
+//const info = {abs: 'sfns', abf: [123, 75, 'sf']}
+const info = [{abs: 123, 34: 'wnd'}, 1223, 'wirn']
+console.log(convertToString(info))
+
+//calculateNetworkDataProfit();
 //getWhatsAppNumberKId();
 //toNumber();
