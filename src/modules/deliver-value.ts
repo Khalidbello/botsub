@@ -68,7 +68,7 @@ const notifyAlreadyDelivered = async (meta: any, id: string, date: Date) => {
  */
 const deliverData = (response: any) => {
   // Switch provider based on Network ID
-  const useOpenSub = response.data.meta.networkID === 4;
+  const useOpenSub = response.data.meta.networkID === '4';
   const options = {
     url: useOpenSub ? 'https://opendatasub.com/api/data/' : 'https://asbdata.com/api/data/',
     headers: {
@@ -83,6 +83,7 @@ const deliverData = (response: any) => {
     },
   };
 
+  console.log('Before excuting work flow:  ', options, payload);
   return executeWorkflow(response, options, 'data');
 };
 
