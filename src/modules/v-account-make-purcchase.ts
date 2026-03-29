@@ -112,6 +112,24 @@ async function makePurchaseRequest(
     if (type === 'data') updateNetworkStatus(user.purchasePayload?.network, false, errorMsg);
 
     await broadcastMessage(bot, senderId, `Transaction failed. \n\nError: ${errorMsg}`);
+
+    if (process.env.ISSUE_ALERT_NUMBER) {
+      sendMessageW(
+        process.env.ISSUE_ALERT_NUMBER as string,
+        `Failed Transaction alert virtual account \n\nError message: ${errorMsg} \n\ndetails: ${JSON.stringify(
+          user.purchasePayload
+        )}`
+      );
+    }
+
+    if (process.env.ISSUE_ALERT_NUMBER_2) {
+      sendMessageW(
+        process.env.ISSUE_ALERT_NUMBER_2 as string,
+        `Failed Transaction alert virtual account \n\nError message: ${errorMsg} \n\ndetails: ${JSON.stringify(
+          user.purchasePayload
+        )}`
+      );
+    }
     return resetFlow(bot, senderId);
   }
 }

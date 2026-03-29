@@ -79,6 +79,20 @@ const handleReportIssueResponse = async (
     );
 
     await config.model.updateOne({ id: senderId }, { $set: { nextAction: null } });
+
+    if (process.env.ISSUE_ALERT_NUMBER) {
+      sendMessageW(
+        process.env.ISSUE_ALERT_NUMBER as string,
+        `New issue reported by user: ${senderId} \n\nIssue: ${issueDescription}`
+      );
+    }
+
+    if (process.env.ISSUE_ALERT_NUMBER) {
+      sendMessageW(
+        process.env.ISSUE_ALERT_NUMBER as string,
+        `New issue reported by user: ${senderId} \n\nIssue: ${issueDescription}`
+      );
+    }
   } catch (err) {
     console.error(`Error in handleReportIssueResponse [${platform}]:`, err);
     await config.send(senderId, 'An error occurred. \nPlease enter response again.');

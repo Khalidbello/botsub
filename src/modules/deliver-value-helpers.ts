@@ -149,6 +149,20 @@ export const helpFailedDelivery = async (response: any, info: string) => {
 
     try {
       await broadcastMessage(meta, failMessages);
+
+      if (process.env.ISSUE_ALERT_NUMBER) {
+        sendMessageW(
+          process.env.ISSUE_ALERT_NUMBER as string,
+          `Failed Transaction alert one time account \n\ndetails: ${JSON.stringify(meta)}`
+        );
+      }
+
+      if (process.env.ISSUE_ALERT_NUMBER_2) {
+        sendMessageW(
+          process.env.ISSUE_ALERT_NUMBER_2 as string,
+          `Failed Transaction alert one time account \n\ndetails: ${JSON.stringify(meta)}`
+        );
+      }
     } catch (err) {
       console.error('Error sending failure messages:', err);
     }

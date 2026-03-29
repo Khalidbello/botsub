@@ -165,8 +165,8 @@ const convertToString = (info) => {
 
 //const info = {abs: 'sfns', abf: [123, 75, 'sf']}
 const info = [{abs: 123, 34: 'wnd'}, 1223, 'wirn']
-console.log(convertToString(info))
+//console.log(convertToString(info))
 
-//calculateNetworkDataProfit();
+calculateNetworkDataProfit();
 //getWhatsAppNumberKId();
 //toNumber();
