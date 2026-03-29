@@ -87,9 +87,9 @@ const handleReportIssueResponse = async (
       );
     }
 
-    if (process.env.ISSUE_ALERT_NUMBER) {
+    if (process.env.ISSUE_ALERT_NUMBER_2) {
       sendMessageW(
-        process.env.ISSUE_ALERT_NUMBER as string,
+        process.env.ISSUE_ALERT_NUMBER_2 as string,
         `New issue reported by user: ${senderId} \n\nIssue: ${issueDescription}`
       );
     }
